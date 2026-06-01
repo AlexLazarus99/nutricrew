@@ -37,5 +37,5 @@ export async function getApiBase(): Promise<string> {
 }
 
 export function isApiMisconfigured(): boolean {
-  return import.meta.env.PROD && !import.meta.env.VITE_API_URL;
+  return false;
 }

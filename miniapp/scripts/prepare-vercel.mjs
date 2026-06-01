@@ -7,7 +7,10 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const apiUrl = (process.env.VITE_API_URL ?? process.env.API_PROXY_TARGET ?? "").trim();
+
+/** Default Render API — override with VITE_API_URL on Vercel if needed. */
+const DEFAULT_API_URL = "https://nutricrew-dddi.onrender.com/api";
+const apiUrl = (process.env.VITE_API_URL ?? process.env.API_PROXY_TARGET ?? DEFAULT_API_URL).trim();
 
 const rewrites = [];
 
@@ -23,11 +26,9 @@ if (apiUrl) {
     `${JSON.stringify({ apiUrl: normalized }, null, 2)}\n`,
   );
   console.log(`[prepare-vercel] API proxy: /api/* → ${base}/api/*`);
-  console.log(`[prepare-vercel] wrote public/runtime-config.json`);
+  console.log(`[prepare-vercel] wrote public/runtime-config.json → ${normalized}`);
 } else {
-  console.warn(
-    "[prepare-vercel] VITE_API_URL not set — add it on Vercel (e.g. https://your-app.onrender.com/api) and redeploy.",
-  );
+  console.warn("[prepare-vercel] No API URL — using existing vercel.json / runtime-config.json");
 }
 
 rewrites.push({ source: "/(.*)", destination: "/index.html" });
