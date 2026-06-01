@@ -1,0 +1,43 @@
+# Render Blueprint — NutriCrew API
+# https://render.com/docs/blueprint-spec
+#
+# Deploy: Render Dashboard → New → Blueprint → connect this repo.
+# Or add DATABASE_URL manually: Web Service → Environment → New Variable.
+
+databases:
+  - name: nutricrew-db
+    plan: free
+    databaseName: nutricrew
+    user: nutricrew
+
+services:
+  - type: web
+    name: nutricrew-api
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm ci && npm run build -w server
+    startCommand: npm run start -w server
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nutricrew-db
+          property: connectionString
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEBAPP_URL
+        sync: false
+      # Required for Telegram auth, payments, and webhooks. Get from @BotFather.
+      - key: BOT_MODE
+        value: webhook
+      - key: CRON_ENABLED
+        value: "true"
+      - key: S3_ENABLED
+        value: "false"
+      - key: DEV_SKIP_BOT
+        value: "false"
+      - key: DEV_BYPASS_AUTH
+        value: "false"

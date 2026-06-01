@@ -50,6 +50,9 @@ export function assertConfig(): void {
     return;
   }
   if (!config.botToken) {
-    throw new Error("BOT_TOKEN is required. Copy .env.example to .env and set your token.");
+    console.warn(
+      "BOT_TOKEN is not set — API starts without Telegram bot. " +
+        "Set BOT_TOKEN in Render Environment (Dashboard → your service → Environment).",
+    );
   }
 }
