@@ -111,7 +111,10 @@
   "common": {
     "loading": "Loading…",
     "error": "Something went wrong",
-    "retry": "Retry"
+    "retry": "Retry",
+    "apiNotConfigured": "Backend not configured: set VITE_API_URL on Vercel to your API URL (including /api).",
+    "apiUnreachable": "Could not reach the server. Ensure the backend is running and WEBAPP_URL matches this site.",
+    "telegramRequired": "Open this app from Telegram — bot authentication is required."
   },
   "registration": {
     "title": "Welcome, {{name}}!",

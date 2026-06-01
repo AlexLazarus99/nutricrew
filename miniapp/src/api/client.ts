@@ -1,22 +1,54 @@
 const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
 
+export const API_ERROR = {
+  NOT_CONFIGURED: "API_NOT_CONFIGURED",
+  UNREACHABLE: "API_UNREACHABLE",
+  TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
+} as const;
+
+export function isApiMisconfigured(): boolean {
+  return import.meta.env.PROD && !import.meta.env.VITE_API_URL;
+}
+
 function getInitData(): string {
   return window.Telegram?.WebApp?.initData ?? "";
 }
 
+function mapFetchError(err: unknown): Error {
+  if (err instanceof TypeError) {
+    if (isApiMisconfigured()) {
+      return new Error(API_ERROR.NOT_CONFIGURED);
+    }
+    return new Error(API_ERROR.UNREACHABLE);
+  }
+  if (err instanceof Error) {
+    return err;
+  }
+  return new Error(String(err));
+}
+
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      "X-Telegram-Init-Data": getInitData(),
-      ...options?.headers,
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}`, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        "X-Telegram-Init-Data": getInitData(),
+        ...options?.headers,
+      },
+    });
+  } catch (err) {
+    throw mapFetchError(err);
+  }
 
   if (!res.ok) {
     const body = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
-    throw new Error(body.message ?? body.error ?? `HTTP ${res.status}`);
+    const message = body.message ?? body.error ?? `HTTP ${res.status}`;
+    if (message === "Missing Telegram init data" || message === "Invalid init data") {
+      throw new Error(API_ERROR.TELEGRAM_REQUIRED);
+    }
+    throw new Error(message);
   }
 
   return res.json() as Promise<T>;

@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { api, type MeResponse } from "../api/client";
+import { api, API_ERROR, type MeResponse } from "../api/client";
 
 type MeContextValue = {
   me: MeResponse;
@@ -8,6 +8,19 @@ type MeContextValue = {
 };
 
 const MeContext = createContext<MeContextValue | null>(null);
+
+function formatMeError(message: string, t: (key: string) => string): string {
+  switch (message) {
+    case API_ERROR.NOT_CONFIGURED:
+      return t("common.apiNotConfigured");
+    case API_ERROR.UNREACHABLE:
+      return t("common.apiUnreachable");
+    case API_ERROR.TELEGRAM_REQUIRED:
+      return t("common.telegramRequired");
+    default:
+      return message;
+  }
+}
 
 export function MeProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
@@ -40,7 +53,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
     return (
       <section className="card error-card">
         <p>{t("common.error")}</p>
-        <p className="muted">{error}</p>
+        <p className="muted">{formatMeError(error, t)}</p>
       </section>
     );
   }
