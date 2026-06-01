@@ -1,0 +1,27 @@
+{
+  "name": "nutricrew",
+  "private": true,
+  "version": "0.1.0",
+  "description": "NutriCrew — social nutrition game for Telegram",
+  "workspaces": [
+    "server",
+    "miniapp"
+  ],
+  "scripts": {
+    "dev": "node scripts/start-dev.mjs",
+    "dev:apps": "concurrently -n server,miniapp -c blue,green \"npm run dev -w server\" \"npm run dev -w miniapp\"",
+    "build": "npm run build -w miniapp && npm run build -w server",
+    "start": "npm run start -w server",
+    "typecheck": "npm run typecheck -w server && npm run typecheck -w miniapp",
+    "db:up": "docker compose up -d postgres minio minio-init",
+    "pitch:pdf": "npm install --prefix docs && npm run pitch:pdf --prefix docs",
+    "prototype": "npx --yes serve docs/prototype -p 5199"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "embedded-postgres": "^18.2.0-beta.16"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

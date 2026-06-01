@@ -1,0 +1,49 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: nutricrew-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nutricrew
+      POSTGRES_PASSWORD: nutricrew
+      POSTGRES_DB: nutricrew
+    ports:
+      - "5432:5432"
+    volumes:
+      - nutricrew_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nutricrew"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio:latest
+    container_name: nutricrew-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - nutricrew_minio:/data
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 3;
+      mc alias set local http://minio:9000 minioadmin minioadmin;
+      mc mb local/nutricrew --ignore-existing;
+      mc anonymous set download local/nutricrew;
+      exit 0;
+      "
+
+volumes:
+  nutricrew_pg:
+  nutricrew_minio:

@@ -1,0 +1,30 @@
+{
+  "name": "miniapp",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run fetch-dish-photos && tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "generate-dish-photos": "node scripts/generate-dish-photos.mjs",
+    "build-dish-recipes": "node scripts/build-dish-recipes.mjs",
+    "fetch-dish-photos": "node scripts/download-dish-photos.mjs",
+    "fetch-extra-dish-photos": "node scripts/download-dish-photos.mjs --extra --force"
+  },
+  "dependencies": {
+    "i18next": "^24.2.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^15.4.1",
+    "react-router-dom": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.3",
+    "vite": "^6.2.0"
+  }
+}

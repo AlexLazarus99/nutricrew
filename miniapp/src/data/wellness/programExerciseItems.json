@@ -1,0 +1,708 @@
+{
+  "ectoStrength": {
+    "chest": [
+      {
+        "id": "benchPress",
+        "rx": "4×6–8, rest 2–3 min"
+      },
+      {
+        "id": "inclineDbPress",
+        "rx": "3×8–10"
+      },
+      {
+        "id": "cableFly",
+        "rx": "3×12–15, squeeze 1 s"
+      }
+    ],
+    "shoulders": [
+      {
+        "id": "overheadPress",
+        "rx": "4×6–8"
+      },
+      {
+        "id": "lateralRaise",
+        "rx": "3×12–15"
+      },
+      {
+        "id": "facePull",
+        "rx": "3×15"
+      }
+    ],
+    "triceps": [
+      {
+        "id": "closeGripBench",
+        "rx": "3×8–10"
+      },
+      {
+        "id": "ropePushdown",
+        "rx": "3×12–15"
+      },
+      {
+        "id": "overheadExtension",
+        "rx": "2×12"
+      }
+    ],
+    "back": [
+      {
+        "id": "pullUp",
+        "rx": "4×6–10"
+      },
+      {
+        "id": "barbellRow",
+        "rx": "4×8–10"
+      },
+      {
+        "id": "dbRow",
+        "rx": "3×10/side"
+      },
+      {
+        "id": "straightArmPulldown",
+        "rx": "2×12"
+      }
+    ],
+    "biceps": [
+      {
+        "id": "barbellCurl",
+        "rx": "3×8–10"
+      },
+      {
+        "id": "inclineCurl",
+        "rx": "3×10"
+      },
+      {
+        "id": "hammerCurl",
+        "rx": "2×12"
+      }
+    ],
+    "quads": [
+      {
+        "id": "backSquat",
+        "rx": "4×6–8, rest 3 min"
+      },
+      {
+        "id": "legPress",
+        "rx": "3×10–12"
+      },
+      {
+        "id": "walkingLunge",
+        "rx": "3×10/leg"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "romanianDeadlift",
+        "rx": "4×8–10"
+      },
+      {
+        "id": "legCurl",
+        "rx": "3×12–15"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "hipThrust",
+        "rx": "3×10–12, pause at top"
+      },
+      {
+        "id": "cableKickback",
+        "rx": "2×15/leg"
+      }
+    ],
+    "calves": [
+      {
+        "id": "standingCalfRaise",
+        "rx": "4×12–15"
+      },
+      {
+        "id": "seatedCalfRaise",
+        "rx": "3×15–20"
+      }
+    ],
+    "core": [
+      {
+        "id": "hangingLegRaise",
+        "rx": "3×10–12"
+      },
+      {
+        "id": "pallofPress",
+        "rx": "3×12/side"
+      },
+      {
+        "id": "plank",
+        "rx": "3×45–60 s"
+      }
+    ]
+  },
+  "ectoCardio": {
+    "quads": [
+      {
+        "id": "stationaryBike",
+        "rx": "25–35 min steady, moderate resistance"
+      },
+      {
+        "id": "inclineWalk",
+        "rx": "20–30 min brisk walk"
+      },
+      {
+        "id": "stepUps",
+        "rx": "2×20/leg as finisher"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "elliptical",
+        "rx": "20 min"
+      },
+      {
+        "id": "kbSwing",
+        "rx": "3×15 (technique focus)"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "stairClimber",
+        "rx": "15–20 min moderate pace"
+      },
+      {
+        "id": "gluteBridgeMarch",
+        "rx": "2×20 as activation"
+      }
+    ],
+    "calves": [
+      {
+        "id": "jumpRope",
+        "rx": "5×1 min easy (optional)"
+      },
+      {
+        "id": "calfHold",
+        "rx": "2×30 s"
+      }
+    ],
+    "core": [
+      {
+        "id": "deadBug",
+        "rx": "2×10/side post-session"
+      },
+      {
+        "id": "sidePlank",
+        "rx": "2×30 s/side"
+      }
+    ]
+  },
+  "mesoMixed": {
+    "chest": [
+      {
+        "id": "dbBenchPress",
+        "rx": "4×8–10"
+      },
+      {
+        "id": "inclineMachinePress",
+        "rx": "3×10–12"
+      },
+      {
+        "id": "pushUp",
+        "rx": "2×AMRAP"
+      }
+    ],
+    "back": [
+      {
+        "id": "weightedPullUp",
+        "rx": "4×6–8"
+      },
+      {
+        "id": "tbarRow",
+        "rx": "4×8–10"
+      },
+      {
+        "id": "latPulldown",
+        "rx": "3×10"
+      },
+      {
+        "id": "reversePecDeck",
+        "rx": "3×15"
+      }
+    ],
+    "shoulders": [
+      {
+        "id": "arnoldPress",
+        "rx": "3×10"
+      },
+      {
+        "id": "cableLateralRaise",
+        "rx": "3×12–15"
+      },
+      {
+        "id": "uprightRow",
+        "rx": "2×12"
+      }
+    ],
+    "triceps": [
+      {
+        "id": "skullCrusher",
+        "rx": "3×10"
+      },
+      {
+        "id": "diamondPushUp",
+        "rx": "2×12–15"
+      }
+    ],
+    "biceps": [
+      {
+        "id": "preacherCurl",
+        "rx": "3×10"
+      },
+      {
+        "id": "cableHammerCurl",
+        "rx": "3×12"
+      }
+    ],
+    "quads": [
+      {
+        "id": "frontSquat",
+        "rx": "4×6–8"
+      },
+      {
+        "id": "bulgarianSplitSquat",
+        "rx": "3×10/leg"
+      },
+      {
+        "id": "legExtension",
+        "rx": "3×12–15 (controlled)"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "conventionalDeadlift",
+        "rx": "4×5–6"
+      },
+      {
+        "id": "nordicCurl",
+        "rx": "3×8–10"
+      },
+      {
+        "id": "goodMorning",
+        "rx": "2×12"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "hipThrust",
+        "rx": "4×10"
+      },
+      {
+        "id": "stepUp",
+        "rx": "3×10/leg"
+      },
+      {
+        "id": "frogPump",
+        "rx": "2×20 burnout"
+      }
+    ],
+    "calves": [
+      {
+        "id": "legPressCalfRaise",
+        "rx": "4×15"
+      },
+      {
+        "id": "singleLegCalfRaise",
+        "rx": "3×12/leg"
+      }
+    ],
+    "core": [
+      {
+        "id": "abWheel",
+        "rx": "3×8–10"
+      },
+      {
+        "id": "russianTwist",
+        "rx": "3×16"
+      },
+      {
+        "id": "farmerCarry",
+        "rx": "3×40 m (grip + core)"
+      }
+    ]
+  },
+  "mesoSport": {
+    "quads": [
+      {
+        "id": "boxJump",
+        "rx": "4×5, land soft, step down"
+      },
+      {
+        "id": "broadJump",
+        "rx": "4×4, full recovery"
+      },
+      {
+        "id": "splitSquatJump",
+        "rx": "3×6/leg"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "nordicCurl",
+        "rx": "3×5"
+      },
+      {
+        "id": "singleLegRdl",
+        "rx": "3×8/leg"
+      },
+      {
+        "id": "sprintBuildUp",
+        "rx": "4×40 m"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "kbSwing",
+        "rx": "4×12 explosive"
+      },
+      {
+        "id": "bandWalk",
+        "rx": "3×15/side"
+      },
+      {
+        "id": "medBallRotation",
+        "rx": "4×6/side"
+      }
+    ],
+    "calves": [
+      {
+        "id": "pogoHop",
+        "rx": "3×20 (minimal knee bend)"
+      },
+      {
+        "id": "calfJumpRope",
+        "rx": "3×30 s"
+      }
+    ],
+    "core": [
+      {
+        "id": "pallofPress",
+        "rx": "3×8/side"
+      },
+      {
+        "id": "mountainClimber",
+        "rx": "3×30 s"
+      },
+      {
+        "id": "vUp",
+        "rx": "3×12"
+      }
+    ],
+    "shoulders": [
+      {
+        "id": "medBallSlam",
+        "rx": "4×8"
+      },
+      {
+        "id": "pushPress",
+        "rx": "3×8"
+      },
+      {
+        "id": "bandYtw",
+        "rx": "2×12 each"
+      }
+    ],
+    "back": [
+      {
+        "id": "trxRow",
+        "rx": "3×10"
+      },
+      {
+        "id": "chinUp",
+        "rx": "3×6"
+      }
+    ]
+  },
+  "endoCardio": {
+    "quads": [
+      {
+        "id": "recumbentBike",
+        "rx": "35–45 min, moderate resistance"
+      },
+      {
+        "id": "inclineWalk",
+        "rx": "30 min brisk"
+      },
+      {
+        "id": "waterWalk",
+        "rx": "20 min if joint pain"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "ellipticalBack",
+        "rx": "10 min within session"
+      },
+      {
+        "id": "rowingMachine",
+        "rx": "20 min steady state"
+      },
+      {
+        "id": "sliderLegCurl",
+        "rx": "2×12"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "stairClimber",
+        "rx": "20 min (hold rails lightly, posture tall)"
+      },
+      {
+        "id": "hillRepeat",
+        "rx": "5×3 min incline"
+      },
+      {
+        "id": "clamshell",
+        "rx": "2×15/side pre-cardio"
+      }
+    ],
+    "calves": [
+      {
+        "id": "briskWalk",
+        "rx": "accumulate 60+ min/day"
+      },
+      {
+        "id": "calfStretch",
+        "rx": ""
+      }
+    ],
+    "core": [
+      {
+        "id": "birdDog",
+        "rx": "2×10/side after walks"
+      },
+      {
+        "id": "antiRotationBand",
+        "rx": "2×12/side"
+      },
+      {
+        "id": "deepBreathing",
+        "rx": ""
+      }
+    ]
+  },
+  "endoStrength": {
+    "quads": [
+      {
+        "id": "gobletSquat",
+        "rx": "3×12–15 (Session A)"
+      },
+      {
+        "id": "legPress",
+        "rx": "3×15 (Session B)"
+      },
+      {
+        "id": "dbLunge",
+        "rx": "3×12/leg (Session C)"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "dbHipThrust",
+        "rx": "3×15"
+      },
+      {
+        "id": "sumoDeadlift",
+        "rx": "3×12"
+      },
+      {
+        "id": "cablePullThrough",
+        "rx": "3×15"
+      }
+    ],
+    "chest": [
+      {
+        "id": "pushUp",
+        "rx": "3×10–15"
+      },
+      {
+        "id": "dbBenchPress",
+        "rx": "3×12"
+      },
+      {
+        "id": "cableChestPress",
+        "rx": "3×15"
+      }
+    ],
+    "back": [
+      {
+        "id": "latPulldown",
+        "rx": "3×12"
+      },
+      {
+        "id": "seatedCableRow",
+        "rx": "3×12"
+      },
+      {
+        "id": "dbRow",
+        "rx": "3×10/side"
+      }
+    ],
+    "shoulders": [
+      {
+        "id": "dbShoulderPress",
+        "rx": "3×10"
+      },
+      {
+        "id": "lateralRaise",
+        "rx": "3×15"
+      },
+      {
+        "id": "bandFacePull",
+        "rx": "3×15"
+      }
+    ],
+    "core": [
+      {
+        "id": "plank",
+        "rx": "3×45 s"
+      },
+      {
+        "id": "deadBug",
+        "rx": "3×10/side"
+      },
+      {
+        "id": "cableWoodchop",
+        "rx": "3×12/side"
+      }
+    ],
+    "biceps": [
+      {
+        "id": "dbCurl",
+        "rx": "2×12"
+      },
+      {
+        "id": "concentrationCurl",
+        "rx": "2×12/side"
+      }
+    ],
+    "triceps": [
+      {
+        "id": "benchDip",
+        "rx": "2×12"
+      },
+      {
+        "id": "tricepsKickback",
+        "rx": "2×12/side"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "dbRdl",
+        "rx": "3×12"
+      },
+      {
+        "id": "ballLegCurl",
+        "rx": "3×12"
+      }
+    ],
+    "calves": [
+      {
+        "id": "standingCalfRaise",
+        "rx": "3×20"
+      },
+      {
+        "id": "calfHold",
+        "rx": ""
+      }
+    ]
+  },
+  "mobilityAll": {
+    "quads": [
+      {
+        "id": "couchStretch",
+        "rx": "45 s/side"
+      },
+      {
+        "id": "quadStretch",
+        "rx": "30 s/side"
+      },
+      {
+        "id": "foamRollQuads",
+        "rx": "60 s/side, slow"
+      }
+    ],
+    "hamstrings": [
+      {
+        "id": "forwardFold",
+        "rx": "45 s"
+      },
+      {
+        "id": "hamstringStrap",
+        "rx": "30 s/leg"
+      },
+      {
+        "id": "downwardDog",
+        "rx": "45 s, pedal heels"
+      }
+    ],
+    "glutes": [
+      {
+        "id": "figure4",
+        "rx": "45 s/side"
+      },
+      {
+        "id": "pigeonPose",
+        "rx": "45 s/side"
+      },
+      {
+        "id": "foamRollGlutes",
+        "rx": "60 s/side"
+      }
+    ],
+    "core": [
+      {
+        "id": "catCow",
+        "rx": "10 slow reps"
+      },
+      {
+        "id": "childPose",
+        "rx": "45 s"
+      },
+      {
+        "id": "openBook",
+        "rx": "8/side"
+      }
+    ],
+    "back": [
+      {
+        "id": "foamRollThoracic",
+        "rx": "60 s"
+      },
+      {
+        "id": "latStretch",
+        "rx": "30 s/side"
+      },
+      {
+        "id": "cobraStretch",
+        "rx": "10 reps gentle"
+      }
+    ],
+    "shoulders": [
+      {
+        "id": "crossBodyShoulder",
+        "rx": "30 s/side"
+      },
+      {
+        "id": "wallSlide",
+        "rx": "10 reps"
+      },
+      {
+        "id": "bandDislocate",
+        "rx": "10 slow reps"
+      }
+    ],
+    "chest": [
+      {
+        "id": "doorwayPecStretch",
+        "rx": "45 s/side"
+      },
+      {
+        "id": "foamRollChest",
+        "rx": "45 s/side"
+      }
+    ]
+  }
+}

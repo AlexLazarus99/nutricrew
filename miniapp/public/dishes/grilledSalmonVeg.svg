@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280" role="img" aria-label="grilledSalmonVeg">
+  <defs>
+    <linearGradient id="bg-grilledSalmonVeg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e0e7ff"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="280" fill="url(#bg-grilledSalmonVeg)"/>
+  
+    <ellipse cx="200" cy="160" rx="78" ry="12" fill="#000" opacity="0.08"/>
+    <circle cx="200" cy="140" r="68" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    <ellipse cx="192" cy="136" rx="38" ry="28" fill="#6366f1" opacity="0.9"/>
+    <circle cx="228" cy="144" r="14" fill="#14b8a6"/>
+    <rect x="158" y="148" width="28" height="10" rx="5" fill="#14b8a6" opacity="0.75"/>
+    <circle cx="182" cy="126" r="7" fill="#fff" opacity="0.6"/>
+</svg>

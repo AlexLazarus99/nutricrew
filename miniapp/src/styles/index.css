@@ -1,0 +1,1882 @@
+:root {
+  --font-sans: "Manrope", system-ui, -apple-system, sans-serif;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif;
+  --bg: #0f1419;
+  --surface: #1a2332;
+  --surface-2: #243044;
+  --text: #f0f4f8;
+  --muted: #94a3b8;
+  --accent: #22c55e;
+  --accent-dim: #16a34a;
+  --warn: #f59e0b;
+  --radius: 12px;
+  font-family: var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.app-header h1,
+.hero h2,
+.card > h2,
+.wellness-hero-card h2,
+.wellness-card h3,
+.post-registration-rec h3,
+.stat-value,
+.stars {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+}
+
+.card > h2 {
+  margin: 0 0 8px;
+  font-size: 1.55rem;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  isolation: isolate;
+
+  --section-bg: #0f1419;
+  --section-surface: #1a2332;
+  --section-surface-2: #243044;
+  --section-accent: #22c55e;
+  --section-accent-soft: rgba(34, 197, 94, 0.14);
+  --section-glow: rgba(34, 197, 94, 0.07);
+
+  --bg: var(--section-bg);
+  --surface: var(--section-surface);
+  --surface-2: var(--section-surface-2);
+  --accent: var(--section-accent);
+
+  background: var(--bg);
+  transition: background 0.4s ease;
+}
+
+.app-shell[data-section="home"] {
+  --section-bg: #0f1612;
+  --section-surface: #1a2820;
+  --section-surface-2: #243528;
+  --section-accent: #22c55e;
+  --section-accent-soft: rgba(34, 197, 94, 0.16);
+  --section-glow: rgba(34, 197, 94, 0.1);
+}
+
+.app-shell[data-section="log"] {
+  --section-bg: #16120f;
+  --section-surface: #241e18;
+  --section-surface-2: #322a22;
+  --section-accent: #f59e0b;
+  --section-accent-soft: rgba(245, 158, 11, 0.16);
+  --section-glow: rgba(245, 158, 11, 0.09);
+}
+
+.app-shell[data-section="guide"] {
+  --section-bg: #0f1818;
+  --section-surface: #1a2828;
+  --section-surface-2: #243636;
+  --section-accent: #14b8a6;
+  --section-accent-soft: rgba(20, 184, 166, 0.16);
+  --section-glow: rgba(20, 184, 166, 0.09);
+}
+
+.app-shell[data-section="team"] {
+  --section-bg: #101418;
+  --section-surface: #1a2432;
+  --section-surface-2: #243044;
+  --section-accent: #60a5fa;
+  --section-accent-soft: rgba(96, 165, 250, 0.16);
+  --section-glow: rgba(96, 165, 250, 0.09);
+}
+
+.app-shell[data-section="leaderboard"] {
+  --section-bg: #141018;
+  --section-surface: #221a2e;
+  --section-surface-2: #2e2440;
+  --section-accent: #c084fc;
+  --section-accent-soft: rgba(192, 132, 252, 0.16);
+  --section-glow: rgba(192, 132, 252, 0.09);
+}
+
+.app-shell[data-section="prizes"] {
+  --section-bg: #181610;
+  --section-surface: #2a2618;
+  --section-surface-2: #3a3424;
+  --section-accent: #fbbf24;
+  --section-accent-soft: rgba(251, 191, 36, 0.16);
+  --section-glow: rgba(251, 191, 36, 0.09);
+}
+
+.app-shell[data-section="game"] {
+  --section-bg: #0f1a14;
+  --section-surface: #1a2e22;
+  --section-surface-2: #243b2c;
+  --section-accent: #4ade80;
+  --section-accent-soft: rgba(74, 222, 128, 0.16);
+  --section-glow: rgba(74, 222, 128, 0.1);
+}
+
+.app-shell[data-section="auth"] {
+  --section-bg: #12161c;
+  --section-surface: #1c2430;
+  --section-surface-2: #283040;
+  --section-accent: #94a3b8;
+  --section-accent-soft: rgba(148, 163, 184, 0.14);
+  --section-glow: rgba(148, 163, 184, 0.07);
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: radial-gradient(ellipse 80% 40% at 50% 0%, var(--section-glow), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.4s ease;
+}
+
+.fitness-bg {
+  position: fixed;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  color: var(--section-accent);
+}
+
+.fitness-bg-svg {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  opacity: 0.35;
+}
+
+.fitness-bg-fig {
+  opacity: 0.55;
+}
+
+.fitness-bg-fig-1 { animation: fitness-pulse 18s ease-in-out infinite; }
+.fitness-bg-fig-2 { animation: fitness-pulse 22s ease-in-out infinite 2s; }
+.fitness-bg-fig-3 { animation: fitness-pulse 20s ease-in-out infinite 4s; }
+.fitness-bg-fig-5 { animation: fitness-pulse 24s ease-in-out infinite 1s; }
+.fitness-bg-fig-8 { animation: fitness-pulse 16s ease-in-out infinite 3s; }
+
+@keyframes fitness-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+.app-header {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid color-mix(in srgb, var(--section-accent) 18%, transparent);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text) 88%, var(--section-accent));
+}
+
+.tagline {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.app-main {
+  flex: 1;
+  padding: 8px 16px 88px;
+  position: relative;
+  z-index: 1;
+}
+
+.bottom-nav-5 {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.bottom-nav-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.bottom-nav-7 {
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.bottom-nav-8 {
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.bottom-nav-6 a,
+.bottom-nav-7 a,
+.bottom-nav-8 a {
+  font-size: 0.62rem;
+  padding: 8px 2px;
+}
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  padding: 8px 12px 16px;
+  background: color-mix(in srgb, var(--surface) 94%, var(--section-accent));
+  border-top: 1px solid color-mix(in srgb, var(--section-accent) 22%, var(--surface-2));
+  z-index: 2;
+}
+
+.bottom-nav a {
+  text-align: center;
+  font-size: 0.7rem;
+  padding: 8px 4px;
+  border-radius: 8px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.bottom-nav a.active {
+  color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  border: 1px solid color-mix(in srgb, var(--section-accent) 10%, var(--surface-2));
+}
+
+.hero h2 {
+  margin: 0 0 8px;
+  font-size: 1.65rem;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.meal-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  margin-top: 12px;
+}
+
+.food-section-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.food-section-nav a {
+  text-align: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.food-section-nav a.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.diary-day-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.diary-day-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.diary-today-badge {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.diary-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  text-align: center;
+}
+
+.diary-stat-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.diary-stat-value {
+  display: block;
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.diary-stat-deficit {
+  color: #38bdf8;
+}
+
+.diary-stat-onTrack {
+  color: var(--accent);
+}
+
+.diary-stat-surplus {
+  color: #fb923c;
+}
+
+.diary-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  margin: 14px 0 10px;
+  overflow: hidden;
+}
+
+.diary-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+  transition: width 0.25s ease;
+}
+
+.diary-recommendation {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.diary-rec-deficit {
+  color: #7dd3fc;
+}
+
+.diary-rec-onTrack {
+  color: var(--accent);
+}
+
+.diary-rec-surplus {
+  color: #fdba74;
+}
+
+.diary-macros-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  font-size: 0.88rem;
+}
+
+.diary-list-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.diary-list-head h3 {
+  margin: 0;
+}
+
+.diary-meal-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.diary-meal-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--surface-2);
+}
+
+.diary-meal-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.diary-meal-thumb-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  background: var(--surface);
+}
+
+.diary-meal-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.diary-meal-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.diary-meal-kcal {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.diary-meal-meta {
+  margin: 4px 0 0;
+}
+
+.btn-sm {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.small {
+  font-size: 0.75rem;
+}
+
+.invite code {
+  background: var(--surface-2);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.stat {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+button {
+  font-family: var(--font-sans);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #052e16;
+}
+
+.btn-secondary {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed var(--surface-2);
+}
+
+.post-registration-hero {
+  text-align: center;
+}
+
+.post-registration-hero .wellness-badge {
+  margin-bottom: 10px;
+}
+
+.post-registration-bmi {
+  margin: 12px 0 4px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.post-registration-rec-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.post-registration-art {
+  width: 88px;
+  min-width: 88px;
+  height: 66px;
+}
+
+.post-registration-rec h3 {
+  margin: 0 0 6px;
+  font-size: 0.95rem;
+}
+
+.post-registration-rec .btn {
+  margin-top: 10px;
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.form label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form input {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.form-macros-label {
+  margin: 4px 0 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.form-macros {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.form-macros label {
+  margin-bottom: 0;
+  font-size: 0.78rem;
+}
+
+.form-macros input {
+  font-size: 0.95rem;
+  padding: 8px 10px;
+}
+
+.form-error {
+  color: #f87171;
+  font-size: 0.85rem;
+  margin: 0 0 12px;
+}
+
+.registration-note {
+  text-align: center;
+  padding: 0 8px 16px;
+}
+
+.success {
+  color: var(--accent);
+  margin-top: 12px;
+}
+
+.loading {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px;
+}
+
+.lang-switcher {
+  text-align: right;
+}
+
+.lang-label {
+  display: block;
+  font-size: 0.65rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.lang-buttons {
+  display: flex;
+  gap: 4px;
+}
+
+.lang-buttons button {
+  border: 1px solid var(--surface-2);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.lang-buttons button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.member-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.member {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 4px 12px;
+}
+
+.member-name {
+  font-weight: 600;
+}
+
+.member-points {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.badge {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+}
+
+.badge.ok {
+  color: var(--accent);
+}
+
+.badge.warn {
+  color: var(--warn);
+}
+
+.badge.premium {
+  color: #fbbf24;
+  font-size: 0.75rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--surface-2);
+  border-radius: 4px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.leaderboard {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rank-num {
+  font-weight: 800;
+  color: var(--accent);
+  min-width: 2rem;
+}
+
+.rank-name {
+  flex: 1;
+}
+
+.rank-points {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.rank-1 {
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.stars {
+  font-size: 2rem;
+  color: #fbbf24;
+}
+
+.award-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.award-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--surface-2);
+}
+
+.error {
+  color: #f87171;
+  text-align: center;
+}
+
+.wellness-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.wellness-tabs button {
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 10px 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.wellness-tabs button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.wellness-tabs-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.wellness-tabs-4 button {
+  font-size: 0.68rem;
+  padding: 8px 4px;
+}
+
+.wellness-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wellness-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  border: 1px solid transparent;
+}
+
+.wellness-card.selected {
+  border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
+}
+
+.wellness-card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+.wellness-card-link:active {
+  border-color: var(--accent);
+}
+
+.wellness-card h3 {
+  margin: 12px 0 6px;
+  font-size: 1.05rem;
+}
+
+.wellness-illustration {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.body-type-photo {
+  max-width: 168px;
+  aspect-ratio: 4 / 5;
+  object-position: center top;
+}
+
+.diet-photo {
+  max-width: 200px;
+  aspect-ratio: 4 / 3;
+  object-position: center center;
+}
+
+.wellness-photo {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: var(--radius);
+  display: block;
+  margin: 0 auto;
+  background: var(--surface-2);
+  box-shadow: 0 8px 24px rgba(2, 6, 23, 0.35);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 12%, var(--surface-2));
+}
+
+.wellness-hero-art.wellness-photo,
+.wellness-photo.wellness-hero-art {
+  max-width: 240px;
+}
+
+.post-registration-art.wellness-photo {
+  max-width: 120px;
+}
+
+.wellness-hero-art {
+  max-width: 240px;
+  margin-bottom: 12px;
+}
+
+.wellness-tags span,
+.wellness-badge,
+.wellness-source {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--muted);
+  margin: 4px 4px 0 0;
+}
+
+.wellness-source {
+  color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.wellness-macro {
+  font-weight: 600;
+  color: var(--accent);
+  margin: 8px 0;
+}
+
+.wellness-card-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.wellness-card-actions .btn {
+  font-size: 0.8rem;
+  padding: 10px 8px;
+}
+
+.wellness-card-actions .active-pick {
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.wellness-list {
+  margin: 8px 0 0;
+  padding-left: 1.2rem;
+  color: var(--text);
+}
+
+.wellness-list li {
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.wellness-list li::marker {
+  color: var(--accent);
+}
+
+.wellness-note {
+  font-size: 0.85rem;
+  margin: 0 0 8px;
+}
+
+.wellness-back {
+  font-size: 0.85rem;
+  text-decoration: none;
+  margin-bottom: 4px;
+}
+
+.wellness-disclaimer {
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px dashed var(--surface-2);
+}
+
+.wellness-detail h4 {
+  margin: 12px 0 6px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.wellness-hero-card {
+  text-align: center;
+}
+
+.calorie-form select {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.calorie-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.calorie-sex legend,
+.calorie-goals legend {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.calorie-sex,
+.calorie-goals,
+.calorie-formulas {
+  border: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.calorie-formulas legend {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.calorie-formula-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.calorie-formula-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.calorie-formula-btn.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--section-accent) 12%, var(--surface));
+}
+
+.calorie-formula-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.calorie-formula-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.calorie-formula-table-wrap {
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+.calorie-formula-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.calorie-formula-table th,
+.calorie-formula-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--surface-2);
+}
+
+.calorie-formula-table th {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.calorie-formula-row-active {
+  background: color-mix(in srgb, var(--section-accent) 10%, transparent);
+}
+
+.calorie-formula-row-active td:first-child strong {
+  color: var(--accent);
+}
+
+.calorie-formula-row-avg td {
+  border-bottom: none;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.calorie-formula-badge {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.calorie-sex-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.calorie-sex-btns button {
+  border: 1px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calorie-sex-btns button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.calorie-goal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.calorie-goal-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  border: 1px solid var(--surface-2);
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.calorie-goal-btn.active {
+  border-color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.calorie-goal-btn.lose.active {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.calorie-goal-btn.gain.active {
+  border-color: var(--warn);
+  background: rgba(245, 158, 11, 0.12);
+}
+
+.calorie-goal-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.calorie-goal-delta {
+  font-size: 0.7rem;
+  color: var(--muted);
+}
+
+.calorie-big {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 0;
+  line-height: 1;
+}
+
+.calorie-unit {
+  color: var(--muted);
+  margin: 4px 0 0;
+}
+
+.calorie-weekly {
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: var(--warn);
+}
+
+.calorie-result-main {
+  text-align: center;
+}
+
+.calorie-warn {
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.08);
+  color: var(--warn);
+  font-size: 0.85rem;
+}
+
+.calorie-macro-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+
+.macro-protein {
+  background: #3b82f6;
+}
+
+.macro-carbs {
+  background: var(--accent);
+}
+
+.macro-fat {
+  background: var(--warn);
+}
+
+.calorie-macro-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.calorie-macro-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+
+.muscle-groups-title {
+  font-size: 1rem;
+  margin: 8px 0 4px;
+  color: var(--text);
+}
+
+.muscle-group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.muscle-group-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.muscle-tag {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.muscle-tag-chest { background: #ef4444; }
+.muscle-tag-back { background: #3b82f6; }
+.muscle-tag-shoulders { background: #f59e0b; }
+.muscle-tag-biceps { background: #a855f7; }
+.muscle-tag-triceps { background: #ec4899; }
+.muscle-tag-core { background: var(--accent); }
+.muscle-tag-quads { background: #06b6d4; }
+.muscle-tag-hamstrings { background: #6366f1; }
+.muscle-tag-glutes { background: #f97316; }
+.muscle-tag-calves { background: #84cc16; }
+
+.muscle-exercise-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  counter-reset: exercise-step;
+}
+
+.muscle-exercise-list li {
+  counter-increment: exercise-step;
+  padding: 10px 12px 10px 36px;
+  margin-bottom: 6px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  position: relative;
+  border-left: 3px solid var(--accent);
+}
+
+.muscle-exercise-list li::before {
+  content: counter(exercise-step);
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--section-accent) 18%, var(--surface));
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.muscle-group-guide {
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+.muscle-group-note {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.muscle-group-detail {
+  margin: 6px 0 0;
+  line-height: 1.45;
+}
+
+.exercise-card-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.exercise-item-row {
+  list-style: none;
+}
+
+.weekly-split-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.weekly-split-list li {
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  border-left: 3px solid var(--accent);
+}
+
+.meal-plan {
+  gap: 10px;
+}
+
+.meal-plan-week {
+  margin: 8px 0 0;
+}
+
+.meal-day-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.meal-day-tabs button {
+  flex-shrink: 0;
+  border: 1px solid var(--surface-2);
+  background: var(--bg);
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.meal-day-tabs button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--section-accent-soft);
+}
+
+.meal-day-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.meal-day-kcal {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.meal-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dish-photo {
+  width: 100%;
+  min-width: unset;
+  height: 168px;
+  object-fit: cover;
+  border-radius: 0;
+  display: block;
+  background: var(--surface-2);
+}
+
+.dish-photo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 168px;
+  min-width: unset;
+  background: var(--surface-2);
+  font-size: 1.5rem;
+}
+
+.meal-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.meal-slot-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.meal-card-body h4 {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+.meal-kcal {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.dish-recipe {
+  margin-top: 8px;
+}
+
+.dish-recipe-toggle {
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dish-recipe-content {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--surface-2);
+  font-size: 0.78rem;
+  color: var(--text);
+}
+
+.dish-recipe-content strong {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 8px 0 4px;
+}
+
+.dish-recipe-content strong:first-child {
+  margin-top: 0;
+}
+
+.dish-recipe-list {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.dish-recipe-list li {
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.dish-recipe-steps {
+  padding-left: 20px;
+}
+
+.bird-game-page {
+  gap: 12px;
+}
+
+.bird-game-hero {
+  text-align: center;
+  padding-bottom: 12px;
+}
+
+.bird-game {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bird-game-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.bird-game-meta strong {
+  color: var(--accent);
+}
+
+.bird-game-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 390 / 527;
+  max-height: min(calc(100dvh - 260px), 72vh);
+  min-height: 320px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid var(--surface-2);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+
+.bird-game-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #87ceeb;
+}
+
+.bird-game-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.42);
+  pointer-events: none;
+}
+
+.bird-game-overlay-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 16px;
+  padding: 20px 24px;
+  max-width: 280px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.bird-game-overlay-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.bird-game-overlay-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.bird-game-hint {
+  text-align: center;
+  margin: 0;
+}
+
+.bird-game-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.bird-game-leaderboard {
+  margin-top: 4px;
+}
+
+.bird-game-leaderboard h3 {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+}
+
+.bird-game-leaderboard-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bird-game-leaderboard-list li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-size: 0.82rem;
+}
+
+.bird-game-leaderboard-you {
+  outline: 1px solid rgba(34, 197, 94, 0.45);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.bird-game-leaderboard-rank {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.bird-game-leaderboard-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bird-game-leaderboard-score {
+  color: var(--muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.calorie-quiz-page {
+  gap: 12px;
+}
+
+.calorie-quiz-hero {
+  text-align: center;
+  padding-bottom: 12px;
+}
+
+.calorie-quiz {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calorie-quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.calorie-quiz-meta strong {
+  color: var(--accent);
+}
+
+.calorie-quiz-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.calorie-quiz-filters .chip {
+  border: 1px solid var(--surface-2);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.calorie-quiz-filters .chip-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.calorie-quiz-filters .chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.calorie-quiz-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 280px;
+}
+
+.calorie-quiz-ready {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 8px 4px;
+}
+
+.calorie-quiz-emoji {
+  font-size: 2.4rem;
+  margin: 0;
+  line-height: 1;
+}
+
+.calorie-quiz-product {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.calorie-quiz-product-emoji {
+  font-size: 2.8rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.calorie-quiz-product h3 {
+  margin: 2px 0 0;
+  font-size: 1.15rem;
+}
+
+.calorie-quiz-category {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.calorie-quiz-prompt {
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+}
+
+.calorie-quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.calorie-quiz-option {
+  border: 2px solid var(--surface-2);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  padding: 14px 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.calorie-quiz-option:not(:disabled):active {
+  transform: scale(0.98);
+}
+
+.calorie-quiz-option:disabled {
+  cursor: default;
+}
+
+.calorie-quiz-option.option-correct {
+  border-color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.calorie-quiz-option.option-wrong {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  color: #b91c1c;
+}
+
+.calorie-quiz-feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.calorie-quiz-feedback p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.calorie-quiz-nutrition {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  text-align: left;
+}
+
+.calorie-quiz-nutrition p {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+.calorie-quiz-source {
+  font-style: italic;
+}
+
+.calorie-quiz-footnote {
+  text-align: center;
+  margin: 0;
+}

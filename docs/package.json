@@ -1,0 +1,11 @@
+{
+  "name": "nutricrew-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pitch:pdf": "node scripts/generate-pitch-pdf.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.2.1"
+  }
+}

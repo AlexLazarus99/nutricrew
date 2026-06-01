@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 280" width="400" height="280" role="img" aria-label="fruitNuts">
+  <defs>
+    <linearGradient id="bg-fruitNuts" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffedd5"/>
+      <stop offset="100%" stop-color="#fff7ed"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="280" fill="url(#bg-fruitNuts)"/>
+  
+    <ellipse cx="200" cy="156" rx="68" ry="11" fill="#000" opacity="0.08"/>
+    <rect x="144" y="130" width="112" height="28" rx="10" fill="#fff" stroke="#cbd5e1" stroke-width="2"/>
+    <circle cx="172" cy="144" r="10" fill="#ea580c"/>
+    <circle cx="204" cy="142" r="9" fill="#16a34a"/>
+    <circle cx="232" cy="144" r="8" fill="#ea580c" opacity="0.8"/>
+</svg>

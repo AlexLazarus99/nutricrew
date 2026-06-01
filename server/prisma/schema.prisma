@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Team {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  inviteCode       String   @unique @map("invite_code") @db.VarChar(12)
+  weeklyGoalType   String   @default("points") @map("weekly_goal_type") @db.VarChar(32)
+  weeklyGoalTarget Int      @default(1000) @map("weekly_goal_target")
+  isPremium        Boolean  @default(false) @map("is_premium")
+  premiumUntil     DateTime? @map("premium_until")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  users            User[]
+  members          TeamMember[]
+  meals            Meal[]
+  weeklyScores     WeeklyTeamScore[]
+  prizePools       PrizePool[]
+
+  @@map("teams")
+}
+
+model User {
+  id            BigInt    @id @default(autoincrement())
+  telegramId    BigInt    @unique @map("telegram_id")
+  firstName     String    @map("first_name")
+  lastName      String?   @map("last_name")
+  username      String?
+  locale        String    @default("en") @db.VarChar(5)
+  currentStreak Int       @default(0) @map("current_streak")
+  longestStreak Int       @default(0) @map("longest_streak")
+  lastMealDate  DateTime? @map("last_meal_date") @db.Date
+  teamId        String?   @map("team_id") @db.Uuid
+  starBalance   Int       @default(0) @map("star_balance")
+  weightKg      Float?    @map("weight_kg")
+  heightCm      Int?      @map("height_cm")
+  age           Int?      @map("age")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  team              Team?              @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  teamMemberships   TeamMember[]
+  meals             Meal[]
+  payments          Payment[]
+  starTransactions  StarTransaction[]
+  prizeAwards       PrizeAward[]
+  birdGameBest      BirdGameBest?
+
+  @@index([teamId])
+  @@map("users")
+}
+
+model BirdGameBest {
+  userId      BigInt   @id @map("user_id")
+  score       Int
+  level       Int      @default(1)
+  fruits      Int      @default(0)
+  displayName String   @map("display_name")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([score(sort: Desc)])
+  @@map("bird_game_bests")
+}
+
+model TeamMember {
+  teamId   String   @map("team_id") @db.Uuid
+  userId   BigInt   @map("user_id")
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, userId])
+  @@map("team_members")
+}
+
+model Meal {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId       BigInt   @map("user_id")
+  teamId       String?  @map("team_id") @db.Uuid
+  description  String
+  calories     Int
+  protein      Int      @default(0)
+  carbs        Int      @default(0)
+  fat          Int      @default(0)
+  points       Int
+  photoUrl     String?  @map("photo_url")
+  photoKey     String?  @map("photo_key")
+  aiSource     String?  @map("ai_source") @db.VarChar(32)
+  aiConfidence Float?   @map("ai_confidence")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team Team? @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([teamId, createdAt])
+  @@map("meals")
+}
+
+model WeeklyTeamScore {
+  teamId   String @map("team_id") @db.Uuid
+  weekKey  String @map("week_key") @db.VarChar(10)
+  points   Int    @default(0)
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@id([teamId, weekKey])
+  @@map("weekly_team_scores")
+}
+
+model PrizePool {
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  teamId           String   @map("team_id") @db.Uuid
+  weekKey          String   @map("week_key") @db.VarChar(10)
+  starsTotal       Int      @default(0) @map("stars_total")
+  starsDistributed Int      @default(0) @map("stars_distributed")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, weekKey])
+  @@map("prize_pools")
+}
+
+model Payment {
+  id                        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                    BigInt   @map("user_id")
+  teamId                    String?  @map("team_id") @db.Uuid
+  payload                   String   @unique
+  paymentType               String   @map("payment_type") @db.VarChar(32)
+  starsAmount               Int      @map("stars_amount")
+  status                    String   @default("pending") @db.VarChar(16)
+  telegramPaymentChargeId   String?  @map("telegram_payment_charge_id")
+  createdAt                 DateTime @default(now()) @map("created_at")
+  completedAt               DateTime? @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model PrizeAward {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      BigInt    @map("user_id")
+  teamId      String    @map("team_id") @db.Uuid
+  weekKey     String    @map("week_key") @db.VarChar(10)
+  starsAmount Int       @map("stars_amount")
+  status      String    @default("credited") @db.VarChar(16)
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, weekKey])
+  @@map("prize_awards")
+}
+
+model StarTransaction {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      BigInt   @map("user_id")
+  amount      Int
+  type        String   @db.VarChar(32)
+  referenceId String?  @map("reference_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("star_transactions")
+}

@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriCrew — UI Prototype</title>
+  <style>
+    :root {
+      --bg: #0a0e14;
+      --surface: #151c28;
+      --surface-2: #1e2938;
+      --surface-3: #263244;
+      --text: #f1f5f9;
+      --muted: #8b9cb3;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.15);
+      --gold: #fbbf24;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --radius: 14px;
+      --phone-w: 390px;
+      --phone-h: 844px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Segoe UI", system-ui, sans-serif;
+      background: #05080c;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 32px;
+    }
+
+    .proto-banner {
+      text-align: center;
+      margin-bottom: 20px;
+      max-width: 420px;
+    }
+
+    .proto-banner h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .proto-banner p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .proto-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .proto-controls button {
+      background: var(--surface-2);
+      border: 1px solid var(--surface-3);
+      color: var(--text);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .proto-controls button.active {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .phone {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: var(--bg);
+      border-radius: 36px;
+      border: 3px solid #2a3544;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .phone-notch {
+      height: 28px;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .app-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 8px 16px 12px;
+      border-bottom: 1px solid var(--surface-2);
+    }
+
+    .brand h2 {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .brand h2 span { color: var(--accent); }
+
+    .brand p {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .lang-toggle {
+      display: flex;
+      gap: 4px;
+    }
+
+    .lang-toggle button {
+      background: transparent;
+      border: 1px solid var(--surface-3);
+      color: var(--muted);
+      width: 32px;
+      height: 28px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .lang-toggle button.on {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .screen {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 14px 80px;
+      display: none;
+    }
+
+    .screen.active { display: block; }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-2);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .card.hero {
+      background: linear-gradient(145deg, var(--surface) 0%, var(--surface-2) 100%);
+    }
+
+    .card h3 {
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+    }
+
+    .muted { color: var(--muted); font-size: 0.8rem; line-height: 1.4; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--surface-2);
+      border-radius: var(--radius);
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .stat-val {
+      display: block;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .stat-lbl { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .btn-primary { background: var(--accent); color: #052e16; }
+    .btn-secondary { background: var(--surface-2); color: var(--text); border: 1px solid var(--surface-3); }
+    .btn-gold { background: var(--gold); color: #422006; }
+
+    .invite-code {
+      display: inline-block;
+      background: var(--surface-3);
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-top: 8px;
+    }
+
+    .progress {
+      height: 6px;
+      background: var(--surface-3);
+      border-radius: 3px;
+      margin-top: 10px;
+      overflow: hidden;
+    }
+
+    .progress > div {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 3px;
+    }
+
+    .member {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--surface-2);
+    }
+
+    .member:last-child { border-bottom: none; }
+
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--surface-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .avatar.logged { border: 2px solid var(--accent); }
+
+    .member-info { flex: 1; }
+    .member-name { font-weight: 600; font-size: 0.9rem; }
+    .member-status { font-size: 0.7rem; color: var(--muted); }
+    .member-status.ok { color: var(--accent); }
+    .member-status.warn { color: var(--warn); }
+    .member-pts { font-weight: 800; color: var(--accent); font-size: 0.9rem; }
+
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: var(--surface);
+      border: 1px solid var(--surface-2);
+      border-radius: var(--radius);
+    }
+
+    .rank-item.you { border-color: var(--accent); background: var(--accent-soft); }
+    .rank-item.first { border-color: rgba(251, 191, 36, 0.5); }
+
+    .rank-num {
+      width: 28px;
+      font-weight: 900;
+      font-size: 1rem;
+      color: var(--accent);
+    }
+
+    .rank-item.first .rank-num { color: var(--gold); }
+
+    .photo-zone {
+      aspect-ratio: 4/3;
+      background: var(--surface-2);
+      border-radius: 12px;
+      border: 2px dashed var(--surface-3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .photo-zone.has-img {
+      border-style: solid;
+      border-color: var(--accent);
+    }
+
+    .photo-placeholder {
+      font-size: 2rem;
+      opacity: 0.4;
+    }
+
+    .photo-mock {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .photo-zone.has-img .photo-mock { display: block; }
+    .photo-zone.has-img .photo-placeholder,
+    .photo-zone.has-img .photo-hint { display: none; }
+
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--surface-3);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .success-toast {
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .success-toast.show { display: block; }
+
+    .stars-big {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin: 4px 0;
+    }
+
+    .premium-badge {
+      display: inline-block;
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--gold);
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      background: var(--surface);
+      border-top: 1px solid var(--surface-2);
+      padding: 8px 4px 20px;
+    }
+
+    .bottom-nav button {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.58rem;
+      padding: 6px 2px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .bottom-nav button .ico { font-size: 1.1rem; line-height: 1; }
+
+    .bottom-nav button.on {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .fab-log {
+      position: absolute;
+      bottom: 72px;
+      right: 16px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: none;
+      color: #052e16;
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: none;
+    }
+
+    .screen-home.active ~ .fab-log { display: block; }
+
+    .week-pill {
+      display: inline-block;
+      background: var(--surface-3);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="proto-banner">
+    <h1>NutriCrew UI Prototype</h1>
+    <p data-i18n="banner">Click-through demo · EN / RU · mock data</p>
+    <div class="proto-controls">
+      <button type="button" id="btn-onboard" data-i18n="toggleOnboard">Show onboarding</button>
+    </div>
+  </div>
+
+  <div class="phone" id="phone">
+    <div class="phone-notch">Telegram Mini App</div>
+
+    <header class="app-header">
+      <div class="brand">
+        <h2>Nutri<span>Crew</span></h2>
+        <p data-i18n="tagline">Team nutrition battles</p>
+      </div>
+      <div class="lang-toggle">
+        <button type="button" class="on" data-lang="en">EN</button>
+        <button type="button" data-lang="ru">RU</button>
+      </div>
+    </header>
+
+    <!-- HOME -->
+    <section class="screen screen-home active" id="screen-home">
+      <div id="home-team">
+        <div class="card hero">
+          <h3 data-i18n="greeting">Hey, Alex!</h3>
+          <p class="muted" data-i18n="teamWaiting">Your team is waiting for your next meal</p>
+          <span class="invite-code">PROTEIN1</span>
+        </div>
+        <div class="stats">
+          <div class="stat"><span class="stat-val">7</span><span class="stat-lbl" data-i18n="streak">7-day streak</span></div>
+          <div class="stat"><span class="stat-val">×1.30</span><span class="stat-lbl" data-i18n="streakMult">Streak mult.</span></div>
+          <div class="stat"><span class="stat-val">×1.25</span><span class="stat-lbl" data-i18n="teamMult">Team mult.</span></div>
+          <div class="stat"><span class="stat-val">86</span><span class="stat-lbl" data-i18n="todayPts">Today's points</span></div>
+        </div>
+        <button type="button" class="btn btn-primary" data-go="log" data-i18n="logCta">Snap your meal</button>
+        <button type="button" class="btn btn-secondary" data-go="prizes" data-i18n="prizesBtn">Stars & prizes (25)</button>
+      </div>
+      <div id="home-onboard" style="display:none">
+        <div class="card hero">
+          <h3 data-i18n="greeting">Hey, Alex!</h3>
+          <p class="muted" data-i18n="noTeam">Join a crew to earn team points and compete weekly.</p>
+        </div>
+        <div class="card">
+          <h3 data-i18n="createTeam">Create team</h3>
+          <div class="field"><label data-i18n="teamName">Team name</label><input value="Office Greens" readonly /></div>
+          <button type="button" class="btn btn-primary" data-i18n="createBtn">Create</button>
+        </div>
+        <div class="card">
+          <h3 data-i18n="joinTeam">Join with code</h3>
+          <div class="field"><label data-i18n="inviteCode">Invite code</label><input value="PROTEIN1" readonly /></div>
+          <button type="button" class="btn btn-secondary" data-i18n="joinBtn">Join</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- LOG -->
+    <section class="screen screen-log" id="screen-log">
+      <div class="card">
+        <h3 data-i18n="logTitle">Log meal</h3>
+        <p class="muted" data-i18n="logHint">Photo → AI → edit → earn points in ~3 sec</p>
+        <div class="photo-zone" id="photoZone">
+          <span class="photo-placeholder">📷</span>
+          <span class="photo-hint muted" data-i18n="tapPhoto">Tap to simulate photo</span>
+          <svg class="photo-mock" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+            <rect fill="#2d3a4d" width="400" height="300"/>
+            <ellipse cx="200" cy="160" rx="90" ry="70" fill="#4a5568"/>
+            <ellipse cx="200" cy="150" rx="75" ry="55" fill="#718096"/>
+            <circle cx="160" cy="130" r="12" fill="#fbbf24"/>
+            <circle cx="240" cy="140" r="10" fill="#ef4444"/>
+            <text x="200" y="260" text-anchor="middle" fill="#94a3b8" font-size="14">Oatmeal & eggs</text>
+          </svg>
+        </div>
+        <div class="ai-badge" id="aiBadge" style="display:none">
+          <span data-i18n="aiResult">AI 87% · openai</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="field"><label data-i18n="description">What did you eat?</label><input id="mealDesc" value="" /></div>
+        <div class="field"><label data-i18n="calories">Calories</label><input id="mealCal" value="" type="number" /></div>
+        <div class="field"><label data-i18n="protein">Protein (g)</label><input id="mealProt" value="" type="number" /></div>
+        <button type="button" class="btn btn-primary" id="btnSubmitMeal" data-i18n="submitMeal">Add points</button>
+        <div class="success-toast" id="mealSuccess" data-i18n="mealSuccess">+52 you, +65 team · streak 7d</div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="screen screen-team" id="screen-team">
+      <div class="card">
+        <h3>Protein Squad <span class="premium-badge">PREMIUM</span></h3>
+        <p class="muted"><span data-i18n="invite">Invite</span>: <span class="invite-code">PROTEIN1</span></p>
+        <p class="muted" style="margin-top:6px" data-i18n="goalProgress">Weekly protein · 340 / 500 g</p>
+        <p class="muted" data-i18n="rank">Rank #2 of 8 teams</p>
+        <div class="progress"><div style="width:68%"></div></div>
+      </div>
+      <div class="card">
+        <div class="member">
+          <div class="avatar logged">A</div>
+          <div class="member-info"><div class="member-name">Alex (you)</div><div class="member-status ok" data-i18n="logged">Logged today</div></div>
+          <div class="member-pts">120</div>
+        </div>
+        <div class="member">
+          <div class="avatar logged">M</div>
+          <div class="member-info"><div class="member-name">Maria</div><div class="member-status ok" data-i18n="logged">Logged today</div></div>
+          <div class="member-pts">98</div>
+        </div>
+        <div class="member">
+          <div class="avatar">S</div>
+          <div class="member-info"><div class="member-name">Sam</div><div class="member-status warn" data-i18n="notLogged">Not yet</div></div>
+          <div class="member-pts">72</div>
+        </div>
+        <div class="member">
+          <div class="avatar logged">J</div>
+          <div class="member-info"><div class="member-name">Jordan</div><div class="member-status ok" data-i18n="logged">Logged today</div></div>
+          <div class="member-pts">65</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEADERBOARD -->
+    <section class="screen screen-rank" id="screen-rank">
+      <span class="week-pill">2026-W22</span>
+      <div class="card" style="padding:10px 14px">
+        <h3 data-i18n="battleTitle">Weekly battle</h3>
+      </div>
+      <div class="rank-item first">
+        <span class="rank-num">1</span>
+        <span style="flex:1;font-weight:700">Veggie Vikings</span>
+        <span class="muted">1240 pts</span>
+      </div>
+      <div class="rank-item you">
+        <span class="rank-num">2</span>
+        <span style="flex:1;font-weight:700">Protein Squad</span>
+        <span class="muted">1180 pts</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">3</span>
+        <span style="flex:1">Office Greens</span>
+        <span class="muted">990 pts</span>
+      </div>
+      <div class="rank-item">
+        <span class="rank-num">4</span>
+        <span style="flex:1">Carb Crushers</span>
+        <span class="muted">870 pts</span>
+      </div>
+    </section>
+
+    <!-- PRIZES -->
+    <section class="screen screen-prizes" id="screen-prizes">
+      <div class="card hero">
+        <h3 data-i18n="prizesTitle">Stars & prizes</h3>
+        <div class="stars-big">25</div>
+        <p class="muted" data-i18n="balanceHint">Won from weekly team battles</p>
+      </div>
+      <div class="card">
+        <h3 data-i18n="poolTitle">Weekly prize pool</h3>
+        <p class="muted" data-i18n="poolStats">100 total · 80 available</p>
+        <div class="field"><label data-i18n="fundAmount">Stars to add</label><input type="number" value="50" readonly /></div>
+        <button type="button" class="btn btn-gold" data-i18n="fundBtn">Fund pool with Stars</button>
+      </div>
+      <div class="card">
+        <h3 data-i18n="premiumTitle">Team Premium</h3>
+        <p class="muted" style="color:var(--accent)" data-i18n="premiumActive">Premium is active</p>
+      </div>
+    </section>
+
+    <button type="button" class="fab-log" data-go="log" title="Log meal">+</button>
+
+    <nav class="bottom-nav">
+      <button type="button" class="on" data-screen="home"><span class="ico">⌂</span><span data-i18n="navHome">Home</span></button>
+      <button type="button" data-screen="log"><span class="ico">◎</span><span data-i18n="navLog">Log</span></button>
+      <button type="button" data-screen="team"><span class="ico">◉</span><span data-i18n="navTeam">Team</span></button>
+      <button type="button" data-screen="rank"><span class="ico">▲</span><span data-i18n="navRank">Rank</span></button>
+      <button type="button" data-screen="prizes"><span class="ico">★</span><span data-i18n="navPrizes">Prizes</span></button>
+    </nav>
+  </div>
+
+  <script>
+    const I18N = {
+      en: {
+        banner: "Click-through demo · EN / RU · mock data",
+        toggleOnboard: "Show onboarding",
+        toggleTeam: "Show team home",
+        tagline: "Team nutrition battles",
+        greeting: "Hey, Alex!",
+        teamWaiting: "Your team is waiting for your next meal",
+        noTeam: "Join a crew to earn team points and compete weekly.",
+        streak: "7-day streak",
+        streakMult: "Streak mult.",
+        teamMult: "Team mult.",
+        todayPts: "Today's points",
+        logCta: "Snap your meal",
+        prizesBtn: "Stars & prizes (25)",
+        createTeam: "Create team",
+        joinTeam: "Join with code",
+        teamName: "Team name",
+        inviteCode: "Invite code",
+        createBtn: "Create",
+        joinBtn: "Join",
+        logTitle: "Log meal",
+        logHint: "Photo → AI → edit → earn points in ~3 sec",
+        tapPhoto: "Tap to simulate photo",
+        aiResult: "AI 87% · openai",
+        description: "What did you eat?",
+        calories: "Calories",
+        protein: "Protein (g)",
+        submitMeal: "Add points",
+        mealSuccess: "+52 you, +65 team · streak 7d",
+        invite: "Invite",
+        goalProgress: "Weekly protein · 340 / 500 g",
+        rank: "Rank #2 of 8 teams",
+        logged: "Logged today",
+        notLogged: "Not yet",
+        battleTitle: "Weekly battle",
+        prizesTitle: "Stars & prizes",
+        balanceHint: "Won from weekly team battles",
+        poolTitle: "Weekly prize pool",
+        poolStats: "100 total · 80 available",
+        fundAmount: "Stars to add",
+        fundBtn: "Fund pool with Stars",
+        premiumTitle: "Team Premium",
+        premiumActive: "Premium is active",
+        navHome: "Home",
+        navLog: "Log",
+        navTeam: "Team",
+        navRank: "Rank",
+        navPrizes: "Prizes",
+      },
+      ru: {
+        banner: "Интерактивный прототип · EN / RU · mock",
+        toggleOnboard: "Показать онбординг",
+        toggleTeam: "Показать главную",
+        tagline: "Командные битвы по правильному питанию",
+        greeting: "Привет, Alex!",
+        teamWaiting: "Команда ждёт твой следующий приём пищи",
+        noTeam: "Вступи в команду, чтобы получать очки и соревноваться.",
+        streak: "Серия 7 дн.",
+        streakMult: "Множ. серии",
+        teamMult: "Множ. команды",
+        todayPts: "Очки за сегодня",
+        logCta: "Сфотографируй еду",
+        prizesBtn: "Stars и призы (25)",
+        createTeam: "Создать команду",
+        joinTeam: "Вступить по коду",
+        teamName: "Название",
+        inviteCode: "Код приглашения",
+        createBtn: "Создать",
+        joinBtn: "Вступить",
+        logTitle: "Приём пищи",
+        logHint: "Фото → ИИ → правка → очки за ~3 сек",
+        tapPhoto: "Нажми — симуляция фото",
+        aiResult: "ИИ 87% · openai",
+        description: "Что ты ел?",
+        calories: "Калории",
+        protein: "Белок (г)",
+        submitMeal: "Начислить очки",
+        mealSuccess: "+52 тебе, +65 команде · серия 7 дн.",
+        invite: "Код",
+        goalProgress: "Белок за неделю · 340 / 500 г",
+        rank: "Место #2 из 8 команд",
+        logged: "Залогировал сегодня",
+        notLogged: "Ещё нет",
+        battleTitle: "Недельная битва",
+        prizesTitle: "Stars и призы",
+        balanceHint: "За победы в недельных битвах",
+        poolTitle: "Призовой фонд",
+        poolStats: "100 всего · 80 доступно",
+        fundAmount: "Сколько Stars",
+        fundBtn: "Пополнить фонд Stars",
+        premiumTitle: "Premium команда",
+        premiumActive: "Premium активен",
+        navHome: "Главная",
+        navLog: "Еда",
+        navTeam: "Команда",
+        navRank: "Топ",
+        navPrizes: "Призы",
+      },
+    };
+
+    let lang = "en";
+    let onboard = false;
+
+    function t(key) {
+      return I18N[lang][key] || key;
+    }
+
+    function applyI18n() {
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (key) el.textContent = t(key);
+      });
+      document.getElementById("btn-onboard").textContent = onboard ? t("toggleTeam") : t("toggleOnboard");
+    }
+
+    function showScreen(name) {
+      document.querySelectorAll(".screen").forEach((s) => s.classList.remove("active"));
+      document.getElementById("screen-" + name)?.classList.add("active");
+      document.querySelectorAll(".bottom-nav button").forEach((b) => {
+        b.classList.toggle("on", b.dataset.screen === name);
+      });
+    }
+
+    document.querySelectorAll(".bottom-nav button[data-screen]").forEach((btn) => {
+      btn.addEventListener("click", () => showScreen(btn.dataset.screen));
+    });
+
+    document.querySelectorAll("[data-go]").forEach((el) => {
+      el.addEventListener("click", () => showScreen(el.dataset.go));
+    });
+
+    document.querySelectorAll(".lang-toggle button").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        lang = btn.dataset.lang;
+        document.querySelectorAll(".lang-toggle button").forEach((b) => b.classList.toggle("on", b === btn));
+        applyI18n();
+      });
+    });
+
+    document.getElementById("btn-onboard").addEventListener("click", () => {
+      onboard = !onboard;
+      document.getElementById("home-team").style.display = onboard ? "none" : "block";
+      document.getElementById("home-onboard").style.display = onboard ? "block" : "none";
+      applyI18n();
+    });
+
+    const photoZone = document.getElementById("photoZone");
+    const aiBadge = document.getElementById("aiBadge");
+    let photoDone = false;
+
+    photoZone.addEventListener("click", () => {
+      if (photoDone) return;
+      photoDone = true;
+      photoZone.classList.add("has-img");
+      aiBadge.style.display = "inline-flex";
+      document.getElementById("mealDesc").value = lang === "ru" ? "Овсянка и яйца" : "Oatmeal & eggs";
+      document.getElementById("mealCal").value = "420";
+      document.getElementById("mealProt").value = "28";
+    });
+
+    document.getElementById("btnSubmitMeal").addEventListener("click", () => {
+      document.getElementById("mealSuccess").classList.add("show");
+    });
+
+    applyI18n();
+  </script>
+</body>
+</html>
