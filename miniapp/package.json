@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run fetch-dish-photos && tsc --noEmit && vite build",
+    "build": "node scripts/prepare-vercel.mjs && npm run fetch-dish-photos && tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "generate-dish-photos": "node scripts/generate-dish-photos.mjs",

@@ -1,4 +1,12 @@
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000/api";
+/** Production uses same-origin /api (Vercel proxy). Dev uses VITE_API_URL or local server. */
+function resolveApiBase(): string {
+  if (import.meta.env.DEV) {
+    return (import.meta.env.VITE_API_URL ?? "http://localhost:3000/api").replace(/\/$/, "");
+  }
+  return "/api";
+}
+
+const API_BASE = resolveApiBase();
 
 export const API_ERROR = {
   NOT_CONFIGURED: "API_NOT_CONFIGURED",
@@ -6,6 +14,7 @@ export const API_ERROR = {
   TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
 } as const;
 
+/** True when production build had no VITE_API_URL (Vercel proxy not configured). */
 export function isApiMisconfigured(): boolean {
   return import.meta.env.PROD && !import.meta.env.VITE_API_URL;
 }
