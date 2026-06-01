@@ -11,8 +11,6 @@ const MeContext = createContext<MeContextValue | null>(null);
 
 function formatMeError(message: string, t: (key: string) => string): string {
   switch (message) {
-    case API_ERROR.NOT_CONFIGURED:
-      return t("common.apiNotConfigured");
     case API_ERROR.UNREACHABLE:
       return t("common.apiUnreachable");
     case API_ERROR.TELEGRAM_REQUIRED:

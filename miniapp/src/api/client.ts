@@ -1,13 +1,10 @@
-import { getApiBase, isApiMisconfigured } from "../lib/apiBase.js";
+import { getApiBase } from "../lib/apiBase.js";
 
 export const API_ERROR = {
-  NOT_CONFIGURED: "API_NOT_CONFIGURED",
   UNREACHABLE: "API_UNREACHABLE",
   BAD_RESPONSE: "API_BAD_RESPONSE",
   TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
 } as const;
-
-export { isApiMisconfigured };
 
 function getInitData(): string {
   return window.Telegram?.WebApp?.initData ?? "";
@@ -15,9 +12,6 @@ function getInitData(): string {
 
 function mapFetchError(err: unknown): Error {
   if (err instanceof TypeError) {
-    if (isApiMisconfigured()) {
-      return new Error(API_ERROR.NOT_CONFIGURED);
-    }
     return new Error(API_ERROR.UNREACHABLE);
   }
   if (err instanceof Error) {
@@ -31,13 +25,13 @@ async function parseJsonBody<T>(res: Response): Promise<T> {
   const trimmed = text.trimStart();
 
   if (trimmed.startsWith("<")) {
-    throw new Error(isApiMisconfigured() ? API_ERROR.NOT_CONFIGURED : API_ERROR.BAD_RESPONSE);
+    throw new Error(API_ERROR.BAD_RESPONSE);
   }
 
   try {
     return JSON.parse(text) as T;
   } catch {
-    throw new Error(isApiMisconfigured() ? API_ERROR.NOT_CONFIGURED : API_ERROR.BAD_RESPONSE);
+    throw new Error(API_ERROR.BAD_RESPONSE);
   }
 }
 

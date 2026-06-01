@@ -113,8 +113,8 @@
     "error": "Something went wrong",
     "retry": "Retry",
     "apiNotConfigured": "Backend not configured: set VITE_API_URL on Vercel to your API URL (including /api).",
-    "apiUnreachable": "Could not reach the server. Ensure the backend is running and WEBAPP_URL matches this site.",
-    "apiBadResponse": "API misconfigured: set VITE_API_URL on Vercel (https://your-app.onrender.com/api) and Redeploy.",
+    "apiUnreachable": "Could not reach the server. Ensure Render is running (nutricrew-dddi.onrender.com).",
+    "apiBadResponse": "Invalid server response. Wait a minute for Render to wake up and try again.",
     "telegramRequired": "Open this app from Telegram — bot authentication is required."
   },
   "registration": {

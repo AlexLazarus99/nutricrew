@@ -112,9 +112,9 @@
     "loading": "Загрузка…",
     "error": "Что-то пошло не так",
     "retry": "Повторить",
-    "apiNotConfigured": "Сервер не настроен: в Vercel добавьте переменную VITE_API_URL (URL бэкенда с /api).",
-    "apiUnreachable": "Не удалось связаться с сервером. Проверьте, что бэкенд запущен и WEBAPP_URL указывает на этот сайт.",
-    "apiBadResponse": "API не настроен: в Vercel задайте VITE_API_URL (https://ваш-сервис.onrender.com/api) и сделайте Redeploy.",
+    "apiNotConfigured": "Сервер не настроен: проверьте деплой API на Render.",
+    "apiUnreachable": "Не удалось связаться с сервером. Убедитесь, что Render запущен (nutricrew-dddi.onrender.com).",
+    "apiBadResponse": "Сервер вернул неверный ответ. Подождите минуту (Render просыпается) и откройте снова.",
     "telegramRequired": "Откройте приложение через Telegram — здесь нужна авторизация бота."
   },
   "registration": {

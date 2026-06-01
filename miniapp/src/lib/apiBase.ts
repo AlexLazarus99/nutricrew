@@ -1,10 +1,13 @@
+/** Production Render API (fallback if env / runtime-config missing). */
+export const DEFAULT_PRODUCTION_API_URL = "https://nutricrew-dddi.onrender.com/api";
+
 let cachedBase: string | null = null;
 
 function normalizeApiUrl(url: string): string {
   return url.replace(/\/$/, "");
 }
 
-/** Resolves API base URL (dev / Vercel env / runtime-config.json / same-origin /api). */
+/** Resolves API base URL (dev / Vercel env / runtime-config.json / Render default /api proxy). */
 export async function getApiBase(): Promise<string> {
   if (cachedBase) return cachedBase;
 
@@ -32,10 +35,6 @@ export async function getApiBase(): Promise<string> {
     /* use fallback */
   }
 
-  cachedBase = "/api";
+  cachedBase = normalizeApiUrl(DEFAULT_PRODUCTION_API_URL);
   return cachedBase;
-}
-
-export function isApiMisconfigured(): boolean {
-  return false;
 }
