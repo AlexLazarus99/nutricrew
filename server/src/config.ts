@@ -10,6 +10,7 @@ dotenv.config({ path: path.join(serverRoot, ".env") });
 
 export const config = {
   port: Number(process.env.PORT ?? 3000),
+  host: process.env.HOST ?? "0.0.0.0",
   botToken: process.env.BOT_TOKEN ?? "",
   webappUrl: process.env.WEBAPP_URL ?? "http://localhost:5173",
   botMode: (process.env.BOT_MODE ?? "polling") as "polling" | "webhook",

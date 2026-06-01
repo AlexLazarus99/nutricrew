@@ -7,17 +7,13 @@ import { seedIfEmpty } from "./db/seed.js";
 import type { Telegraf } from "telegraf";
 import type { Context } from "telegraf";
 
-async function main(): Promise<void> {
-  assertConfig();
+async function startBot(app: ReturnType<typeof createApiApp>): Promise<Telegraf<Context> | null> {
+  if (config.devSkipBot || !config.botToken) {
+    return null;
+  }
 
-  await runMigrations();
-  await seedIfEmpty();
-
-  const app = createApiApp();
-  let bot: Telegraf<Context> | null = null;
-
-  if (!config.devSkipBot && config.botToken) {
-    bot = createBot();
+  try {
+    const bot = createBot();
 
     if (config.botMode === "webhook") {
       const webhookUrl = `${config.webappUrl.replace(/\/$/, "")}${config.webhookPath}`;
@@ -28,23 +24,47 @@ async function main(): Promise<void> {
       await bot.launch();
       console.log("Bot: polling mode");
     }
+
+    return bot;
+  } catch (err) {
+    console.error("Bot startup failed (API keeps running):", err);
+    return null;
+  }
+}
+
+async function main(): Promise<void> {
+  assertConfig();
+
+  const app = createApiApp();
+  let bot: Telegraf<Context> | null = null;
+
+  // Bind port first — Render requires an open port during startup checks.
+  await new Promise<void>((resolve) => {
+    app.listen(config.port, config.host, () => {
+      console.log(`API: http://${config.host}:${config.port}`);
+      console.log(`Mini App URL: ${config.webappUrl}`);
+      if (config.devBypassAuth) {
+        console.log("Dev auth bypass ON — browser works without Telegram");
+      }
+      if (!config.openaiApiKey) {
+        console.log("Vision: fallback mode (set OPENAI_API_KEY for AI photos)");
+      }
+      if (config.s3.enabled) {
+        console.log(`S3: ${config.s3.endpoint} / ${config.s3.bucket}`);
+      }
+      resolve();
+    });
+  });
+
+  try {
+    await runMigrations();
+    await seedIfEmpty();
+  } catch (err) {
+    console.error("Database startup failed (API keeps running, /api/health will report db:false):", err);
   }
 
+  bot = await startBot(app);
   startCronJobs();
-
-  app.listen(config.port, () => {
-    console.log(`API: http://localhost:${config.port}`);
-    console.log(`Mini App URL: ${config.webappUrl}`);
-    if (config.devBypassAuth) {
-      console.log("Dev auth bypass ON — browser works without Telegram");
-    }
-    if (!config.openaiApiKey) {
-      console.log("Vision: fallback mode (set OPENAI_API_KEY for AI photos)");
-    }
-    if (config.s3.enabled) {
-      console.log(`S3: ${config.s3.endpoint} / ${config.s3.bucket}`);
-    }
-  });
 
   const shutdown = async (signal: string) => {
     bot?.stop(signal);
