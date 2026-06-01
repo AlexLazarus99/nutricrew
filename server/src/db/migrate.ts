@@ -15,7 +15,6 @@ export async function runMigrations(): Promise<void> {
     cwd: serverRoot,
     stdio: "inherit",
     env: process.env,
-    shell: true,
   });
   await prisma.$connect();
   console.log("Prisma migrations applied");
