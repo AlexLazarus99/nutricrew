@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { apiRouter } from "./routes/index.js";
 import { config } from "../config.js";
+import { isAllowedCorsOrigin } from "../lib/corsOrigins.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -12,7 +13,9 @@ export function createApiApp(): express.Application {
 
   app.use(
     cors({
-      origin: [config.webappUrl, "http://localhost:5173"],
+      origin: (origin, callback) => {
+        callback(null, isAllowedCorsOrigin(origin));
+      },
       credentials: true,
     }),
   );
