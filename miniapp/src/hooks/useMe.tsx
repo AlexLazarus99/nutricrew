@@ -17,6 +17,8 @@ function formatMeError(message: string, t: (key: string) => string): string {
       return t("common.apiUnreachable");
     case API_ERROR.TELEGRAM_REQUIRED:
       return t("common.telegramRequired");
+    case API_ERROR.BAD_RESPONSE:
+      return t("common.apiBadResponse");
     default:
       return message;
   }

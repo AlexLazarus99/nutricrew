@@ -114,6 +114,7 @@
     "retry": "Повторить",
     "apiNotConfigured": "Сервер не настроен: в Vercel добавьте переменную VITE_API_URL (URL бэкенда с /api).",
     "apiUnreachable": "Не удалось связаться с сервером. Проверьте, что бэкенд запущен и WEBAPP_URL указывает на этот сайт.",
+    "apiBadResponse": "API не настроен: в Vercel задайте VITE_API_URL (https://ваш-сервис.onrender.com/api) и сделайте Redeploy.",
     "telegramRequired": "Откройте приложение через Telegram — здесь нужна авторизация бота."
   },
   "registration": {

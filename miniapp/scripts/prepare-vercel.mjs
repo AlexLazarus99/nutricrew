@@ -18,7 +18,12 @@ if (apiUrl) {
     source: "/api/:path*",
     destination: `${base}/api/:path*`,
   });
+  writeFileSync(
+    path.join(root, "public", "runtime-config.json"),
+    `${JSON.stringify({ apiUrl: normalized }, null, 2)}\n`,
+  );
   console.log(`[prepare-vercel] API proxy: /api/* → ${base}/api/*`);
+  console.log(`[prepare-vercel] wrote public/runtime-config.json`);
 } else {
   console.warn(
     "[prepare-vercel] VITE_API_URL not set — add it on Vercel (e.g. https://your-app.onrender.com/api) and redeploy.",

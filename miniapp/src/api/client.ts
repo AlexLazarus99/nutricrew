@@ -1,23 +1,13 @@
-/** Production uses same-origin /api (Vercel proxy). Dev uses VITE_API_URL or local server. */
-function resolveApiBase(): string {
-  if (import.meta.env.DEV) {
-    return (import.meta.env.VITE_API_URL ?? "http://localhost:3000/api").replace(/\/$/, "");
-  }
-  return "/api";
-}
-
-const API_BASE = resolveApiBase();
+import { getApiBase, isApiMisconfigured } from "../lib/apiBase.js";
 
 export const API_ERROR = {
   NOT_CONFIGURED: "API_NOT_CONFIGURED",
   UNREACHABLE: "API_UNREACHABLE",
+  BAD_RESPONSE: "API_BAD_RESPONSE",
   TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
 } as const;
 
-/** True when production build had no VITE_API_URL (Vercel proxy not configured). */
-export function isApiMisconfigured(): boolean {
-  return import.meta.env.PROD && !import.meta.env.VITE_API_URL;
-}
+export { isApiMisconfigured };
 
 function getInitData(): string {
   return window.Telegram?.WebApp?.initData ?? "";
@@ -36,10 +26,27 @@ function mapFetchError(err: unknown): Error {
   return new Error(String(err));
 }
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  let res: Response;
+async function parseJsonBody<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  const trimmed = text.trimStart();
+
+  if (trimmed.startsWith("<")) {
+    throw new Error(isApiMisconfigured() ? API_ERROR.NOT_CONFIGURED : API_ERROR.BAD_RESPONSE);
+  }
+
   try {
-    res = await fetch(`${API_BASE}${path}`, {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(isApiMisconfigured() ? API_ERROR.NOT_CONFIGURED : API_ERROR.BAD_RESPONSE);
+  }
+}
+
+async function request<T>(path: string, options?: RequestInit): Promise<T> {
+  const apiBase = await getApiBase();
+  let res: Response;
+
+  try {
+    res = await fetch(`${apiBase}${path}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +59,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   }
 
   if (!res.ok) {
-    const body = (await res.json().catch(() => ({}))) as { error?: string; message?: string };
+    let body: { error?: string; message?: string } = {};
+    try {
+      body = await parseJsonBody<{ error?: string; message?: string }>(res);
+    } catch {
+      /* HTML or invalid JSON */
+    }
     const message = body.message ?? body.error ?? `HTTP ${res.status}`;
     if (message === "Missing Telegram init data" || message === "Invalid init data") {
       throw new Error(API_ERROR.TELEGRAM_REQUIRED);
@@ -60,7 +72,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error(message);
   }
 
-  return res.json() as Promise<T>;
+  return parseJsonBody<T>(res);
 }
 
 export interface MeResponse {
