@@ -5,8 +5,9 @@ const messages = {
     welcome: (name: string) =>
       `Hey ${name}! 👋\n\nWelcome to *NutriCrew* — turn meals into team points.\n\nOpen the app to log food, join your crew, and win weekly battles.`,
     openApp: "Open NutriCrew",
+    openAppPrompt: "Tap to open NutriCrew:",
     help:
-      "Commands:\n/start — open app\n/team — team stats\n/stars — balance & prizes\n/create <name> — new team\n/join <code> — join\n/lang en | ru",
+      "Commands:\n/start — welcome + open app\n/app — open app button\n/team — team stats\n/stars — balance & prizes\n/create <name> — new team\n/join <code> — join\n/lang en | ru",
     teamInfo: (name: string, rank: number, points: number, code: string) =>
       `Team *${name}*\nInvite code: \`${code}\`\nWeekly rank: #${rank}\nPoints: ${points}`,
     noTeam: "You're not in a team yet. Use /create <name> or /join <code>",
@@ -27,8 +28,9 @@ const messages = {
     welcome: (name: string) =>
       `Привет, ${name}! 👋\n\nДобро пожаловать в *NutriCrew* — превращай приёмы пищи в очки команды.\n\nОткрой приложение, чтобы логировать еду и выигрывать недельные битвы.`,
     openApp: "Открыть NutriCrew",
+    openAppPrompt: "Нажмите, чтобы открыть NutriCrew:",
     help:
-      "Команды:\n/start — приложение\n/team — статистика\n/stars — баланс и призы\n/create <имя> — создать\n/join <код> — вступить\n/lang en | ru",
+      "Команды:\n/start — приветствие и кнопка приложения\n/app — открыть приложение\n/team — статистика\n/stars — баланс и призы\n/create <имя> — создать\n/join <код> — вступить\n/lang en | ru",
     teamInfo: (name: string, rank: number, points: number, code: string) =>
       `Команда *${name}*\nКод: \`${code}\`\nРейтинг недели: #${rank}\nОчки: ${points}`,
     noTeam: "Ты ещё не в команде. /create <имя> или /join <код>",

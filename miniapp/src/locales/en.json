@@ -119,7 +119,7 @@
     "apiBadResponse": "Invalid server response. Check Render and Vercel deploys.",
     "telegramRequired": "Open the mini app from your Telegram bot button, not a browser tab.",
     "telegramAuthFailed": "Telegram did not pass sign-in data. Close the app and reopen from the bot.",
-    "telegramMenuButtonHint": "In @BotFather, Menu Button and Mini App URL must both be https://nutricrew-miniapp.vercel.app. Close and reopen the mini app.",
+    "telegramMenuButtonHint": "Menu Button is set by the bot API. Profile «Open App» is separate: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Then send /start to the bot.",
     "invalidTelegramAuth": "Auth failed. On Render, BOT_TOKEN must be the token of the same bot you opened the app from.",
     "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service."
   },

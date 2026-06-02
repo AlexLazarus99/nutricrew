@@ -20,9 +20,14 @@ function webAppUrl(): string {
   return config.webappUrl.replace(/\/$/, "");
 }
 
-function webAppKeyboard(locale: BotLocale) {
+/** Inline Web App button — always uses current WEBAPP_URL (reply keyboards cache old URLs). */
+function inlineWebAppKeyboard(locale: BotLocale) {
   const msg = t(locale);
-  return Markup.keyboard([[Markup.button.webApp(msg.openApp, webAppUrl())]]).resize();
+  return Markup.inlineKeyboard([[Markup.button.webApp(msg.openApp, webAppUrl())]]);
+}
+
+function startAppDeepLink(username: string): string {
+  return `https://t.me/${username}?startapp`;
 }
 
 /** Sets the bottom-left menu button (next to the message field) for all chats. */
@@ -74,7 +79,7 @@ export function createBot(): Telegraf<Context> {
         const team = await joinTeam(dbUser, code);
         await ctx.reply(msg.teamJoined(team.name), {
           parse_mode: "Markdown",
-          ...webAppKeyboard(locale),
+          ...inlineWebAppKeyboard(locale),
         });
         return;
       } catch {
@@ -84,8 +89,29 @@ export function createBot(): Telegraf<Context> {
 
     await ctx.reply(msg.welcome(name), {
       parse_mode: "Markdown",
-      ...webAppKeyboard(locale),
+      ...Markup.removeKeyboard(),
     });
+
+    const me = await ctx.telegram.getMe();
+    const deepLink = me.username ? startAppDeepLink(me.username) : "";
+    const openHint =
+      locale === "ru"
+        ? deepLink
+          ? `Нажмите кнопку ниже или откройте из профиля бота.\nПрямая ссылка: ${deepLink}`
+          : "Нажмите кнопку ниже, чтобы открыть приложение."
+        : deepLink
+          ? `Tap the button below or use Open App on the bot profile.\nDirect link: ${deepLink}`
+          : "Tap the button below to open the app.";
+
+    await ctx.reply(openHint, inlineWebAppKeyboard(locale));
+  });
+
+  bot.command("app", async (ctx) => {
+    if (!ctx.from) return;
+    const user = await usersRepo.findByTelegramId(ctx.from.id);
+    const locale = getLocale(ctx, user);
+    const msg = t(locale);
+    await ctx.reply(msg.openAppPrompt, inlineWebAppKeyboard(locale));
   });
 
   bot.command("help", async (ctx) => {
@@ -147,7 +173,7 @@ export function createBot(): Telegraf<Context> {
     const team = await createTeamForUser(user, name);
     await ctx.reply(msg.teamCreated(team.name, team.invite_code), {
       parse_mode: "Markdown",
-      ...webAppKeyboard(locale),
+      ...inlineWebAppKeyboard(locale),
     });
   });
 
@@ -179,7 +205,7 @@ export function createBot(): Telegraf<Context> {
       user = (await usersRepo.findByTelegramId(ctx.from.id))!;
       await ctx.reply(msg.teamJoined(team.name), {
         parse_mode: "Markdown",
-        ...webAppKeyboard(locale),
+        ...inlineWebAppKeyboard(locale),
       });
     } catch {
       await ctx.reply(msg.teamNotFound);
@@ -209,7 +235,7 @@ export function createBot(): Telegraf<Context> {
             : "") +
           (summary.teamPremium ? "Premium active ✅\n" : "") +
           `\nFund pool or Premium in Mini App → Prizes`;
-    await ctx.reply(msg, { parse_mode: "Markdown", ...webAppKeyboard(locale) });
+    await ctx.reply(msg, { parse_mode: "Markdown", ...inlineWebAppKeyboard(locale) });
   });
 
   bot.command("lang", async (ctx) => {
@@ -227,7 +253,7 @@ export function createBot(): Telegraf<Context> {
     if (user) {
       await usersRepo.setLocale(user.id, arg);
     }
-    await ctx.reply(msg.langSet(arg), webAppKeyboard(arg));
+    await ctx.reply(msg.langSet(arg), inlineWebAppKeyboard(arg));
   });
 
   return bot;
