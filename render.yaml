@@ -31,7 +31,7 @@ services:
       - key: BOT_TOKEN
         sync: false
       - key: WEBAPP_URL
-        value: https://miniapp-nine-woad.vercel.app
+        value: https://nutricrew-miniapp.vercel.app
       # Required for Telegram auth, payments, and webhooks. Get from @BotFather.
       - key: BOT_MODE
         value: webhook
