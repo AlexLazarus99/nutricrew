@@ -26,6 +26,8 @@ interface TelegramWebApp {
   };
   themeParams: Record<string, string | undefined>;
   colorScheme: "light" | "dark";
+  platform?: string;
+  version?: string;
 }
 
 interface Window {

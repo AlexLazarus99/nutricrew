@@ -21,8 +21,10 @@ async function fetchWithTimeout(url: string, options: RequestInit): Promise<Resp
   }
 }
 
+import { getTelegramInitData } from "../lib/telegramReady.js";
+
 function getInitData(): string {
-  return window.Telegram?.WebApp?.initData ?? "";
+  return getTelegramInitData();
 }
 
 function mapFetchError(err: unknown): Error {

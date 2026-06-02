@@ -16,14 +16,19 @@ function getLocale(ctx: Context, user?: { locale: string } | null): BotLocale {
   return resolveBotLocale(ctx.from?.language_code);
 }
 
+function webAppUrl(): string {
+  return config.webappUrl.replace(/\/$/, "");
+}
+
 function webAppKeyboard(locale: BotLocale) {
   const msg = t(locale);
-  return Markup.keyboard([[Markup.button.webApp(msg.openApp, config.webappUrl)]]).resize();
+  return Markup.keyboard([[Markup.button.webApp(msg.openApp, webAppUrl())]]).resize();
 }
 
 /** Sets the bottom-left menu button (next to the message field) for all chats. */
 export async function configureBotMenuButton(bot: Telegraf<Context>): Promise<void> {
-  if (!config.webappUrl.startsWith("https://")) {
+  const url = webAppUrl();
+  if (!url.startsWith("https://")) {
     console.warn("WEBAPP_URL must be HTTPS for Telegram menu button");
     return;
   }
@@ -33,10 +38,10 @@ export async function configureBotMenuButton(bot: Telegraf<Context>): Promise<vo
       menuButton: {
         type: "web_app",
         text: "NutriCrew",
-        web_app: { url: config.webappUrl },
+        web_app: { url },
       },
     });
-    console.log(`Menu button → ${config.webappUrl}`);
+    console.log(`Menu button → ${url}`);
   } catch (err) {
     console.error("Failed to set menu button (configure in @BotFather):", err);
   }

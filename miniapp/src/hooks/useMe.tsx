@@ -18,7 +18,7 @@ function formatMeError(message: string, t: (key: string) => string): string {
     case API_ERROR.TIMEOUT:
       return t("common.apiTimeout");
     case API_ERROR.TELEGRAM_REQUIRED:
-      return isInsideTelegram() ? t("common.telegramAuthFailed") : t("common.telegramRequired");
+      return isInsideTelegram() ? t("common.telegramMenuButtonHint") : t("common.telegramRequired");
     case API_ERROR.INVALID_TELEGRAM_AUTH:
       return t("common.invalidTelegramAuth");
     case API_ERROR.BOT_NOT_CONFIGURED:
@@ -55,13 +55,6 @@ export function MeProvider({ children }: { children: ReactNode }) {
 
     void (async () => {
       await waitForTelegramInitData();
-
-      if (!cancelled && !window.Telegram?.WebApp?.initData && !import.meta.env.DEV) {
-        setError(API_ERROR.TELEGRAM_REQUIRED);
-        setLoading(false);
-        window.clearTimeout(slowTimer);
-        return;
-      }
 
       try {
         await refresh();

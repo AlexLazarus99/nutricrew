@@ -12,7 +12,11 @@ export const config = {
   port: Number(process.env.PORT ?? 3000),
   host: process.env.HOST ?? "0.0.0.0",
   botToken: process.env.BOT_TOKEN ?? "",
-  webappUrl: process.env.WEBAPP_URL ?? "http://localhost:5173",
+  webappUrl:
+    (process.env.WEBAPP_URL ?? "").replace(/\/$/, "") ||
+    (process.env.NODE_ENV === "production"
+      ? "https://nutricrew-miniapp.vercel.app"
+      : "http://localhost:5173"),
   botMode: (process.env.BOT_MODE ?? "polling") as "polling" | "webhook",
   webhookPath: process.env.WEBHOOK_PATH ?? "/telegram/webhook",
   isDev: process.env.NODE_ENV !== "production",

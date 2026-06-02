@@ -119,6 +119,7 @@
     "apiBadResponse": "Сервер вернул неверный ответ. Проверьте деплой на Render и Vercel.",
     "telegramRequired": "Откройте мини-приложение через кнопку в Telegram-боте, а не по ссылке в браузере.",
     "telegramAuthFailed": "Telegram не передал данные входа. Закройте приложение и откройте снова из бота.",
+    "telegramMenuButtonHint": "Menu Button и Mini App в @BotFather должны указывать на https://nutricrew-miniapp.vercel.app (без другого URL). Закройте mini app и откройте снова.",
     "invalidTelegramAuth": "Ошибка авторизации. На Render в BOT_TOKEN должен быть токен того же бота, из которого вы открыли приложение.",
     "botNotConfigured": "На Render не задан BOT_TOKEN. Добавьте токен от @BotFather и перезапустите сервис."
   },

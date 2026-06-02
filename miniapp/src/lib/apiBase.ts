@@ -1,7 +1,7 @@
 /** Production Render API — hardcoded so Vercel env vars are not required. */
 export const PRODUCTION_API_URL = "https://nutricrew-dddi.onrender.com/api";
 
-export const APP_BUILD = "2026-05-29-dddi";
+export const APP_BUILD = "2026-06-02-menu";
 
 function normalizeApiUrl(url: string): string {
   return url.replace(/\/$/, "");
@@ -14,6 +14,8 @@ export function getApiBase(): string {
   return PRODUCTION_API_URL;
 }
 
+import { isTelegramClient } from "../lib/telegramReady.js";
+
 export function isInsideTelegram(): boolean {
-  return Boolean(window.Telegram?.WebApp);
+  return isTelegramClient();
 }
