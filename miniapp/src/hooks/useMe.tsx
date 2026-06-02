@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { api, API_ERROR, type MeResponse } from "../api/client";
-import { isInsideTelegram } from "../lib/apiBase";
+import { isInsideTelegram, APP_BUILD } from "../lib/apiBase";
 import { waitForTelegramInitData } from "../lib/telegramReady";
 
 type MeContextValue = {
@@ -102,6 +102,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
       <section className="card error-card">
         <p>{t("common.error")}</p>
         <p className="muted">{formatMeError(error, t)}</p>
+        <p className="muted build-stamp">build {APP_BUILD}</p>
         <button type="button" className="btn btn-secondary" onClick={() => void refresh()}>
           {t("common.retry")}
         </button>

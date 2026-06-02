@@ -4,7 +4,12 @@
       "src": "/api/(.*)",
       "dest": "https://nutricrew-dddi.onrender.com/api/$1"
     },
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ]
 }
