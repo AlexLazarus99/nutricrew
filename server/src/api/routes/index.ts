@@ -14,6 +14,7 @@ import { getCurrentWeekKey } from "../../lib/week.js";
 import { teamMultiplier } from "../../services/points.js";
 import { isProfileComplete, validateProfile } from "../../lib/profileValidation.js";
 import { requireProfile } from "../middleware/requireProfile.js";
+import { config } from "../../config.js";
 
 export const apiRouter = Router();
 
@@ -24,9 +25,9 @@ apiRouter.get("/health", async (_req, res) => {
   try {
     const { prisma } = await import("../../db/client.js");
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ ok: true, service: "nutricrew-api", db: true });
+    res.json({ ok: true, service: "nutricrew-api", db: true, webappUrl: config.webappUrl });
   } catch {
-    res.status(503).json({ ok: false, service: "nutricrew-api", db: false });
+    res.status(503).json({ ok: false, service: "nutricrew-api", db: false, webappUrl: config.webappUrl });
   }
 });
 

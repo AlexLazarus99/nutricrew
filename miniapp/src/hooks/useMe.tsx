@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { useTranslation } from "react-i18next";
 import { api, API_ERROR, type MeResponse } from "../api/client";
 import { isInsideTelegram, APP_BUILD } from "../lib/apiBase";
-import { waitForTelegramInitData } from "../lib/telegramReady";
+import { getTelegramAuthDebug, waitForTelegramInitData } from "../lib/telegramReady";
 
 type MeContextValue = {
   me: MeResponse;
@@ -96,6 +96,9 @@ export function MeProvider({ children }: { children: ReactNode }) {
         <p>{t("common.error")}</p>
         <p className="muted">{formatMeError(error, t)}</p>
         <p className="muted build-stamp">build {APP_BUILD}</p>
+        {error === API_ERROR.TELEGRAM_REQUIRED ? (
+          <p className="muted build-stamp">{getTelegramAuthDebug()}</p>
+        ) : null}
         <button type="button" className="btn btn-secondary" onClick={() => void refresh()}>
           {t("common.retry")}
         </button>

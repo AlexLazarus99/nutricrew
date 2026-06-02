@@ -1,23 +1,49 @@
 const INIT_DATA_WAIT_MS = 8000;
 
+function hashFragment(): string {
+  return window.location.hash.replace(/^#/, "");
+}
+
 /** Read initData from URL hash when SDK has not populated it yet (menu button launch). */
 export function readInitDataFromHash(): string {
-  const raw = window.location.hash.replace(/^#/, "");
+  const raw = hashFragment();
   if (!raw) return "";
 
-  for (const part of raw.split("&")) {
-    if (part.startsWith("tgWebAppData=")) {
-      return decodeURIComponent(part.slice("tgWebAppData=".length));
-    }
+  const params = new URLSearchParams(raw);
+  const fromWrapper = params.get("tgWebAppData");
+  if (fromWrapper) return fromWrapper;
+
+  // Some Telegram clients pass signed fields directly in the fragment.
+  if (params.has("auth_date") && params.has("hash")) {
+    return raw;
   }
+
   return "";
+}
+
+function readInitDataFromSearch(): string {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("tgWebAppData") ?? "";
 }
 
 /** Best available Telegram initData for API auth headers. */
 export function getTelegramInitData(): string {
   const fromSdk = window.Telegram?.WebApp?.initData ?? "";
   if (fromSdk) return fromSdk;
-  return readInitDataFromHash();
+
+  const fromHash = readInitDataFromHash();
+  if (fromHash) return fromHash;
+
+  return readInitDataFromSearch();
+}
+
+/** Short diagnostic string for auth errors (no secrets). */
+export function getTelegramAuthDebug(): string {
+  const platform = getTelegramPlatform();
+  const hasSdk = Boolean(window.Telegram?.WebApp?.initData);
+  const hasHash = Boolean(readInitDataFromHash());
+  const hasSearch = Boolean(readInitDataFromSearch());
+  return `tg:${platform} sdk:${hasSdk ? "yes" : "no"} hash:${hasHash ? "yes" : "no"} q:${hasSearch ? "yes" : "no"}`;
 }
 
 export function getTelegramPlatform(): string {
