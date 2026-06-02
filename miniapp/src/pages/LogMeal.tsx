@@ -1,12 +1,12 @@
-import { ChangeEvent, FormEvent, useRef, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { FoodSectionNav } from "../components/food/FoodSectionNav";
+import { MealPhotoCapture, type MealPhotoAnalysis } from "../components/food/MealPhotoCapture";
 
 export function LogMealPage() {
   const { t } = useTranslation();
-  const fileRef = useRef<HTMLInputElement>(null);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
@@ -17,39 +17,23 @@ export function LogMealPage() {
   const [result, setResult] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [aiNote, setAiNote] = useState<string | null>(null);
+  const [captureError, setCaptureError] = useState<string | null>(null);
 
-  async function onPhotoChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const dataUrl = reader.result as string;
-      setPreview(dataUrl);
-      setAnalyzing(true);
-      setAiNote(null);
-      setResult(null);
-
-      try {
-        const analysis = await api.analyzeMeal(dataUrl);
-        setDescription(analysis.description);
-        setCalories(String(analysis.calories));
-        setProtein(String(analysis.protein));
-        setCarbs(String(analysis.carbs));
-        setFat(String(analysis.fat));
-        setAiNote(
-          t("log.aiNote", {
-            confidence: Math.round(analysis.confidence * 100),
-            source: analysis.source,
-          }),
-        );
-      } catch (err) {
-        setResult((err as Error).message);
-      } finally {
-        setAnalyzing(false);
-      }
-    };
-    reader.readAsDataURL(file);
+  function applyAnalysis(analysis: MealPhotoAnalysis) {
+    setCaptureError(null);
+    setPreview(analysis.preview);
+    setDescription(analysis.description);
+    setCalories(String(analysis.calories));
+    setProtein(String(analysis.protein));
+    setCarbs(String(analysis.carbs));
+    setFat(String(analysis.fat));
+    setAiNote(
+      t("log.aiNote", {
+        confidence: Math.round(analysis.confidence * 100),
+        source: analysis.source,
+      }),
+    );
+    setResult(null);
   }
 
   async function onSubmit(e: FormEvent) {
@@ -81,24 +65,15 @@ export function LogMealPage() {
       <div className="card">
         <h2>{t("log.title")}</h2>
         <p className="muted">{t("log.hint")}</p>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/*"
-          capture="environment"
-          hidden
-          onChange={onPhotoChange}
+        <MealPhotoCapture
+          analyzing={analyzing}
+          preview={preview}
+          aiNote={aiNote}
+          onAnalyzingChange={setAnalyzing}
+          onAnalysis={applyAnalysis}
+          onError={setCaptureError}
         />
-        <button
-          type="button"
-          className="btn btn-secondary btn-block"
-          onClick={() => fileRef.current?.click()}
-          disabled={analyzing}
-        >
-          {analyzing ? t("log.analyzing") : t("log.pickPhoto")}
-        </button>
-        {preview && <img src={preview} alt="" className="meal-preview" />}
-        {aiNote && <p className="muted small">{aiNote}</p>}
+        {captureError && <p className="error-text">{captureError}</p>}
       </div>
 
       <form className="card form" onSubmit={onSubmit}>
@@ -159,8 +134,7 @@ export function LogMealPage() {
         </button>
         {result && (
           <p className="success">
-            {result}
-            {" "}
+            {result}{" "}
             <Link to="/diary">{t("diary.viewAfterLog")}</Link>
           </p>
         )}

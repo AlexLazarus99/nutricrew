@@ -1,0 +1,118 @@
+import { ChangeEvent, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { api, type MealAnalysisResponse } from "../../api/client";
+import { fileToDataUrl } from "../../lib/imageCapture";
+import { MealLiveScanner } from "./MealLiveScanner";
+
+export type MealPhotoAnalysis = MealAnalysisResponse & { preview: string };
+
+type Props = {
+  analyzing: boolean;
+  preview: string | null;
+  aiNote: string | null;
+  onAnalyzingChange: (value: boolean) => void;
+  onAnalysis: (result: MealPhotoAnalysis) => void;
+  onError: (message: string) => void;
+};
+
+export function MealPhotoCapture({
+  analyzing,
+  preview,
+  aiNote,
+  onAnalyzingChange,
+  onAnalysis,
+  onError,
+}: Props) {
+  const { t } = useTranslation();
+  const galleryRef = useRef<HTMLInputElement>(null);
+  const cameraRef = useRef<HTMLInputElement>(null);
+  const [liveOpen, setLiveOpen] = useState(false);
+
+  async function analyzeFile(file: File) {
+    onAnalyzingChange(true);
+    onError("");
+
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      const analysis = await api.analyzeMeal(dataUrl);
+      onAnalysis({ ...analysis, preview: dataUrl });
+    } catch (err) {
+      onError((err as Error).message);
+    } finally {
+      onAnalyzingChange(false);
+    }
+  }
+
+  function onFileChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    void analyzeFile(file);
+  }
+
+  function handleLiveApply(result: MealPhotoAnalysis) {
+    setLiveOpen(false);
+    onAnalysis(result);
+  }
+
+  if (liveOpen) {
+    return (
+      <MealLiveScanner
+        onApply={handleLiveApply}
+        onClose={() => setLiveOpen(false)}
+      />
+    );
+  }
+
+  return (
+    <div className="meal-photo-capture">
+      <input
+        ref={galleryRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={onFileChange}
+      />
+      <input
+        ref={cameraRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        hidden
+        onChange={onFileChange}
+      />
+
+      <div className="meal-photo-actions">
+        <button
+          type="button"
+          className="btn btn-primary btn-block"
+          onClick={() => setLiveOpen(true)}
+          disabled={analyzing}
+        >
+          {t("log.liveCamera")}
+        </button>
+        <div className="meal-photo-actions-row">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => cameraRef.current?.click()}
+            disabled={analyzing}
+          >
+            {analyzing ? t("log.analyzing") : t("log.takePhoto")}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => galleryRef.current?.click()}
+            disabled={analyzing}
+          >
+            {analyzing ? t("log.analyzing") : t("log.fromGallery")}
+          </button>
+        </div>
+      </div>
+
+      {preview && <img src={preview} alt="" className="meal-preview" />}
+      {aiNote && <p className="muted small">{aiNote}</p>}
+    </div>
+  );
+}
