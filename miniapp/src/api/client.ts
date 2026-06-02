@@ -3,14 +3,30 @@ import { getApiBase } from "../lib/apiBase.js";
 export const API_ERROR = {
   UNREACHABLE: "API_UNREACHABLE",
   BAD_RESPONSE: "API_BAD_RESPONSE",
+  TIMEOUT: "API_TIMEOUT",
   TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
 } as const;
+
+const REQUEST_TIMEOUT_MS = 28_000;
+
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 function getInitData(): string {
   return window.Telegram?.WebApp?.initData ?? "";
 }
 
 function mapFetchError(err: unknown): Error {
+  if (err instanceof DOMException && err.name === "AbortError") {
+    return new Error(API_ERROR.TIMEOUT);
+  }
   if (err instanceof TypeError) {
     return new Error(API_ERROR.UNREACHABLE);
   }
@@ -36,11 +52,11 @@ async function parseJsonBody<T>(res: Response): Promise<T> {
 }
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const apiBase = await getApiBase();
+  const apiBase = getApiBase();
   let res: Response;
 
   try {
-    res = await fetch(`${apiBase}${path}`, {
+    res = await fetchWithTimeout(`${apiBase}${path}`, {
       ...options,
       headers: {
         "Content-Type": "application/json",

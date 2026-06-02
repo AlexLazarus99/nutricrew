@@ -685,6 +685,21 @@ button {
   padding: 24px;
 }
 
+.loading-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+  gap: 8px;
+}
+
+.loading-hint {
+  font-size: 0.9rem;
+  max-width: 280px;
+  text-align: center;
+}
+
 .lang-switcher {
   text-align: right;
 }

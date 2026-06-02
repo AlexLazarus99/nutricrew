@@ -13,6 +13,8 @@ function formatMeError(message: string, t: (key: string) => string): string {
   switch (message) {
     case API_ERROR.UNREACHABLE:
       return t("common.apiUnreachable");
+    case API_ERROR.TIMEOUT:
+      return t("common.apiTimeout");
     case API_ERROR.TELEGRAM_REQUIRED:
       return t("common.telegramRequired");
     case API_ERROR.BAD_RESPONSE:
@@ -26,6 +28,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [slow, setSlow] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -35,9 +38,21 @@ export function MeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
+    setSlow(false);
+    setError(null);
+
+    const slowTimer = window.setTimeout(() => setSlow(true), 4000);
+
     refresh()
       .catch((e: Error) => setError(e.message))
-      .finally(() => setLoading(false));
+      .finally(() => {
+        window.clearTimeout(slowTimer);
+        setLoading(false);
+        setSlow(false);
+      });
+
+    return () => window.clearTimeout(slowTimer);
   }, [refresh]);
 
   const value = useMemo(
@@ -46,7 +61,12 @@ export function MeProvider({ children }: { children: ReactNode }) {
   );
 
   if (loading) {
-    return <p className="loading">{t("common.loading")}</p>;
+    return (
+      <div className="loading-screen">
+        <p className="loading">{t("common.loading")}</p>
+        {slow ? <p className="muted loading-hint">{t("common.loadingSlow")}</p> : null}
+      </div>
+    );
   }
 
   if (error && !me) {
@@ -54,6 +74,9 @@ export function MeProvider({ children }: { children: ReactNode }) {
       <section className="card error-card">
         <p>{t("common.error")}</p>
         <p className="muted">{formatMeError(error, t)}</p>
+        <button type="button" className="btn btn-secondary" onClick={() => void refresh()}>
+          {t("common.retry")}
+        </button>
       </section>
     );
   }

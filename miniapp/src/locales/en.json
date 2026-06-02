@@ -110,10 +110,12 @@
   },
   "common": {
     "loading": "Loading…",
+    "loadingSlow": "Waking up Render server, please wait up to 30 seconds…",
     "error": "Something went wrong",
     "retry": "Retry",
     "apiNotConfigured": "Backend not configured: set VITE_API_URL on Vercel to your API URL (including /api).",
-    "apiUnreachable": "Could not reach the server. Ensure Render is running (nutricrew-dddi.onrender.com).",
+    "apiUnreachable": "Could not reach the server. Check Render (nutricrew-dddi.onrender.com).",
+    "apiTimeout": "Server did not respond in time. Wait a minute and tap Retry.",
     "apiBadResponse": "Invalid server response. Wait a minute for Render to wake up and try again.",
     "telegramRequired": "Open this app from Telegram — bot authentication is required."
   },
