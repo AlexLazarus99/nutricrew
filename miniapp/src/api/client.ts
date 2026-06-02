@@ -5,6 +5,8 @@ export const API_ERROR = {
   BAD_RESPONSE: "API_BAD_RESPONSE",
   TIMEOUT: "API_TIMEOUT",
   TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
+  BOT_NOT_CONFIGURED: "BOT_NOT_CONFIGURED",
+  INVALID_TELEGRAM_AUTH: "INVALID_TELEGRAM_AUTH",
 } as const;
 
 const REQUEST_TIMEOUT_MS = 28_000;
@@ -76,8 +78,19 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
       /* HTML or invalid JSON */
     }
     const message = body.message ?? body.error ?? `HTTP ${res.status}`;
-    if (message === "Missing Telegram init data" || message === "Invalid init data") {
-      throw new Error(API_ERROR.TELEGRAM_REQUIRED);
+    if (message === "Bot token not configured") {
+      throw new Error(API_ERROR.BOT_NOT_CONFIGURED);
+    }
+    if (
+      message === "Missing Telegram init data" ||
+      message === "Invalid init data" ||
+      message === "Expired or malformed init data"
+    ) {
+      throw new Error(
+        message === "Missing Telegram init data"
+          ? API_ERROR.TELEGRAM_REQUIRED
+          : API_ERROR.INVALID_TELEGRAM_AUTH,
+      );
     }
     throw new Error(message);
   }

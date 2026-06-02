@@ -113,11 +113,14 @@
     "loadingSlow": "Waking up Render server, please wait up to 30 seconds…",
     "error": "Something went wrong",
     "retry": "Retry",
-    "apiNotConfigured": "Backend not configured: set VITE_API_URL on Vercel to your API URL (including /api).",
-    "apiUnreachable": "Could not reach the server. Check Render (nutricrew-dddi.onrender.com).",
+    "apiNotConfigured": "Could not reach the API. Check that Render is running.",
+    "apiUnreachable": "Could not reach the server (nutricrew-dddi.onrender.com).",
     "apiTimeout": "Server did not respond in time. Wait a minute and tap Retry.",
-    "apiBadResponse": "Invalid server response. Wait a minute for Render to wake up and try again.",
-    "telegramRequired": "Open this app from Telegram — bot authentication is required."
+    "apiBadResponse": "Invalid server response. Check Render and Vercel deploys.",
+    "telegramRequired": "Open the mini app from your Telegram bot button, not a browser tab.",
+    "telegramAuthFailed": "Telegram did not pass sign-in data. Close the app and reopen it from the bot.",
+    "invalidTelegramAuth": "Auth failed. On Render, BOT_TOKEN must be the token of the same bot you opened the app from.",
+    "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service."
   },
   "registration": {
     "title": "Welcome, {{name}}!",

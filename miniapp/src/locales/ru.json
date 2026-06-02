@@ -113,11 +113,14 @@
     "loadingSlow": "Сервер на Render просыпается, подождите до 30 секунд…",
     "error": "Что-то пошло не так",
     "retry": "Повторить",
-    "apiNotConfigured": "Сервер не настроен: проверьте деплой API на Render.",
-    "apiUnreachable": "Не удалось связаться с сервером. Проверьте Render (nutricrew-dddi.onrender.com).",
+    "apiNotConfigured": "Не удалось связаться с API. Проверьте, что Render запущен.",
+    "apiUnreachable": "Не удалось связаться с сервером (nutricrew-dddi.onrender.com).",
     "apiTimeout": "Сервер не ответил вовремя. Подождите минуту и нажмите «Повторить».",
-    "apiBadResponse": "Сервер вернул неверный ответ. Подождите минуту (Render просыпается) и откройте снова.",
-    "telegramRequired": "Откройте приложение через Telegram — здесь нужна авторизация бота."
+    "apiBadResponse": "Сервер вернул неверный ответ. Проверьте деплой на Render и Vercel.",
+    "telegramRequired": "Откройте мини-приложение через кнопку в Telegram-боте, а не по ссылке в браузере.",
+    "telegramAuthFailed": "Telegram не передал данные входа. Закройте приложение и откройте снова из бота.",
+    "invalidTelegramAuth": "Ошибка авторизации. На Render в BOT_TOKEN должен быть токен того же бота, из которого вы открыли приложение.",
+    "botNotConfigured": "На Render не задан BOT_TOKEN. Добавьте токен от @BotFather и перезапустите сервис."
   },
   "registration": {
     "title": "Добро пожаловать, {{name}}!",

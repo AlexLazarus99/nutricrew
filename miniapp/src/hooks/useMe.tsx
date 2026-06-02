@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { api, API_ERROR, type MeResponse } from "../api/client";
+import { isInsideTelegram } from "../lib/apiBase";
+import { waitForTelegramInitData } from "../lib/telegramReady";
 
 type MeContextValue = {
   me: MeResponse;
@@ -16,7 +18,11 @@ function formatMeError(message: string, t: (key: string) => string): string {
     case API_ERROR.TIMEOUT:
       return t("common.apiTimeout");
     case API_ERROR.TELEGRAM_REQUIRED:
-      return t("common.telegramRequired");
+      return isInsideTelegram() ? t("common.telegramAuthFailed") : t("common.telegramRequired");
+    case API_ERROR.INVALID_TELEGRAM_AUTH:
+      return t("common.invalidTelegramAuth");
+    case API_ERROR.BOT_NOT_CONFIGURED:
+      return t("common.botNotConfigured");
     case API_ERROR.BAD_RESPONSE:
       return t("common.apiBadResponse");
     default:
@@ -38,21 +44,43 @@ export function MeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     setSlow(false);
     setError(null);
 
-    const slowTimer = window.setTimeout(() => setSlow(true), 4000);
+    const slowTimer = window.setTimeout(() => {
+      if (!cancelled) setSlow(true);
+    }, 4000);
 
-    refresh()
-      .catch((e: Error) => setError(e.message))
-      .finally(() => {
-        window.clearTimeout(slowTimer);
+    void (async () => {
+      await waitForTelegramInitData();
+
+      if (!cancelled && !window.Telegram?.WebApp?.initData && !import.meta.env.DEV) {
+        setError(API_ERROR.TELEGRAM_REQUIRED);
         setLoading(false);
-        setSlow(false);
-      });
+        window.clearTimeout(slowTimer);
+        return;
+      }
 
-    return () => window.clearTimeout(slowTimer);
+      try {
+        await refresh();
+        if (!cancelled) setError(null);
+      } catch (e) {
+        if (!cancelled) setError((e as Error).message);
+      } finally {
+        if (!cancelled) {
+          window.clearTimeout(slowTimer);
+          setLoading(false);
+          setSlow(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(slowTimer);
+    };
   }, [refresh]);
 
   const value = useMemo(

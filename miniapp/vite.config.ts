@@ -6,7 +6,7 @@ const DEFAULT_PRODUCTION_API_URL = "https://nutricrew-dddi.onrender.com/api";
 
 export default defineConfig(({ mode }) => {
   if (mode === "production" && !process.env.VITE_API_URL) {
-    process.env.VITE_API_URL = DEFAULT_PRODUCTION_API_URL;
+    process.env.VITE_API_URL = "https://nutricrew-dddi.onrender.com/api";
   }
 
   return {
