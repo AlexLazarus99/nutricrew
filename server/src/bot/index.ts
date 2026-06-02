@@ -21,6 +21,27 @@ function webAppKeyboard(locale: BotLocale) {
   return Markup.keyboard([[Markup.button.webApp(msg.openApp, config.webappUrl)]]).resize();
 }
 
+/** Sets the bottom-left menu button (next to the message field) for all chats. */
+export async function configureBotMenuButton(bot: Telegraf<Context>): Promise<void> {
+  if (!config.webappUrl.startsWith("https://")) {
+    console.warn("WEBAPP_URL must be HTTPS for Telegram menu button");
+    return;
+  }
+
+  try {
+    await bot.telegram.setChatMenuButton({
+      menuButton: {
+        type: "web_app",
+        text: "NutriCrew",
+        web_app: { url: config.webappUrl },
+      },
+    });
+    console.log(`Menu button → ${config.webappUrl}`);
+  } catch (err) {
+    console.error("Failed to set menu button (configure in @BotFather):", err);
+  }
+}
+
 export function createBot(): Telegraf<Context> {
   const bot = new Telegraf<Context>(config.botToken);
   setNotificationBot(bot);

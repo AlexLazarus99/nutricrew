@@ -1,6 +1,6 @@
 import { createApiApp } from "./api/index.js";
 import { assertConfig, config } from "./config.js";
-import { createBot } from "./bot/index.js";
+import { createBot, configureBotMenuButton } from "./bot/index.js";
 import { runMigrations, disconnectDb } from "./db/migrate.js";
 import { startCronJobs } from "./jobs/cron.js";
 import { seedIfEmpty } from "./db/seed.js";
@@ -14,6 +14,7 @@ async function startBot(app: ReturnType<typeof createApiApp>): Promise<Telegraf<
 
   try {
     const bot = createBot();
+    await configureBotMenuButton(bot);
 
     if (config.botMode === "webhook") {
       const webhookUrl = `${config.webappUrl.replace(/\/$/, "")}${config.webhookPath}`;
