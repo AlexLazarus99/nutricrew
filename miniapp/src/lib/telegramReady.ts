@@ -87,4 +87,16 @@ export function bootstrapTelegramWebApp(): void {
   if (!tg) return;
   tg.ready();
   tg.expand();
+
+  const scheme = tg.colorScheme ?? "light";
+  document.documentElement.dataset.colorScheme = scheme;
+  document.documentElement.style.colorScheme = scheme;
+
+  const params = tg.themeParams;
+  if (params?.bg_color) {
+    document.documentElement.style.setProperty("--tg-bg", params.bg_color);
+  }
+  if (params?.button_color) {
+    document.documentElement.style.setProperty("--tg-button", params.button_color);
+  }
 }

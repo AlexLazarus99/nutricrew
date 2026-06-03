@@ -6,6 +6,7 @@ import { bootstrapTelegramWebApp } from "./lib/telegramReady";
 import { wakeApi } from "./lib/apiWarmup";
 import "./i18n";
 import "./styles/index.css";
+import "./styles/wellness-theme.css";
 
 bootstrapTelegramWebApp();
 wakeApi();

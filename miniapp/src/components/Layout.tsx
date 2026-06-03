@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { FitnessBackground } from "./FitnessBackground";
+import { WellnessBackground } from "./WellnessBackground";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MeProvider, useMe } from "../hooks/useMe";
 import { RegistrationPage } from "../pages/Registration";
@@ -24,7 +24,7 @@ function LayoutShell() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { me, refresh } = useMe();
-  const { user } = useTelegram();
+  const { user, colorScheme } = useTelegram();
   const registered = me.profileComplete;
   const [offerDismissed, setOfferDismissed] = useState(false);
   const showWellnessOffer =
@@ -34,8 +34,8 @@ function LayoutShell() {
   const compactNav = registered && !me.teamId;
 
   return (
-    <div className="app-shell" data-section={section}>
-      <FitnessBackground />
+    <div className="app-shell" data-section={section} data-color-scheme={colorScheme}>
+      <WellnessBackground />
       <header className="app-header">
         <div>
           <h1>{t("app.name")}</h1>
