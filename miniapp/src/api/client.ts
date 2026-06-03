@@ -135,6 +135,24 @@ export interface MeResponse {
   starBalance: number;
   dailyBonus: { game: boolean; quiz: boolean };
   timezoneOffsetMinutes: number | null;
+  progress: {
+    xp: number;
+    level: number;
+    titleKey: string;
+    emoji: string;
+    xpInLevel: number;
+    xpToNext: number;
+    percent: number;
+    maxLevel: boolean;
+  };
+  socialLinks: Partial<{
+    telegramChannel: string;
+    telegramGroup: string;
+    instagram: string;
+    x: string;
+    youtube: string;
+    tiktok: string;
+  }>;
 }
 
 export interface TeamActivityItem {

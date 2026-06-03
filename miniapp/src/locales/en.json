@@ -40,6 +40,89 @@
     "teamFeedEmpty": "No meals logged today yet — be the first!",
     "teamFeedYou": "You"
   },
+  "progress": {
+    "levelShort": "Lv. {{level}}",
+    "xpTotal": "{{xp}} XP total",
+    "toNext": "{{current}} / {{need}} XP to Lv. {{next}}",
+    "maxLevel": "Max level — you're a crew legend!",
+    "titles": {
+      "hatchling": "Hatchling",
+      "sprout": "Sprout",
+      "snacker": "Snacker",
+      "logger": "Food Logger",
+      "regular": "Regular",
+      "balanced": "Balanced",
+      "protein": "Protein Pro",
+      "crewmate": "Crewmate",
+      "chef": "Chef",
+      "hawk": "Hawk",
+      "streaker": "Streaker",
+      "captain": "Captain",
+      "champion": "Champion",
+      "master": "Master",
+      "legend": "Legend"
+    }
+  },
+  "tutorial": {
+    "step": "Step {{current}} / {{total}}",
+    "next": "Next",
+    "skip": "Skip",
+    "done": "Got it!",
+    "welcome": {
+      "title": "Welcome to NutriCrew!",
+      "body": "Like your favorite Telegram games: level up, log meals, and lead your crew to win."
+    },
+    "progress": {
+      "title": "Your level",
+      "body": "XP grows from meals, streaks, NutriBird, and the quiz. Tap ▼ to see all ranks."
+    },
+    "log": {
+      "title": "Log meals",
+      "body": "The Food tab — photo, AI, and points every time you eat."
+    },
+    "team": {
+      "title": "Your crew",
+      "body": "Create or join with a code — multipliers and weekly battles."
+    },
+    "game": {
+      "title": "NutriBird",
+      "body": "The mini-game gives a daily crew XP bonus — play after logging food!"
+    },
+    "logPhoto": {
+      "title": "Snap your meal",
+      "body": "Camera or gallery — AI fills calories, you edit and save."
+    },
+    "logSubmit": {
+      "title": "Earn points",
+      "body": "Tap here — points go to you and your crew, and your level rises."
+    },
+    "bird": {
+      "title": "NutriBird flight",
+      "body": "Tap to flap. Collect fruit, dodge junk food."
+    },
+    "birdBonus": {
+      "title": "Daily bonus",
+      "body": "First run each day — bonus crew XP, like daily quests in duck games."
+    },
+    "teamPage": {
+      "title": "Invite friends",
+      "body": "Share the link in chat — bigger crew, higher multiplier and prizes."
+    },
+    "levels": {
+      "title": "Level ladder",
+      "body": "15 ranks from Hatchling to Legend — see them all on the progress card."
+    }
+  },
+  "social": {
+    "title": "Follow us",
+    "hint": "News, challenges, and support",
+    "telegramChannel": "Channel",
+    "telegramGroup": "Chat",
+    "instagram": "Instagram",
+    "x": "X",
+    "youtube": "YouTube",
+    "tiktok": "TikTok"
+  },
   "home": {
     "greeting": "Hey, {{name}}!",
     "streak": "{{days}}-day streak",

@@ -80,6 +80,14 @@ export async function countUserMeals(userId: number): Promise<number> {
   return prisma.meal.count({ where: { userId: BigInt(userId) } });
 }
 
+export async function getLifetimeMealPoints(userId: number): Promise<number> {
+  const agg = await prisma.meal.aggregate({
+    where: { userId: BigInt(userId) },
+    _sum: { points: true },
+  });
+  return agg._sum.points ?? 0;
+}
+
 export async function getTeamRecentMeals(teamId: string, limit = 12) {
   const start = new Date();
   start.setUTCHours(0, 0, 0, 0);

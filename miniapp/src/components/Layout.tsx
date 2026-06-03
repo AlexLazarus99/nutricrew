@@ -9,6 +9,7 @@ import { PostRegistrationOffer } from "../pages/PostRegistrationOffer";
 import { useTelegram } from "../hooks/useTelegram";
 import { shouldShowPostRegistrationOffer } from "../lib/postRegistration";
 import { sectionFromPath, type AppSection } from "../lib/appSection";
+import { SocialLinks } from "./SocialLinks";
 
 function resolveSection(
   registered: boolean,
@@ -57,6 +58,12 @@ function LayoutShell() {
         )}
       </main>
 
+      {registered && !showWellnessOffer && (
+        <footer className="app-footer">
+          <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
+        </footer>
+      )}
+
       {registered &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
         <nav className={`bottom-nav ${compactNav ? "bottom-nav-5" : "bottom-nav-8"}`}>
@@ -65,13 +72,16 @@ function LayoutShell() {
           </NavLink>
           <NavLink
             to="/log"
+            data-tutorial="nav-log"
             className={({ isActive }) =>
               isActive || pathname.startsWith("/diary") ? "active" : undefined
             }
           >
             {t("nav.log")}
           </NavLink>
-          <NavLink to="/game">{t("nav.game")}</NavLink>
+          <NavLink to="/game" data-tutorial="nav-game">
+            {t("nav.game")}
+          </NavLink>
           {compactNav ? (
             <>
               <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
@@ -81,7 +91,9 @@ function LayoutShell() {
             <>
               <NavLink to="/guide">{t("nav.guide")}</NavLink>
               <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
-              <NavLink to="/team">{t("nav.team")}</NavLink>
+              <NavLink to="/team" data-tutorial="nav-team">
+                {t("nav.team")}
+              </NavLink>
               <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
               <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
             </>

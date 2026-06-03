@@ -47,6 +47,15 @@ export const config = {
     minTeamForPrizes: Number(process.env.MIN_TEAM_FOR_PRIZES ?? 3),
   },
 
+  social: {
+    telegramChannel: process.env.SOCIAL_TELEGRAM_CHANNEL ?? "",
+    telegramGroup: process.env.SOCIAL_TELEGRAM_GROUP ?? "",
+    instagram: process.env.SOCIAL_INSTAGRAM ?? "",
+    x: process.env.SOCIAL_X ?? "",
+    youtube: process.env.SOCIAL_YOUTUBE ?? "",
+    tiktok: process.env.SOCIAL_TIKTOK ?? "",
+  },
+
   stars: {
     premiumPrice: Number(process.env.PREMIUM_STARS_PRICE ?? 99),
     premiumDays: Number(process.env.PREMIUM_DAYS ?? 30),
@@ -55,6 +64,18 @@ export const config = {
     winnerSharePercent: Number(process.env.WINNER_POOL_SHARE_PERCENT ?? 80),
   },
 };
+
+export function getPublicSocialLinks(): Record<string, string> {
+  const links: Record<string, string> = {};
+  const s = config.social;
+  if (s.telegramChannel) links.telegramChannel = s.telegramChannel;
+  if (s.telegramGroup) links.telegramGroup = s.telegramGroup;
+  if (s.instagram) links.instagram = s.instagram;
+  if (s.x) links.x = s.x;
+  if (s.youtube) links.youtube = s.youtube;
+  if (s.tiktok) links.tiktok = s.tiktok;
+  return links;
+}
 
 export function assertConfig(): void {
   if (config.devSkipBot) {

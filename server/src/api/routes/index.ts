@@ -14,11 +14,12 @@ import { getCurrentWeekKey } from "../../lib/week.js";
 import { teamMultiplier } from "../../services/points.js";
 import { isProfileComplete, validateProfile } from "../../lib/profileValidation.js";
 import { requireProfile } from "../middleware/requireProfile.js";
-import { config } from "../../config.js";
+import { config, getPublicSocialLinks } from "../../config.js";
 import { buildTeamInviteUrl } from "../../lib/inviteLink.js";
 import { apiReady } from "../ready.js";
 import * as engagementRepo from "../../repositories/engagement.js";
 import { parseInviteStartParam } from "../../services/referrals.js";
+import { computeUserProgress } from "../../services/progress.js";
 
 export const apiRouter = Router();
 
@@ -36,6 +37,7 @@ apiRouter.get("/ping", (_req, res) => {
     ready: apiReady,
     webappUrl: config.webappUrl,
     botUsername: config.botUsername || null,
+    socialLinks: getPublicSocialLinks(),
   });
 });
 
@@ -117,6 +119,7 @@ apiRouter.get("/me", ...authed, async (req, res) => {
   }
 
   const parsedStart = parseInviteStartParam(req.telegram!.startParam);
+  const progress = await computeUserProgress(user);
 
   res.json({
     user: {
@@ -146,6 +149,8 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     starBalance: user.star_balance,
     dailyBonus,
     timezoneOffsetMinutes: user.timezone_offset_minutes,
+    progress,
+    socialLinks: getPublicSocialLinks(),
   });
 });
 

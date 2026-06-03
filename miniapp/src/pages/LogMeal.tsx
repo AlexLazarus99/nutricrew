@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type MealResponse } from "../api/client";
 import { MealShareCard } from "../components/MealShareCard";
+import { TutorialCoach } from "../components/TutorialCoach";
+import { useTutorialTour } from "../hooks/useTutorialTour";
 import { FoodSectionNav } from "../components/food/FoodSectionNav";
 import { MealPhotoCapture, type MealPhotoAnalysis } from "../components/food/MealPhotoCapture";
 
 export function LogMealPage() {
   const { t } = useTranslation();
+  const logTour = useTutorialTour("log", true);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
   const [protein, setProtein] = useState("");
@@ -63,6 +66,7 @@ export function LogMealPage() {
 
   return (
     <section className="stack">
+      <TutorialCoach {...logTour} />
       <FoodSectionNav />
       <div className="card">
         <h2>{t("log.title")}</h2>
@@ -131,7 +135,12 @@ export function LogMealPage() {
             />
           </label>
         </div>
-        <button type="submit" className="btn btn-primary btn-block" disabled={loading || analyzing}>
+        <button
+          type="submit"
+          className="btn btn-primary btn-block"
+          disabled={loading || analyzing}
+          data-tutorial="log-submit"
+        >
           {loading ? t("common.loading") : t("log.submit")}
         </button>
         {resultError && <p className="error-text">{resultError}</p>}

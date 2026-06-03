@@ -4,10 +4,13 @@ import { api, type TeamResponse } from "../api/client";
 import { useMe } from "../hooks/useMe";
 import { InviteShareButton } from "../components/InviteShareButton";
 import { TeamActivityFeed } from "../components/TeamActivityFeed";
+import { TutorialCoach } from "../components/TutorialCoach";
+import { useTutorialTour } from "../hooks/useTutorialTour";
 
 export function TeamPage() {
   const { t } = useTranslation();
   const { me } = useMe();
+  const teamTour = useTutorialTour("team", true);
   const [team, setTeam] = useState<TeamResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,7 +38,8 @@ export function TeamPage() {
 
   return (
     <section className="stack">
-      <div className="card">
+      <TutorialCoach {...teamTour} />
+      <div className="card" data-tutorial="team-invite">
         <h2>
           {team.name}
           {team.isPremium && <span className="badge premium"> Premium</span>}

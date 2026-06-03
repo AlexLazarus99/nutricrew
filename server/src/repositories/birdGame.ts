@@ -27,6 +27,14 @@ export async function upsertBestScore(
   return true;
 }
 
+export async function getBestScore(userId: number): Promise<{ score: number } | null> {
+  const row = await prisma.birdGameBest.findUnique({
+    where: { userId: BigInt(userId) },
+    select: { score: true },
+  });
+  return row ? { score: row.score } : null;
+}
+
 export async function getLeaderboard(limit = 20): Promise<BirdLeaderboardRow[]> {
   const rows = await prisma.birdGameBest.findMany({
     orderBy: { score: "desc" },

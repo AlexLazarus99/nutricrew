@@ -294,6 +294,7 @@ export function NutriBirdGame() {
       <div
         ref={wrapRef}
         className="bird-game-canvas-wrap"
+        data-tutorial="game-canvas"
         role="button"
         tabIndex={0}
         aria-label={t("game.tapHint")}

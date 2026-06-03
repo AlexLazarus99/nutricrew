@@ -32,6 +32,14 @@ services:
         sync: false
       - key: BOT_USERNAME
         sync: false
+      - key: SOCIAL_TELEGRAM_CHANNEL
+        sync: false
+      - key: SOCIAL_TELEGRAM_GROUP
+        sync: false
+      - key: SOCIAL_INSTAGRAM
+        sync: false
+      - key: SOCIAL_X
+        sync: false
       - key: WEBAPP_URL
         value: https://nutricrew-miniapp.vercel.app
       # Required for Telegram auth, payments, and webhooks. Get from @BotFather.

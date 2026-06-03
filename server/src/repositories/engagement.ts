@@ -67,3 +67,9 @@ export async function getDailyBonusStatus(userId: number): Promise<{
     quiz: types.has("quiz"),
   };
 }
+
+export async function countDailyBonuses(userId: number): Promise<number> {
+  return prisma.userDailyBonus.count({
+    where: { userId: BigInt(userId) },
+  });
+}

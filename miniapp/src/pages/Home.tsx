@@ -6,6 +6,10 @@ import { useMe } from "../hooks/useMe";
 import { useAutoJoinTeam } from "../hooks/useAutoJoinTeam";
 import { InviteShareButton } from "../components/InviteShareButton";
 import { DailyMealsProgress } from "../components/DailyMealsProgress";
+import { ProgressLevelCard } from "../components/ProgressLevelCard";
+import { TutorialCoach } from "../components/TutorialCoach";
+import { SocialLinks } from "../components/SocialLinks";
+import { useTutorialTour } from "../hooks/useTutorialTour";
 
 const TEAM_TEMPLATES = [
   { key: "office", nameRu: "Офис NutriCrew", nameEn: "Office NutriCrew" },
@@ -22,6 +26,7 @@ export function HomePage() {
   const [teamBusy, setTeamBusy] = useState(false);
 
   useAutoJoinTeam(me, refresh);
+  const welcomeTour = useTutorialTour("welcome", me.profileComplete);
 
   async function onCreateTeam(e: FormEvent) {
     e.preventDefault();
@@ -62,6 +67,8 @@ export function HomePage() {
   if (!me.teamId) {
     return (
       <section className="stack">
+        <TutorialCoach {...welcomeTour} />
+        <ProgressLevelCard progress={me.progress} />
         {error && (
           <div className="card error-card">
             <p className="muted">{error}</p>
@@ -131,13 +138,16 @@ export function HomePage() {
         <Link to="/quiz" className="btn btn-secondary btn-block">
           🔥 {t("home.quizCta")}
         </Link>
+        <SocialLinks links={me.socialLinks ?? {}} variant="card" />
       </section>
     );
   }
 
   return (
     <section className="stack">
-      <div className="card hero">
+      <TutorialCoach {...welcomeTour} />
+      <ProgressLevelCard progress={me.progress} />
+      <div className="card hero" data-tutorial="home-hero">
         <h2>{t("home.greeting", { name: displayName })}</h2>
         <p className="muted">{t("home.teamWaiting")}</p>
         {me.inviteCode && (
@@ -215,6 +225,7 @@ export function HomePage() {
       <Link to="/prizes" className="btn btn-secondary btn-block">
         ⭐ {t("nav.prizes")} ({me.starBalance})
       </Link>
+      <SocialLinks links={me.socialLinks ?? {}} variant="card" />
     </section>
   );
 }
