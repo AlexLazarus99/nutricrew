@@ -1,4 +1,5 @@
 import { createApiApp } from "./api/index.js";
+import { setApiReady } from "./api/ready.js";
 import { assertConfig, config } from "./config.js";
 import { createBot, configureBotMenuButton } from "./bot/index.js";
 import { runMigrations, disconnectDb } from "./db/migrate.js";
@@ -60,6 +61,8 @@ async function main(): Promise<void> {
   try {
     await runMigrations();
     await seedIfEmpty();
+    setApiReady(true);
+    console.log("API ready (database connected)");
   } catch (err) {
     console.error("Database startup failed (API keeps running, /api/health will report db:false):", err);
   }

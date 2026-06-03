@@ -15,19 +15,77 @@ import { teamMultiplier } from "../../services/points.js";
 import { isProfileComplete, validateProfile } from "../../lib/profileValidation.js";
 import { requireProfile } from "../middleware/requireProfile.js";
 import { config } from "../../config.js";
+import { apiReady } from "../ready.js";
 
 export const apiRouter = Router();
 
 const authed = [authInitData, ensureUser] as const;
 const authedProfile = [...authed, requireProfile] as const;
 
+const DB_HEALTH_CACHE_MS = 8000;
+let dbHealthCache: { ok: boolean; checkedAt: number } | null = null;
+
+/** Instant wake-up for Render cold start (no DB). */
+apiRouter.get("/ping", (_req, res) => {
+  res.json({
+    ok: true,
+    service: "nutricrew-api",
+    ready: apiReady,
+    webappUrl: config.webappUrl,
+  });
+});
+
+apiRouter.use((req, res, next) => {
+  if (req.path === "/ping" || req.path === "/health") {
+    next();
+    return;
+  }
+  if (!apiReady) {
+    res.status(503).json({ error: "Server starting", code: "STARTING" });
+    return;
+  }
+  next();
+});
+
 apiRouter.get("/health", async (_req, res) => {
+  const now = Date.now();
+  if (dbHealthCache && now - dbHealthCache.checkedAt < DB_HEALTH_CACHE_MS) {
+    const db = dbHealthCache.ok;
+    res.status(db ? 200 : 503).json({
+      ok: db && apiReady,
+      service: "nutricrew-api",
+      db,
+      ready: apiReady,
+      webappUrl: config.webappUrl,
+    });
+    return;
+  }
+
   try {
     const { prisma } = await import("../../db/client.js");
-    await prisma.$queryRaw`SELECT 1`;
-    res.json({ ok: true, service: "nutricrew-api", db: true, webappUrl: config.webappUrl });
+    await Promise.race([
+      prisma.$queryRaw`SELECT 1`,
+      new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error("db health timeout")), 4000);
+      }),
+    ]);
+    dbHealthCache = { ok: true, checkedAt: now };
+    res.json({
+      ok: apiReady,
+      service: "nutricrew-api",
+      db: true,
+      ready: apiReady,
+      webappUrl: config.webappUrl,
+    });
   } catch {
-    res.status(503).json({ ok: false, service: "nutricrew-api", db: false, webappUrl: config.webappUrl });
+    dbHealthCache = { ok: false, checkedAt: now };
+    res.status(503).json({
+      ok: false,
+      service: "nutricrew-api",
+      db: false,
+      ready: apiReady,
+      webappUrl: config.webappUrl,
+    });
   }
 });
 

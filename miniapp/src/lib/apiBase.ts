@@ -1,7 +1,7 @@
 /** Production Render API — hardcoded so Vercel env vars are not required. */
 export const PRODUCTION_API_URL = "https://nutricrew-dddi.onrender.com/api";
 
-export const APP_BUILD = "2026-06-03-lv50-fix";
+export const APP_BUILD = "2026-06-03-render-wake";
 
 function normalizeApiUrl(url: string): string {
   return url.replace(/\/$/, "");

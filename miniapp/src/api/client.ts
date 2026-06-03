@@ -4,6 +4,7 @@ export const API_ERROR = {
   UNREACHABLE: "API_UNREACHABLE",
   BAD_RESPONSE: "API_BAD_RESPONSE",
   TIMEOUT: "API_TIMEOUT",
+  STARTING: "API_STARTING",
   TELEGRAM_REQUIRED: "TELEGRAM_REQUIRED",
   BOT_NOT_CONFIGURED: "BOT_NOT_CONFIGURED",
   INVALID_TELEGRAM_AUTH: "INVALID_TELEGRAM_AUTH",
@@ -80,6 +81,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
       /* HTML or invalid JSON */
     }
     const message = body.message ?? body.error ?? `HTTP ${res.status}`;
+    if (res.status === 503 && (body as { code?: string }).code === "STARTING") {
+      throw new Error(API_ERROR.STARTING);
+    }
+    if (message === "Server starting") {
+      throw new Error(API_ERROR.STARTING);
+    }
     if (message === "Bot token not configured") {
       throw new Error(API_ERROR.BOT_NOT_CONFIGURED);
     }
@@ -213,8 +220,38 @@ export interface DiaryResponse {
   };
 }
 
+const ME_RETRY_DELAYS_MS = [0, 2000, 4000, 6000];
+
+function isRetryableMeError(message: string): boolean {
+  return (
+    message === API_ERROR.TIMEOUT ||
+    message === API_ERROR.UNREACHABLE ||
+    message === API_ERROR.STARTING
+  );
+}
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 export const api = {
-  getMe: () => request<MeResponse>("/me"),
+  getMe: async () => {
+    let lastErr: Error | null = null;
+    for (let i = 0; i < ME_RETRY_DELAYS_MS.length; i++) {
+      if (ME_RETRY_DELAYS_MS[i] > 0) {
+        await sleep(ME_RETRY_DELAYS_MS[i]);
+      }
+      try {
+        return await request<MeResponse>("/me");
+      } catch (e) {
+        lastErr = e as Error;
+        if (!isRetryableMeError(lastErr.message) || i === ME_RETRY_DELAYS_MS.length - 1) {
+          throw lastErr;
+        }
+      }
+    }
+    throw lastErr ?? new Error(API_ERROR.UNREACHABLE);
+  },
   getTeam: () => request<TeamResponse>("/team"),
   getLeaderboard: () => request<LeaderboardResponse>("/leaderboard"),
   getBirdLeaderboard: () => request<BirdGameLeaderboardResponse>("/game/leaderboard"),

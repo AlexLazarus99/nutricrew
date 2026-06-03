@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { useTranslation } from "react-i18next";
 import { api, API_ERROR, type MeResponse } from "../api/client";
 import { isInsideTelegram, APP_BUILD } from "../lib/apiBase";
+import { waitForServerReady, wakeApi } from "../lib/apiWarmup";
 import { getTelegramAuthDebug, waitForTelegramInitData } from "../lib/telegramReady";
 
 type MeContextValue = {
@@ -16,6 +17,7 @@ function formatMeError(message: string, t: (key: string) => string): string {
     case API_ERROR.UNREACHABLE:
       return t("common.apiUnreachable");
     case API_ERROR.TIMEOUT:
+    case API_ERROR.STARTING:
       return t("common.apiTimeout");
     case API_ERROR.TELEGRAM_REQUIRED:
       return isInsideTelegram() ? t("common.telegramMenuButtonHint") : t("common.telegramRequired");
@@ -54,7 +56,8 @@ export function MeProvider({ children }: { children: ReactNode }) {
     }, 4000);
 
     void (async () => {
-      await waitForTelegramInitData();
+      wakeApi();
+      await Promise.all([waitForTelegramInitData(), waitForServerReady()]);
 
       try {
         await refresh();
