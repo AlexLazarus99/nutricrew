@@ -501,7 +501,7 @@ function spawnFloatingPickup(state: GameState, x: number, tree: TreeObstacle, ju
 }
 
 function hazardChance(level: number, base: number): number {
-  return Math.min(0.48, base + (level - 1) * 0.028);
+  return Math.min(0.26, base + (level - 1) * 0.014);
 }
 
 /** Доп. препятствия между сегментами */
@@ -824,6 +824,9 @@ function collideOctopusTentacle(state: GameState, tentacle: OctopusTentacle): bo
 }
 
 const MAX_DEBRIS = 90;
+const MAX_TREES = 56;
+const MAX_HAZARDS = 22;
+const MAX_PICKUPS = 28;
 
 function pushDebris(debris: DebrisParticle[], particle: DebrisParticle): void {
   debris.push(particle);
@@ -1561,10 +1564,6 @@ export function tick(state: GameState, dtMs: number): GameState {
     next.cityLandmarkX = next.width * 1.05;
   }
 
-  if (inCity) {
-    next.slowMoUntil = next.elapsed;
-  }
-
   const move = (next.speed + level * 0.04) * speedMult * dt;
 
   next.level = level;
@@ -1661,7 +1660,10 @@ export function tick(state: GameState, dtMs: number): GameState {
   const spacing = treeSpacing(level);
   const spawnHorizon = bx + spacing * 3.2;
 
-  while (next.nextTreeX < spawnHorizon) {
+  let spawnSteps = 0;
+  const maxSpawnSteps = 14;
+  while (next.nextTreeX < spawnHorizon && spawnSteps < maxSpawnSteps) {
+    spawnSteps += 1;
     const segment = spawnSegment(next, next.nextTreeX);
     next.trees = [...next.trees, segment.tree];
     next.junks = [...next.junks, segment.junk];
@@ -1696,6 +1698,16 @@ export function tick(state: GameState, dtMs: number): GameState {
   next = tryDefeatAnimalBoss(next);
 
   next = smashObstacles(next);
+
+  if (next.trees.length > MAX_TREES) {
+    next.trees = next.trees.slice(-MAX_TREES);
+  }
+  if (next.hazards.length > MAX_HAZARDS) {
+    next.hazards = next.hazards.slice(-MAX_HAZARDS);
+  }
+  if (next.pickups.length > MAX_PICKUPS) {
+    next.pickups = next.pickups.slice(-MAX_PICKUPS);
+  }
 
   const phase = checkCollisions(next);
   return { ...next, phase };
@@ -1744,8 +1756,23 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
 
   if (zv.natureWeight < 0.98 && city) {
     ctx.save();
-    ctx.globalAlpha = 1 - zv.natureWeight;
+    ctx.globalAlpha = Math.max(0.08, 1 - zv.natureWeight);
     drawCityBackdrop(ctx, city, zv, cityCtx, width, height, tod.night, warm, state);
+    ctx.restore();
+  }
+
+  if (zv.natureWeight < 0.35) {
+    ctx.save();
+    ctx.globalAlpha = 1;
+    const pal = zv.naturePalette;
+    const fillH = Math.ceil(height * Math.max(0.15, zv.natureWeight));
+    if (fillH > 0) {
+      const sky = ctx.createLinearGradient(0, 0, 0, fillH);
+      sky.addColorStop(0, pal.skyTop);
+      sky.addColorStop(1, pal.skyBot);
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, width, fillH);
+    }
     ctx.restore();
   }
 

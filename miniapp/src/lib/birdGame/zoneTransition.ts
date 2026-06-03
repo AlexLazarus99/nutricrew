@@ -92,12 +92,21 @@ export function lerpBiomePalette(a: BiomePalette, b: BiomePalette, t: number): B
   };
 }
 
+/** City to paint during the nature→city fade (levels 44–50) before isCityLevel is true. */
+function approachCityForPos(pos: number, block: number): CityId | null {
+  const distToCity = BIOME_LEVEL_SPAN - pos;
+  if (pos < BIOME_LEVEL_SPAN && distToCity > 0 && distToCity < ZONE_BLEND_SPAN) {
+    return cityForBlock(block);
+  }
+  return null;
+}
+
 export function computeZoneVisual(level: number, score: number): ZoneVisual {
   const pos = cyclePos(level, score);
   const half = ZONE_BLEND_SPAN;
   const block = worldBlockIndex(level);
   const biome = biomeForLevel(level);
-  const city = cityForLevel(level);
+  const city = cityForLevel(level) ?? approachCityForPos(pos, block);
 
   let natureWeight = 1;
 
