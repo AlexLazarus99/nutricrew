@@ -121,10 +121,29 @@ export interface MeResponse {
   age: number | null;
   teamId: string | null;
   inviteCode: string | null;
+  inviteUrl: string | null;
+  botUsername: string | null;
+  startParam?: string | null;
+  startInviteCode?: string | null;
   streak: { days: number; multiplier: number };
   teamMultiplier: number;
+  teamMemberCount: number;
+  minTeamForPrizes: number;
+  mealsToday: number;
+  mealsTodayTarget: number;
   todayPoints: number;
   starBalance: number;
+  dailyBonus: { game: boolean; quiz: boolean };
+  timezoneOffsetMinutes: number | null;
+}
+
+export interface TeamActivityItem {
+  id: string;
+  userName: string;
+  description: string;
+  points: number;
+  createdAt: string;
+  isYou?: boolean;
 }
 
 export interface PrizesResponse {
@@ -194,6 +213,8 @@ export interface MealResponse {
   points: number;
   teamPoints: number;
   streak: number;
+  mealsToday?: number;
+  inviteUrl?: string | null;
   message: string;
 }
 
@@ -290,10 +311,22 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ name }),
     }),
-  joinTeam: (code: string) =>
+  joinTeam: (code: string, referrerTelegramId?: number) =>
     request<{ id: string; name: string; inviteCode: string }>("/teams/join", {
       method: "POST",
-      body: JSON.stringify({ code }),
+      body: JSON.stringify({ code, referrerTelegramId }),
+    }),
+  getTeamActivity: () =>
+    request<{ items: TeamActivityItem[] }>("/team/activity"),
+  claimDailyBonus: (type: "game" | "quiz") =>
+    request<{ claimed: boolean; points: number }>("/engagement/daily-bonus", {
+      method: "POST",
+      body: JSON.stringify({ type }),
+    }),
+  setTimezone: (offsetMinutes: number) =>
+    request<{ ok: boolean }>("/me/timezone", {
+      method: "PATCH",
+      body: JSON.stringify({ offsetMinutes }),
     }),
   setLocale: (locale: "en" | "ru") =>
     request<{ ok: boolean }>("/me/locale", {

@@ -19,8 +19,12 @@ export interface DbUser {
   weight_kg: number | null;
   height_cm: number | null;
   age: number | null;
+  timezone_offset_minutes: number | null;
+  referred_by_user_id: number | null;
   created_at: Date;
 }
+
+export type DailyBonusType = "game" | "quiz";
 
 export interface DbTeam {
   id: string;

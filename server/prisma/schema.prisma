@@ -41,9 +41,14 @@ model User {
   weightKg      Float?    @map("weight_kg")
   heightCm      Int?      @map("height_cm")
   age           Int?      @map("age")
+  timezoneOffsetMinutes Int? @map("timezone_offset_minutes")
+  referredByUserId      BigInt? @map("referred_by_user_id")
   createdAt     DateTime  @default(now()) @map("created_at")
 
+  referredBy        User?  @relation("UserReferrals", fields: [referredByUserId], references: [id], onDelete: SetNull)
+  referrals         User[] @relation("UserReferrals")
   team              Team?              @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  dailyBonuses      UserDailyBonus[]
   teamMemberships   TeamMember[]
   meals             Meal[]
   payments          Payment[]
@@ -52,7 +57,19 @@ model User {
   birdGameBest      BirdGameBest?
 
   @@index([teamId])
+  @@index([referredByUserId])
   @@map("users")
+}
+
+model UserDailyBonus {
+  userId    BigInt   @map("user_id")
+  bonusType String   @map("bonus_type") @db.VarChar(16)
+  bonusDate DateTime @map("bonus_date") @db.Date
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, bonusType, bonusDate])
+  @@map("user_daily_bonuses")
 }
 
 model BirdGameBest {

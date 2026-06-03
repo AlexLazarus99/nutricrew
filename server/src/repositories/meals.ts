@@ -65,6 +65,45 @@ export async function countTeamMembers(teamId: string): Promise<number> {
   return prisma.teamMember.count({ where: { teamId } });
 }
 
+export async function countMealsToday(userId: number): Promise<number> {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  return prisma.meal.count({
+    where: {
+      userId: BigInt(userId),
+      createdAt: { gte: start },
+    },
+  });
+}
+
+export async function countUserMeals(userId: number): Promise<number> {
+  return prisma.meal.count({ where: { userId: BigInt(userId) } });
+}
+
+export async function getTeamRecentMeals(teamId: string, limit = 12) {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  const rows = await prisma.meal.findMany({
+    where: {
+      teamId,
+      createdAt: { gte: start },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: {
+      user: { select: { firstName: true, telegramId: true } },
+    },
+  });
+  return rows.map((m) => ({
+    id: m.id,
+    description: m.description,
+    points: m.points,
+    createdAt: m.createdAt,
+    userName: m.user.firstName,
+    userTelegramId: Number(m.user.telegramId),
+  }));
+}
+
 export async function findMealsInRange(
   userId: number,
   from: Date,

@@ -12,6 +12,7 @@ export const config = {
   port: Number(process.env.PORT ?? 3000),
   host: process.env.HOST ?? "0.0.0.0",
   botToken: process.env.BOT_TOKEN ?? "",
+  botUsername: (process.env.BOT_USERNAME ?? "").replace(/^@/, ""),
   webappUrl:
     (process.env.WEBAPP_URL ?? "").replace(/\/$/, "") ||
     (process.env.NODE_ENV === "production"
@@ -38,6 +39,12 @@ export const config = {
     region: process.env.S3_REGION ?? "us-east-1",
     publicUrl: process.env.S3_PUBLIC_URL ?? "http://localhost:9000/nutricrew",
     enabled: process.env.S3_ENABLED !== "false",
+  },
+
+  growth: {
+    dailyBonusPoints: Number(process.env.DAILY_BONUS_POINTS ?? 8),
+    referralTeamPoints: Number(process.env.REFERRAL_TEAM_POINTS ?? 25),
+    minTeamForPrizes: Number(process.env.MIN_TEAM_FOR_PRIZES ?? 3),
   },
 
   stars: {

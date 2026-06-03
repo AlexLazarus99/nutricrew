@@ -15,6 +15,7 @@ import {
 } from "../../lib/birdGame/leaderboard";
 import { createBirdGameAudio, loadMusicMuted } from "../../lib/birdGame/birdGameAudio";
 import type { GamePhase, GameState } from "../../lib/birdGame/types";
+import { tryClaimDailyBonus } from "../../lib/claimDailyBonus";
 
 function measureWrap(wrap: HTMLDivElement): { w: number; h: number } {
   const measuredW = wrap.clientWidth;
@@ -45,6 +46,7 @@ export function NutriBirdGame() {
   const [leaderboard, setLeaderboard] = useState<BirdLeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
   const [musicMuted, setMusicMuted] = useState(loadMusicMuted);
+  const [bonusToast, setBonusToast] = useState<string | null>(null);
   const audioRef = useRef(createBirdGameAudio());
   const prevPhaseRef = useRef<GamePhase>("idle");
   const prevFruitsRef = useRef(0);
@@ -184,6 +186,12 @@ export function NutriBirdGame() {
             void submitBirdScore(state.score, state.level, state.fruitsCollected).then(() =>
               refreshLeaderboard(),
             );
+            void tryClaimDailyBonus("game").then((pts) => {
+              if (pts) {
+                setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+                window.setTimeout(() => setBonusToast(null), 4000);
+              }
+            });
           } else if (state.phase === "playing") {
             void audioRef.current.startMusic();
           }
@@ -311,6 +319,7 @@ export function NutriBirdGame() {
                   ? t("game.startHint")
                   : t("game.overHint", { score: hudScore, fruit: fruits })}
               </p>
+              {bonusToast && <p className="success small">{bonusToast}</p>}
             </div>
           </div>
         )}

@@ -74,9 +74,12 @@ export function createBot(): Telegraf<Context> {
 
     const startPayload = ctx.startPayload;
     if (startPayload?.startsWith("join_") && !dbUser.team_id) {
-      const code = startPayload.replace("join_", "");
-      try {
-        const team = await joinTeam(dbUser, code);
+      const { parseInviteStartParam } = await import("../services/referrals.js");
+      const parsed = parseInviteStartParam(startPayload);
+      if (!parsed.code) {
+        /* fall through */
+      } else try {
+        const team = await joinTeam(dbUser, parsed.code, parsed.referrerTelegramId);
         await ctx.reply(msg.teamJoined(team.name), {
           parse_mode: "Markdown",
           ...inlineWebAppKeyboard(locale),

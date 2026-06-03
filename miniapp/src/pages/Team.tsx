@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type TeamResponse } from "../api/client";
+import { useMe } from "../hooks/useMe";
+import { InviteShareButton } from "../components/InviteShareButton";
+import { TeamActivityFeed } from "../components/TeamActivityFeed";
 
 export function TeamPage() {
   const { t } = useTranslation();
+  const { me } = useMe();
   const [team, setTeam] = useState<TeamResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,6 +31,7 @@ export function TeamPage() {
   }
 
   const goal = team.weeklyGoal;
+  const prizeMembersNeeded = Math.max(0, me.minTeamForPrizes - team.members.length);
 
   return (
     <section className="stack">
@@ -38,6 +43,21 @@ export function TeamPage() {
         <p className="invite">
           {t("team.invite")}: <code>{team.inviteCode}</code>
         </p>
+        {prizeMembersNeeded > 0 && (
+          <p className="muted small">
+            {t("growth.prizePoolHint", {
+              needed: prizeMembersNeeded,
+              min: me.minTeamForPrizes,
+            })}
+          </p>
+        )}
+        <InviteShareButton
+          inviteCode={team.inviteCode}
+          botUsername={me.botUsername}
+          inviteUrl={me.inviteUrl}
+          referrerTelegramId={me.user.id}
+          variant="secondary"
+        />
         <p className="muted">
           {t("team.weeklyGoal", { type: goal.type })} —{" "}
           {t("team.progress", {
@@ -54,6 +74,8 @@ export function TeamPage() {
           />
         </div>
       </div>
+
+      <TeamActivityFeed />
 
       <ul className="member-list">
         {team.members.map((m) => (

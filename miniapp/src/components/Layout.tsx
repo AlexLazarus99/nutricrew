@@ -31,6 +31,7 @@ function LayoutShell() {
     !offerDismissed && shouldShowPostRegistrationOffer(registered);
   const displayName = me.user.firstName ?? user?.first_name;
   const section = resolveSection(registered, showWellnessOffer, pathname);
+  const compactNav = registered && !me.teamId;
 
   return (
     <div className="app-shell" data-section={section}>
@@ -58,7 +59,7 @@ function LayoutShell() {
 
       {registered &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
-        <nav className="bottom-nav bottom-nav-8">
+        <nav className={`bottom-nav ${compactNav ? "bottom-nav-5" : "bottom-nav-8"}`}>
           <NavLink to="/" end>
             {t("nav.home")}
           </NavLink>
@@ -70,12 +71,21 @@ function LayoutShell() {
           >
             {t("nav.log")}
           </NavLink>
-          <NavLink to="/guide">{t("nav.guide")}</NavLink>
           <NavLink to="/game">{t("nav.game")}</NavLink>
-          <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
-          <NavLink to="/team">{t("nav.team")}</NavLink>
-          <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
-          <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
+          {compactNav ? (
+            <>
+              <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
+              <NavLink to="/guide">{t("nav.guide")}</NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink to="/guide">{t("nav.guide")}</NavLink>
+              <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
+              <NavLink to="/team">{t("nav.team")}</NavLink>
+              <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
+              <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
+            </>
+          )}
         </nav>
       )}
     </div>

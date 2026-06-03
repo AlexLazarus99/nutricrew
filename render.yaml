@@ -30,6 +30,8 @@ services:
           property: connectionString
       - key: BOT_TOKEN
         sync: false
+      - key: BOT_USERNAME
+        sync: false
       - key: WEBAPP_URL
         value: https://nutricrew-miniapp.vercel.app
       # Required for Telegram auth, payments, and webhooks. Get from @BotFather.

@@ -1,7 +1,8 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api } from "../api/client";
+import { api, type MealResponse } from "../api/client";
+import { MealShareCard } from "../components/MealShareCard";
 import { FoodSectionNav } from "../components/food/FoodSectionNav";
 import { MealPhotoCapture, type MealPhotoAnalysis } from "../components/food/MealPhotoCapture";
 
@@ -14,7 +15,8 @@ export function LogMealPage() {
   const [fat, setFat] = useState("");
   const [preview, setPreview] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [mealResult, setMealResult] = useState<MealResponse | null>(null);
+  const [resultError, setResultError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [aiNote, setAiNote] = useState<string | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
@@ -33,13 +35,15 @@ export function LogMealPage() {
         source: analysis.source,
       }),
     );
-    setResult(null);
+    setMealResult(null);
+    setResultError(null);
   }
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setResult(null);
+    setMealResult(null);
+    setResultError(null);
     try {
       const res = await api.logMeal({
         description: description || "Meal",
@@ -49,11 +53,9 @@ export function LogMealPage() {
         fat: Number(fat) || 0,
         imageBase64: preview ?? undefined,
       });
-      setResult(
-        t("log.success", { points: res.points, team: res.teamPoints, streak: res.streak }),
-      );
+      setMealResult(res);
     } catch (err) {
-      setResult((err as Error).message);
+      setResultError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -132,13 +134,22 @@ export function LogMealPage() {
         <button type="submit" className="btn btn-primary btn-block" disabled={loading || analyzing}>
           {loading ? t("common.loading") : t("log.submit")}
         </button>
-        {result && (
-          <p className="success">
-            {result}{" "}
-            <Link to="/diary">{t("diary.viewAfterLog")}</Link>
-          </p>
-        )}
+        {resultError && <p className="error-text">{resultError}</p>}
       </form>
+
+      {mealResult && (
+        <>
+          <MealShareCard
+            points={mealResult.points}
+            teamPoints={mealResult.teamPoints}
+            streak={mealResult.streak}
+            inviteUrl={mealResult.inviteUrl}
+          />
+          <Link to="/diary" className="btn btn-secondary btn-block">
+            {t("diary.viewAfterLog")}
+          </Link>
+        </>
+      )}
     </section>
   );
 }

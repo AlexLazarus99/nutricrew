@@ -19,6 +19,8 @@ export function mapUser(u: User): DbUser {
     weight_kg: u.weightKg,
     height_cm: u.heightCm,
     age: u.age,
+    timezone_offset_minutes: u.timezoneOffsetMinutes,
+    referred_by_user_id: u.referredByUserId ? Number(u.referredByUserId) : null,
     created_at: u.createdAt,
   };
 }

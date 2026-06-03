@@ -14,6 +14,7 @@ import {
   type QuizDeck,
   type QuizQuestion,
 } from "../../lib/calorieQuiz/engine";
+import { tryClaimDailyBonus } from "../../lib/claimDailyBonus";
 
 type Phase = "ready" | "playing" | "revealed" | "finished";
 
@@ -27,6 +28,7 @@ export function CalorieQuizGame() {
   const [category, setCategory] = useState<FoodCategory | "all">("all");
   const [totalQuestions, setTotalQuestions] = useState(QUESTIONS_PER_GAME);
   const [questionNumber, setQuestionNumber] = useState(0);
+  const [bonusToast, setBonusToast] = useState<string | null>(null);
   const deckRef = useRef<QuizDeck | null>(null);
 
   const categoryFilter = category === "all" ? undefined : category;
@@ -41,6 +43,9 @@ export function CalorieQuizGame() {
     if (!result) {
       finishGame(deckRef.current);
       setPhase("finished");
+      void tryClaimDailyBonus("quiz").then((pts) => {
+        if (pts) setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+      });
       return;
     }
 
@@ -84,6 +89,11 @@ export function CalorieQuizGame() {
     if (deckRef.current && isGameComplete(deckRef.current)) {
       finishGame(deckRef.current);
       setPhase("finished");
+      void tryClaimDailyBonus("quiz").then((pts) => {
+        if (pts) {
+          setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+        }
+      });
       return;
     }
     startRound();
@@ -173,6 +183,7 @@ export function CalorieQuizGame() {
             <p className="muted small">
               {t("quiz.gameOverHint", { score, total: totalQuestions })}
             </p>
+            {bonusToast && <p className="success small">{bonusToast}</p>}
             <button type="button" className="btn btn-primary btn-block" onClick={onPlayAgain}>
               {t("quiz.playAgain")}
             </button>

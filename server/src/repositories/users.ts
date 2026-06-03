@@ -118,3 +118,26 @@ export async function listAllWithTeams(): Promise<DbUser[]> {
   const users = await prisma.user.findMany({ where: { teamId: { not: null } } });
   return users.map(mapUser);
 }
+
+export async function setTimezoneOffset(userId: number, offsetMinutes: number): Promise<void> {
+  const clamped = Math.max(-840, Math.min(840, Math.round(offsetMinutes)));
+  await prisma.user.update({
+    where: { id: BigInt(userId) },
+    data: { timezoneOffsetMinutes: clamped },
+  });
+}
+
+export async function setReferredBy(userId: number, referrerUserId: number): Promise<void> {
+  if (userId === referrerUserId) return;
+  await prisma.user.updateMany({
+    where: { id: BigInt(userId), referredByUserId: null },
+    data: { referredByUserId: BigInt(referrerUserId) },
+  });
+}
+
+export async function clearReferredBy(userId: number): Promise<void> {
+  await prisma.user.update({
+    where: { id: BigInt(userId) },
+    data: { referredByUserId: null },
+  });
+}

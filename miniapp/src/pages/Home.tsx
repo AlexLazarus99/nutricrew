@@ -1,270 +1,220 @@
 import { FormEvent, useState } from "react";
-
 import { Link } from "react-router-dom";
-
 import { useTranslation } from "react-i18next";
-
 import { api } from "../api/client";
-
 import { useMe } from "../hooks/useMe";
+import { useAutoJoinTeam } from "../hooks/useAutoJoinTeam";
+import { InviteShareButton } from "../components/InviteShareButton";
+import { DailyMealsProgress } from "../components/DailyMealsProgress";
 
-
+const TEAM_TEMPLATES = [
+  { key: "office", nameRu: "Офис NutriCrew", nameEn: "Office NutriCrew" },
+  { key: "gym", nameRu: "Зал 💪", nameEn: "Gym Crew 💪" },
+  { key: "friends", nameRu: "Друзья", nameEn: "Friends" },
+] as const;
 
 export function HomePage() {
-
-  const { t } = useTranslation();
-
+  const { t, i18n } = useTranslation();
   const { me, refresh } = useMe();
-
   const [error, setError] = useState<string | null>(null);
-
   const [teamName, setTeamName] = useState("");
-
   const [joinCode, setJoinCode] = useState("");
-
   const [teamBusy, setTeamBusy] = useState(false);
 
-
+  useAutoJoinTeam(me, refresh);
 
   async function onCreateTeam(e: FormEvent) {
-
     e.preventDefault();
-
     setTeamBusy(true);
-
     setError(null);
-
     try {
-
       await api.createTeam(teamName);
-
       await refresh();
-
     } catch (err) {
-
       setError((err as Error).message);
-
     } finally {
-
       setTeamBusy(false);
-
     }
-
   }
-
-
 
   async function onJoinTeam(e: FormEvent) {
-
     e.preventDefault();
-
     setTeamBusy(true);
-
     setError(null);
-
     try {
-
-      await api.joinTeam(joinCode);
-
+      await api.joinTeam(joinCode.trim(), me.user.id);
       await refresh();
-
     } catch (err) {
-
       setError((err as Error).message);
-
     } finally {
-
       setTeamBusy(false);
-
     }
-
   }
 
-
+  function applyTemplate(template: (typeof TEAM_TEMPLATES)[number]) {
+    const name = i18n.language.startsWith("ru") ? template.nameRu : template.nameEn;
+    setTeamName(name);
+  }
 
   const displayName = me.user.firstName ?? "Crew";
-
-
+  const prizeMembersNeeded = Math.max(0, me.minTeamForPrizes - me.teamMemberCount);
 
   if (!me.teamId) {
-
     return (
-
       <section className="stack">
-
         {error && (
-
           <div className="card error-card">
-
             <p className="muted">{error}</p>
-
           </div>
-
         )}
 
         <div className="card hero">
-
           <h2>{t("home.greeting", { name: displayName })}</h2>
-
           <p className="muted">{t("home.noTeam")}</p>
+          <p className="muted small">{t("growth.tryLogFirst")}</p>
+        </div>
 
+        <Link to="/log" className="btn btn-primary btn-block">
+          {t("growth.logWithoutTeam")}
+        </Link>
+
+        <div className="card">
+          <h3>{t("growth.teamTemplatesTitle")}</h3>
+          <div className="team-template-row">
+            {TEAM_TEMPLATES.map((tpl) => (
+              <button
+                key={tpl.key}
+                type="button"
+                className="btn btn-secondary team-template-btn"
+                onClick={() => applyTemplate(tpl)}
+              >
+                {i18n.language.startsWith("ru") ? tpl.nameRu : tpl.nameEn}
+              </button>
+            ))}
+          </div>
         </div>
 
         <form className="card form" onSubmit={onCreateTeam}>
-
           <h3>{t("home.createTeam")}</h3>
-
           <label>
-
             {t("home.teamName")}
-
             <input value={teamName} onChange={(e) => setTeamName(e.target.value)} required />
-
           </label>
-
           <button type="submit" className="btn btn-primary btn-block" disabled={teamBusy}>
-
             {t("home.createBtn")}
-
           </button>
-
         </form>
 
         <form className="card form" onSubmit={onJoinTeam}>
-
           <h3>{t("home.joinTeam")}</h3>
-
           <label>
-
             {t("home.inviteCode")}
-
-            <input value={joinCode} onChange={(e) => setJoinCode(e.target.value)} required />
-
+            <input
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value)}
+              placeholder={me.startInviteCode ?? ""}
+              required
+            />
           </label>
-
           <button type="submit" className="btn btn-secondary btn-block" disabled={teamBusy}>
-
             {t("home.joinBtn")}
-
           </button>
-
         </form>
+
+        {me.startInviteCode && (
+          <p className="muted small">{t("growth.autoJoinPending", { code: me.startInviteCode })}</p>
+        )}
 
         <Link to="/game" className="btn btn-secondary btn-block">
           🐦 {t("home.gameCta")}
         </Link>
-
         <Link to="/quiz" className="btn btn-secondary btn-block">
           🔥 {t("home.quizCta")}
         </Link>
-
       </section>
-
     );
-
   }
 
-
-
   return (
-
     <section className="stack">
-
       <div className="card hero">
-
         <h2>{t("home.greeting", { name: displayName })}</h2>
-
         <p className="muted">{t("home.teamWaiting")}</p>
-
         {me.inviteCode && (
-
           <p className="invite">
-
             {t("home.shareCode")}: <code>{me.inviteCode}</code>
-
           </p>
-
         )}
-
       </div>
 
+      <DailyMealsProgress mealsToday={me.mealsToday} target={me.mealsTodayTarget} />
 
+      {prizeMembersNeeded > 0 && (
+        <div className="card growth-hint-card">
+          <p className="muted small">
+            {t("growth.prizePoolHint", {
+              needed: prizeMembersNeeded,
+              min: me.minTeamForPrizes,
+            })}
+          </p>
+        </div>
+      )}
+
+      {(me.dailyBonus.game || me.dailyBonus.quiz) && (
+        <p className="muted small">{t("growth.dailyBonusDone")}</p>
+      )}
+      {!me.dailyBonus.game && (
+        <p className="muted small">{t("growth.dailyBonusGameHint")}</p>
+      )}
+      {!me.dailyBonus.quiz && (
+        <p className="muted small">{t("growth.dailyBonusQuizHint")}</p>
+      )}
 
       <div className="stats-row">
-
         <div className="stat">
-
           <span className="stat-value">{me.streak.days}</span>
-
           <span className="stat-label">{t("home.streak", { days: me.streak.days })}</span>
-
         </div>
-
         <div className="stat">
-
           <span className="stat-value">×{me.streak.multiplier.toFixed(2)}</span>
-
           <span className="stat-label">
-
             {t("home.multiplier", { value: me.streak.multiplier.toFixed(2) })}
-
           </span>
-
         </div>
-
         <div className="stat">
-
           <span className="stat-value">×{me.teamMultiplier.toFixed(2)}</span>
-
           <span className="stat-label">{t("home.teamMult")}</span>
-
         </div>
-
         <div className="stat">
-
           <span className="stat-value">{me.todayPoints}</span>
-
           <span className="stat-label">{t("home.todayPoints")}</span>
-
         </div>
-
       </div>
 
-
+      {me.inviteCode && (
+        <InviteShareButton
+          inviteCode={me.inviteCode}
+          botUsername={me.botUsername}
+          inviteUrl={me.inviteUrl}
+          referrerTelegramId={me.user.id}
+        />
+      )}
 
       <Link to="/log" className="btn btn-primary btn-block">
-
         {t("home.logCta")}
-
       </Link>
-
       <Link to="/guide" className="btn btn-secondary btn-block">
-
         🥗 {t("home.guideCta")}
-
       </Link>
-
       <Link to="/game" className="btn btn-secondary btn-block">
-
         🐦 {t("home.gameCta")}
-
       </Link>
-
       <Link to="/quiz" className="btn btn-secondary btn-block">
-
         🔥 {t("home.quizCta")}
-
       </Link>
-
       <Link to="/prizes" className="btn btn-secondary btn-block">
-
         ⭐ {t("nav.prizes")} ({me.starBalance})
-
       </Link>
-
     </section>
-
   );
-
 }
-

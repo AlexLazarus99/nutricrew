@@ -613,6 +613,83 @@ body {
   font-size: 0.9rem;
 }
 
+.team-template-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.team-template-btn {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 0.85rem;
+}
+
+.daily-meals-card h3 {
+  margin: 0 0 6px;
+}
+
+.daily-meal-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+
+.meal-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 2px solid var(--muted);
+}
+
+.meal-dot.filled {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.growth-hint-card {
+  border-left: 3px solid var(--accent);
+}
+
+.meal-share-card {
+  margin-top: 8px;
+}
+
+.team-activity-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.team-activity-list li {
+  padding: 8px 0;
+  border-bottom: 1px solid var(--surface-2);
+}
+
+.team-activity-list li:last-child {
+  border-bottom: none;
+}
+
+.activity-name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.activity-meta {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.share-feedback {
+  margin-top: 6px;
+  text-align: center;
+}
+
 .stat {
   background: var(--surface);
   border-radius: var(--radius);

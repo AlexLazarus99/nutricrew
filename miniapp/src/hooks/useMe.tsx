@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { useTranslation } from "react-i18next";
 import { api, API_ERROR, type MeResponse } from "../api/client";
 import { isInsideTelegram, APP_BUILD } from "../lib/apiBase";
+import { syncTimezoneOnce } from "../lib/syncTimezone";
 import { waitForServerReady, wakeApi } from "../lib/apiWarmup";
 import { getTelegramAuthDebug, waitForTelegramInitData } from "../lib/telegramReady";
 
@@ -61,6 +62,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
 
       try {
         await refresh();
+        syncTimezoneOnce();
         if (!cancelled) setError(null);
       } catch (e) {
         if (!cancelled) setError((e as Error).message);

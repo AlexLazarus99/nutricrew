@@ -73,6 +73,9 @@ export async function logMealForUser(
     await teamsRepo.addWeeklyPoints(user.team_id, weekKey, teamPoints || points);
   }
 
+  const { maybeRewardReferralFirstMeal } = await import("./referrals.js");
+  await maybeRewardReferralFirstMeal(user);
+
   return {
     meal,
     points,

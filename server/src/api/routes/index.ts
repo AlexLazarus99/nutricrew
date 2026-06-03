@@ -15,7 +15,10 @@ import { teamMultiplier } from "../../services/points.js";
 import { isProfileComplete, validateProfile } from "../../lib/profileValidation.js";
 import { requireProfile } from "../middleware/requireProfile.js";
 import { config } from "../../config.js";
+import { buildTeamInviteUrl } from "../../lib/inviteLink.js";
 import { apiReady } from "../ready.js";
+import * as engagementRepo from "../../repositories/engagement.js";
+import { parseInviteStartParam } from "../../services/referrals.js";
 
 export const apiRouter = Router();
 
@@ -32,6 +35,7 @@ apiRouter.get("/ping", (_req, res) => {
     service: "nutricrew-api",
     ready: apiReady,
     webappUrl: config.webappUrl,
+    botUsername: config.botUsername || null,
   });
 });
 
@@ -92,14 +96,27 @@ apiRouter.get("/health", async (_req, res) => {
 apiRouter.get("/me", ...authed, async (req, res) => {
   const user = req.dbUser!;
   const todayPoints = await mealsRepo.getTodayPoints(user.id);
+  const mealsToday = await mealsRepo.countMealsToday(user.id);
   const mult = streakMultiplier(user.current_streak);
+  const dailyBonus = await engagementRepo.getDailyBonusStatus(user.id);
 
   let teamMultiplierValue = 1;
+  let teamMemberCount = 0;
+  let inviteCode: string | null = null;
+  let inviteUrl: string | null = null;
+
   if (user.team_id) {
-    const total = await mealsRepo.countTeamMembers(user.team_id);
+    const team = await teamsRepo.findById(user.team_id);
+    inviteCode = team?.invite_code ?? null;
+    inviteUrl = inviteCode
+      ? buildTeamInviteUrl(inviteCode, user.telegram_id)
+      : null;
+    teamMemberCount = await mealsRepo.countTeamMembers(user.team_id);
     const logged = await mealsRepo.countMembersLoggedToday(user.team_id);
-    teamMultiplierValue = teamMultiplier(logged, total);
+    teamMultiplierValue = teamMultiplier(logged, teamMemberCount);
   }
+
+  const parsedStart = parseInviteStartParam(req.telegram!.startParam);
 
   res.json({
     user: {
@@ -114,14 +131,21 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     heightCm: user.height_cm,
     age: user.age,
     teamId: user.team_id,
-    inviteCode: user.team_id
-      ? (await teamsRepo.findById(user.team_id))?.invite_code
-      : null,
+    inviteCode,
+    inviteUrl,
+    botUsername: config.botUsername || null,
     startParam: req.telegram!.startParam,
+    startInviteCode: parsedStart.code ?? null,
     streak: { days: user.current_streak, multiplier: mult },
     teamMultiplier: teamMultiplierValue,
+    teamMemberCount,
+    minTeamForPrizes: config.growth.minTeamForPrizes,
+    mealsToday,
+    mealsTodayTarget: 3,
     todayPoints,
     starBalance: user.star_balance,
+    dailyBonus,
+    timezoneOffsetMinutes: user.timezone_offset_minutes,
   });
 });
 
@@ -232,6 +256,16 @@ apiRouter.post("/meals", ...authedProfile, async (req, res) => {
     teamPoints: result.teamPoints,
     streak: result.streak,
     photoUrl: result.photoUrl,
+    mealsToday: await mealsRepo.countMealsToday(user.id),
+    inviteCode: user.team_id
+      ? (await teamsRepo.findById(user.team_id))?.invite_code
+      : null,
+    inviteUrl: user.team_id
+      ? buildTeamInviteUrl(
+          (await teamsRepo.findById(user.team_id))!.invite_code,
+          user.telegram_id,
+        )
+      : null,
     message: "Logged",
   });
 });
@@ -340,18 +374,71 @@ apiRouter.post("/teams/create", ...authedProfile, async (req, res) => {
 
 apiRouter.post("/teams/join", ...authedProfile, async (req, res) => {
   const user = req.dbUser!;
-  const { code } = req.body as { code?: string };
+  const { code, referrerTelegramId } = req.body as {
+    code?: string;
+    referrerTelegramId?: number;
+  };
   if (!code?.trim()) {
     res.status(400).json({ error: "code required" });
     return;
   }
 
+  const parsedStart = parseInviteStartParam(req.telegram!.startParam);
+  const refId =
+    referrerTelegramId ??
+    parsedStart.referrerTelegramId;
+
   try {
-    const team = await joinTeam(user, code.trim());
+    const team = await joinTeam(user, code.trim(), refId);
     res.json({ id: team.id, name: team.name, inviteCode: team.invite_code });
   } catch {
     res.status(404).json({ error: "TEAM_NOT_FOUND" });
   }
+});
+
+apiRouter.get("/team/activity", ...authedProfile, async (req, res) => {
+  const user = req.dbUser!;
+  if (!user.team_id) {
+    res.status(404).json({ error: "NO_TEAM" });
+    return;
+  }
+  const items = await mealsRepo.getTeamRecentMeals(user.team_id, 12);
+  res.json({
+    items: items.map((m) => ({
+      id: m.id,
+      userName: m.userName,
+      description: m.description,
+      points: m.points,
+      createdAt: m.createdAt,
+      isYou: m.userTelegramId === user.telegram_id,
+    })),
+  });
+});
+
+apiRouter.post("/engagement/daily-bonus", ...authedProfile, async (req, res) => {
+  const user = req.dbUser!;
+  const { type } = req.body as { type?: string };
+  if (type !== "game" && type !== "quiz") {
+    res.status(400).json({ error: "type must be game or quiz" });
+    return;
+  }
+  const result = await engagementRepo.claimDailyBonus(
+    user.id,
+    user.team_id,
+    type,
+    config.growth.dailyBonusPoints,
+  );
+  res.json(result);
+});
+
+apiRouter.patch("/me/timezone", ...authed, async (req, res) => {
+  const { offsetMinutes } = req.body as { offsetMinutes?: number };
+  if (!Number.isFinite(Number(offsetMinutes))) {
+    res.status(400).json({ error: "offsetMinutes required" });
+    return;
+  }
+  await usersRepo.setTimezoneOffset(req.dbUser!.id, Number(offsetMinutes));
+  res.json({ ok: true, offsetMinutes: Number(offsetMinutes) });
 });
 
 apiRouter.patch("/me/locale", ...authed, async (req, res) => {
