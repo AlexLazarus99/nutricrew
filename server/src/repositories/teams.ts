@@ -5,11 +5,18 @@ import type { DbTeam, WeeklyGoalType } from "../types.js";
 
 const GOAL_ROTATION: WeeklyGoalType[] = ["points", "protein", "calories"];
 
-export async function createTeam(name: string): Promise<DbTeam> {
+export async function createTeam(
+  name: string,
+  leagueTag?: string | null,
+): Promise<DbTeam> {
+  const tag =
+    leagueTag && ["friends", "gym", "office", "corp"].includes(leagueTag)
+      ? leagueTag
+      : null;
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
       const team = await prisma.team.create({
-        data: { name, inviteCode: generateInviteCode() },
+        data: { name, inviteCode: generateInviteCode(), leagueTag: tag },
       });
       return mapTeam(team);
     } catch {

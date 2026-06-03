@@ -1,4 +1,5 @@
 import { type CityId, cityDisplayName, cityPalette } from "./progression";
+import { parseColorRgb } from "./colorUtils.js";
 
 export type CityDrawCtx = {
   width: number;
@@ -84,12 +85,16 @@ function drawSkylineLayer(
   ctx.globalAlpha = alpha;
 
   let bx = -layerOffset;
-  while (bx < c.width + 40) {
+  let guard = 0;
+  while (bx < c.width + 40 && guard < 120) {
+    guard += 1;
     const ix = Math.floor(bx);
-    const bw = 22 + ((ix * 7) % 28);
+    const bw = Math.max(18, 22 + ((ix * 7) % 28));
     const bh = Math.floor((38 + ((ix * 13) % 90)) * heightScale);
     drawRectBuilding(ctx, ix, gy, bw, bh, fill, c.night);
-    bx += bw + 6 + ((ix * 3) % 12);
+    const step = bw + 6 + ((ix * 3) % 12);
+    if (step < 1) break;
+    bx += step;
   }
   ctx.globalAlpha = 1;
 }
@@ -790,7 +795,7 @@ export function drawCitySky(
   const pal = cityPalette(city);
   const g = ctx.createLinearGradient(0, 0, 0, h);
   const blend = (day: string, n: number) => {
-    const [r1, g1, b1] = hex(day);
+    const [r1, g1, b1] = parseColorRgb(day);
     const nr = Math.round(r1 * (1 - n) + 13 * n);
     const ng = Math.round(g1 * (1 - n) + 27 * n);
     const nb = Math.round(b1 * (1 - n) + 62 * n);
@@ -803,7 +808,3 @@ export function drawCitySky(
   ctx.fillRect(0, 0, w, h);
 }
 
-function hex(color: string): [number, number, number] {
-  const h = color.startsWith("#") ? color.slice(1) : color;
-  return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
-}

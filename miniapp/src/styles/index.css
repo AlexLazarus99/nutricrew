@@ -32,6 +32,8 @@ body {
 .app-header h1,
 .hero h2,
 .card > h2,
+.card > h3,
+.form h3,
 .wellness-hero-card h2,
 .wellness-card h3,
 .post-registration-rec h3,
@@ -111,6 +113,15 @@ body {
   --section-accent: #60a5fa;
   --section-accent-soft: rgba(96, 165, 250, 0.16);
   --section-glow: rgba(96, 165, 250, 0.09);
+}
+
+.app-shell[data-section="chat"] {
+  --section-bg: #0f1412;
+  --section-surface: #1a2420;
+  --section-surface-2: #243830;
+  --section-accent: #4ade9a;
+  --section-accent-soft: rgba(74, 222, 154, 0.16);
+  --section-glow: rgba(74, 222, 154, 0.09);
 }
 
 .app-shell[data-section="leaderboard"] {
@@ -245,9 +256,14 @@ body {
   grid-template-columns: repeat(8, 1fr);
 }
 
+.bottom-nav-9 {
+  grid-template-columns: repeat(9, 1fr);
+}
+
 .bottom-nav-6 a,
 .bottom-nav-7 a,
-.bottom-nav-8 a {
+.bottom-nav-8 a,
+.bottom-nav-9 a {
   font-size: 0.62rem;
   padding: 8px 2px;
 }

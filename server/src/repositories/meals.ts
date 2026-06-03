@@ -14,6 +14,8 @@ export async function insertMeal(input: {
   photoKey?: string | null;
   aiSource?: string;
   aiConfidence?: number;
+  mealSlot?: string | null;
+  qualityTag?: string | null;
 }) {
   const meal = await prisma.meal.create({
     data: {
@@ -29,6 +31,8 @@ export async function insertMeal(input: {
       photoKey: input.photoKey ?? null,
       aiSource: input.aiSource ?? null,
       aiConfidence: input.aiConfidence ?? null,
+      mealSlot: input.mealSlot ?? null,
+      qualityTag: input.qualityTag ?? null,
     },
   });
   return mapMeal(meal);

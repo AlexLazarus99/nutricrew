@@ -5,6 +5,7 @@ import { isInsideTelegram, APP_BUILD } from "../lib/apiBase";
 import { syncTimezoneOnce } from "../lib/syncTimezone";
 import { waitForServerReady, wakeApi } from "../lib/apiWarmup";
 import { getTelegramAuthDebug, waitForTelegramInitData } from "../lib/telegramReady";
+import { NutriCrewSplash } from "../components/NutriCrewSplash";
 
 type MeContextValue = {
   me: MeResponse;
@@ -87,12 +88,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
   );
 
   if (loading) {
-    return (
-      <div className="loading-screen">
-        <p className="loading">{t("common.loading")}</p>
-        {slow ? <p className="muted loading-hint">{t("common.loadingSlow")}</p> : null}
-      </div>
-    );
+    return <NutriCrewSplash slow={slow} />;
   }
 
   if (error && !me) {

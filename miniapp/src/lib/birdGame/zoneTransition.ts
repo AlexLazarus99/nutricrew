@@ -11,6 +11,7 @@ import {
   type BiomePalette,
   type CityId,
 } from "./progression";
+import { lerpColorStr, sanitizeBiomePalette } from "./colorUtils.js";
 
 /** Половина окна перехода в позициях цикла (уровень ≈ каждые 3 очка). */
 export const ZONE_BLEND_SPAN = 7;
@@ -51,45 +52,22 @@ function cyclicDistToNatureStart(pos: number): number {
   return Math.min(pos, WORLD_CYCLE - pos);
 }
 
-function parseHex(hex: string): [number, number, number] {
-  const h = hex.startsWith("#") ? hex.slice(1) : hex;
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
-}
-
-function lerpRgb(a: [number, number, number], b: [number, number, number], t: number): [number, number, number] {
-  const k = Math.max(0, Math.min(1, t));
-  return [
-    Math.round(a[0] + (b[0] - a[0]) * k),
-    Math.round(a[1] + (b[1] - a[1]) * k),
-    Math.round(a[2] + (b[2] - a[2]) * k),
-  ];
-}
-
-function lerpColor(a: string, b: string, t: number): string {
-  const [r, g, bl] = lerpRgb(parseHex(a), parseHex(b), t);
-  return `rgb(${r},${g},${bl})`;
-}
-
 export function lerpBiomePalette(a: BiomePalette, b: BiomePalette, t: number): BiomePalette {
   const k = Math.max(0, Math.min(1, t));
-  return {
-    skyTop: lerpColor(a.skyTop, b.skyTop, k),
-    skyMid: lerpColor(a.skyMid, b.skyMid, k),
-    skyBot: lerpColor(a.skyBot, b.skyBot, k),
-    landTop: lerpColor(a.landTop, b.landTop, k),
-    landMid: lerpColor(a.landMid, b.landMid, k),
-    landBot: lerpColor(a.landBot, b.landBot, k),
-    landSoil: lerpColor(a.landSoil, b.landSoil, k),
-    waterTop: lerpColor(a.waterTop, b.waterTop, k),
-    waterMid: lerpColor(a.waterMid, b.waterMid, k),
-    waterBot: lerpColor(a.waterBot, b.waterBot, k),
-    farMountains: lerpColor(a.farMountains, b.farMountains, k),
-    grass: lerpColor(a.grass, b.grass, k),
-  };
+  return sanitizeBiomePalette({
+    skyTop: lerpColorStr(a.skyTop, b.skyTop, k),
+    skyMid: lerpColorStr(a.skyMid, b.skyMid, k),
+    skyBot: lerpColorStr(a.skyBot, b.skyBot, k),
+    landTop: lerpColorStr(a.landTop, b.landTop, k),
+    landMid: lerpColorStr(a.landMid, b.landMid, k),
+    landBot: lerpColorStr(a.landBot, b.landBot, k),
+    landSoil: lerpColorStr(a.landSoil, b.landSoil, k),
+    waterTop: lerpColorStr(a.waterTop, b.waterTop, k),
+    waterMid: lerpColorStr(a.waterMid, b.waterMid, k),
+    waterBot: lerpColorStr(a.waterBot, b.waterBot, k),
+    farMountains: lerpColorStr(a.farMountains, b.farMountains, k),
+    grass: lerpColorStr(a.grass, b.grass, k),
+  });
 }
 
 /** City to paint during the nature→city fade (levels 44–50) before isCityLevel is true. */
@@ -128,17 +106,20 @@ export function computeZoneVisual(level: number, score: number): ZoneVisual {
   let biomeDecorBlend = 0;
   let naturePalette = biomePalette(biome);
 
-  const nearNatureStart = cyclicDistToNatureStart(pos) < half;
+  const distToNatureWrap = cyclicDistToNatureStart(pos);
   const inCityZone = pos >= BIOME_LEVEL_SPAN;
+  /** Биомный кроссфейд только в природной зоне (в городе ломал drawSky из-за rgb-палитры). */
+  const nearNatureStart = !inCityZone && distToNatureWrap < half;
 
-  if (nearNatureStart && (inCityZone || (pos < half && block > 0))) {
-    const dist = cyclicDistToNatureStart(pos);
-    biomeDecorBlend = smoothstep(1 - dist / half);
-    const fromBiome = inCityZone ? biomeForBlock(block) : biomeForBlock(block - 1);
-    const toBiome = inCityZone ? biomeForBlock(block + 1) : biomeForBlock(block);
+  if (nearNatureStart && pos < half && block > 0) {
+    biomeDecorBlend = smoothstep(1 - distToNatureWrap / half);
+    const fromBiome = biomeForBlock(block - 1);
+    const toBiome = biomeForBlock(block);
     prevBiome = fromBiome;
     naturePalette = lerpBiomePalette(biomePalette(fromBiome), biomePalette(toBiome), biomeDecorBlend);
   }
+
+  naturePalette = sanitizeBiomePalette(naturePalette);
 
   let prevCity: CityId | null = null;
   let cityBlend = 1;
@@ -148,7 +129,7 @@ export function computeZoneVisual(level: number, score: number): ZoneVisual {
   }
 
   /** Городской вид только когда город уже активен в прогрессии (не при подходе к городу). */
-  const visualCity = city != null && natureWeight < 0.42;
+  const visualCity = city != null && (inCityZone ? natureWeight < 0.72 : natureWeight < 0.42);
   const inTransition =
     city != null && natureWeight > 0.04 && natureWeight < 0.96;
 

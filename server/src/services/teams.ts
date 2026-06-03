@@ -22,10 +22,16 @@ export async function joinTeam(
   return team;
 }
 
-export async function createTeamForUser(user: DbUser, name: string) {
-  const team = await teamsRepo.createTeam(name);
+export async function createTeamForUser(
+  user: DbUser,
+  name: string,
+  leagueTag?: string | null,
+) {
+  const team = await teamsRepo.createTeam(name, leagueTag);
   await teamsRepo.addMember(team.id, user.id);
   await usersRepo.setTeam(user.id, team.id);
+  const { setMemberRole } = await import("../repositories/growth.js");
+  await setMemberRole(team.id, user.id, "captain");
 
   const weekKey = (await import("../lib/week.js")).getCurrentWeekKey();
   await teamsRepo.addWeeklyPoints(team.id, weekKey, 0);

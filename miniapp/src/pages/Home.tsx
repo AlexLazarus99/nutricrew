@@ -13,9 +13,9 @@ import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
 
 const TEAM_TEMPLATES = [
-  { key: "office", nameRu: "Офис NutriCrew", nameEn: "Office NutriCrew" },
-  { key: "gym", nameRu: "Зал 💪", nameEn: "Gym Crew 💪" },
   { key: "friends", nameRu: "Друзья", nameEn: "Friends" },
+  { key: "gym", nameRu: "Зал 💪", nameEn: "Gym Crew 💪" },
+  { key: "office", nameRu: "Офис", nameEn: "Office" },
 ] as const;
 
 export function HomePage() {
@@ -25,6 +25,7 @@ export function HomePage() {
   const [teamName, setTeamName] = useState("");
   const [joinCode, setJoinCode] = useState("");
   const [teamBusy, setTeamBusy] = useState(false);
+  const [teamLeagueTag, setTeamLeagueTag] = useState<string | undefined>();
 
   useAutoJoinTeam(me, refresh);
   const welcomeTour = useTutorialTour("welcome", me.profileComplete);
@@ -34,7 +35,7 @@ export function HomePage() {
     setTeamBusy(true);
     setError(null);
     try {
-      await api.createTeam(teamName);
+      await api.createTeam(teamName, teamLeagueTag);
       await refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -60,6 +61,7 @@ export function HomePage() {
   function applyTemplate(template: (typeof TEAM_TEMPLATES)[number]) {
     const name = i18n.language.startsWith("ru") ? template.nameRu : template.nameEn;
     setTeamName(name);
+    setTeamLeagueTag(template.key);
   }
 
   const displayName = me.user.firstName ?? "Crew";
@@ -166,7 +168,19 @@ export function HomePage() {
         )}
       </div>
 
-      <DailyMealsProgress mealsToday={me.mealsToday} target={me.mealsTodayTarget} />
+      <DailyMealsProgress
+        mealsToday={me.mealsToday}
+        target={me.growth?.dailyGoal?.type === "meals" ? me.growth.dailyGoal.target : me.mealsTodayTarget}
+      />
+
+      {me.growth && (
+        <Link to="/features" className="card growth-hint-card">
+          <p>
+            {t("growth.featuresCta")} · {me.growth.league.tier} ·{" "}
+            {me.growth.dailyGoal.done ? "✓" : `${me.growth.dailyGoal.progress}/${me.growth.dailyGoal.target}`}
+          </p>
+        </Link>
+      )}
 
       {prizeMembersNeeded > 0 && (
         <div className="card growth-hint-card">

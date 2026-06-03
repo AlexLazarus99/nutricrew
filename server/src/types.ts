@@ -34,6 +34,7 @@ export interface DbTeam {
   weekly_goal_target: number;
   is_premium: boolean;
   premium_until: Date | null;
+  league_tag: string | null;
   created_at: Date;
 }
 

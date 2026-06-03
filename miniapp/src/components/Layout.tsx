@@ -9,6 +9,7 @@ import { PostRegistrationOffer } from "../pages/PostRegistrationOffer";
 import { useTelegram } from "../hooks/useTelegram";
 import { shouldShowPostRegistrationOffer } from "../lib/postRegistration";
 import { sectionFromPath, type AppSection } from "../lib/appSection";
+import { APP_BUILD } from "../lib/apiBase";
 import { SocialLinks } from "./SocialLinks";
 
 function resolveSection(
@@ -61,12 +62,17 @@ function LayoutShell() {
       {registered && !showWellnessOffer && (
         <footer className="app-footer">
           <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
+          <p className="muted build-stamp">build {APP_BUILD}</p>
         </footer>
       )}
 
       {registered &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
-        <nav className={`bottom-nav ${compactNav ? "bottom-nav-5" : "bottom-nav-8"}`}>
+        <nav
+          className={`bottom-nav ${
+            compactNav ? "bottom-nav-5" : me.teamId ? "bottom-nav-9" : "bottom-nav-8"
+          }`}
+        >
           <NavLink to="/" end>
             {t("nav.home")}
           </NavLink>
@@ -94,6 +100,7 @@ function LayoutShell() {
               <NavLink to="/team" data-tutorial="nav-team">
                 {t("nav.team")}
               </NavLink>
+              {me.teamId ? <NavLink to="/chat">{t("nav.chat")}</NavLink> : null}
               <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
               <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
             </>

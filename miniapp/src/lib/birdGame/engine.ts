@@ -31,13 +31,16 @@ import {
   bossSpec,
   biomeForLevel,
   biomePalette,
+  cityPalette,
   isCityLevel,
+  cityForLevel,
   biomeDisplayName,
   cityDisplayName,
 } from "./progression";
 import { effectiveSeaBlend, drawBiomeBackdrop, drawBiomeForeground, drawDiveSuitBird } from "./biomes";
 import { drawCityscape, drawCityGround, drawCitySky, drawCityObstacleBuilding, drawCityLandmarkForeground } from "./cities";
 import { computeZoneVisual, type ZoneVisual } from "./zoneTransition";
+import { parseColorRgb, rgbString, lerpRgb, sanitizeBiomePalette } from "./colorUtils.js";
 import type { BiomePalette } from "./progression";
 import {
   BOAR_DEFEAT_VIEW_MS,
@@ -405,9 +408,10 @@ function spawnSegment(state: GameState, x: number): { tree: TreeObstacle; junk: 
   const ground = treeGroundY(state);
   const minGap = gapHeightFor(state.score, state.bird.nutrition, levelFromScore(state.score));
   const skyTop = 32;
-  const maxTreeH = Math.max(48, ground - minGap - skyTop - 36);
   const minTreeH = 38;
-  const treeHeight = minTreeH + Math.random() * (maxTreeH - minTreeH);
+  const maxTreeH = Math.max(minTreeH, Math.max(48, ground - minGap - skyTop - 36));
+  const treeHeight =
+    maxTreeH <= minTreeH ? minTreeH : minTreeH + Math.random() * (maxTreeH - minTreeH);
   const treeTop = ground - treeHeight;
 
   const maxJunkBottom = treeTop - minGap;
@@ -1553,7 +1557,7 @@ export function tick(state: GameState, dtMs: number): GameState {
   const enteredCity = inCity && !isCityLevel(prevLevel);
 
   if (enteredCity) {
-    next.slowMoUntil = next.elapsed;
+    next.slowMoUntil = 0;
     next.bossApproachSlowMoUsed = true;
     next.bossExplosion = null;
     next.bossEnergyAbsorbUntil = 0;
@@ -1569,10 +1573,12 @@ export function tick(state: GameState, dtMs: number): GameState {
   next.level = level;
   next.worldScroll += move;
   const vy = Math.min(MAX_FALL_SPEED, next.bird.vy + GRAVITY * dt);
+  let birdY = next.bird.y + vy * dt;
+  if (!Number.isFinite(birdY)) birdY = next.height * 0.45;
   next.bird = {
     ...next.bird,
-    vy,
-    y: next.bird.y + vy * dt,
+    vy: Number.isFinite(vy) ? vy : 0,
+    y: birdY,
   };
   next.flapAnim = Math.max(0, next.flapAnim - dt * 0.1);
 
@@ -1605,12 +1611,15 @@ export function tick(state: GameState, dtMs: number): GameState {
     if (!next.cityLandmarkDone) {
       if (next.cityLandmarkX == null) {
         next.cityLandmarkX = next.width * 1.05;
-      } else {
+      } else if (Number.isFinite(next.cityLandmarkX)) {
         next.cityLandmarkX -= move;
         if (next.cityLandmarkX < -next.width * 0.55) {
           next.cityLandmarkX = null;
           next.cityLandmarkDone = true;
         }
+      } else {
+        next.cityLandmarkX = null;
+        next.cityLandmarkDone = true;
       }
     }
   } else {
@@ -1713,15 +1722,50 @@ export function tick(state: GameState, dtMs: number): GameState {
   return { ...next, phase };
 }
 
+function resetCanvasState(ctx: CanvasRenderingContext2D): void {
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = "source-over";
+}
+
+function paintBaseSky(
+  ctx: CanvasRenderingContext2D,
+  w: number,
+  h: number,
+  city: ReturnType<typeof cityForLevel>,
+  pal: ReturnType<typeof sanitizeBiomePalette>,
+): void {
+  if (city) {
+    const cp = cityPalette(city);
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, cp.skyTop);
+    g.addColorStop(0.55, cp.skyMid);
+    g.addColorStop(1, cp.skyBot);
+    ctx.fillStyle = g;
+  } else {
+    const g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, pal.skyTop);
+    g.addColorStop(0.55, pal.skyMid);
+    g.addColorStop(1, pal.skyBot);
+    ctx.fillStyle = g;
+  }
+  ctx.fillRect(0, 0, w, h);
+}
+
 export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void {
   const { width, height } = state;
+  if (width < 2 || height < 2) return;
+
+  resetCanvasState(ctx);
   ctx.clearRect(0, 0, width, height);
 
   const zv = computeZoneVisual(state.level, state.score);
-  const city = zv.city;
   const cityMode = isCityLevel(state.level);
+  const city = zv.city ?? (cityMode ? cityForLevel(state.level) : null);
   const visualCity = zv.visualCity;
   const biome = zv.biome;
+  const safePal = sanitizeBiomePalette(zv.naturePalette);
+
+  paintBaseSky(ctx, width, height, city, safePal);
   const tod = timeOfDay(state.elapsed);
   const warm = Math.max(tod.sunset, tod.sunrise * 0.75);
   const groundLine = treeGroundY(state);
@@ -1747,10 +1791,13 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
     night: tod.night,
   };
 
-  if (zv.natureWeight > 0.02) {
+  /** В городе природу рисуем только в самом конце цикла (56–62), иначе ломалась палитра/небо. */
+  const skipNatureLayer = cityMode && zv.natureWeight < 0.88;
+
+  if (zv.natureWeight > 0.02 && !skipNatureLayer) {
     ctx.save();
     ctx.globalAlpha = zv.natureWeight;
-    drawNatureBackdrop(ctx, state, zv, tod, biomeCtx);
+    drawNatureBackdrop(ctx, state, { ...zv, naturePalette: safePal }, tod, biomeCtx);
     ctx.restore();
   }
 
@@ -1761,20 +1808,19 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
     ctx.restore();
   }
 
-  if (zv.natureWeight < 0.35) {
+  if (!cityMode && zv.inTransition && zv.natureWeight > 0.04 && !skipNatureLayer) {
     ctx.save();
-    ctx.globalAlpha = 1;
-    const pal = zv.naturePalette;
-    const fillH = Math.ceil(height * Math.max(0.15, zv.natureWeight));
-    if (fillH > 0) {
-      const sky = ctx.createLinearGradient(0, 0, 0, fillH);
-      sky.addColorStop(0, pal.skyTop);
-      sky.addColorStop(1, pal.skyBot);
-      ctx.fillStyle = sky;
-      ctx.fillRect(0, 0, width, fillH);
-    }
+    ctx.globalAlpha = zv.natureWeight * 0.85;
+    const sky = ctx.createLinearGradient(0, 0, 0, height);
+    sky.addColorStop(0, safePal.skyTop);
+    sky.addColorStop(0.55, safePal.skyMid);
+    sky.addColorStop(1, safePal.skyBot);
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, width, height);
     ctx.restore();
   }
+
+  resetCanvasState(ctx);
 
   for (const tree of state.trees) {
     if (visualCity && city) {
@@ -1888,6 +1934,7 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   }
   drawHud(ctx, state, zv);
   drawScreenFlash(ctx, state);
+  resetCanvasState(ctx);
 }
 
 function drawNatureBackdrop(
@@ -2010,7 +2057,7 @@ function drawSky(ctx: CanvasRenderingContext2D, state: GameState, palette?: Biom
   const tod = timeOfDay(state.elapsed);
   const warm = Math.max(tod.sunset, tod.sunrise * 0.75);
   const g = ctx.createLinearGradient(0, 0, 0, h);
-  const pal = palette ?? biomePalette(biomeForLevel(state.level));
+  const pal = sanitizeBiomePalette(palette ?? biomePalette(biomeForLevel(state.level)));
 
   const topDay = pal.skyTop;
   const topSunset = "#FF7043";
@@ -2039,35 +2086,13 @@ function drawSky(ctx: CanvasRenderingContext2D, state: GameState, palette?: Biom
   }
 }
 
-function parseHex(hex: string): [number, number, number] {
-  const h = hex.startsWith("#") ? hex.slice(1) : hex;
-  return [
-    parseInt(h.slice(0, 2), 16),
-    parseInt(h.slice(2, 4), 16),
-    parseInt(h.slice(4, 6), 16),
-  ];
-}
-
-function lerpRgb(a: [number, number, number], b: [number, number, number], t: number): [number, number, number] {
-  const k = Math.max(0, Math.min(1, t));
-  return [
-    Math.round(a[0] + (b[0] - a[0]) * k),
-    Math.round(a[1] + (b[1] - a[1]) * k),
-    Math.round(a[2] + (b[2] - a[2]) * k),
-  ];
-}
-
-function rgbString(rgb: [number, number, number]): string {
-  return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
-}
-
 function blendSkyColor(day: string, sunset: string, night: string, warm: number, nightT: number): string {
-  const blended = lerpRgb(parseHex(day), parseHex(sunset), warm);
-  return rgbString(lerpRgb(blended, parseHex(night), nightT));
+  const blended = lerpRgb(parseColorRgb(day), parseColorRgb(sunset), warm);
+  return rgbString(lerpRgb(blended, parseColorRgb(night), nightT));
 }
 
 function lerpColor(a: string, b: string, t: number): string {
-  return rgbString(lerpRgb(parseHex(a), parseHex(b), t));
+  return rgbString(lerpRgb(parseColorRgb(a), parseColorRgb(b), t));
 }
 
 function drawSun(ctx: CanvasRenderingContext2D, state: GameState): void {

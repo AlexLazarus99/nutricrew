@@ -169,8 +169,14 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
 
         if (state?.phase === "playing") {
           const dt = lastTsRef.current ? ts - lastTsRef.current : 16;
-          state = tick(state, dt);
-          stateRef.current = state;
+          try {
+            state = tick(state, dt);
+            stateRef.current = state;
+          } catch (err) {
+            console.error("[NutriBird] tick failed", err);
+            state = { ...state, phase: "gameover" };
+            stateRef.current = state;
+          }
 
           if (state.phase === "gameover" && prevPhaseRef.current === "playing") {
             audioRef.current.onGameOver();
@@ -215,7 +221,19 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         }
 
         if (state) {
-          drawGame(ctx, state);
+          try {
+            drawGame(ctx, state);
+          } catch (err) {
+            console.error("[NutriBird] draw failed at level", state.level, err);
+            const { w, h } = sizeRef.current;
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = "#5eb3e8";
+            ctx.fillRect(0, 0, w || 320, h || 480);
+            ctx.fillStyle = "#1a2e26";
+            ctx.font = "600 14px Plus Jakarta Sans, sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(`Lv ${state.level} — redraw…`, (w || 320) / 2, (h || 480) / 2);
+          }
         } else if (canvas) {
           ctx.fillStyle = "#87CEEB";
           ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);

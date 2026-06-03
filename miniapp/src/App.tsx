@@ -10,6 +10,8 @@ import { WellnessGuidePage } from "./pages/WellnessGuide";
 import { WellnessDetailPage } from "./pages/WellnessDetail";
 import { BirdGamePage } from "./pages/BirdGamePage";
 import { CalorieQuizPage } from "./pages/CalorieQuizPage";
+import { ChatPage } from "./pages/ChatPage";
+import { FeaturesPage } from "./pages/FeaturesPage";
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
         <Route path="log" element={<LogMealPage />} />
         <Route path="diary" element={<FoodDiaryPage />} />
         <Route path="team" element={<TeamPage />} />
+        <Route path="chat" element={<ChatPage />} />
+        <Route path="features" element={<FeaturesPage />} />
         <Route path="leaderboard" element={<LeaderboardPage />} />
         <Route path="prizes" element={<PrizesPage />} />
         <Route path="guide" element={<WellnessGuidePage />} />

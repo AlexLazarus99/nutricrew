@@ -28,6 +28,13 @@
   --shadow-md: 0 10px 36px rgba(26, 46, 38, 0.08);
   --shadow-nav: 0 -6px 28px rgba(26, 46, 38, 0.07);
 
+  --heading: #0a1f18;
+  --heading-accent: #143528;
+  --heading-gradient-a: #081a14;
+  --heading-gradient-b: #1b4d3c;
+  --heading-gradient-c: #2d7a5f;
+  --heading-subtle: #3a5248;
+
   color: var(--text);
   background: var(--bg);
 }
@@ -49,10 +56,69 @@ body {
   --surface: var(--section-surface);
   --surface-2: var(--section-surface-2);
   --accent: var(--section-accent);
+  --heading: var(--text);
+}
+
+/* Card & section titles — dark gradient on light surfaces (high contrast) */
+.card > h2,
+.card > h3,
+.hero h2,
+.form h3,
+.quests-panel-head h3,
+.progress-level-title,
+.tutorial-title,
+.social-links-title,
+.chat-header h2,
+.diary-list-head h3,
+.daily-meals-card h3,
+.wellness-card h3,
+.post-registration-rec h3,
+.muscle-group-header h3,
+.muscle-groups-title,
+.bird-game-overlay-card h3,
+.bird-game-leaderboard h3,
+.calorie-quiz-product h3,
+.bird-game-hero h2 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: var(--heading);
+  background: linear-gradient(
+    118deg,
+    var(--heading-gradient-a) 0%,
+    var(--heading-gradient-b) 48%,
+    var(--heading-gradient-c) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.92))
+    drop-shadow(0 2px 6px rgba(8, 26, 20, 0.12));
+}
+
+.card > h3,
+.form h3,
+.quests-panel-head h3 {
+  margin: 0 0 10px;
+  font-size: 1.12rem;
+}
+
+.hero h2,
+.card > h2 {
+  font-size: 1.45rem;
+}
+
+/* Subtitles under gradient titles */
+.quests-panel-head .muted,
+.progress-level-meta > .muted,
+.hero .muted {
+  color: var(--heading-subtle);
+  font-weight: 500;
 }
 
 .app-shell[data-section="home"] {
   --section-bg: #f4f7f2;
+  --section-surface: #ffffff;
   --section-surface-2: #e5efe8;
   --section-accent: #3a8f6e;
   --section-accent-soft: rgba(58, 143, 110, 0.16);
@@ -61,6 +127,7 @@ body {
 
 .app-shell[data-section="log"] {
   --section-bg: #faf6f1;
+  --section-surface: #ffffff;
   --section-surface-2: #f0e8df;
   --section-accent: #d4896a;
   --section-accent-soft: rgba(212, 137, 106, 0.18);
@@ -69,6 +136,7 @@ body {
 
 .app-shell[data-section="guide"] {
   --section-bg: #f2f7f6;
+  --section-surface: #ffffff;
   --section-surface-2: #dcebe8;
   --section-accent: #4a9b8e;
   --section-accent-soft: rgba(74, 155, 142, 0.16);
@@ -77,14 +145,25 @@ body {
 
 .app-shell[data-section="team"] {
   --section-bg: #f3f6fa;
+  --section-surface: #ffffff;
   --section-surface-2: #e3eaf5;
   --section-accent: #5b8fd4;
   --section-accent-soft: rgba(91, 143, 212, 0.16);
   --section-glow: rgba(91, 143, 212, 0.1);
 }
 
+.app-shell[data-section="chat"] {
+  --section-bg: #f4f8f6;
+  --section-surface: #ffffff;
+  --section-surface-2: #e0efe8;
+  --section-accent: #3d9b7a;
+  --section-accent-soft: rgba(61, 155, 122, 0.18);
+  --section-glow: rgba(61, 155, 122, 0.12);
+}
+
 .app-shell[data-section="leaderboard"] {
   --section-bg: #f6f4f9;
+  --section-surface: #ffffff;
   --section-surface-2: #ebe6f4;
   --section-accent: #8b7dc8;
   --section-accent-soft: rgba(139, 125, 200, 0.16);
@@ -93,6 +172,7 @@ body {
 
 .app-shell[data-section="prizes"] {
   --section-bg: #faf8f2;
+  --section-surface: #ffffff;
   --section-surface-2: #f2ebdc;
   --section-accent: #c9a227;
   --section-accent-soft: rgba(201, 162, 39, 0.18);
@@ -101,6 +181,7 @@ body {
 
 .app-shell[data-section="game"] {
   --section-bg: #f2f8f4;
+  --section-surface: #ffffff;
   --section-surface-2: #dff0e6;
   --section-accent: #52b788;
   --section-accent-soft: rgba(82, 183, 136, 0.18);
@@ -109,6 +190,7 @@ body {
 
 .app-shell[data-section="quiz"] {
   --section-bg: #faf5f3;
+  --section-surface: #ffffff;
   --section-surface-2: #f5e8e4;
   --section-accent: #e07a5f;
   --section-accent-soft: rgba(224, 122, 95, 0.16);
@@ -117,6 +199,7 @@ body {
 
 .app-shell[data-section="auth"] {
   --section-bg: #f5f5f3;
+  --section-surface: #ffffff;
   --section-surface-2: #e8e8e4;
   --section-accent: #6b7f75;
   --section-accent-soft: rgba(107, 127, 117, 0.14);
@@ -148,13 +231,19 @@ body {
 
 .app-header h1 {
   font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  background: linear-gradient(135deg, var(--section-accent) 0%, var(--text) 100%);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--heading);
+  background: linear-gradient(
+    125deg,
+    var(--heading-gradient-a) 0%,
+    var(--heading-gradient-b) 55%,
+    var(--heading-gradient-c) 100%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.85));
 }
 
 .tagline {
@@ -201,18 +290,19 @@ body {
 .bottom-nav-5 a,
 .bottom-nav-6 a,
 .bottom-nav-7 a,
-.bottom-nav-8 a {
+.bottom-nav-8 a,
+.bottom-nav-9 a {
   font-size: 0.58rem;
 }
 
 /* ——— Cards & hero ——— */
 .card {
-  background: var(--surface);
+  background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--section-accent-soft) 12%, #ffffff) 100%);
   border-radius: var(--radius);
   padding: 18px;
   margin-bottom: 14px;
-  border: 1px solid color-mix(in srgb, var(--section-accent) 8%, #e8e4dc);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 14%, #dce8e2);
+  box-shadow: 0 3px 16px rgba(20, 50, 40, 0.06);
 }
 
 .hero {
@@ -260,7 +350,12 @@ body {
 .stat-value {
   font-family: var(--font-display);
   font-size: 1.5rem;
-  color: var(--accent-dim);
+  font-weight: 800;
+  color: var(--heading);
+  background: linear-gradient(120deg, var(--heading-gradient-b), var(--heading-gradient-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .stat-label {
@@ -301,12 +396,18 @@ body {
 }
 
 /* ——— Forms & food nav ——— */
+.form label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
 .form input,
 .form textarea,
 .form select {
   border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--muted) 22%, #e8e4dc);
-  background: #fff;
+  background: var(--surface-2);
+  color: var(--text);
 }
 
 .food-section-nav a {
@@ -407,10 +508,18 @@ body {
   --bg: #141a17;
   --surface: #1e2622;
   --surface-2: #283530;
+  --section-surface: #1e2622;
+  --section-surface-2: #283530;
   --text: #eef4f0;
-  --muted: #9aab9f;
+  --muted: #a8b8ad;
+  --heading: #f4fbf7;
+  --heading-accent: #d4f5e6;
+  --heading-gradient-a: #f8fffb;
+  --heading-gradient-b: #cfe8dc;
+  --heading-gradient-c: #8fd4b0;
+  --heading-subtle: #a8bdb2;
   --accent: #6bc9a3;
-  --accent-dim: #52b788;
+  --accent-dim: #8fdcb8;
   --accent-soft: rgba(107, 201, 163, 0.16);
   --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 12px 40px rgba(0, 0, 0, 0.35);
@@ -435,6 +544,111 @@ body {
   --section-glow: rgba(232, 168, 138, 0.08);
 }
 
+.app-shell[data-color-scheme="dark"][data-section="guide"] {
+  --section-bg: #141a19;
+  --section-surface: #1c2624;
+  --section-surface-2: #283532;
+  --section-accent: #6ec4b8;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="team"] {
+  --section-bg: #141820;
+  --section-surface: #1c2430;
+  --section-surface-2: #283040;
+  --section-accent: #8ab4f0;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="chat"] {
+  --section-bg: #141a17;
+  --section-surface: #1c2622;
+  --section-surface-2: #283530;
+  --section-accent: #6bc9a3;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="leaderboard"] {
+  --section-bg: #18141f;
+  --section-surface: #221c2c;
+  --section-surface-2: #2e2640;
+  --section-accent: #b8a8e8;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="prizes"] {
+  --section-bg: #1a1810;
+  --section-surface: #262218;
+  --section-surface-2: #342e24;
+  --section-accent: #e8c860;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="game"] {
+  --section-bg: #121a15;
+  --section-surface: #1a2820;
+  --section-surface-2: #243830;
+  --section-accent: #72d8a0;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="quiz"] {
+  --section-bg: #1a1614;
+  --section-surface: #262018;
+  --section-surface-2: #342c26;
+  --section-accent: #f0a890;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="auth"] {
+  --section-bg: #141816;
+  --section-surface: #1e2622;
+  --section-surface-2: #283530;
+}
+
+.app-shell[data-color-scheme="dark"] .card > h2,
+.app-shell[data-color-scheme="dark"] .card > h3,
+.app-shell[data-color-scheme="dark"] .hero h2,
+.app-shell[data-color-scheme="dark"] .form h3,
+.app-shell[data-color-scheme="dark"] .quests-panel-head h3,
+.app-shell[data-color-scheme="dark"] .progress-level-title,
+.app-shell[data-color-scheme="dark"] .tutorial-title,
+.app-shell[data-color-scheme="dark"] .daily-meals-card h3,
+.app-shell[data-color-scheme="dark"] .chat-header h2,
+.app-shell[data-color-scheme="dark"] .bird-game-hero h2 {
+  background: linear-gradient(118deg, #f8fffb 0%, #d0efe0 45%, #9fd9b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+
+.app-shell[data-color-scheme="dark"] .progress-roadmap-item.current {
+  color: #e8f5ef;
+}
+
+.app-shell[data-color-scheme="dark"] .progress-roadmap-item.current .progress-roadmap-name {
+  background: linear-gradient(120deg, #f8fffb, #9fd9b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-shell[data-color-scheme="dark"] .progress-level-badge {
+  color: #0f2a20;
+  background: linear-gradient(135deg, #d4f5e6, #9fd9b8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.app-shell[data-color-scheme="dark"] .stat-value {
+  background: linear-gradient(120deg, #f0faf5, #9fd9b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.app-shell[data-color-scheme="dark"] .progress-level-card,
+.app-shell[data-color-scheme="dark"] .quests-panel {
+  background: linear-gradient(
+    165deg,
+    var(--surface) 0%,
+    color-mix(in srgb, var(--section-accent-soft) 35%, var(--surface)) 100%
+  );
+}
+
 .app-shell[data-color-scheme="dark"] .card {
   border-color: color-mix(in srgb, var(--section-accent) 12%, #2a332e);
 }
@@ -444,8 +658,24 @@ body {
 }
 
 .app-shell[data-color-scheme="dark"] .app-header h1 {
-  -webkit-text-fill-color: unset;
-  color: var(--text);
+  background: linear-gradient(125deg, #f8fffb 0%, #b8e8d0 55%, #7ec9a0 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+}
+
+.app-shell[data-color-scheme="dark"] .quests-panel-head .muted,
+.app-shell[data-color-scheme="dark"] .progress-level-meta > .muted {
+  color: var(--heading-subtle);
+}
+
+.app-shell[data-color-scheme="dark"] .tagline {
+  color: var(--muted);
+}
+
+.app-shell[data-color-scheme="dark"] .form label {
+  color: var(--muted);
 }
 
 .app-shell[data-color-scheme="dark"] .calorie-quiz-option {
@@ -566,10 +796,20 @@ body {
 /* ——— Progress levels (Duck-style) ——— */
 .progress-level-card {
   background: linear-gradient(
-    145deg,
-    var(--surface) 0%,
-    color-mix(in srgb, var(--section-accent-soft) 50%, var(--surface)) 100%
+    165deg,
+    #ffffff 0%,
+    #f6fbf8 42%,
+    color-mix(in srgb, var(--section-accent-soft) 28%, #ffffff) 100%
   );
+  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, #dce8e2);
+  box-shadow: 0 4px 20px rgba(20, 50, 40, 0.08);
+}
+
+.progress-level-card .progress-level-meta {
+  padding-bottom: 10px;
+  margin-bottom: 2px;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--heading-gradient-c), #b8e6d0, transparent) 1;
 }
 
 .progress-level-header {
@@ -592,20 +832,22 @@ body {
 .progress-level-badge {
   display: inline-block;
   font-size: 0.65rem;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--accent-dim);
-  background: var(--section-accent-soft);
-  padding: 3px 8px;
+  color: #0f3528;
+  background: linear-gradient(135deg, #e2f3eb 0%, #c5e6d6 100%);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 25%, #b8d9c8);
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 3px rgba(20, 50, 40, 0.08);
 }
 
 .progress-level-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.35rem;
 }
 
 .progress-level-info {
@@ -658,8 +900,16 @@ body {
 
 .progress-roadmap-item.current {
   opacity: 1;
-  font-weight: 700;
-  color: var(--accent-dim);
+  font-weight: 800;
+  color: var(--heading);
+}
+
+.progress-roadmap-item.current .progress-roadmap-name {
+  background: linear-gradient(120deg, var(--heading-gradient-a), var(--heading-gradient-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 800;
 }
 
 .progress-roadmap-emoji {
@@ -822,6 +1072,14 @@ body {
 /* ——— Quests & challenges ——— */
 .quests-panel {
   padding: 16px;
+  background: linear-gradient(
+    165deg,
+    #ffffff 0%,
+    #fafcf9 38%,
+    color-mix(in srgb, var(--section-accent-soft) 22%, #ffffff) 100%
+  );
+  border: 1px solid color-mix(in srgb, var(--section-accent) 16%, #dce8e2);
+  box-shadow: 0 4px 20px rgba(20, 50, 40, 0.07);
 }
 
 .quests-panel-head {
@@ -829,12 +1087,15 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, var(--heading-gradient-c), #c5e8d8, transparent) 1;
 }
 
 .quests-panel-head h3 {
   margin: 0 0 4px;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
 .quests-ready-badge {
@@ -890,9 +1151,11 @@ body {
 }
 
 .quests-tabs button.active {
-  background: var(--surface);
-  color: var(--accent-dim);
+  background: linear-gradient(135deg, #ffffff, #eef7f1);
+  color: var(--heading);
+  font-weight: 800;
   box-shadow: var(--shadow-sm);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 20%, transparent);
 }
 
 .quests-list {
@@ -935,13 +1198,16 @@ body {
 
 .quest-name {
   display: block;
-  font-weight: 700;
-  font-size: 0.88rem;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--heading);
+  letter-spacing: -0.01em;
 }
 
 .quest-desc {
   display: block;
   margin: 2px 0 6px;
+  color: var(--heading-subtle);
 }
 
 .quest-progress-bar {
@@ -989,4 +1255,223 @@ body {
 .btn-sm {
   padding: 8px 12px;
   font-size: 0.8rem;
+}
+
+/* ——— Team chat ——— */
+.chat-page {
+  padding-bottom: 140px;
+}
+
+.team-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: calc(100dvh - 200px);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 0;
+}
+
+.chat-header h2 {
+  margin: 0 0 4px;
+  font-size: 1.15rem;
+}
+
+.chat-header-mascot {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: var(--section-accent-soft);
+}
+
+.chat-notice {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--warn) 12%, var(--surface));
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.chat-messages-wrap {
+  flex: 1;
+  overflow-y: auto;
+  max-height: min(52dvh, 420px);
+  padding: 8px 4px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+
+.chat-bubble-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.chat-bubble-row.mine {
+  flex-direction: row-reverse;
+}
+
+.chat-bubble-row.system {
+  justify-content: center;
+}
+
+.chat-bubble-row.system .chat-bubble {
+  max-width: 92%;
+  background: color-mix(in srgb, var(--section-accent-soft) 55%, var(--surface));
+  border-style: dashed;
+}
+
+.chat-avatar {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--section-accent-soft);
+  color: var(--accent-dim);
+}
+
+.chat-bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 18px 18px 18px 6px;
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 10%, #e8e4dc);
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-bubble-row.mine .chat-bubble {
+  border-radius: 18px 18px 6px 18px;
+  background: color-mix(in srgb, var(--section-accent-soft) 70%, var(--surface));
+}
+
+.chat-bubble--mod .chat-body {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.chat-bubble-row.hidden-msg .chat-body {
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.chat-bubble-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 0.7rem;
+}
+
+.chat-author {
+  font-weight: 700;
+  color: var(--accent-dim);
+}
+
+.chat-time {
+  color: var(--muted);
+}
+
+.chat-body {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.chat-reactions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.chat-reaction-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--section-accent) 15%, transparent);
+  background: var(--surface-2);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.chat-reaction-btn.active {
+  background: var(--section-accent-soft);
+  border-color: var(--section-accent);
+  transform: scale(1.05);
+}
+
+.chat-reaction-count {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.chat-composer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 0;
+  position: sticky;
+  bottom: 72px;
+  z-index: 1;
+}
+
+.chat-composer input {
+  flex: 1;
+  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, #ddd);
+  border-radius: 999px;
+  padding: 12px 16px;
+  font-size: 0.95rem;
+  background: var(--surface-2);
+}
+
+.chat-composer .btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chat-rules {
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.chat-empty {
+  text-align: center;
+  padding: 28px 20px;
+}
+
+.chat-empty-emoji {
+  font-size: 2.5rem;
+  margin: 0 0 8px;
+}
+
+.chat-empty-list,
+.chat-loading {
+  text-align: center;
+  padding: 24px;
+}
+
+.chat-team-cta {
+  margin-top: 10px;
 }

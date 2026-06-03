@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TeamResponse } from "../api/client";
 import { useMe } from "../hooks/useMe";
@@ -62,6 +63,9 @@ export function TeamPage() {
           referrerTelegramId={me.user.id}
           variant="secondary"
         />
+        <Link to="/chat" className="btn btn-secondary btn-block chat-team-cta">
+          💬 {t("chat.openFromTeam")}
+        </Link>
         <p className="muted">
           {t("team.weeklyGoal", { type: goal.type })} —{" "}
           {t("team.progress", {
@@ -79,6 +83,9 @@ export function TeamPage() {
         </div>
       </div>
 
+      <Link to="/features" className="btn btn-secondary btn-block">
+        {t("nav.features")}
+      </Link>
       <TeamActivityFeed />
 
       <ul className="member-list">

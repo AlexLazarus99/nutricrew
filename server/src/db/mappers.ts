@@ -34,6 +34,7 @@ export function mapTeam(t: Team): DbTeam {
     weekly_goal_target: t.weeklyGoalTarget,
     is_premium: t.isPremium,
     premium_until: t.premiumUntil,
+    league_tag: t.leagueTag ?? null,
     created_at: t.createdAt,
   };
 }

@@ -153,7 +153,66 @@ export interface MeResponse {
     youtube: string;
     tiktok: string;
   }>;
+  growth?: GrowthPayload;
 }
+
+export type GrowthPayload = {
+  streakFreezes: number;
+  league: { tier: string; weeklyXp: number; xpToNext: number };
+  dailyGoal: { type: string; target: number; progress: number; done: boolean };
+  photoPrivacy: string;
+  onboardingVariant: string;
+  birdBoost: { active: boolean; until: string | null };
+  doublePoints: { available: boolean; usedWeekKey: string | null };
+  favorites: Array<{
+    id: string;
+    description: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    useCount: number;
+  }>;
+  challenge: {
+    id: string;
+    titleKey: string;
+    descKey: string;
+    emoji: string;
+    progress: number;
+    target: number;
+    completed: boolean;
+  } | null;
+  duel: {
+    id: string;
+    youName: string;
+    foeName: string;
+    yourPoints: number;
+    foePoints: number;
+  } | null;
+  teamRole: string | null;
+  corpLeaderboard: Array<{ rank: number; name: string; points: number }>;
+  achievements: Array<{
+    id: string;
+    titleKey: string;
+    descKey: string;
+    emoji: string;
+    unlocked: boolean;
+    unlockedAt: string | null;
+  }>;
+  battlePass: {
+    seasonKey: string;
+    tier: number;
+    maxTier: number;
+    xp: number;
+    xpPerTier: number;
+  };
+  kudosEmojis: string[];
+  premiumPerks: {
+    streakFreezeGrant: boolean;
+    doublePointsDay: boolean;
+    photoPrivacyOptions: string[];
+  };
+};
 
 export type QuestStatus = "locked" | "active" | "ready" | "claimed";
 
@@ -185,6 +244,11 @@ export interface TeamActivityItem {
   points: number;
   createdAt: string;
   isYou?: boolean;
+  kudosCount?: number;
+  kudos?: string[];
+  photoUrl?: string | null;
+  qualityTag?: string | null;
+  mealSlot?: string | null;
 }
 
 export interface PrizesResponse {
@@ -296,6 +360,31 @@ async function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
+export type ChatReaction = {
+  emoji: string;
+  count: number;
+  mine: boolean;
+};
+
+export type ChatMessage = {
+  id: string;
+  authorName: string;
+  authorId: number | null;
+  body: string;
+  displayBody: string;
+  isHidden: boolean;
+  isSystem: boolean;
+  isMine: boolean;
+  hiddenReason: string | null;
+  createdAt: string;
+  reactions: ChatReaction[];
+};
+
+export type ChatMessagesResponse = {
+  messages: ChatMessage[];
+  reactions: string[];
+};
+
 export const api = {
   getMe: async () => {
     let lastErr: Error | null = null;
@@ -334,7 +423,54 @@ export const api = {
     carbs: number;
     fat: number;
     imageBase64?: string;
+    mealSlot?: string;
+    qualityTag?: string;
+    favoriteId?: string;
   }) => request<MealResponse>("/meals", { method: "POST", body: JSON.stringify(body) }),
+  postMealKudos: (mealId: string, emoji: string) =>
+    request<{ ok: boolean; added: boolean; kudosCount: number }>(
+      `/meals/${encodeURIComponent(mealId)}/kudos`,
+      { method: "POST", body: JSON.stringify({ emoji }) },
+    ),
+  getGrowth: () => request<GrowthPayload>("/growth"),
+  patchGrowthSettings: (body: {
+    dailyGoalType?: string;
+    dailyGoalTarget?: number;
+    photoPrivacy?: string;
+    onboardingVariant?: string;
+  }) =>
+    request<{ ok: boolean; growth: GrowthPayload }>("/growth/settings", {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+  buyStreakFreeze: (useStars: boolean) =>
+    request<{ ok: boolean; streakFreezes: number; starBalance: number }>(
+      "/growth/streak-freeze/buy",
+      { method: "POST", body: JSON.stringify({ useStars }) },
+    ),
+  useStreakFreeze: () =>
+    request<{ ok: boolean }>("/growth/streak-freeze/use", { method: "POST", body: "{}" }),
+  activateDoublePoints: () =>
+    request<{ ok: boolean; weekKey: string }>("/growth/double-points", {
+      method: "POST",
+      body: "{}",
+    }),
+  startDuel: () =>
+    request<{ ok: boolean; duel?: { id: string; foeName: string }; error?: string }>(
+      "/growth/duel/start",
+      { method: "POST", body: "{}" },
+    ),
+  saveFavorite: (body: {
+    description: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  }) =>
+    request<{ id: string }>("/growth/favorites", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
   getMealDiary: (dayStart: string, dayEnd: string) =>
     request<DiaryResponse>(
       `/meals/diary?dayStart=${encodeURIComponent(dayStart)}&dayEnd=${encodeURIComponent(dayEnd)}`,
@@ -347,10 +483,10 @@ export const api = {
     }),
   createPremiumInvoice: () =>
     request<{ invoiceLink: string }>("/prizes/premium-invoice", { method: "POST", body: "{}" }),
-  createTeam: (name: string) =>
+  createTeam: (name: string, leagueTag?: string) =>
     request<{ id: string; name: string; inviteCode: string }>("/teams/create", {
       method: "POST",
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, leagueTag }),
     }),
   joinTeam: (code: string, referrerTelegramId?: number) =>
     request<{ id: string; name: string; inviteCode: string }>("/teams/join", {
@@ -358,7 +494,18 @@ export const api = {
       body: JSON.stringify({ code, referrerTelegramId }),
     }),
   getTeamActivity: () =>
-    request<{ items: TeamActivityItem[] }>("/team/activity"),
+    request<{ items: TeamActivityItem[]; kudosEmojis?: string[] }>("/team/activity"),
+  getChatMessages: () => request<ChatMessagesResponse>("/chat/messages"),
+  postChatMessage: (body: string) =>
+    request<ChatMessagesResponse & { message: ChatMessage; moderationNotice: string | null }>(
+      "/chat/messages",
+      { method: "POST", body: JSON.stringify({ body }) },
+    ),
+  reactChatMessage: (messageId: string, emoji: string) =>
+    request<{ message: ChatMessage }>(`/chat/messages/${encodeURIComponent(messageId)}/reactions`, {
+      method: "POST",
+      body: JSON.stringify({ emoji }),
+    }),
   getQuests: () => request<QuestBoard>("/quests"),
   claimQuest: (questId: string) =>
     request<{

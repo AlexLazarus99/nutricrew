@@ -1,0 +1,105 @@
+.features-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.feature-card h3 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+}
+
+.feature-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.feature-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.feature-chip.active {
+  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+  color: #fff;
+  border-color: transparent;
+}
+
+.league-badge {
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.battle-pass-bar {
+  height: 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.battle-pass-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff9800, #ffd54f);
+  transition: width 0.3s ease;
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.achievement-tile {
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  opacity: 0.55;
+}
+
+.achievement-tile.unlocked {
+  opacity: 1;
+  border-color: rgba(46, 125, 50, 0.35);
+}
+
+.team-activity-kudos {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.kudos-btn {
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  cursor: pointer;
+}
+
+.favorites-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.favorite-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.75);
+}

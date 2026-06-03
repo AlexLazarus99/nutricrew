@@ -21,8 +21,15 @@ import * as engagementRepo from "../../repositories/engagement.js";
 import { parseInviteStartParam } from "../../services/referrals.js";
 import { computeUserProgress } from "../../services/progress.js";
 import { claimQuest, getQuestBoard } from "../../services/quests.js";
+import { chatRouter } from "./chat.js";
+import { growthRouter } from "./growth.js";
+import * as growthRepo from "../../repositories/growth.js";
+import { buildGrowthPayload } from "../../services/growthHub.js";
+import { KUDOS_EMOJIS } from "../../lib/challengeDefinitions.js";
 
 export const apiRouter = Router();
+apiRouter.use("/chat", chatRouter);
+apiRouter.use("/growth", growthRouter);
 
 const authed = [authInitData, ensureUser] as const;
 const authedProfile = [...authed, requireProfile] as const;
@@ -152,6 +159,7 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     timezoneOffsetMinutes: user.timezone_offset_minutes,
     progress,
     socialLinks: getPublicSocialLinks(),
+    growth: await buildGrowthPayload(user),
   });
 });
 
@@ -252,23 +260,48 @@ apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
 
 apiRouter.post("/meals", ...authedProfile, async (req, res) => {
   const user = req.dbUser!;
-  const { description, calories, protein, carbs, fat, imageBase64 } = req.body as {
+  const {
+    description,
+    calories,
+    protein,
+    carbs,
+    fat,
+    imageBase64,
+    mealSlot,
+    qualityTag,
+    favoriteId,
+  } = req.body as {
     description?: string;
     calories?: number;
     protein?: number;
     carbs?: number;
     fat?: number;
     imageBase64?: string;
+    mealSlot?: string;
+    qualityTag?: string;
+    favoriteId?: string;
   };
 
-  const result = await logMealForUser(user, {
-    description: description ?? "Meal",
-    calories: Math.round(Number(calories) || 0),
-    protein: Math.round(Number(protein) || 0),
-    carbs: Math.round(Number(carbs) || 0),
-    fat: Math.round(Number(fat) || 0),
-    photoBase64: imageBase64,
-  });
+  let result;
+  try {
+    result = await logMealForUser(user, {
+      description: description ?? "Meal",
+      calories: Math.round(Number(calories) || 0),
+      protein: Math.round(Number(protein) || 0),
+      carbs: Math.round(Number(carbs) || 0),
+      fat: Math.round(Number(fat) || 0),
+      photoBase64: imageBase64,
+      mealSlot,
+      qualityTag,
+      favoriteId,
+    });
+  } catch (e) {
+    if ((e as Error).message === "DAILY_MEAL_LIMIT") {
+      res.status(429).json({ error: "DAILY_MEAL_LIMIT" });
+      return;
+    }
+    throw e;
+  }
 
   if (user.team_id) {
     const team = await teamsRepo.findById(user.team_id);
@@ -299,6 +332,8 @@ apiRouter.post("/meals", ...authedProfile, async (req, res) => {
         )
       : null,
     message: "Logged",
+    birdBoostUntil: result.birdBoostUntil,
+    newAchievements: result.newAchievements,
   });
 });
 
@@ -400,7 +435,8 @@ apiRouter.post("/teams/create", ...authedProfile, async (req, res) => {
     return;
   }
 
-  const team = await createTeamForUser(user, name.trim());
+  const { leagueTag } = req.body as { leagueTag?: string };
+  const team = await createTeamForUser(user, name.trim(), leagueTag);
   res.json({ id: team.id, name: team.name, inviteCode: team.invite_code });
 });
 
@@ -434,17 +470,47 @@ apiRouter.get("/team/activity", ...authedProfile, async (req, res) => {
     res.status(404).json({ error: "NO_TEAM" });
     return;
   }
-  const items = await mealsRepo.getTeamRecentMeals(user.team_id, 12);
+  const rows = await growthRepo.getTeamActivityWithKudos(user.team_id, 12);
   res.json({
-    items: items.map((m) => ({
+    items: rows.map((m) => ({
       id: m.id,
-      userName: m.userName,
+      userName: m.user.firstName,
       description: m.description,
       points: m.points,
-      createdAt: m.createdAt,
-      isYou: m.userTelegramId === user.telegram_id,
+      createdAt: m.createdAt.toISOString(),
+      isYou: Number(m.user.telegramId) === user.telegram_id,
+      kudosCount: m.kudosCount,
+      kudos: m.kudos.map((k) => k.emoji),
+      photoUrl:
+        m.user.photoPrivacy === "hidden" || m.user.photoPrivacy === "private"
+          ? null
+          : m.photoUrl,
+      qualityTag: m.qualityTag,
+      mealSlot: m.mealSlot,
     })),
+    kudosEmojis: KUDOS_EMOJIS,
   });
+});
+
+apiRouter.post("/meals/:mealId/kudos", ...authedProfile, async (req, res) => {
+  const user = req.dbUser!;
+  if (!user.team_id) {
+    res.status(400).json({ error: "NO_TEAM" });
+    return;
+  }
+  const mealId = String(req.params.mealId ?? "");
+  const { emoji } = req.body as { emoji?: string };
+  const allowed = KUDOS_EMOJIS as readonly string[];
+  const pick = allowed.includes(emoji ?? "") ? emoji! : "🔥";
+  const meal = await import("../../db/client.js").then((m) =>
+    m.prisma.meal.findFirst({ where: { id: mealId, teamId: user.team_id } }),
+  );
+  if (!meal) {
+    res.status(404).json({ error: "MEAL_NOT_FOUND" });
+    return;
+  }
+  const result = await growthRepo.addMealKudos(mealId, user.id, pick);
+  res.json({ ok: true, added: result.added, kudosCount: result.count });
 });
 
 apiRouter.post("/engagement/daily-bonus", ...authedProfile, async (req, res) => {
