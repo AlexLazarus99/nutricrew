@@ -31,6 +31,36 @@ export function migrationDatabaseUrl(): string {
   return normalizeDatabaseUrl(main);
 }
 
+export function migrationHostHint(url: string): string {
+  try {
+    return new URL(url.replace(/^postgresql:/, "https:")).hostname;
+  } catch {
+    return "(unknown host)";
+  }
+}
+
+/** Clear Prisma migrate advisory lock left by interrupted deploys (Neon/pooler). */
+export async function releaseStuckMigrationLocks(migrateUrl: string): Promise<void> {
+  const { PrismaClient } = await import("@prisma/client");
+  const admin = new PrismaClient({
+    datasources: { db: { url: migrateUrl } },
+  });
+  try {
+    await admin.$executeRawUnsafe(`
+      SELECT pg_terminate_backend(PSA.pid)
+      FROM pg_locks AS PL
+      INNER JOIN pg_stat_activity AS PSA ON PSA.pid = PL.pid
+      WHERE PL.locktype = 'advisory'
+        AND PL.objid = 72707369
+        AND PSA.pid <> pg_backend_pid()
+    `);
+  } catch (err) {
+    console.warn("Could not release stuck migration locks:", err);
+  } finally {
+    await admin.$disconnect();
+  }
+}
+
 export function runtimeDatabaseUrl(): string {
   return normalizeDatabaseUrl(process.env.DATABASE_URL?.trim() ?? "");
 }
@@ -53,6 +83,8 @@ export async function withDbRetries<T>(
       const msg = String(err);
       const retryable =
         msg.includes("P1001") ||
+        msg.includes("P1002") ||
+        msg.includes("advisory lock") ||
         msg.includes("Can't reach database") ||
         msg.includes("Connection timed out") ||
         msg.includes("ECONNREFUSED") ||

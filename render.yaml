@@ -28,6 +28,8 @@ services:
         fromDatabase:
           name: nutricrew-db
           property: connectionString
+      - key: DIRECT_URL
+        sync: false
       - key: BOT_TOKEN
         sync: false
       - key: BOT_USERNAME

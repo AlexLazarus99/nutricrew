@@ -41,3 +41,35 @@ DIRECT_URL=postgresql://USER:PASSWORD@ep-icy-tooth-apeh2t6p.c-7.us-east-1.aws.ne
 - `GET https://nutricrew-dddi.onrender.com/api/health` — должно быть `"db": true` после успешного старта
 
 Если `db: false` — смотрите логи Render → *nutricrew-api* → строки `Database startup failed` или `P1001`.
+
+## Ошибка P1002 (advisory lock timeout)
+
+```
+Timed out trying to acquire a postgres advisory lock (72707369)
+```
+
+**Причина:** предыдущий деплой прервал `prisma migrate deploy`, или миграции шли через **pooler** (`-pooler` в хосте), или два деплоя одновременно.
+
+**Сразу в Neon SQL Editor** (Direct connection, не pooler):
+
+```sql
+SELECT pg_terminate_backend(PSA.pid)
+FROM pg_locks AS PL
+INNER JOIN pg_stat_activity AS PSA ON PSA.pid = PL.pid
+WHERE PL.locktype = 'advisory'
+  AND PL.objid = 72707369;
+```
+
+**На Render → Environment:**
+
+| Переменная | Значение |
+|------------|----------|
+| `DATABASE_URL` | Neon **Pooled** (`…-pooler.….neon.tech`) |
+| `DIRECT_URL` | Neon **Direct** (без `-pooler`) |
+
+Save → **Manual Deploy**.
+
+Код сервера для Neon автоматически:
+- мигрирует через `DIRECT_URL` (или direct-хост без pooler);
+- снимает зависший lock перед migrate;
+- отключает advisory lock (`PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK`) на Neon.
