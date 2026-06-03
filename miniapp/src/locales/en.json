@@ -111,6 +111,91 @@
     "levels": {
       "title": "Level ladder",
       "body": "15 ranks from Hatchling to Legend — see them all on the progress card."
+    },
+    "quests": {
+      "title": "Quests",
+      "body": "Daily and weekly quests with XP, team points, and Stars. Tap Claim when ready!"
+    }
+  },
+  "quests": {
+    "title": "Quests & challenges",
+    "subtitle": "Complete tasks — tap Claim. Resets daily and weekly.",
+    "tabs": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "once": "Starter"
+    },
+    "claim": "Claim",
+    "claimed": "Done",
+    "locked": "🔒",
+    "empty": "No quests in this tab",
+    "rewardTeam": "team",
+    "claimedToast": "Reward: {{rewards}}",
+    "items": {
+      "first_meal": {
+        "title": "First meal",
+        "desc": "Log at least 1 meal today ({{progress}}/{{target}})"
+      },
+      "three_meals": {
+        "title": "Full day",
+        "desc": "3 meals logged today ({{progress}}/{{target}})"
+      },
+      "points_50": {
+        "title": "Daily energy",
+        "desc": "Earn 50+ points today ({{progress}}/{{target}})"
+      },
+      "keep_streak": {
+        "title": "Keep streak",
+        "desc": "Active streak and logged today ({{progress}}/{{target}})"
+      },
+      "nutribird": {
+        "title": "NutriBird run",
+        "desc": "Play and claim the daily game bonus ({{progress}}/{{target}})"
+      },
+      "quiz": {
+        "title": "Calorie quiz",
+        "desc": "Finish quiz and claim daily bonus ({{progress}}/{{target}})"
+      },
+      "crew_meal": {
+        "title": "Crew meal",
+        "desc": "In a team + 1 meal today ({{progress}}/{{target}})"
+      },
+      "meals_10": {
+        "title": "10 meals",
+        "desc": "10 meal logs this week ({{progress}}/{{target}})"
+      },
+      "meals_20": {
+        "title": "Food marathon",
+        "desc": "20 meals this week + 1 ⭐ ({{progress}}/{{target}})"
+      },
+      "streak_5": {
+        "title": "5-day streak",
+        "desc": "5+ day streak ({{progress}}/{{target}})"
+      },
+      "team_active": {
+        "title": "Crew online",
+        "desc": "2+ teammates logged food today ({{progress}}/{{target}})"
+      },
+      "bird_300": {
+        "title": "NutriBird hunter",
+        "desc": "Best score 300+ in game ({{progress}}/{{target}})"
+      },
+      "meals_15": {
+        "title": "Weekly challenge",
+        "desc": "15 meals this week + 2 ⭐ ({{progress}}/{{target}})"
+      },
+      "once_first_meal": {
+        "title": "First step",
+        "desc": "First meal log in NutriCrew ({{progress}}/{{target}})"
+      },
+      "once_join_team": {
+        "title": "Join a crew",
+        "desc": "Create or join a team ({{progress}}/{{target}})"
+      },
+      "once_bird_fly": {
+        "title": "First flight",
+        "desc": "Score 50+ in NutriBird ({{progress}}/{{target}})"
+      }
     }
   },
   "social": {

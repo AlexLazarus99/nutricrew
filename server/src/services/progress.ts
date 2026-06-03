@@ -1,6 +1,7 @@
 import * as mealsRepo from "../repositories/meals.js";
 import * as engagementRepo from "../repositories/engagement.js";
 import * as birdGameRepo from "../repositories/birdGame.js";
+import * as questsRepo from "../repositories/quests.js";
 import type { DbUser } from "../types.js";
 
 export type ProgressPayload = {
@@ -41,12 +42,15 @@ export async function computeUserProgress(user: DbUser): Promise<ProgressPayload
   const bonusCount = await engagementRepo.countDailyBonuses(user.id);
   const birdBest = await birdGameRepo.getBestScore(user.id);
 
+  const questXp = await questsRepo.sumClaimedXp(user.id);
+
   const xp =
     mealPoints +
     user.current_streak * 25 +
     user.longest_streak * 10 +
     bonusCount * 12 +
-    Math.min(500, Math.floor((birdBest?.score ?? 0) / 4));
+    Math.min(500, Math.floor((birdBest?.score ?? 0) / 4)) +
+    questXp;
 
   return xpToProgress(xp);
 }

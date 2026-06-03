@@ -80,6 +80,15 @@ export async function countUserMeals(userId: number): Promise<number> {
   return prisma.meal.count({ where: { userId: BigInt(userId) } });
 }
 
+export async function countMealsSince(userId: number, since: Date): Promise<number> {
+  return prisma.meal.count({
+    where: {
+      userId: BigInt(userId),
+      createdAt: { gte: since },
+    },
+  });
+}
+
 export async function getLifetimeMealPoints(userId: number): Promise<number> {
   const agg = await prisma.meal.aggregate({
     where: { userId: BigInt(userId) },

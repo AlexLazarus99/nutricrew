@@ -111,6 +111,91 @@
     "levels": {
       "title": "Лестница уровней",
       "body": "15 рангов от Птенца до Легенды — все видны в карточке прогресса."
+    },
+    "quests": {
+      "title": "Задания",
+      "body": "Каждый день и неделю — новые квесты с XP, очками команде и Stars. Жми «Забрать», когда готово!"
+    }
+  },
+  "quests": {
+    "title": "Задания и челленджи",
+    "subtitle": "Выполняй — жми «Забрать». Обновляются каждый день и неделю.",
+    "tabs": {
+      "daily": "День",
+      "weekly": "Неделя",
+      "once": "Старт"
+    },
+    "claim": "Забрать",
+    "claimed": "Готово",
+    "locked": "🔒",
+    "empty": "Нет заданий в этой вкладке",
+    "rewardTeam": "команде",
+    "claimedToast": "Награда: {{rewards}}",
+    "items": {
+      "first_meal": {
+        "title": "Первый приём",
+        "desc": "Залогируй хотя бы 1 приём сегодня ({{progress}}/{{target}})"
+      },
+      "three_meals": {
+        "title": "Полный день",
+        "desc": "3 приёма пищи за день ({{progress}}/{{target}})"
+      },
+      "points_50": {
+        "title": "Энергия дня",
+        "desc": "Набери 50+ очков за сегодня ({{progress}}/{{target}})"
+      },
+      "keep_streak": {
+        "title": "Держи серию",
+        "desc": "Серия активна и ты поел сегодня ({{progress}}/{{target}})"
+      },
+      "nutribird": {
+        "title": "Полёт NutriBird",
+        "desc": "Сыграй и получи дневной бонус в игре ({{progress}}/{{target}})"
+      },
+      "quiz": {
+        "title": "Квиз калорий",
+        "desc": "Пройди квиз и забери дневной бонус ({{progress}}/{{target}})"
+      },
+      "crew_meal": {
+        "title": "Еда с командой",
+        "desc": "В команде и 1+ приём сегодня ({{progress}}/{{target}})"
+      },
+      "meals_10": {
+        "title": "10 приёмов",
+        "desc": "10 логов еды за неделю ({{progress}}/{{target}})"
+      },
+      "meals_20": {
+        "title": "Марафон еды",
+        "desc": "20 приёмов за неделю + 1 ⭐ ({{progress}}/{{target}})"
+      },
+      "streak_5": {
+        "title": "Серия 5 дней",
+        "desc": "Серия 5+ дней подряд ({{progress}}/{{target}})"
+      },
+      "team_active": {
+        "title": "Команда в строю",
+        "desc": "2+ тиммейта залогировали еду сегодня ({{progress}}/{{target}})"
+      },
+      "bird_300": {
+        "title": "Охотник NutriBird",
+        "desc": "Рекорд в игре 300+ очков ({{progress}}/{{target}})"
+      },
+      "meals_15": {
+        "title": "Челлендж недели",
+        "desc": "15 приёмов за неделю + 2 ⭐ ({{progress}}/{{target}})"
+      },
+      "once_first_meal": {
+        "title": "Первый шаг",
+        "desc": "Первый лог еды в NutriCrew ({{progress}}/{{target}})"
+      },
+      "once_join_team": {
+        "title": "Вступление в команду",
+        "desc": "Создай или вступи в команду ({{progress}}/{{target}})"
+      },
+      "once_bird_fly": {
+        "title": "Первый полёт",
+        "desc": "Набери 50+ в NutriBird ({{progress}}/{{target}})"
+      }
     }
   },
   "social": {

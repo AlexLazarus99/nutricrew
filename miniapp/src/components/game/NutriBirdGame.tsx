@@ -27,7 +27,11 @@ function measureWrap(wrap: HTMLDivElement): { w: number; h: number } {
   return { w, h };
 }
 
-export function NutriBirdGame() {
+type NutriBirdGameProps = {
+  onActivity?: () => void;
+};
+
+export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const { t } = useTranslation();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -189,6 +193,7 @@ export function NutriBirdGame() {
             void tryClaimDailyBonus("game").then((pts) => {
               if (pts) {
                 setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+                onActivity?.();
                 window.setTimeout(() => setBonusToast(null), 4000);
               }
             });

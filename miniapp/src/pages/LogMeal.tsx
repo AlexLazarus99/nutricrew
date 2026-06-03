@@ -5,11 +5,13 @@ import { api, type MealResponse } from "../api/client";
 import { MealShareCard } from "../components/MealShareCard";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { useTutorialTour } from "../hooks/useTutorialTour";
+import { useMe } from "../hooks/useMe";
 import { FoodSectionNav } from "../components/food/FoodSectionNav";
 import { MealPhotoCapture, type MealPhotoAnalysis } from "../components/food/MealPhotoCapture";
 
 export function LogMealPage() {
   const { t } = useTranslation();
+  const { refresh } = useMe();
   const logTour = useTutorialTour("log", true);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
@@ -57,6 +59,7 @@ export function LogMealPage() {
         imageBase64: preview ?? undefined,
       });
       setMealResult(res);
+      await refresh();
     } catch (err) {
       setResultError((err as Error).message);
     } finally {

@@ -20,6 +20,7 @@ import { apiReady } from "../ready.js";
 import * as engagementRepo from "../../repositories/engagement.js";
 import { parseInviteStartParam } from "../../services/referrals.js";
 import { computeUserProgress } from "../../services/progress.js";
+import { claimQuest, getQuestBoard } from "../../services/quests.js";
 
 export const apiRouter = Router();
 
@@ -151,6 +152,32 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     timezoneOffsetMinutes: user.timezone_offset_minutes,
     progress,
     socialLinks: getPublicSocialLinks(),
+  });
+});
+
+apiRouter.get("/quests", ...authedProfile, async (req, res) => {
+  const board = await getQuestBoard(req.dbUser!);
+  res.json(board);
+});
+
+apiRouter.post("/quests/:questId/claim", ...authedProfile, async (req, res) => {
+  const user = req.dbUser!;
+  const questId = String(req.params.questId ?? "");
+  const result = await claimQuest(user, questId);
+  if (!result.ok) {
+    const code = result.error ?? "CLAIM_FAILED";
+    const status = code === "QUEST_NOT_FOUND" ? 404 : 400;
+    res.status(status).json({ error: code });
+    return;
+  }
+  const board = await getQuestBoard(user);
+  const progress = await computeUserProgress(user);
+  res.json({
+    ok: true,
+    rewards: result.rewards,
+    board,
+    progress,
+    starBalance: (await usersRepo.findById(user.id))?.star_balance ?? user.star_balance,
   });
 });
 

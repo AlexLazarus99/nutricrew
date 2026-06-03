@@ -49,6 +49,7 @@ model User {
   referrals         User[] @relation("UserReferrals")
   team              Team?              @relation(fields: [teamId], references: [id], onDelete: SetNull)
   dailyBonuses      UserDailyBonus[]
+  questClaims       UserQuestClaim[]
   teamMemberships   TeamMember[]
   meals             Meal[]
   payments          Payment[]
@@ -70,6 +71,21 @@ model UserDailyBonus {
 
   @@id([userId, bonusType, bonusDate])
   @@map("user_daily_bonuses")
+}
+
+model UserQuestClaim {
+  userId      BigInt   @map("user_id")
+  questId     String   @map("quest_id") @db.VarChar(64)
+  periodKey   String   @map("period_key") @db.VarChar(16)
+  rewardXp    Int      @default(0) @map("reward_xp")
+  rewardTeam  Int      @default(0) @map("reward_team")
+  rewardStars Int      @default(0) @map("reward_stars")
+  claimedAt   DateTime @default(now()) @map("claimed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, questId, periodKey])
+  @@map("user_quest_claims")
 }
 
 model BirdGameBest {

@@ -44,6 +44,12 @@ export const TUTORIAL_TOURS: Record<TutorialTourId, TutorialStep[]> = {
       target: "[data-tutorial='progress-card']",
     },
     {
+      emoji: "📋",
+      titleKey: "tutorial.quests.title",
+      bodyKey: "tutorial.quests.body",
+      target: "[data-tutorial='quests-panel']",
+    },
+    {
       emoji: "📸",
       titleKey: "tutorial.log.title",
       bodyKey: "tutorial.log.body",

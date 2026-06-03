@@ -10,6 +10,7 @@ import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
+import { QuestsPanel } from "../components/QuestsPanel";
 
 const TEAM_TEMPLATES = [
   { key: "office", nameRu: "Офис NutriCrew", nameEn: "Office NutriCrew" },
@@ -69,6 +70,10 @@ export function HomePage() {
       <section className="stack">
         <TutorialCoach {...welcomeTour} />
         <ProgressLevelCard progress={me.progress} />
+        <QuestsPanel
+          key={`${me.todayPoints}-${me.progress.xp}-${me.starBalance}`}
+          onClaimed={refresh}
+        />
         {error && (
           <div className="card error-card">
             <p className="muted">{error}</p>
@@ -147,6 +152,10 @@ export function HomePage() {
     <section className="stack">
       <TutorialCoach {...welcomeTour} />
       <ProgressLevelCard progress={me.progress} />
+      <QuestsPanel
+        key={`${me.todayPoints}-${me.progress.xp}-${me.starBalance}`}
+        onClaimed={refresh}
+      />
       <div className="card hero" data-tutorial="home-hero">
         <h2>{t("home.greeting", { name: displayName })}</h2>
         <p className="muted">{t("home.teamWaiting")}</p>

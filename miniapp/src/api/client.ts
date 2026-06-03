@@ -155,6 +155,29 @@ export interface MeResponse {
   }>;
 }
 
+export type QuestStatus = "locked" | "active" | "ready" | "claimed";
+
+export interface QuestItem {
+  id: string;
+  period: "daily" | "weekly" | "once";
+  titleKey: string;
+  descKey: string;
+  emoji: string;
+  target: number;
+  progress: number;
+  status: QuestStatus;
+  rewards: { xp: number; team: number; stars: number };
+  periodKey: string;
+}
+
+export interface QuestBoard {
+  daily: QuestItem[];
+  weekly: QuestItem[];
+  once: QuestItem[];
+  readyCount: number;
+  claimedToday: number;
+}
+
 export interface TeamActivityItem {
   id: string;
   userName: string;
@@ -336,6 +359,15 @@ export const api = {
     }),
   getTeamActivity: () =>
     request<{ items: TeamActivityItem[] }>("/team/activity"),
+  getQuests: () => request<QuestBoard>("/quests"),
+  claimQuest: (questId: string) =>
+    request<{
+      ok: boolean;
+      rewards: { xp: number; team: number; stars: number };
+      board: QuestBoard;
+      progress: MeResponse["progress"];
+      starBalance: number;
+    }>(`/quests/${encodeURIComponent(questId)}/claim`, { method: "POST", body: "{}" }),
   claimDailyBonus: (type: "game" | "quiz") =>
     request<{ claimed: boolean; points: number }>("/engagement/daily-bonus", {
       method: "POST",

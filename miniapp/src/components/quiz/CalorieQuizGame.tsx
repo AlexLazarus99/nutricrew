@@ -18,7 +18,11 @@ import { tryClaimDailyBonus } from "../../lib/claimDailyBonus";
 
 type Phase = "ready" | "playing" | "revealed" | "finished";
 
-export function CalorieQuizGame() {
+type Props = {
+  onActivity?: () => void;
+};
+
+export function CalorieQuizGame({ onActivity }: Props = {}) {
   const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>("ready");
   const [question, setQuestion] = useState<QuizQuestion | null>(null);
@@ -44,7 +48,10 @@ export function CalorieQuizGame() {
       finishGame(deckRef.current);
       setPhase("finished");
       void tryClaimDailyBonus("quiz").then((pts) => {
-        if (pts) setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+        if (pts) {
+          setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+          onActivity?.();
+        }
       });
       return;
     }
@@ -92,6 +99,7 @@ export function CalorieQuizGame() {
       void tryClaimDailyBonus("quiz").then((pts) => {
         if (pts) {
           setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+          onActivity?.();
         }
       });
       return;
