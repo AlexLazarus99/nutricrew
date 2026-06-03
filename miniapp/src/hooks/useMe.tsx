@@ -1,11 +1,21 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { api, API_ERROR, type MeResponse } from "../api/client";
+import { api, API_ERROR, isRetryableMeError, type MeResponse } from "../api/client";
 import { isInsideTelegram, APP_BUILD } from "../lib/apiBase";
 import { syncTimezoneOnce } from "../lib/syncTimezone";
 import { waitForServerReady, wakeApi } from "../lib/apiWarmup";
 import { getTelegramAuthDebug, waitForTelegramInitData } from "../lib/telegramReady";
 import { NutriCrewSplash } from "../components/NutriCrewSplash";
+
+const BOOT_MAX_MS = 90_000;
 
 type MeContextValue = {
   me: MeResponse;
@@ -34,17 +44,30 @@ function formatMeError(message: string, t: (key: string) => string): string {
   }
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
 export function MeProvider({ children }: { children: ReactNode }) {
   const { t } = useTranslation();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [slow, setSlow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bootAttempt, setBootAttempt] = useState(0);
 
   const refresh = useCallback(async () => {
     const data = await api.getMe();
     setMe(data);
     setError(null);
+  }, []);
+
+  const retryBoot = useCallback(() => {
+    wakeApi();
+    setLoading(true);
+    setSlow(false);
+    setError(null);
+    setBootAttempt((n) => n + 1);
   }, []);
 
   useEffect(() => {
@@ -55,26 +78,40 @@ export function MeProvider({ children }: { children: ReactNode }) {
 
     const slowTimer = window.setTimeout(() => {
       if (!cancelled) setSlow(true);
-    }, 4000);
+    }, 3000);
 
     void (async () => {
       wakeApi();
       await waitForTelegramInitData();
 
+      const deadline = Date.now() + BOOT_MAX_MS;
+      let lastError: string | null = null;
       let profileLoaded = false;
-      const earlyLoad = refresh()
-        .then(() => {
-          profileLoaded = true;
-        })
-        .catch(() => {});
 
-      await Promise.all([waitForServerReady(), earlyLoad]);
+      while (Date.now() < deadline && !cancelled) {
+        try {
+          await refresh();
+          profileLoaded = true;
+          lastError = null;
+          break;
+        } catch (e) {
+          lastError = (e as Error).message;
+          if (!isRetryableMeError(lastError)) {
+            break;
+          }
+          wakeApi();
+          await waitForServerReady();
+          await sleep(1500);
+        }
+      }
 
       try {
-        if (!profileLoaded) {
-          await refresh();
+        if (!profileLoaded && lastError) {
+          throw new Error(lastError);
         }
-        syncTimezoneOnce();
+        if (profileLoaded) {
+          syncTimezoneOnce();
+        }
         if (!cancelled) setError(null);
       } catch (e) {
         if (!cancelled) setError((e as Error).message);
@@ -91,7 +128,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
       cancelled = true;
       window.clearTimeout(slowTimer);
     };
-  }, [refresh]);
+  }, [refresh, bootAttempt]);
 
   const value = useMemo(
     () => (me ? { me, refresh } : null),
@@ -111,7 +148,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
         {error === API_ERROR.TELEGRAM_REQUIRED ? (
           <p className="muted build-stamp">{getTelegramAuthDebug()}</p>
         ) : null}
-        <button type="button" className="btn btn-secondary" onClick={() => void refresh()}>
+        <button type="button" className="btn btn-secondary" onClick={retryBoot}>
           {t("common.retry")}
         </button>
       </section>
@@ -122,7 +159,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
     return (
       <section className="card error-card">
         <p>{t("common.error")}</p>
-        <button type="button" className="btn btn-secondary" onClick={() => void refresh()}>
+        <button type="button" className="btn btn-secondary" onClick={retryBoot}>
           {t("common.retry")}
         </button>
       </section>

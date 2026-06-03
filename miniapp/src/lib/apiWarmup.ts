@@ -1,8 +1,9 @@
 import { getApiBase } from "./apiBase.js";
 
-const PING_TIMEOUT_MS = 6_000;
-const WAKE_MAX_WAIT_MS = 18_000;
-const WAKE_POLL_MS = 800;
+/** Render free tier cold start can take 30–90s before the first byte. */
+const PING_TIMEOUT_MS = 25_000;
+const WAKE_MAX_WAIT_MS = 75_000;
+const WAKE_POLL_MS = 2_000;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));

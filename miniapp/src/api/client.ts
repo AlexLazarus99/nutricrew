@@ -349,9 +349,9 @@ export interface DiaryResponse {
   };
 }
 
-const ME_RETRY_DELAYS_MS = [0, 1000, 2000, 3000];
+const ME_RETRY_DELAYS_MS = [0, 3000, 5000, 8000, 10_000, 12_000];
 
-function isRetryableMeError(message: string): boolean {
+export function isRetryableMeError(message: string): boolean {
   return (
     message === API_ERROR.TIMEOUT ||
     message === API_ERROR.UNREACHABLE ||
