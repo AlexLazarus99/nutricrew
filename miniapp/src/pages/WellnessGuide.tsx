@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ensureWellnessTranslations } from "../i18n";
+import { PageLoader } from "../components/PageLoader";
 import { WellnessIllustration } from "../components/wellness/WellnessIllustration";
 import { CalorieCalculator } from "../components/wellness/CalorieCalculator";
 import {
@@ -16,6 +18,7 @@ type Tab = "body" | "diets" | "exercises" | "calc";
 export function WellnessGuidePage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
+  const [wellnessReady, setWellnessReady] = useState(false);
   const initialTab = searchParams.get("tab");
   const [tab, setTab] = useState<Tab>(() => {
     if (initialTab === "calc" || initialTab === "body" || initialTab === "diets" || initialTab === "exercises") {
@@ -29,6 +32,10 @@ export function WellnessGuidePage() {
   });
 
   useEffect(() => {
+    void ensureWellnessTranslations().then(() => setWellnessReady(true));
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem(BODY_TYPE_STORAGE_KEY, selectedBody);
   }, [selectedBody]);
 
@@ -38,6 +45,10 @@ export function WellnessGuidePage() {
       setTab(q);
     }
   }, [searchParams]);
+
+  if (!wellnessReady) {
+    return <PageLoader />;
+  }
 
   return (
     <section className="stack wellness">

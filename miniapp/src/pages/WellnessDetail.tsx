@@ -1,5 +1,8 @@
 import { Link, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ensureWellnessTranslations } from "../i18n";
+import { PageLoader } from "../components/PageLoader";
 import { WellnessIllustration } from "../components/wellness/WellnessIllustration";
 import { MuscleGroupSections, WarmupBlock, WeeklySplit } from "../components/wellness/MuscleGroupSections";
 import { WeeklyMealPlan } from "../components/wellness/WeeklyMealPlan";
@@ -28,6 +31,15 @@ function asStringArray(value: unknown): string[] {
 export function WellnessDetailPage() {
   const { category, id } = useParams<DetailParams>();
   const { t } = useTranslation();
+  const [wellnessReady, setWellnessReady] = useState(false);
+
+  useEffect(() => {
+    void ensureWellnessTranslations().then(() => setWellnessReady(true));
+  }, []);
+
+  if (!wellnessReady) {
+    return <PageLoader />;
+  }
 
   if (!category || !id || !["body", "diet", "exercise"].includes(category)) {
     return (

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { WellnessBackground } from "./WellnessBackground";
 import { LanguageSwitcher } from "./LanguageSwitcher";
+import { PageLoader } from "./PageLoader";
 import { MeProvider, useMe } from "../hooks/useMe";
 import { RegistrationPage } from "../pages/Registration";
 import { PostRegistrationOffer } from "../pages/PostRegistrationOffer";
@@ -55,7 +56,9 @@ function LayoutShell() {
             onDismiss={() => setOfferDismissed(true)}
           />
         ) : (
-          <Outlet />
+          <Suspense fallback={<PageLoader />}>
+            <Outlet />
+          </Suspense>
         )}
       </main>
 

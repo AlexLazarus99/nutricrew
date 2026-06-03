@@ -1,17 +1,41 @@
+import { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { HomePage } from "./pages/Home";
-import { LogMealPage } from "./pages/LogMeal";
-import { FoodDiaryPage } from "./pages/FoodDiary";
-import { TeamPage } from "./pages/Team";
-import { LeaderboardPage } from "./pages/Leaderboard";
-import { PrizesPage } from "./pages/Prizes";
-import { WellnessGuidePage } from "./pages/WellnessGuide";
-import { WellnessDetailPage } from "./pages/WellnessDetail";
-import { BirdGamePage } from "./pages/BirdGamePage";
-import { CalorieQuizPage } from "./pages/CalorieQuizPage";
-import { ChatPage } from "./pages/ChatPage";
-import { FeaturesPage } from "./pages/FeaturesPage";
+
+const LogMealPage = lazy(() =>
+  import("./pages/LogMeal").then((m) => ({ default: m.LogMealPage })),
+);
+const FoodDiaryPage = lazy(() =>
+  import("./pages/FoodDiary").then((m) => ({ default: m.FoodDiaryPage })),
+);
+const TeamPage = lazy(() =>
+  import("./pages/Team").then((m) => ({ default: m.TeamPage })),
+);
+const LeaderboardPage = lazy(() =>
+  import("./pages/Leaderboard").then((m) => ({ default: m.LeaderboardPage })),
+);
+const PrizesPage = lazy(() =>
+  import("./pages/Prizes").then((m) => ({ default: m.PrizesPage })),
+);
+const WellnessGuidePage = lazy(() =>
+  import("./pages/WellnessGuide").then((m) => ({ default: m.WellnessGuidePage })),
+);
+const WellnessDetailPage = lazy(() =>
+  import("./pages/WellnessDetail").then((m) => ({ default: m.WellnessDetailPage })),
+);
+const BirdGamePage = lazy(() =>
+  import("./pages/BirdGamePage").then((m) => ({ default: m.BirdGamePage })),
+);
+const CalorieQuizPage = lazy(() =>
+  import("./pages/CalorieQuizPage").then((m) => ({ default: m.CalorieQuizPage })),
+);
+const ChatPage = lazy(() =>
+  import("./pages/ChatPage").then((m) => ({ default: m.ChatPage })),
+);
+const FeaturesPage = lazy(() =>
+  import("./pages/FeaturesPage").then((m) => ({ default: m.FeaturesPage })),
+);
 
 export default function App() {
   return (

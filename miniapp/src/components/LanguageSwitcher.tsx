@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { setStoredLocale, type AppLocale } from "../lib/locale";
-import i18n from "../i18n";
+import i18n, { ensureLocale } from "../i18n";
 import { api } from "../api/client";
 
 export function LanguageSwitcher() {
@@ -9,10 +9,13 @@ export function LanguageSwitcher() {
 
   function setLocale(locale: AppLocale) {
     setStoredLocale(locale);
-    void i18n.changeLanguage(locale);
-    void api.setLocale(locale).catch(() => {
-      /* offline / outside Telegram */
-    });
+    void (async () => {
+      await ensureLocale(locale);
+      await i18n.changeLanguage(locale);
+      await api.setLocale(locale).catch(() => {
+        /* offline / outside Telegram */
+      });
+    })();
   }
 
   return (

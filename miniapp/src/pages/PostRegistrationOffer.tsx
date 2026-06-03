@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useMe } from "../hooks/useMe";
+import { ensureWellnessTranslations } from "../i18n";
+import { PageLoader } from "../components/PageLoader";
 import { clearPostRegistrationOfferPending } from "../lib/postRegistration";
 import { recommendWellness } from "../lib/wellnessRecommendations";
 import { BODY_TYPE_STORAGE_KEY } from "../data/wellness/catalog";
@@ -14,6 +17,11 @@ type Props = {
 export function PostRegistrationOffer({ displayName, onDismiss }: Props) {
   const { t } = useTranslation();
   const { me } = useMe();
+  const [wellnessReady, setWellnessReady] = useState(false);
+
+  useEffect(() => {
+    void ensureWellnessTranslations().then(() => setWellnessReady(true));
+  }, []);
 
   const weight = me.weightKg ?? 70;
   const height = me.heightCm ?? 170;
@@ -28,6 +36,10 @@ export function PostRegistrationOffer({ displayName, onDismiss }: Props) {
 
   const categoryLabel = t(`postRegistration.bmiCategory.${rec.category}` as const);
   const reasonKey = `postRegistration.reason.${rec.category}` as const;
+
+  if (!wellnessReady) {
+    return <PageLoader />;
+  }
 
   return (
     <section className="stack post-registration">
