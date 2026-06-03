@@ -13,6 +13,7 @@ import {
   submitBirdScore,
   type BirdLeaderboardEntry,
 } from "../../lib/birdGame/leaderboard";
+import { createBirdGameAudio, loadMusicMuted } from "../../lib/birdGame/birdGameAudio";
 import type { GamePhase, GameState } from "../../lib/birdGame/types";
 
 function measureWrap(wrap: HTMLDivElement): { w: number; h: number } {
@@ -43,6 +44,10 @@ export function NutriBirdGame() {
   const [canvasReady, setCanvasReady] = useState(false);
   const [leaderboard, setLeaderboard] = useState<BirdLeaderboardEntry[]>([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
+  const [musicMuted, setMusicMuted] = useState(loadMusicMuted);
+  const audioRef = useRef(createBirdGameAudio());
+  const prevPhaseRef = useRef<GamePhase>("idle");
+  const prevFruitsRef = useRef(0);
 
   const syncHud = useCallback((state: GameState) => {
     setHudScore(state.score);
@@ -131,6 +136,11 @@ export function NutriBirdGame() {
   }, [refreshLeaderboard]);
 
   useEffect(() => {
+    const audio = audioRef.current;
+    return () => audio.dispose();
+  }, []);
+
+  useEffect(() => {
     const lastHudRef = { score: -1, nutrition: -1, phase: "idle" as GamePhase };
 
     const loop = (ts: number) => {
@@ -147,7 +157,17 @@ export function NutriBirdGame() {
           state = tick(state, dt);
           stateRef.current = state;
 
+          if (state.phase === "gameover" && prevPhaseRef.current === "playing") {
+            audioRef.current.onGameOver();
+          }
+          if (state.fruitsCollected > prevFruitsRef.current) {
+            audioRef.current.onFruit();
+          }
+          prevFruitsRef.current = state.fruitsCollected;
+          prevPhaseRef.current = state.phase;
+
           if (state.phase === "gameover") {
+            audioRef.current.setPlaying(false);
             if (state.score > bestScore) {
               saveBestScore(state.score);
               setBestScore(state.score);
@@ -155,6 +175,8 @@ export function NutriBirdGame() {
             void submitBirdScore(state.score, state.level, state.fruitsCollected).then(() =>
               refreshLeaderboard(),
             );
+          } else if (state.phase === "playing") {
+            audioRef.current.setPlaying(true);
           }
 
           const n = Math.round(state.bird.nutrition);
@@ -191,9 +213,26 @@ export function NutriBirdGame() {
     if (!applySize(!playing)) return;
     const state = stateRef.current;
     if (!state) return;
+    void audioRef.current.unlock();
+    audioRef.current.onFlap();
     stateRef.current = flap(state);
-    syncHud(stateRef.current);
+    const next = stateRef.current;
+    if (next.phase === "playing") {
+      audioRef.current.setPlaying(true);
+      prevFruitsRef.current = next.fruitsCollected;
+      prevPhaseRef.current = "playing";
+    }
+    syncHud(next);
   }, [applySize, syncHud]);
+
+  const toggleMusic = useCallback(() => {
+    const muted = audioRef.current.toggleMute();
+    setMusicMuted(muted);
+    if (!muted && stateRef.current?.phase === "playing") {
+      void audioRef.current.unlock();
+      audioRef.current.setPlaying(true);
+    }
+  }, []);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -209,6 +248,15 @@ export function NutriBirdGame() {
   return (
     <div className="bird-game">
       <div className="bird-game-meta">
+        <button
+          type="button"
+          className="bird-game-music-btn"
+          onClick={toggleMusic}
+          aria-pressed={musicMuted}
+          aria-label={musicMuted ? t("game.musicUnmute") : t("game.musicMute")}
+        >
+          {musicMuted ? t("game.musicOff") : t("game.musicOn")}
+        </button>
         <span>
           {t("game.best")}: <strong>{bestScore}</strong>
         </span>

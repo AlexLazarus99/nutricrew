@@ -1679,11 +1679,29 @@ button {
 
 .bird-game-meta {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
   font-size: 0.78rem;
   color: var(--muted);
   padding: 0 4px;
+}
+
+.bird-game-music-btn {
+  font-family: "Manrope", system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.bird-game-music-btn[aria-pressed="true"] {
+  color: var(--muted);
 }
 
 .bird-game-meta strong {
