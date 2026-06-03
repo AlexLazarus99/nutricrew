@@ -24,7 +24,7 @@ import { claimQuest, getQuestBoard } from "../../services/quests.js";
 import { chatRouter } from "./chat.js";
 import { growthRouter } from "./growth.js";
 import * as growthRepo from "../../repositories/growth.js";
-import { buildGrowthPayload } from "../../services/growthHub.js";
+import { buildGrowthSummary } from "../../services/growthHub.js";
 import { KUDOS_EMOJIS } from "../../lib/challengeDefinitions.js";
 
 export const apiRouter = Router();
@@ -105,10 +105,15 @@ apiRouter.get("/health", async (_req, res) => {
 
 apiRouter.get("/me", ...authed, async (req, res) => {
   const user = req.dbUser!;
-  const todayPoints = await mealsRepo.getTodayPoints(user.id);
-  const mealsToday = await mealsRepo.countMealsToday(user.id);
+
+  const [todayPoints, mealsToday, dailyBonus, progress] = await Promise.all([
+    mealsRepo.getTodayPoints(user.id),
+    mealsRepo.countMealsToday(user.id),
+    engagementRepo.getDailyBonusStatus(user.id),
+    computeUserProgress(user),
+  ]);
+
   const mult = streakMultiplier(user.current_streak);
-  const dailyBonus = await engagementRepo.getDailyBonusStatus(user.id);
 
   let teamMultiplierValue = 1;
   let teamMemberCount = 0;
@@ -121,13 +126,16 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     inviteUrl = inviteCode
       ? buildTeamInviteUrl(inviteCode, user.telegram_id)
       : null;
-    teamMemberCount = await mealsRepo.countTeamMembers(user.team_id);
-    const logged = await mealsRepo.countMembersLoggedToday(user.team_id);
+    const [memberCount, logged] = await Promise.all([
+      mealsRepo.countTeamMembers(user.team_id),
+      mealsRepo.countMembersLoggedToday(user.team_id),
+    ]);
+    teamMemberCount = memberCount;
     teamMultiplierValue = teamMultiplier(logged, teamMemberCount);
   }
 
   const parsedStart = parseInviteStartParam(req.telegram!.startParam);
-  const progress = await computeUserProgress(user);
+  const growth = await buildGrowthSummary(user, { mealsToday, todayPoints });
 
   res.json({
     user: {
@@ -159,7 +167,7 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     timezoneOffsetMinutes: user.timezone_offset_minutes,
     progress,
     socialLinks: getPublicSocialLinks(),
-    growth: await buildGrowthPayload(user),
+    growth,
   });
 });
 

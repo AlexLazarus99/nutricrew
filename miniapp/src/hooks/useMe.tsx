@@ -59,10 +59,21 @@ export function MeProvider({ children }: { children: ReactNode }) {
 
     void (async () => {
       wakeApi();
-      await Promise.all([waitForTelegramInitData(), waitForServerReady()]);
+      await waitForTelegramInitData();
+
+      let profileLoaded = false;
+      const earlyLoad = refresh()
+        .then(() => {
+          profileLoaded = true;
+        })
+        .catch(() => {});
+
+      await Promise.all([waitForServerReady(), earlyLoad]);
 
       try {
-        await refresh();
+        if (!profileLoaded) {
+          await refresh();
+        }
         syncTimezoneOnce();
         if (!cancelled) setError(null);
       } catch (e) {

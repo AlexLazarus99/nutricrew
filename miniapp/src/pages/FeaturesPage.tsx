@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type GrowthPayload } from "../api/client";
@@ -8,9 +8,28 @@ import "../styles/features.css";
 export function FeaturesPage() {
   const { t } = useTranslation();
   const { me, refresh } = useMe();
-  const growth = me.growth;
+  const [growth, setGrowth] = useState<GrowthPayload | null>(null);
+  const [loadingGrowth, setLoadingGrowth] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
+
+  const reloadGrowth = useCallback(async () => {
+    const data = await api.getGrowth();
+    setGrowth(data);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingGrowth(true);
+    void reloadGrowth()
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setLoadingGrowth(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadGrowth]);
 
   const run = useCallback(
     async (key: string, fn: () => Promise<unknown>) => {
@@ -18,17 +37,17 @@ export function FeaturesPage() {
       setMsg(null);
       try {
         await fn();
-        await refresh();
+        await Promise.all([refresh(), reloadGrowth()]);
       } catch (e) {
         setMsg((e as Error).message);
       } finally {
         setBusy(null);
       }
     },
-    [refresh],
+    [refresh, reloadGrowth],
   );
 
-  if (!growth) {
+  if (loadingGrowth || !growth) {
     return (
       <section className="stack">
         <div className="card">

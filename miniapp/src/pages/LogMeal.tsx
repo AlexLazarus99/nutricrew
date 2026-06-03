@@ -12,7 +12,7 @@ import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMeal
 
 export function LogMealPage() {
   const { t } = useTranslation();
-  const { me, refresh } = useMe();
+  const { refresh } = useMe();
   const logTour = useTutorialTour("log", true);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
@@ -31,7 +31,24 @@ export function LogMealPage() {
   const [favoriteId, setFavoriteId] = useState<string | undefined>();
   const [draftNote, setDraftNote] = useState<string | null>(null);
 
-  const favorites = me.growth?.favorites ?? [];
+  const [favorites, setFavorites] = useState<
+    Array<{
+      id: string;
+      description: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      useCount: number;
+    }>
+  >([]);
+
+  useEffect(() => {
+    void api
+      .getGrowth()
+      .then((g) => setFavorites(g.favorites))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const draft = loadMealDraft();

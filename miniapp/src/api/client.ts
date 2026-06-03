@@ -153,16 +153,19 @@ export interface MeResponse {
     youtube: string;
     tiktok: string;
   }>;
-  growth?: GrowthPayload;
+  growth?: GrowthSummary;
 }
 
-export type GrowthPayload = {
+export type GrowthSummary = {
   streakFreezes: number;
   league: { tier: string; weeklyXp: number; xpToNext: number };
   dailyGoal: { type: string; target: number; progress: number; done: boolean };
-  photoPrivacy: string;
-  onboardingVariant: string;
   birdBoost: { active: boolean; until: string | null };
+};
+
+export type GrowthPayload = GrowthSummary & {
+  onboardingVariant: string;
+  photoPrivacy: string;
   doublePoints: { available: boolean; usedWeekKey: string | null };
   favorites: Array<{
     id: string;
@@ -346,7 +349,7 @@ export interface DiaryResponse {
   };
 }
 
-const ME_RETRY_DELAYS_MS = [0, 2000, 4000, 6000];
+const ME_RETRY_DELAYS_MS = [0, 1000, 2000, 3000];
 
 function isRetryableMeError(message: string): boolean {
   return (
