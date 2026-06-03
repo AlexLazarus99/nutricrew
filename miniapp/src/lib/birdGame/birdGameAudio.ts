@@ -19,8 +19,9 @@ export function saveMusicMuted(muted: boolean): void {
 }
 
 export type BirdGameAudio = {
-  unlock: () => Promise<void>;
-  setPlaying: (playing: boolean) => void;
+  unlock: () => Promise<boolean>;
+  startMusic: () => Promise<void>;
+  stopMusic: () => void;
   onFlap: () => void;
   onFruit: () => void;
   onGameOver: () => void;
@@ -35,10 +36,13 @@ export function createBirdGameAudio(): BirdGameAudio {
 
   return {
     unlock: () => player.unlock(),
-    setPlaying: (playing) => {
-      if (playing) player.startLoop();
-      else player.stopLoop();
+    startMusic: async () => {
+      if (!player.isUnlocked()) {
+        await player.unlock();
+      }
+      player.startLoop();
     },
+    stopMusic: () => player.stopLoop(),
     onFlap: () => player.playFlap(),
     onFruit: () => player.playFruit(),
     onGameOver: () => {

@@ -137,7 +137,16 @@ export function NutriBirdGame() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    return () => audio.dispose();
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && stateRef.current?.phase === "playing") {
+        void audio.startMusic();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      audio.dispose();
+    };
   }, []);
 
   useEffect(() => {
@@ -167,7 +176,7 @@ export function NutriBirdGame() {
           prevPhaseRef.current = state.phase;
 
           if (state.phase === "gameover") {
-            audioRef.current.setPlaying(false);
+            audioRef.current.stopMusic();
             if (state.score > bestScore) {
               saveBestScore(state.score);
               setBestScore(state.score);
@@ -176,7 +185,7 @@ export function NutriBirdGame() {
               refreshLeaderboard(),
             );
           } else if (state.phase === "playing") {
-            audioRef.current.setPlaying(true);
+            void audioRef.current.startMusic();
           }
 
           const n = Math.round(state.bird.nutrition);
@@ -208,17 +217,20 @@ export function NutriBirdGame() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [bestScore, syncHud, refreshLeaderboard]);
 
-  const handleTap = useCallback(() => {
+  const handleTap = useCallback(async () => {
     const playing = stateRef.current?.phase === "playing";
     if (!applySize(!playing)) return;
     const state = stateRef.current;
     if (!state) return;
-    void audioRef.current.unlock();
-    audioRef.current.onFlap();
+
+    const audio = audioRef.current;
+    await audio.unlock();
+    audio.onFlap();
+
     stateRef.current = flap(state);
     const next = stateRef.current;
     if (next.phase === "playing") {
-      audioRef.current.setPlaying(true);
+      await audio.startMusic();
       prevFruitsRef.current = next.fruitsCollected;
       prevPhaseRef.current = "playing";
     }
@@ -229,8 +241,9 @@ export function NutriBirdGame() {
     const muted = audioRef.current.toggleMute();
     setMusicMuted(muted);
     if (!muted && stateRef.current?.phase === "playing") {
-      void audioRef.current.unlock();
-      audioRef.current.setPlaying(true);
+      void audioRef.current.startMusic();
+    } else if (muted) {
+      audioRef.current.stopMusic();
     }
   }, []);
 
@@ -238,7 +251,7 @@ export function NutriBirdGame() {
     const onKey = (e: KeyboardEvent) => {
       if (e.code === "Space" || e.code === "ArrowUp") {
         e.preventDefault();
-        handleTap();
+        void handleTap();
       }
     };
     window.addEventListener("keydown", onKey);
@@ -278,7 +291,7 @@ export function NutriBirdGame() {
         aria-label={t("game.tapHint")}
         onPointerDown={(e) => {
           e.preventDefault();
-          handleTap();
+          void handleTap();
         }}
       >
         <canvas ref={canvasRef} className="bird-game-canvas" />
@@ -302,7 +315,9 @@ export function NutriBirdGame() {
           </div>
         )}
       </div>
-      <p className="muted small bird-game-hint">{t("game.tapHint")}</p>
+      <p className="muted small bird-game-hint">
+        {t("game.tapHint")} {t("game.musicHint")}
+      </p>
 
       <div className="card bird-game-leaderboard">
         <h3>{t("game.leaderboardTitle")}</h3>
