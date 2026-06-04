@@ -7,33 +7,33 @@
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", "Georgia", serif;
 
-  --bg: #f6f3ed;
-  --surface: #ffffff;
-  --surface-2: #e8f0eb;
-  --text: #1a2e26;
-  --muted: #5c6f66;
-  --accent: #3a8f6e;
-  --accent-dim: #2d7358;
-  --accent-soft: rgba(58, 143, 110, 0.14);
-  --warn: #c17d3a;
-  --danger: #c45c5c;
-  --success: #3a8f6e;
+  --bg: #f7f5f0;
+  --surface: #fffefb;
+  --surface-2: #eef4f0;
+  --text: #2a3d34;
+  --muted: #5f7268;
+  --accent: #5ba88a;
+  --accent-dim: #468a70;
+  --accent-soft: rgba(91, 168, 138, 0.16);
+  --warn: #c4925a;
+  --danger: #c97070;
+  --success: #5ba88a;
 
   --radius: 18px;
   --radius-sm: 12px;
   --radius-lg: 24px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 2px 10px rgba(26, 46, 38, 0.06);
-  --shadow-md: 0 10px 36px rgba(26, 46, 38, 0.08);
-  --shadow-nav: 0 -6px 28px rgba(26, 46, 38, 0.07);
+  --shadow-sm: 0 2px 12px rgba(42, 61, 52, 0.05);
+  --shadow-md: 0 12px 32px rgba(42, 61, 52, 0.07);
+  --shadow-nav: 0 -4px 24px rgba(42, 61, 52, 0.06);
 
-  --heading: #0a1f18;
-  --heading-accent: #143528;
-  --heading-gradient-a: #081a14;
-  --heading-gradient-b: #1b4d3c;
-  --heading-gradient-c: #2d7a5f;
-  --heading-subtle: #3a5248;
+  --heading: #1e3329;
+  --heading-accent: #2d5242;
+  --heading-gradient-a: #1e3329;
+  --heading-gradient-b: #2d5242;
+  --heading-gradient-c: #3d6b55;
+  --heading-subtle: #4d6359;
 
   color: var(--text);
   background: var(--bg);
@@ -59,7 +59,7 @@ body {
   --heading: var(--text);
 }
 
-/* Card & section titles — dark gradient on light surfaces (high contrast) */
+/* Card & section titles — solid, high contrast (readable) */
 .card > h2,
 .card > h3,
 .hero h2,
@@ -78,22 +78,17 @@ body {
 .bird-game-overlay-card h3,
 .bird-game-leaderboard h3,
 .calorie-quiz-product h3,
-.bird-game-hero h2 {
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
+.bird-game-hero h2,
+.feature-card h3 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
   color: var(--heading);
-  background: linear-gradient(
-    118deg,
-    var(--heading-gradient-a) 0%,
-    var(--heading-gradient-b) 48%,
-    var(--heading-gradient-c) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.92))
-    drop-shadow(0 2px 6px rgba(8, 26, 20, 0.12));
+  background: none;
+  -webkit-background-clip: unset;
+  background-clip: unset;
+  -webkit-text-fill-color: currentColor;
+  filter: none;
 }
 
 .card > h3,
@@ -192,9 +187,18 @@ body {
   --section-bg: #faf5f3;
   --section-surface: #ffffff;
   --section-surface-2: #f5e8e4;
-  --section-accent: #e07a5f;
-  --section-accent-soft: rgba(224, 122, 95, 0.16);
-  --section-glow: rgba(224, 122, 95, 0.1);
+  --section-accent: #d4896a;
+  --section-accent-soft: rgba(212, 137, 106, 0.16);
+  --section-glow: rgba(212, 137, 106, 0.1);
+}
+
+.app-shell[data-section="features"] {
+  --section-bg: #f5f4f8;
+  --section-surface: #fffefb;
+  --section-surface-2: #ebe8f2;
+  --section-accent: #7d8fd4;
+  --section-accent-soft: rgba(125, 143, 212, 0.16);
+  --section-glow: rgba(125, 143, 212, 0.1);
 }
 
 .app-shell[data-section="auth"] {
@@ -232,18 +236,11 @@ body {
 .app-header h1 {
   font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   color: var(--heading);
-  background: linear-gradient(
-    125deg,
-    var(--heading-gradient-a) 0%,
-    var(--heading-gradient-b) 55%,
-    var(--heading-gradient-c) 100%
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.85));
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  filter: none;
 }
 
 .tagline {
@@ -351,11 +348,9 @@ body {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--heading);
-  background: linear-gradient(120deg, var(--heading-gradient-b), var(--heading-gradient-c));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: var(--accent-dim);
+  background: none;
+  -webkit-text-fill-color: currentColor;
 }
 
 .stat-label {

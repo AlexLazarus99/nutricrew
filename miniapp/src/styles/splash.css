@@ -1,4 +1,4 @@
-/* NutriCrew splash — bright arcade / duck-game energy */
+/* NutriCrew splash — soft sage / cream (matches app theme) */
 
 .nutricrew-splash {
   position: fixed;
@@ -11,7 +11,13 @@
   gap: 28px;
   padding: 24px 20px 32px;
   overflow: hidden;
-  background: linear-gradient(145deg, #1a0f2e 0%, #2d1b4e 35%, #0f2847 70%, #0d3d3a 100%);
+  background: linear-gradient(
+    155deg,
+    #f7f5f0 0%,
+    #eef6f1 35%,
+    #e8f0eb 65%,
+    #f0ebe4 100%
+  );
 }
 
 .splash-bg {
@@ -34,7 +40,7 @@
   height: 220px;
   top: -8%;
   left: -12%;
-  background: #ff6b9d;
+  background: #a8d4bc;
   animation-delay: 0s;
 }
 
@@ -43,7 +49,7 @@
   height: 260px;
   bottom: -15%;
   right: -18%;
-  background: #ffe566;
+  background: #e8d4a8;
   animation-delay: -2.5s;
 }
 
@@ -52,7 +58,7 @@
   height: 180px;
   top: 40%;
   right: 5%;
-  background: #4ecdc4;
+  background: #9cc9b8;
   animation-delay: -4s;
 }
 
@@ -69,8 +75,8 @@
 .splash-spark {
   position: absolute;
   font-size: 1.4rem;
-  color: #fff9c4;
-  text-shadow: 0 0 12px rgba(255, 235, 59, 0.9);
+  color: #7ab89a;
+  text-shadow: 0 0 10px rgba(91, 168, 138, 0.45);
   animation: splash-spark-pulse 2s ease-in-out infinite;
 }
 
@@ -134,10 +140,10 @@
 }
 
 .splash-ring-outer {
-  border-top-color: #ffe566;
-  border-right-color: #ff6b9d;
-  border-bottom-color: #4ecdc4;
-  border-left-color: #ff9f43;
+  border-top-color: #9cc9b8;
+  border-right-color: #c9a8d4;
+  border-bottom-color: #7ab89a;
+  border-left-color: #d4c49a;
   animation: splash-ring-spin 2.4s linear infinite;
 }
 
@@ -161,7 +167,7 @@
   height: auto;
   display: block;
   animation: splash-mascot-bounce 2.2s ease-in-out infinite;
-  filter: drop-shadow(0 12px 28px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 8px 20px rgba(42, 61, 52, 0.12));
 }
 
 @keyframes splash-mascot-bounce {
@@ -216,21 +222,17 @@
 }
 
 .splash-word-nutri {
-  background: linear-gradient(105deg, #fff9c4 0%, #ffe566 35%, #ff9f43 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 0 rgba(255, 111, 0, 0.45));
+  color: #2d5242;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  filter: none;
 }
 
 .splash-word-crew {
-  background: linear-gradient(105deg, #b2ebf2 0%, #4ecdc4 40%, #26a69a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 0 rgba(38, 166, 154, 0.5));
+  color: #5ba88a;
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  filter: none;
   animation-delay: -0.35s;
 }
 
@@ -250,7 +252,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
+  color: #5f7268;
   text-align: center;
   max-width: 280px;
 }
@@ -269,19 +271,19 @@
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(91, 168, 138, 0.15);
   overflow: hidden;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 3px rgba(42, 61, 52, 0.08);
 }
 
 .splash-loader-bar {
   height: 100%;
   width: 42%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #ff6b9d, #ffe566, #4ecdc4, #ff9f43, #ff6b9d);
+  background: linear-gradient(90deg, #7ab89a, #a8d4bc, #5ba88a, #c9d4a8, #7ab89a);
   background-size: 200% 100%;
   animation: splash-bar-slide 1.35s ease-in-out infinite;
-  box-shadow: 0 0 16px rgba(255, 230, 102, 0.55);
+  box-shadow: 0 0 12px rgba(91, 168, 138, 0.35);
 }
 
 @keyframes splash-bar-slide {
@@ -299,7 +301,7 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #fff;
+  color: #2a3d34;
   text-align: center;
 }
 
@@ -307,7 +309,7 @@
   margin: 0;
   font-size: 0.8rem;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.65);
+  color: #5f7268;
   text-align: center;
   max-width: 300px;
   animation: splash-hint-fade 2s ease-in-out infinite;

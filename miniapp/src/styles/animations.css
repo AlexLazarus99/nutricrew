@@ -1,0 +1,346 @@
+/**
+ * NutriCrew motion — soft, readable UI. Respects prefers-reduced-motion.
+ */
+
+@keyframes nc-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nc-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nc-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes nc-float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes nc-pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.92;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes nc-nav-pop {
+  0% {
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes nc-glow-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--section-accent) 0%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--section-accent) 18%, transparent);
+  }
+}
+
+@keyframes nc-progress-flow {
+  0% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.08);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+/* Page content stagger */
+.app-main .stack > .card,
+.app-main .stack > section,
+.app-main .stack > article,
+.app-main .stack > .hero,
+.app-main > .stack > .card,
+.app-main > section.card {
+  animation: nc-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-main .stack > *:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.app-main .stack > *:nth-child(2) {
+  animation-delay: 0.09s;
+}
+.app-main .stack > *:nth-child(3) {
+  animation-delay: 0.14s;
+}
+.app-main .stack > *:nth-child(4) {
+  animation-delay: 0.19s;
+}
+.app-main .stack > *:nth-child(5) {
+  animation-delay: 0.24s;
+}
+.app-main .stack > *:nth-child(6) {
+  animation-delay: 0.29s;
+}
+.app-main .stack > *:nth-child(7) {
+  animation-delay: 0.34s;
+}
+.app-main .stack > *:nth-child(8) {
+  animation-delay: 0.39s;
+}
+.app-main .stack > *:nth-child(n + 9) {
+  animation-delay: 0.44s;
+}
+
+.features-grid > .card,
+.features-grid > .hero {
+  animation: nc-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.features-grid > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.features-grid > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.features-grid > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.features-grid > *:nth-child(n + 4) {
+  animation-delay: 0.2s;
+}
+
+.page-loader .card {
+  animation: nc-pulse-soft 1.4s ease-in-out infinite;
+}
+
+/* Cards & hero */
+.card,
+.hero {
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.2s ease;
+}
+
+.card:hover,
+.hero:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hero {
+  animation: nc-scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wellness-card,
+.growth-hint-card,
+.stat {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.2s ease;
+}
+
+.wellness-card:active,
+.stat:active {
+  transform: scale(0.99);
+}
+
+.wellness-card.selected {
+  animation: nc-glow-ring 2s ease-in-out infinite;
+}
+
+/* Buttons */
+.btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.22s ease,
+    filter 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--section-accent) 32%, transparent);
+}
+
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+
+.btn-primary:hover:not(:disabled)::after {
+  transform: translateX(100%);
+}
+
+/* Bottom nav */
+.bottom-nav a {
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1),
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.bottom-nav a.active {
+  animation: nc-nav-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.bottom-nav a:active {
+  transform: scale(0.94);
+}
+
+/* Progress & stats */
+.progress-fill,
+.daily-meals-bar .progress-fill,
+.battle-pass-fill {
+  position: relative;
+  overflow: hidden;
+  animation: nc-progress-flow 2.2s ease-in-out infinite;
+}
+
+.progress-fill::after,
+.daily-meals-bar .progress-fill::after,
+.battle-pass-fill::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.35) 50%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  animation: nc-shimmer-slide 2.4s ease-in-out infinite;
+}
+
+@keyframes nc-shimmer-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.meal-dot.filled {
+  animation: nc-pulse-soft 2.2s ease-in-out infinite;
+}
+
+.stat-value {
+  animation: nc-fade-in 0.6s ease both;
+}
+
+/* Quests & achievements */
+.quest-card.ready,
+.achievement-tile.unlocked {
+  animation: nc-pulse-soft 2.5s ease-in-out infinite;
+}
+
+.feature-chip {
+  transition:
+    transform 0.18s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.feature-chip:hover {
+  transform: translateY(-1px);
+}
+
+.feature-chip.active {
+  animation: nc-nav-pop 0.35s ease;
+}
+
+/* Header */
+.app-header {
+  animation: nc-fade-in 0.45s ease both;
+}
+
+.app-header h1 {
+  animation: nc-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+/* Background blobs extra motion */
+.wellness-blob {
+  animation: nc-float-soft 18s ease-in-out infinite;
+}
+
+.fitness-bg-fig {
+  animation: nc-float-soft 22s ease-in-out infinite;
+}
+
+/* Chat messages */
+.chat-bubble-row {
+  animation: nc-fade-up 0.35s ease both;
+}
+
+/* Tutorial coach */
+.tutorial-card {
+  animation: nc-scale-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .card:hover,
+  .hero:hover {
+    transform: none;
+  }
+}

@@ -20,35 +20,38 @@
   align-items: center;
   gap: 4px;
   padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(255, 255, 255, 0.85);
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 14%, #e8e4dc);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.8rem;
   cursor: pointer;
 }
 
 .feature-chip.active {
-  background: linear-gradient(135deg, #2e7d32, #66bb6a);
+  background: linear-gradient(135deg, var(--accent-dim), var(--section-accent));
   color: #fff;
   border-color: transparent;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--section-accent) 28%, transparent);
 }
 
 .league-badge {
   font-weight: 700;
   text-transform: capitalize;
+  color: var(--accent-dim);
 }
 
 .battle-pass-bar {
   height: 10px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--section-accent) 10%, var(--surface-2));
   overflow: hidden;
 }
 
 .battle-pass-fill {
   height: 100%;
-  background: linear-gradient(90deg, #ff9800, #ffd54f);
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--warn), #e8c878);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .achievement-grid {
@@ -59,15 +62,17 @@
 
 .achievement-tile {
   padding: 10px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  opacity: 0.55;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 12%, #e8e4dc);
+  opacity: 0.65;
+  color: var(--text);
 }
 
 .achievement-tile.unlocked {
   opacity: 1;
-  border-color: rgba(46, 125, 50, 0.35);
+  border-color: color-mix(in srgb, var(--section-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--section-accent-soft) 40%, var(--surface));
 }
 
 .team-activity-kudos {
@@ -79,9 +84,10 @@
 .kudos-btn {
   padding: 2px 8px;
   font-size: 0.85rem;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: #fff;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--muted) 18%, #e8e4dc);
+  background: var(--surface);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -100,6 +106,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text);
 }
