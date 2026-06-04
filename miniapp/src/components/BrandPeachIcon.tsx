@@ -1,4 +1,5 @@
 export const BRAND_PEACH_SRC = "/splash/nutricrew-peach.png";
+export const BRAND_PEACH_SRC_2X = "/splash/nutricrew-peach@2x.png";
 
 type BrandPeachIconProps = {
   size?: number;
@@ -24,8 +25,8 @@ export function BrandPeachIcon({
     <img
       className={rootClass}
       src={BRAND_PEACH_SRC}
-      width={409}
-      height={480}
+      width={410}
+      height={481}
       alt=""
       decoding="async"
       draggable={false}

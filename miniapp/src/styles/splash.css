@@ -68,12 +68,12 @@
 
 /* Splash: brand peach artwork + inner gradient */
 .splash-logo-stage {
-  --splash-peach-size: min(300px, 80vw);
+  --splash-peach-size: min(200px, 53.33vw);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 340px;
+  min-height: 230px;
 }
 
 .splash-brand-logo {
@@ -98,7 +98,7 @@
 .splash-peach-mark {
   position: relative;
   width: var(--splash-peach-size);
-  aspect-ratio: 409 / 480;
+  aspect-ratio: 410 / 481;
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.32));
 }
 
@@ -109,6 +109,9 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  image-rendering: auto;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   pointer-events: none;
   transform-origin: 50% 85%;
   animation: brand-peach-bob 3.4s ease-in-out infinite;
@@ -129,8 +132,8 @@
   );
   background-size: 300% 300%;
   animation: splash-gradient-flow 5.5s ease-in-out infinite;
-  -webkit-mask-image: url(/splash/nutricrew-peach.png);
-  mask-image: url(/splash/nutricrew-peach.png);
+  -webkit-mask-image: url(/splash/nutricrew-peach@2x.png);
+  mask-image: url(/splash/nutricrew-peach@2x.png);
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   -webkit-mask-repeat: no-repeat;

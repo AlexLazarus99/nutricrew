@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { BRAND_PEACH_SRC } from "./BrandPeachIcon";
+import { BRAND_PEACH_SRC, BRAND_PEACH_SRC_2X } from "./BrandPeachIcon";
 
 type SplashGradientLogoProps = {
   peachSize?: number;
@@ -19,8 +19,10 @@ export function SplashGradientLogo({ peachSize }: SplashGradientLogoProps) {
           <img
             className="splash-peach-mark__art"
             src={BRAND_PEACH_SRC}
-            width={409}
-            height={480}
+            srcSet={`${BRAND_PEACH_SRC} 1x, ${BRAND_PEACH_SRC_2X} 2x`}
+            sizes="(max-width: 480px) 53vw, 200px"
+            width={410}
+            height={481}
             alt=""
             decoding="async"
             draggable={false}
