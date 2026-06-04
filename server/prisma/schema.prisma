@@ -76,6 +76,7 @@ model User {
   birdGameBest      BirdGameBest?
   ownedBirds        UserBird[]
   birdTrials        UserBirdTrial[]
+  xpSpends          UserXpSpend[]
   achievements      UserAchievement[]
   battlePass        BattlePassProgress?
   duelsAsChallenger TeamDuel[] @relation("DuelChallenger")
@@ -179,6 +180,19 @@ model UserBirdTrial {
 
   @@id([userId, trialId])
   @@map("user_bird_trials")
+}
+
+model UserXpSpend {
+  userId      BigInt   @map("user_id")
+  spendType   String   @map("spend_type") @db.VarChar(32)
+  referenceId String   @map("reference_id") @db.VarChar(64)
+  amount      Int
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, spendType, referenceId])
+  @@map("user_xp_spends")
 }
 
 model TeamMember {

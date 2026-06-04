@@ -302,6 +302,12 @@ export function drawSpeciesBird(
   opts: BirdDrawOpts,
 ): void {
   const id = resolveBirdId(speciesId);
+  ctx.save();
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  if (r > 36) {
+    ctx.lineWidth = Math.max(2, r * 0.04);
+  }
   switch (id) {
     case "ember":
       drawEmber(ctx, r, flapAnim, elapsed, opts);
@@ -321,6 +327,7 @@ export function drawSpeciesBird(
     default:
       drawClassic(ctx, r, flapAnim, opts);
   }
+  ctx.restore();
 }
 
 export function drawBirdTrail(

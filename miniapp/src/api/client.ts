@@ -317,6 +317,8 @@ export interface BirdCatalogRow {
   id: string;
   starPrice: number;
   invoiceStars: number;
+  xpPrice: number | null;
+  starsOnly: boolean;
   free: boolean;
   owned: boolean;
   trials: BirdTrialEntry[];
@@ -325,6 +327,9 @@ export interface BirdCatalogRow {
 export interface BirdRosterResponse {
   selectedBirdId: string;
   starBalance: number;
+  totalXp: number;
+  spentXp: number;
+  availableXp: number;
   birds: BirdCatalogRow[];
   trialsCompleted: string[];
 }
@@ -455,6 +460,11 @@ export const api = {
   unlockGameBirdStars: (birdId: string) =>
     request<{ ok: boolean; starBalance: number; selectedBirdId: string }>(
       "/game/birds/unlock-stars",
+      { method: "POST", body: JSON.stringify({ birdId }) },
+    ),
+  unlockGameBirdXp: (birdId: string) =>
+    request<{ ok: boolean; availableXp: number; selectedBirdId: string }>(
+      "/game/birds/unlock-xp",
       { method: "POST", body: JSON.stringify({ birdId }) },
     ),
   createGameBirdInvoice: (birdId: string) =>

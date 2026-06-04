@@ -12,14 +12,20 @@ import {
 import * as birdRosterRepo from "../repositories/birdRoster.js";
 import * as usersRepo from "../repositories/users.js";
 import { createBirdUnlockInvoice } from "./payments.js";
+import { getXpWallet, spendXp } from "./xpWallet.js";
 
 export type BirdRosterPayload = {
   selectedBirdId: string;
   starBalance: number;
+  totalXp: number;
+  spentXp: number;
+  availableXp: number;
   birds: Array<{
     id: string;
     starPrice: number;
     invoiceStars: number;
+    xpPrice: number | null;
+    starsOnly: boolean;
     free: boolean;
     owned: boolean;
     trials: Array<{
@@ -42,6 +48,9 @@ export async function getBirdRoster(userId: number): Promise<BirdRosterPayload> 
   ]);
   const ownedSet = new Set(owned);
   const completedSet = new Set(completed);
+  const wallet = user
+    ? await getXpWallet(user)
+    : { totalXp: 0, spentXp: 0, availableXp: 0 };
 
   const birds = [...BIRD_CATALOG]
     .sort((a, b) => a.sortOrder - b.sortOrder)
@@ -49,6 +58,8 @@ export async function getBirdRoster(userId: number): Promise<BirdRosterPayload> 
       id: b.id,
       starPrice: b.starPrice,
       invoiceStars: b.invoiceStars,
+      xpPrice: b.xpPrice,
+      starsOnly: b.starsOnly,
       free: b.free,
       owned: b.free || ownedSet.has(b.id),
       trials: trialsForBird(b.id).map((t) => ({
@@ -68,8 +79,52 @@ export async function getBirdRoster(userId: number): Promise<BirdRosterPayload> 
   return {
     selectedBirdId,
     starBalance: user?.star_balance ?? 0,
+    totalXp: wallet.totalXp,
+    spentXp: wallet.spentXp,
+    availableXp: wallet.availableXp,
     birds,
     trialsCompleted: completed,
+  };
+}
+
+export async function unlockWithXp(
+  userId: number,
+  birdId: string,
+): Promise<{
+  ok: boolean;
+  error?: string;
+  availableXp?: number;
+  selectedBirdId?: string;
+}> {
+  if (!isBirdId(birdId)) return { ok: false, error: "INVALID_BIRD" };
+  const def = getBirdDef(birdId)!;
+  if (def.free) return { ok: false, error: "ALREADY_FREE" };
+  if (def.starsOnly || def.xpPrice == null || def.xpPrice <= 0) {
+    return { ok: false, error: "NOT_FOR_XP" };
+  }
+  if (await birdRosterRepo.hasBird(userId, birdId)) {
+    return { ok: false, error: "ALREADY_OWNED" };
+  }
+
+  const dbUser = await usersRepo.findById(userId);
+  if (!dbUser) return { ok: false, error: "USER_NOT_FOUND" };
+
+  const spent = await spendXp(userId, def.xpPrice, "bird_unlock", birdId, dbUser);
+  if (!spent.ok) {
+    return {
+      ok: false,
+      error: spent.error,
+      availableXp: spent.wallet?.availableXp,
+    };
+  }
+
+  await birdRosterRepo.unlockBird(userId, birdId);
+  await birdRosterRepo.setSelectedBird(userId, birdId);
+
+  return {
+    ok: true,
+    availableXp: spent.wallet?.availableXp ?? 0,
+    selectedBirdId: birdId,
   };
 }
 

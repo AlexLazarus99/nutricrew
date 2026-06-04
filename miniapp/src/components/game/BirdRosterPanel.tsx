@@ -2,7 +2,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type BirdCatalogRow, type BirdRosterResponse } from "../../api/client";
 import { BIRD_UI, type BirdId } from "../../lib/birdGame/birdCatalog";
-import { drawBirdPreview } from "../../lib/birdGame/birdSprites";
+import {
+  drawBirdRosterPortrait,
+  ROSTER_PREVIEW_H,
+  ROSTER_PREVIEW_W,
+  setupRosterCanvas,
+} from "../../lib/birdGame/birdRosterArt";
 
 type BirdRosterPanelProps = {
   selectedBirdId: string;
@@ -22,6 +27,7 @@ export function BirdRosterPanel({
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<string | null>(null);
   const previewRefs = useRef<Map<string, HTMLCanvasElement>>(new Map());
+  const previewDprRef = useRef<Map<string, number>>(new Map());
   const syncedRef = useRef(false);
 
   const load = useCallback(() => {
@@ -44,11 +50,13 @@ export function BirdRosterPanel({
     const draw = (ts: number) => {
       for (const [id, canvas] of previewRefs.current) {
         const ctx = canvas.getContext("2d");
+        const dpr = previewDprRef.current.get(id) ?? 1;
         if (!ctx) continue;
-        const w = canvas.width;
-        const h = canvas.height;
-        ctx.clearRect(0, 0, w, h);
-        drawBirdPreview(ctx, id, Math.min(w, h), ts);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const owned = roster?.birds.find((b) => b.id === id)?.owned ?? true;
+        drawBirdRosterPortrait(ctx, id, ROSTER_PREVIEW_W, ROSTER_PREVIEW_H, ts, {
+          locked: !owned,
+        });
       }
       raf = requestAnimationFrame(draw);
     };
@@ -90,6 +98,22 @@ export function BirdRosterPanel({
     }
   }
 
+  async function unlockXp(bird: BirdCatalogRow) {
+    if (!bird.xpPrice) return;
+    setBusy(bird.id);
+    setMsg(null);
+    try {
+      const res = await api.unlockGameBirdXp(bird.id);
+      onSelect(res.selectedBirdId);
+      load();
+      setMsg(t("birds.unlocked"));
+    } catch {
+      setMsg(t("birds.errorXp"));
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function selectBird(bird: BirdCatalogRow) {
     if (!bird.owned) return;
     setBusy(bird.id);
@@ -114,9 +138,14 @@ export function BirdRosterPanel({
     <div className="bird-roster card">
       <div className="bird-roster-head">
         <h3>{t("birds.title")}</h3>
-        <span className="bird-roster-stars">
-          ⭐ {roster.starBalance} {t("birds.balance")}
-        </span>
+        <div className="bird-roster-balances">
+          <span className="bird-roster-stars">
+            ⭐ {roster.starBalance} {t("birds.balance")}
+          </span>
+          <span className="bird-roster-xp">
+            ✨ {roster.availableXp} {t("birds.xpAvailable")} / {roster.totalXp}
+          </span>
+        </div>
       </div>
       <p className="muted small">{t("birds.subtitle")}</p>
       {msg && <p className="success small">{msg}</p>}
@@ -126,23 +155,46 @@ export function BirdRosterPanel({
           const ui = BIRD_UI[bird.id as BirdId];
           const active = selectedBirdId === bird.id;
           const isBusy = busy === bird.id;
+          const starsOnly =
+            bird.starsOnly ?? (!bird.free && (bird.xpPrice == null || bird.xpPrice <= 0));
+          const canXp =
+            !bird.owned &&
+            !starsOnly &&
+            bird.xpPrice != null &&
+            bird.xpPrice > 0 &&
+            roster.availableXp >= bird.xpPrice;
           return (
             <article
               key={bird.id}
               className={`bird-roster-card${active ? " bird-roster-card--active" : ""}${bird.owned ? "" : " bird-roster-card--locked"}`}
               style={{ "--bird-accent": ui?.accent ?? "#FFD54F" } as Record<string, string>}
             >
-              <canvas
-                ref={(el) => {
-                  if (el) previewRefs.current.set(bird.id, el);
-                  else previewRefs.current.delete(bird.id);
-                }}
-                className="bird-roster-preview"
-                width={96}
-                height={72}
-                aria-hidden
-              />
-              <h4>{t(`birds.names.${bird.id}`)}</h4>
+              <div className="bird-roster-preview-wrap">
+                <canvas
+                  ref={(el) => {
+                    if (el) {
+                      previewRefs.current.set(bird.id, el);
+                      const setup = setupRosterCanvas(el);
+                      if (setup) {
+                        previewDprRef.current.set(bird.id, el.width / ROSTER_PREVIEW_W);
+                      }
+                    } else {
+                      previewRefs.current.delete(bird.id);
+                      previewDprRef.current.delete(bird.id);
+                    }
+                  }}
+                  className="bird-roster-preview"
+                  width={ROSTER_PREVIEW_W}
+                  height={ROSTER_PREVIEW_H}
+                  aria-hidden
+                />
+              </div>
+              <h4>
+                {t(`birds.names.${bird.id}`)}
+                {starsOnly && !bird.owned && (
+                  <span className="bird-roster-exclusive">{t("birds.exclusive")}</span>
+                )}
+              </h4>
               <p className="bird-roster-skills small muted">
                 {t(`birds.skills.${bird.id}`)}
               </p>
@@ -174,6 +226,16 @@ export function BirdRosterPanel({
                   </button>
                 ) : (
                   <>
+                    {bird.xpPrice != null && bird.xpPrice > 0 && (
+                      <button
+                        type="button"
+                        className="btn btn-primary btn-sm bird-roster-btn-xp"
+                        disabled={disabled || isBusy || !canXp}
+                        onClick={() => void unlockXp(bird)}
+                      >
+                        {t("birds.unlockXp", { xp: bird.xpPrice })}
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="btn btn-primary btn-sm"

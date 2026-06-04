@@ -673,6 +673,26 @@ apiRouter.post("/game/birds/unlock-stars", ...authed, async (req, res) => {
   res.json({ ok: true, starBalance: result.starBalance, selectedBirdId: birdId.trim() });
 });
 
+apiRouter.post("/game/birds/unlock-xp", ...authed, async (req, res) => {
+  const { birdId } = req.body as { birdId?: string };
+  if (!birdId?.trim()) {
+    res.status(400).json({ error: "birdId required" });
+    return;
+  }
+  const result = await import("../../services/birdRoster.js").then((m) =>
+    m.unlockWithXp(req.dbUser!.id, birdId.trim()),
+  );
+  if (!result.ok) {
+    res.status(400).json({ error: result.error, availableXp: result.availableXp });
+    return;
+  }
+  res.json({
+    ok: true,
+    availableXp: result.availableXp,
+    selectedBirdId: result.selectedBirdId,
+  });
+});
+
 apiRouter.post("/game/birds/invoice", ...authed, async (req, res) => {
   const { birdId } = req.body as { birdId?: string };
   if (!birdId?.trim()) {

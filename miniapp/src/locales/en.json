@@ -664,8 +664,12 @@
   },
   "birds": {
     "title": "Bird aviary",
-    "subtitle": "Unlock birds with Telegram Stars or your star balance. Each bird has unique boosts and level trials.",
+    "subtitle": "Some birds are exclusive (Stars only). Ember & Frost can be earned with lots of XP.",
     "balance": "balance",
+    "xpAvailable": "XP available",
+    "unlockXp": "Unlock for {{xp}} XP",
+    "exclusive": "Exclusive",
+    "errorXp": "Not enough XP or bird unavailable for XP.",
     "equip": "Equip",
     "equipped": "Equipped",
     "buyTelegram": "Buy {{stars}} ⭐",
@@ -684,11 +688,11 @@
     },
     "skills": {
       "classic": "Balanced starter — great for learning the game.",
-      "ember": "Burns junk food on contact · +18% fruit nutrition.",
-      "frost": "Longer slow-mo · wider gaps · ice trail.",
-      "neon": "Faster flight · +1 nitro stack cap · rainbow trail.",
-      "royal": "Longer ghost after fruit · extra-wide gaps.",
-      "storm": "Longer boss energy boost · lightning trail."
+      "ember": "Burns junk on contact · +18% fruit · unlock with 3500 XP or Stars.",
+      "frost": "Slow-mo & wide gaps · unlock with 5000 XP or Stars.",
+      "neon": "Exclusive · +1 nitro stack · rainbow trail · Stars / Telegram only.",
+      "royal": "Exclusive · long ghost · wide gaps · Stars / Telegram only.",
+      "storm": "Exclusive · boss energy boost · lightning · Stars / Telegram only."
     }
   },
   "quiz": {

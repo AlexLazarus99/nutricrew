@@ -1959,15 +1959,69 @@ button {
   margin: 0;
 }
 
-.bird-roster-stars {
-  font-size: 0.85rem;
+.bird-roster-balances {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 0.82rem;
   font-weight: 600;
+}
+
+.bird-roster-stars {
+  color: #ffd54f;
+}
+
+.bird-roster-xp {
+  color: #b388ff;
+}
+
+.bird-roster-preview-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.bird-roster-preview {
+  display: block;
+  width: 100%;
+  height: 140px;
+  border-radius: 12px;
+}
+
+.bird-roster-btn-xp {
+  background: linear-gradient(135deg, #7c4dff, #536dfe) !important;
+  border: none !important;
+}
+
+.bird-roster-card h4 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.bird-roster-exclusive {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(255, 193, 7, 0.35), rgba(255, 87, 34, 0.25));
+  color: #ffe082;
+  border: 1px solid rgba(255, 193, 7, 0.45);
+}
+
+.bird-roster-card--locked.bird-roster-card:has(.bird-roster-exclusive) {
+  box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.25);
 }
 
 .bird-roster-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
   margin-top: 12px;
 }
 
@@ -1994,16 +2048,6 @@ button {
   font-size: 0.9rem;
 }
 
-.bird-roster-preview {
-  width: 100%;
-  height: 72px;
-  border-radius: 10px;
-  background: radial-gradient(
-    ellipse at center,
-    color-mix(in srgb, var(--bird-accent, #ffd54f) 18%, transparent),
-    transparent 70%
-  );
-}
 
 .bird-roster-skills {
   line-height: 1.35;

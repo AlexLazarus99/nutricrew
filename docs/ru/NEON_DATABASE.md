@@ -100,9 +100,13 @@ WHERE table_name IN ('user_birds', 'user_bird_trials');
 Если deploy падает на P1002 или migrate не доезжает:
 
 1. [console.neon.tech](https://console.neon.tech) → проект → **SQL Editor**.
-2. Откройте файл  
-   `server/prisma/migrations/20250629120000_bird_roster/neon_manual_run.sql`.
-3. Выполните **Block 1 → 2 → 3 → 4** по очереди (Block 5 — только если не будете делать deploy).
+2. Откройте в репозитории **`RUN_IN_NEON.sql`** (не вставляйте путь к файлу в редактор!):
+   - `server/prisma/migrations/20250629120000_bird_roster/RUN_IN_NEON.sql`
+   - затем `server/prisma/migrations/20250630140000_user_xp_spends/RUN_IN_NEON.sql`
+3. Скопируйте **весь текст SQL** из файла → вставьте в Neon → **Run**.
+
+**Ошибка `trailing junk after numeric literal ... 20250629120000_bird_roster`** значит, что в Neon попала **строка-путь** вида `20250629120000_bird_roster/neon_manual_run.sql`, а не SQL. Удалите её из редактора и вставьте только содержимое `RUN_IN_NEON.sql`.
+
 4. При P1002 перед deploy выполните SQL снятия advisory lock (см. выше).
 5. Сделайте **Manual Deploy** на Render (код API с bird roster должен быть задеплоен).
 

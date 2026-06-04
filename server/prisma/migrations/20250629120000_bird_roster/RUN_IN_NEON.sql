@@ -1,20 +1,14 @@
 -- =============================================================================
--- NEON SQL EDITOR — bird roster migration
---
--- DO NOT paste the file path into Neon! Wrong:
---   20250629120000_bird_roster/neon_manual_run.sql
--- That causes: ERROR trailing junk after numeric literal ...
---
--- Open and copy ALL of: RUN_IN_NEON.sql (same folder)
--- Or run blocks below one at a time (select block -> Run).
+-- СКОПИРУЙТЕ ТОЛЬКО ЭТОТ ФАЙЛ В NEON SQL EDITOR (не путь и не имя папки!)
+-- Copy ONLY this file contents — NOT: 20250629120000_bird_roster/neon_manual_run.sql
 -- =============================================================================
 
--- BLOCK 1
+-- --- BLOCK 1: columns ---
 ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "selected_bird_id" VARCHAR(32) NOT NULL DEFAULT 'classic';
 
 ALTER TABLE "payments" ADD COLUMN IF NOT EXISTS "reference_id" VARCHAR(64);
 
--- BLOCK 2
+-- --- BLOCK 2: tables ---
 CREATE TABLE IF NOT EXISTS "user_birds" (
     "user_id" BIGINT NOT NULL,
     "bird_id" VARCHAR(32) NOT NULL,
@@ -30,7 +24,7 @@ CREATE TABLE IF NOT EXISTS "user_bird_trials" (
     CONSTRAINT "user_bird_trials_pkey" PRIMARY KEY ("user_id", "trial_id")
 );
 
--- BLOCK 3
+-- --- BLOCK 3: foreign keys ---
 DO $bird_fk1$ BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM pg_constraint WHERE conname = 'user_birds_user_id_fkey'
@@ -51,7 +45,7 @@ DO $bird_fk2$ BEGIN
   END IF;
 END $bird_fk2$;
 
--- BLOCK 4
+-- --- BLOCK 4: classic bird for all users ---
 INSERT INTO "user_birds" ("user_id", "bird_id", "unlocked_at")
 SELECT u."id", 'classic', CURRENT_TIMESTAMP
 FROM "users" u

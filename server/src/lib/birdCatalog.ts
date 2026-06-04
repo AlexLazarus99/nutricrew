@@ -11,17 +11,21 @@ export type BirdDef = {
   id: BirdId;
   starPrice: number;
   invoiceStars: number;
+  /** Lifetime XP cost (optional alternative to Stars) */
+  xpPrice: number | null;
+  /** Only Telegram Stars / in-app star balance — no XP unlock */
+  starsOnly: boolean;
   free: boolean;
   sortOrder: number;
 };
 
 export const BIRD_CATALOG: BirdDef[] = [
-  { id: "classic", starPrice: 0, invoiceStars: 0, free: true, sortOrder: 0 },
-  { id: "ember", starPrice: 120, invoiceStars: 99, free: false, sortOrder: 1 },
-  { id: "frost", starPrice: 150, invoiceStars: 129, free: false, sortOrder: 2 },
-  { id: "neon", starPrice: 200, invoiceStars: 169, free: false, sortOrder: 3 },
-  { id: "royal", starPrice: 280, invoiceStars: 229, free: false, sortOrder: 4 },
-  { id: "storm", starPrice: 350, invoiceStars: 289, free: false, sortOrder: 5 },
+  { id: "classic", starPrice: 0, invoiceStars: 0, xpPrice: null, starsOnly: false, free: true, sortOrder: 0 },
+  { id: "ember", starPrice: 120, invoiceStars: 99, xpPrice: 3500, starsOnly: false, free: false, sortOrder: 1 },
+  { id: "frost", starPrice: 150, invoiceStars: 129, xpPrice: 5000, starsOnly: false, free: false, sortOrder: 2 },
+  { id: "neon", starPrice: 200, invoiceStars: 169, xpPrice: null, starsOnly: true, free: false, sortOrder: 3 },
+  { id: "royal", starPrice: 280, invoiceStars: 229, xpPrice: null, starsOnly: true, free: false, sortOrder: 4 },
+  { id: "storm", starPrice: 350, invoiceStars: 289, xpPrice: null, starsOnly: true, free: false, sortOrder: 5 },
 ];
 
 export const BIRD_TRIALS: BirdTrialDef[] = [
