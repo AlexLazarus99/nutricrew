@@ -94,66 +94,11 @@
   animation: splash-logo-reveal 0.9s ease-out 0.12s forwards;
 }
 
-/* Icon only — crop wordmark from source PNG */
-.splash-peach-mark {
-  position: relative;
+.splash-peach-svg {
   width: var(--splash-peach-size);
-  height: calc(var(--splash-peach-size) * 0.78);
-  overflow: hidden;
-  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.32));
-}
-
-.splash-peach-mark__art {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 108%;
-  max-width: none;
   height: auto;
-  transform: translateX(-50%);
-  clip-path: inset(0 0 34% 0);
-  -webkit-clip-path: inset(0 0 34% 0);
   display: block;
-  pointer-events: none;
-}
-
-.splash-peach-mark__gradient {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 108%;
-  height: 66%;
-  transform: translateX(-50%);
-  background: linear-gradient(
-    125deg,
-    #fff5ee 0%,
-    #f5c4a0 22%,
-    #9fd9b8 48%,
-    #e8a078 68%,
-    #d4f0e4 88%,
-    #fff0e6 100%
-  );
-  background-size: 300% 300%;
-  animation: splash-gradient-flow 5.5s ease-in-out infinite;
-  -webkit-mask-size: 100% auto;
-  mask-size: 100% auto;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center top;
-  mask-position: center top;
-  mix-blend-mode: soft-light;
-  opacity: 0.75;
-  pointer-events: none;
-}
-
-@keyframes splash-gradient-flow {
-  0%,
-  100% {
-    background-position: 0% 42%;
-  }
-  50% {
-    background-position: 100% 58%;
-  }
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.3));
 }
 
 .splash-brand-wordmark {
@@ -398,7 +343,7 @@
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
   .splash-brand-logo__reveal,
-  .splash-peach-mark__gradient,
+  .splash-peach-svg animate,
   .splash-tagline,
   .splash-loader,
   .splash-orb,
