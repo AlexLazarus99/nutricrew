@@ -110,6 +110,8 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  transform-origin: 50% 85%;
+  animation: brand-peach-bob 3.4s ease-in-out infinite;
 }
 
 .splash-peach-mark__shimmer {
@@ -390,6 +392,7 @@
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
   .splash-brand-logo__reveal,
+  .splash-peach-mark__art,
   .splash-peach-mark__shimmer,
   .splash-tagline,
   .splash-loader,

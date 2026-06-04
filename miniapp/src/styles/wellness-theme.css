@@ -315,10 +315,13 @@ body {
   -webkit-backdrop-filter: blur(12px);
 }
 
-.app-header h1 {
+.app-title {
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.02em;
+}
+
+.app-title__text {
   color: var(--heading);
   background: linear-gradient(
     125deg,
@@ -753,7 +756,7 @@ body {
   color: #0f1a14;
 }
 
-.app-shell[data-color-scheme="dark"] .app-header h1 {
+.app-shell[data-color-scheme="dark"] .app-title__text {
   background: linear-gradient(125deg, #f8fffb 0%, #b8e8d0 55%, #7ec9a0 100%);
   -webkit-background-clip: text;
   background-clip: text;

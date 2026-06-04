@@ -220,11 +220,19 @@ body {
   border-bottom: 1px solid color-mix(in srgb, var(--section-accent) 18%, transparent);
 }
 
-.app-header h1 {
+.app-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
   margin: 0;
   font-size: 1.45rem;
   font-weight: 600;
   color: color-mix(in srgb, var(--text) 88%, var(--section-accent));
+}
+
+.app-title__peach {
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.18));
 }
 
 .tagline {

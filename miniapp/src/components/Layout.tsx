@@ -12,6 +12,7 @@ import { shouldShowPostRegistrationOffer } from "../lib/postRegistration";
 import { sectionFromPath, type AppSection } from "../lib/appSection";
 import { APP_BUILD } from "../lib/apiBase";
 import { SocialLinks } from "./SocialLinks";
+import { BrandPeachIcon } from "./BrandPeachIcon";
 
 function resolveSection(
   registered: boolean,
@@ -41,7 +42,10 @@ function LayoutShell() {
       <WellnessBackground />
       <header className="app-header">
         <div>
-          <h1>{t("app.name")}</h1>
+          <h1 className="app-title">
+            <span className="app-title__text">{t("app.name")}</span>
+            <BrandPeachIcon size={26} className="app-title__peach" animated />
+          </h1>
           <p className="tagline">{t("app.tagline")}</p>
         </div>
         <LanguageSwitcher />

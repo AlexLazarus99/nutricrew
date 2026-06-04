@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
-
-const PEACH_SRC = "/splash/nutricrew-peach.png";
+import { BRAND_PEACH_SRC } from "./BrandPeachIcon";
 
 type SplashGradientLogoProps = {
   peachSize?: number;
@@ -19,7 +18,7 @@ export function SplashGradientLogo({ peachSize }: SplashGradientLogoProps) {
           <div className="splash-peach-mark__shimmer" aria-hidden />
           <img
             className="splash-peach-mark__art"
-            src={PEACH_SRC}
+            src={BRAND_PEACH_SRC}
             width={1024}
             height={593}
             alt=""
