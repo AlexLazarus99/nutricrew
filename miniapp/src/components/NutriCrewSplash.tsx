@@ -1,8 +1,5 @@
-import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
 import { SplashGradientLogo } from "./SplashGradientLogo";
-
-const LIGHT_RAY_COUNT = 14;
 
 type Props = {
   slow?: boolean;
@@ -20,22 +17,7 @@ export function NutriCrewSplash({ slow = false }: Props) {
 
       <div className="splash-card">
         <div className="splash-logo-stage">
-          <div className="splash-light-burst" aria-hidden>
-            {Array.from({ length: LIGHT_RAY_COUNT }, (_, i) => (
-              <span
-                key={i}
-                className="splash-light-ray"
-                style={
-                  {
-                    "--ray-deg": `${(360 / LIGHT_RAY_COUNT) * i}deg`,
-                    "--ray-i": i,
-                  } as CSSProperties
-                }
-              />
-            ))}
-          </div>
-          <span className="splash-logo-bloom" aria-hidden />
-          <SplashGradientLogo size={152} showWordmark />
+          <SplashGradientLogo />
         </div>
         <p className="splash-tagline">{t("splash.tagline")}</p>
       </div>

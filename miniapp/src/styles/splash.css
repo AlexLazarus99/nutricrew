@@ -66,179 +66,91 @@
   animation: nutricrew-mark-crew 4.2s ease-in-out infinite;
 }
 
-/* Splash: Apple-style logo + light-ray reveal */
+/* Splash: brand image + soft masked gradient */
 .splash-logo-stage {
-  --splash-logo-size: 152px;
-  --splash-logo-height: calc(var(--splash-logo-size) * 112 / 96);
+  --splash-logo-width: min(248px, 80vw);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: calc(var(--splash-logo-height) + 56px);
+  min-height: 240px;
 }
 
-.splash-apple-logo {
+.splash-brand-logo {
   position: relative;
   z-index: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
+  width: var(--splash-logo-width);
 }
 
-.splash-apple-logo__reveal {
+.splash-brand-logo__reveal {
   opacity: 0;
-  animation: splash-logo-reveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+  animation: splash-logo-reveal 0.9s ease-out 0.12s forwards;
 }
 
-.splash-apple-logo__icon {
-  width: var(--splash-logo-size);
-  height: var(--splash-logo-height);
-  filter: drop-shadow(0 10px 28px rgba(46, 90, 68, 0.22));
-  animation: splash-apple-float 5.5s ease-in-out 1.35s infinite;
+.splash-brand-logo__frame {
+  position: relative;
+  padding: 18px 22px 14px;
+  border-radius: 32px;
+  background: linear-gradient(165deg, #fffefb 0%, #faf6f2 48%, #f5f0ea 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 16px 48px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-.splash-apple-logo__icon svg {
-  width: 100%;
-  height: 100%;
+.splash-brand-logo__img {
+  position: relative;
+  z-index: 1;
   display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
 }
 
-.splash-apple-wordmark {
-  margin: 0;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "SF Pro Display",
-    "Segoe UI",
-    system-ui,
-    sans-serif;
-  font-size: clamp(1.85rem, 8.5vw, 2.5rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1;
-  opacity: 0;
-  animation: splash-word-reveal 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.72s forwards;
+.splash-brand-logo__gradient {
+  position: absolute;
+  inset: 18px 22px 14px;
+  z-index: 2;
+  border-radius: 8px;
+  background: linear-gradient(
+    125deg,
+    #f4c4a8 0%,
+    #e8a078 18%,
+    #8fd4a8 42%,
+    #7ec4a0 58%,
+    #f0b898 78%,
+    #c5e8f0 92%,
+    #f4c4a8 100%
+  );
+  background-size: 280% 280%;
+  animation: splash-gradient-flow 5.5s ease-in-out infinite;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  mix-blend-mode: soft-light;
+  opacity: 0.62;
+  pointer-events: none;
 }
 
-.splash-apple-word-nutri {
-  color: #f5faf7;
-}
-
-.splash-apple-word-crew {
-  color: rgba(184, 220, 232, 0.92);
-}
-
-@keyframes splash-apple-float {
+@keyframes splash-gradient-flow {
   0%,
   100% {
-    transform: translateY(0);
+    background-position: 0% 40%;
   }
   50% {
-    transform: translateY(-5px);
-  }
-}
-
-.splash-light-burst {
-  position: absolute;
-  top: calc(var(--splash-logo-height) / 2);
-  left: 50%;
-  width: min(280px, 72vw);
-  height: min(280px, 72vw);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.splash-light-ray {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 2px;
-  height: 48%;
-  margin-left: -1px;
-  transform-origin: center bottom;
-  transform: rotate(var(--ray-deg)) scaleY(0);
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(230, 248, 238, 0.55) 35%,
-    rgba(255, 255, 255, 0.85) 72%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  border-radius: 2px;
-  opacity: 0;
-  animation: splash-ray-burst 1.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  animation-delay: calc(var(--ray-i) * 0.025s);
-  filter: blur(0.3px);
-}
-
-.splash-logo-bloom {
-  position: absolute;
-  top: calc(var(--splash-logo-height) / 2);
-  left: 50%;
-  width: min(200px, 55vw);
-  height: min(200px, 55vw);
-  transform: translate(-50%, -50%) scale(0.2);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 1;
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0.42) 0%,
-    rgba(159, 217, 184, 0.22) 32%,
-    rgba(126, 196, 160, 0.08) 55%,
-    transparent 72%
-  );
-  opacity: 0;
-  animation: splash-logo-bloom 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-@keyframes splash-ray-burst {
-  0% {
-    transform: rotate(var(--ray-deg)) scaleY(0);
-    opacity: 0;
-  }
-  28% {
-    opacity: 0.95;
-  }
-  55% {
-    transform: rotate(var(--ray-deg)) scaleY(1);
-    opacity: 0.65;
-  }
-  100% {
-    transform: rotate(var(--ray-deg)) scaleY(1.08);
-    opacity: 0;
-  }
-}
-
-@keyframes splash-logo-bloom {
-  0% {
-    transform: translate(-50%, -50%) scale(0.15);
-    opacity: 0;
-  }
-  40% {
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.15);
-    opacity: 0;
+    background-position: 100% 60%;
   }
 }
 
 @keyframes splash-logo-reveal {
-  0% {
+  from {
     opacity: 0;
-    transform: scale(0.78);
-    filter: blur(10px);
   }
-  55% {
-    filter: blur(2px);
-  }
-  100% {
+  to {
     opacity: 1;
-    transform: scale(1);
-    filter: blur(0);
   }
 }
 
@@ -453,11 +365,9 @@
   .nutricrew-mark--animated .nutricrew-mark-halo,
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
-  .splash-apple-logo__reveal,
-  .splash-apple-logo__icon,
-  .splash-apple-wordmark,
-  .splash-light-ray,
-  .splash-logo-bloom,
+  .splash-brand-logo__reveal,
+  .splash-brand-logo__frame,
+  .splash-brand-logo__gradient,
   .splash-tagline,
   .splash-loader,
   .splash-orb,
@@ -466,14 +376,6 @@
     opacity: 1;
     transform: none;
     filter: drop-shadow(0 10px 28px rgba(46, 90, 68, 0.22));
-  }
-
-  .splash-apple-logo__icon svg animate {
-    display: none;
-  }
-
-  .splash-light-ray {
-    display: none;
   }
 
   .splash-loader-bar {
