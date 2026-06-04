@@ -3694,252 +3694,267 @@ function drawJunk(ctx: CanvasRenderingContext2D, junk: JunkObstacle, state: Game
     ctx.ellipse(cx - rx * 0.25, bodyY - ry * 0.25, rx * 0.22, ry * 0.18, -0.4, 0, Math.PI * 2);
     ctx.fill();
   } else if (type === "bacon") {
-    drawBaconStrip(ctx, x, cx, bottomY, size);
+    drawEggWithBacon(ctx, x, cx, bottomY, size, state.elapsed);
   } else if (type === "burger") {
-    const w = size * 0.52;
-    ctx.fillStyle = "#F4A460";
-    ctx.beginPath();
-    ctx.ellipse(cx, bottomY - size * 0.1, w, size * 0.11, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#D2691E";
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-
-    ctx.fillStyle = "#6D4C41";
-    ctx.beginPath();
-    ctx.ellipse(cx, bottomY - size * 0.26, w * 0.96, size * 0.13, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#66BB6A";
-    ctx.beginPath();
-    ctx.moveTo(x + size * 0.06, bottomY - size * 0.36);
-    ctx.quadraticCurveTo(cx, bottomY - size * 0.42, x + size * 0.94, bottomY - size * 0.36);
-    ctx.lineTo(x + size * 0.94, bottomY - size * 0.44);
-    ctx.quadraticCurveTo(cx, bottomY - size * 0.5, x + size * 0.06, bottomY - size * 0.44);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#FFEB3B";
-    ctx.fillRect(x + size * 0.08, bottomY - size * 0.52, size * 0.84, size * 0.07);
-
-    ctx.fillStyle = "#D84315";
-    ctx.beginPath();
-    ctx.ellipse(cx, bottomY - size * 0.58, w * 0.94, size * 0.12, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#F4A460";
-    ctx.beginPath();
-    ctx.ellipse(cx, bottomY - size * 0.74, w, size * 0.13, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.strokeStyle = "#D2691E";
-    ctx.stroke();
-
-    ctx.fillStyle = "#FFF8E1";
-    for (let i = 0; i < 6; i++) {
-      ctx.beginPath();
-      ctx.arc(x + size * 0.16 + i * size * 0.12, bottomY - size * 0.74, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = "#FFF";
-    ctx.beginPath();
-    ctx.ellipse(cx - w * 0.35, bottomY - size * 0.76, 3, 5, -0.3, 0, Math.PI * 2);
-    ctx.fill();
+    drawAnimatedBurger(ctx, x, cx, bottomY, size, state.elapsed);
   } else if (type === "pizza") {
-    const tipY = bottomY - size * 0.06;
-    const crustY = bottomY - size * 0.82;
-
-    ctx.fillStyle = "#FF9800";
-    ctx.beginPath();
-    ctx.moveTo(cx, tipY);
-    ctx.lineTo(x + size * 0.04, crustY);
-    ctx.lineTo(x + size * 0.96, crustY);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#FFE0B2";
-    ctx.beginPath();
-    ctx.moveTo(cx, tipY + size * 0.1);
-    ctx.lineTo(x + size * 0.14, crustY + size * 0.04);
-    ctx.lineTo(x + size * 0.86, crustY + size * 0.04);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.fillStyle = "#E53935";
-    const toppings = [
-      [0.28, 0.52],
-      [0.42, 0.62],
-      [0.58, 0.48],
-      [0.72, 0.58],
-      [0.36, 0.44],
-      [0.64, 0.66],
-    ];
-    for (const [tx, ty] of toppings) {
-      ctx.beginPath();
-      ctx.arc(x + size * tx, bottomY - size * ty, 5.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = "#FF7043";
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.ellipse(x + size * (0.22 + i * 0.14), bottomY - size * 0.38, 4, 2.5, 0.3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.strokeStyle = "#E65100";
-    ctx.lineWidth = 2.5;
-    ctx.beginPath();
-    ctx.moveTo(cx, tipY);
-    ctx.lineTo(x + size * 0.04, crustY);
-    ctx.lineTo(x + size * 0.96, crustY);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.strokeStyle = "#BF360C";
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(x + size * 0.04, crustY);
-    ctx.lineTo(x + size * 0.96, crustY);
-    ctx.stroke();
+    drawAnimatedPizza(ctx, x, cx, bottomY, size, state.elapsed);
   } else if (type === "soda") {
     drawSodaBottle(ctx, x, cx, bottomY, size, state.elapsed);
   }
 }
 
-function drawBaconStrip(
+function drawEggWithBacon(
   ctx: CanvasRenderingContext2D,
   x: number,
-  _cx: number,
+  cx: number,
   bottomY: number,
   size: number,
+  elapsed: number,
 ): void {
-  const topY = bottomY - size * 0.9;
+  const t = elapsed * 0.005;
+  const wobble = Math.sin(t * 2.1) * size * 0.012;
+  const plateY = bottomY - size * 0.08 + wobble;
 
   ctx.save();
+  ctx.translate(0, wobble);
+
+  ctx.fillStyle = "#ECEFF1";
+  ctx.strokeStyle = "#B0BEC5";
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(x + size * 0.1, bottomY - size * 0.11);
-  ctx.bezierCurveTo(
-    x + size * 0.04,
-    bottomY - size * 0.34,
-    x + size * 0.28,
-    bottomY - size * 0.46,
-    x + size * 0.22,
-    bottomY - size * 0.58,
-  );
-  ctx.bezierCurveTo(
-    x + size * 0.16,
-    bottomY - size * 0.72,
-    x + size * 0.38,
-    bottomY - size * 0.84,
-    x + size * 0.52,
-    bottomY - size * 0.8,
-  );
-  ctx.bezierCurveTo(
-    x + size * 0.68,
-    bottomY - size * 0.76,
-    x + size * 0.82,
-    bottomY - size * 0.58,
-    x + size * 0.86,
-    bottomY - size * 0.38,
-  );
-  ctx.bezierCurveTo(
-    x + size * 0.9,
-    bottomY - size * 0.2,
-    x + size * 0.78,
-    bottomY - size * 0.1,
-    x + size * 0.58,
-    bottomY - size * 0.09,
-  );
-  ctx.bezierCurveTo(
-    x + size * 0.34,
-    bottomY - size * 0.08,
-    x + size * 0.18,
-    bottomY - size * 0.09,
-    x + size * 0.1,
-    bottomY - size * 0.11,
-  );
-  ctx.closePath();
-
-  const meatGrad = ctx.createLinearGradient(x, topY, x + size, bottomY);
-  meatGrad.addColorStop(0, "#C62828");
-  meatGrad.addColorStop(0.35, "#E53935");
-  meatGrad.addColorStop(0.65, "#D84315");
-  meatGrad.addColorStop(1, "#B71C1C");
-  ctx.fillStyle = meatGrad;
+  ctx.ellipse(cx, plateY, size * 0.48, size * 0.1, 0, 0, Math.PI * 2);
   ctx.fill();
-
-  ctx.strokeStyle = "#5D4037";
-  ctx.lineWidth = 1.4;
   ctx.stroke();
 
-  ctx.clip();
-
-  const fatStreaks: Array<[number, number, number, number]> = [
-    [0.14, 0.22, 0.78, 0.18],
-    [0.18, 0.38, 0.82, 0.34],
-    [0.12, 0.52, 0.8, 0.48],
-    [0.16, 0.66, 0.76, 0.62],
-    [0.2, 0.78, 0.72, 0.74],
-  ];
-  for (const [x0, y0, x1, y1] of fatStreaks) {
-    const wave = size * 0.04;
-    ctx.strokeStyle = "rgba(255,252,245,0.92)";
-    ctx.lineWidth = size * 0.055 + (y0 % 0.2) * size * 0.02;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(x + size * x0, bottomY - size * y0);
-    ctx.quadraticCurveTo(
-      x + size * ((x0 + x1) / 2),
-      bottomY - size * ((y0 + y1) / 2) + wave,
-      x + size * x1,
-      bottomY - size * y1,
-    );
-    ctx.stroke();
-    ctx.strokeStyle = "rgba(255,255,255,0.45)";
-    ctx.lineWidth = size * 0.022;
-    ctx.stroke();
-  }
-
-  ctx.fillStyle = "rgba(255,235,220,0.55)";
+  const yolkCy = bottomY - size * 0.48;
+  const yolkPulse = 1 + Math.sin(t * 3.5) * 0.04;
+  ctx.fillStyle = "#FFEB3B";
   ctx.beginPath();
-  ctx.ellipse(x + size * 0.78, bottomY - size * 0.14, size * 0.09, size * 0.05, -0.25, 0, Math.PI * 2);
+  ctx.ellipse(cx - size * 0.08, yolkCy, size * 0.2 * yolkPulse, size * 0.17 * yolkPulse, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = "#FFC107";
+  ctx.beginPath();
+  ctx.ellipse(cx - size * 0.08, yolkCy, size * 0.12, size * 0.1, 0, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.restore();
-
-  ctx.fillStyle = "#FFEBEE";
+  ctx.fillStyle = "rgba(255,255,255,0.85)";
   ctx.beginPath();
-  ctx.moveTo(x + size * 0.08, bottomY - size * 0.12);
-  ctx.lineTo(x + size * 0.14, bottomY - size * 0.2);
-  ctx.lineTo(x + size * 0.12, bottomY - size * 0.1);
-  ctx.closePath();
+  ctx.ellipse(cx - size * 0.14, yolkCy - size * 0.06, size * 0.28, size * 0.2, -0.2, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#BCAAA4";
+  ctx.strokeStyle = "rgba(255,255,255,0.5)";
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  ctx.fillStyle = "rgba(255,255,255,0.28)";
-  ctx.beginPath();
-  ctx.ellipse(x + size * 0.32, bottomY - size * 0.32, size * 0.08, size * 0.035, -0.35, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "rgba(62,39,35,0.35)";
-  const searSpots: Array<[number, number]> = [
-    [0.28, 0.28],
-    [0.42, 0.36],
-    [0.56, 0.44],
-    [0.36, 0.54],
-    [0.64, 0.34],
-    [0.48, 0.68],
-    [0.3, 0.62],
-    [0.72, 0.5],
-  ];
-  for (const [fx, fy] of searSpots) {
+  const drawBaconStripOnPlate = (ox: number, oy: number, flip: number) => {
+    ctx.save();
+    ctx.translate(x + size * ox, bottomY - size * oy);
+    ctx.scale(flip, 1);
     ctx.beginPath();
-    ctx.arc(x + size * fx, bottomY - size * fy, 0.85, 0, Math.PI * 2);
+    ctx.moveTo(0, 0);
+    ctx.bezierCurveTo(size * 0.04, -size * 0.06, size * 0.14, -size * 0.08, size * 0.2, -size * 0.04);
+    ctx.bezierCurveTo(size * 0.26, 0, size * 0.22, size * 0.06, size * 0.12, size * 0.08);
+    ctx.bezierCurveTo(size * 0.04, size * 0.1, -size * 0.02, size * 0.04, 0, 0);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, -size * 0.08, size * 0.2, size * 0.08);
+    g.addColorStop(0, "#E53935");
+    g.addColorStop(0.5, "#C62828");
+    g.addColorStop(1, "#B71C1C");
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.strokeStyle = "#5D4037";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  drawBaconStripOnPlate(0.58, 0.42, 1);
+  drawBaconStripOnPlate(0.72, 0.52, -1);
+  drawBaconStripOnPlate(0.64, 0.62, 1);
+
+  ctx.fillStyle = "rgba(255,255,255,0.5)";
+  for (let i = 0; i < 4; i++) {
+    const phase = t * 4 + i * 1.4;
+    const sx = cx - size * 0.22 + Math.sin(phase) * size * 0.04;
+    const sy = bottomY - size * 0.78 - ((phase * 0.35) % 1) * size * 0.2;
+    const r = size * (0.025 + (i % 2) * 0.01);
+    ctx.beginPath();
+    ctx.arc(sx, sy, r, 0, Math.PI * 2);
     ctx.fill();
   }
+
+  ctx.restore();
+}
+
+function drawAnimatedBurger(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  cx: number,
+  bottomY: number,
+  size: number,
+  elapsed: number,
+): void {
+  const spin = elapsed * 0.0045;
+  const pivotY = bottomY - size * 0.42;
+  const w = size * 0.52;
+
+  ctx.save();
+  ctx.translate(cx, pivotY);
+  ctx.rotate(spin);
+  ctx.translate(-cx, -pivotY);
+
+  ctx.fillStyle = "#F4A460";
+  ctx.beginPath();
+  ctx.ellipse(cx, bottomY - size * 0.1, w, size * 0.11, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#D2691E";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.fillStyle = "#6D4C41";
+  ctx.beginPath();
+  ctx.ellipse(cx, bottomY - size * 0.26, w * 0.96, size * 0.13, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#66BB6A";
+  ctx.beginPath();
+  ctx.moveTo(x + size * 0.06, bottomY - size * 0.36);
+  ctx.quadraticCurveTo(cx, bottomY - size * 0.42, x + size * 0.94, bottomY - size * 0.36);
+  ctx.lineTo(x + size * 0.94, bottomY - size * 0.44);
+  ctx.quadraticCurveTo(cx, bottomY - size * 0.5, x + size * 0.06, bottomY - size * 0.44);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = "#FFEB3B";
+  ctx.fillRect(x + size * 0.08, bottomY - size * 0.52, size * 0.84, size * 0.07);
+
+  ctx.fillStyle = "#D84315";
+  ctx.beginPath();
+  ctx.ellipse(cx, bottomY - size * 0.58, w * 0.94, size * 0.12, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#F4A460";
+  ctx.beginPath();
+  ctx.ellipse(cx, bottomY - size * 0.74, w, size * 0.13, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = "#D2691E";
+  ctx.stroke();
+
+  const sesameT = elapsed * 0.008;
+  ctx.fillStyle = "#FFF8E1";
+  for (let i = 0; i < 6; i++) {
+    const ang = sesameT + i * 1.05;
+    const sx = cx + Math.cos(ang) * w * 0.55;
+    const sy = bottomY - size * 0.74 + Math.sin(ang) * size * 0.04;
+    ctx.beginPath();
+    ctx.ellipse(sx, sy, 2.5, 1.8, ang, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.beginPath();
+  ctx.ellipse(cx - w * 0.35, bottomY - size * 0.76, 3, 5, -0.3, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawAnimatedPizza(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  cx: number,
+  bottomY: number,
+  size: number,
+  elapsed: number,
+): void {
+  const t = elapsed * 0.004;
+  const sway = Math.sin(t * 2) * 0.07;
+  const tipY = bottomY - size * 0.06;
+  const crustY = bottomY - size * 0.82;
+
+  ctx.save();
+  ctx.translate(cx, bottomY - size * 0.44);
+  ctx.rotate(sway);
+  ctx.translate(-cx, -(bottomY - size * 0.44));
+
+  ctx.fillStyle = "#FF9800";
+  ctx.beginPath();
+  ctx.moveTo(cx, tipY);
+  ctx.lineTo(x + size * 0.04, crustY);
+  ctx.lineTo(x + size * 0.96, crustY);
+  ctx.closePath();
+  ctx.fill();
+
+  const cheeseWave = Math.sin(t * 5) * size * 0.02;
+  ctx.fillStyle = "#FFE0B2";
+  ctx.beginPath();
+  ctx.moveTo(cx, tipY + size * 0.1 + cheeseWave);
+  ctx.lineTo(x + size * 0.14, crustY + size * 0.04);
+  ctx.lineTo(x + size * 0.86, crustY + size * 0.04);
+  ctx.closePath();
+  ctx.fill();
+
+  const toppings: Array<[number, number, number]> = [
+    [0.28, 0.52, 0],
+    [0.42, 0.62, 1.2],
+    [0.58, 0.48, 2.4],
+    [0.72, 0.58, 3.1],
+    [0.36, 0.44, 4.5],
+    [0.64, 0.66, 5.3],
+  ];
+  for (const [tx, ty, phase] of toppings) {
+    const pulse = 1 + Math.sin(t * 6 + phase) * 0.12;
+    ctx.fillStyle = "#E53935";
+    ctx.beginPath();
+    ctx.arc(x + size * tx, bottomY - size * ty, 5.5 * pulse, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.beginPath();
+    ctx.arc(x + size * tx - 1.5, bottomY - size * ty - 1.5, 1.8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = "#FF7043";
+  for (let i = 0; i < 5; i++) {
+    const melt = Math.sin(t * 4 + i) * size * 0.015;
+    ctx.beginPath();
+    ctx.ellipse(
+      x + size * (0.22 + i * 0.14),
+      bottomY - size * 0.38 + melt,
+      4,
+      2.5,
+      0.3 + Math.sin(t + i) * 0.2,
+      0,
+      Math.PI * 2,
+    );
+    ctx.fill();
+  }
+
+  const heat = 0.35 + Math.sin(t * 8) * 0.15;
+  ctx.strokeStyle = `rgba(255,193,7,${heat})`;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(cx, tipY + size * 0.04);
+  ctx.lineTo(cx - size * 0.08, crustY + size * 0.12);
+  ctx.stroke();
+
+  ctx.strokeStyle = "#E65100";
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(cx, tipY);
+  ctx.lineTo(x + size * 0.04, crustY);
+  ctx.lineTo(x + size * 0.96, crustY);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.strokeStyle = "#BF360C";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(x + size * 0.04, crustY);
+  ctx.lineTo(x + size * 0.96, crustY);
+  ctx.stroke();
+
+  ctx.restore();
 }
 
 function drawSodaBottle(

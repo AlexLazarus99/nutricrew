@@ -89,6 +89,9 @@ export function updateDebrisInPlace(debris: DebrisParticle[], move: number, dt: 
 }
 
 export const TICK_DT_CLAMP_MS = 48;
+/** Fixed simulation step (~60 Hz) for smooth physics on high-refresh displays */
+export const SIM_STEP_MS = 1000 / 60;
+export const MAX_SIM_STEPS_PER_FRAME = 5;
 
 export function clampTickDt(dtMs: number): number {
   if (!Number.isFinite(dtMs) || dtMs <= 0) return 16;

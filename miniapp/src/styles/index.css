@@ -1831,7 +1831,7 @@ button {
   position: relative;
   width: 100%;
   aspect-ratio: 390 / 527;
-  max-height: min(calc(100dvh - 260px), 72vh);
+  max-height: min(calc(100dvh - 200px), 58vh);
   min-height: 320px;
   border-radius: var(--radius);
   overflow: hidden;
@@ -1946,6 +1946,16 @@ button {
   color: var(--muted);
   font-size: 0.75rem;
   white-space: nowrap;
+}
+
+.bird-nursery {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+}
+
+.bird-nursery .bird-roster {
+  margin-bottom: 0;
 }
 
 .bird-roster {

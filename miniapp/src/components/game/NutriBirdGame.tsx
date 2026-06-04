@@ -21,7 +21,12 @@ import { tryClaimDailyBonus } from "../../lib/claimDailyBonus";
 import { clearJuiceEvents } from "../../lib/birdGame/gameJuice";
 import { getDailyProgress, recordDailyRun } from "../../lib/birdGame/dailyChallenge";
 import { gameHaptic } from "../../lib/birdGame/gameHaptics";
-import { hudSnapshot } from "../../lib/birdGame/gameRuntime";
+import {
+  hudSnapshot,
+  MAX_SIM_STEPS_PER_FRAME,
+  SIM_STEP_MS,
+  clampTickDt,
+} from "../../lib/birdGame/gameRuntime";
 
 import { NutriBirdMark } from "./NutriBirdMark";
 
@@ -37,7 +42,7 @@ function measureWrap(wrap: HTMLDivElement): { w: number; h: number } {
     280,
     Math.floor(measuredW > 0 ? measuredW : Math.min(480, window.innerWidth - 32)),
   );
-  const h = Math.max(320, Math.floor(Math.min(w * 1.35, window.innerHeight - 200)));
+  const h = Math.max(320, Math.floor(Math.min(w * 1.35, window.innerHeight - 280)));
   return { w, h };
 }
 
@@ -76,6 +81,7 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const tabVisibleRef = useRef(true);
   const dirtyRef = useRef(true);
   const lastHudSyncRef = useRef(0);
+  const simAccumRef = useRef(0);
 
   const syncHud = useCallback((snap: ReturnType<typeof hudSnapshot>) => {
     setHudScore(snap.score);
@@ -215,16 +221,25 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
 
       if (ctx && state) {
         if (shouldSimulate) {
-          const dt = lastTsRef.current ? ts - lastTsRef.current : 16;
+          const frameDt = lastTsRef.current ? ts - lastTsRef.current : SIM_STEP_MS;
+          simAccumRef.current += clampTickDt(frameDt);
+          let steps = 0;
           try {
-            state = tick(state, dt);
+            while (simAccumRef.current >= SIM_STEP_MS && steps < MAX_SIM_STEPS_PER_FRAME) {
+              state = tick(state, SIM_STEP_MS);
+              simAccumRef.current -= SIM_STEP_MS;
+              steps += 1;
+            }
             stateRef.current = state;
-            processJuiceEvents(state);
-            dirtyRef.current = true;
+            if (steps > 0) {
+              processJuiceEvents(state);
+              dirtyRef.current = true;
+            }
           } catch (err) {
             console.error("[NutriBird] tick failed", err);
             state = { ...state, phase: "gameover" };
             stateRef.current = state;
+            simAccumRef.current = 0;
             dirtyRef.current = true;
           }
 
@@ -251,6 +266,10 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
           }
         }
         prevPhaseRef.current = state.phase;
+
+        if (!shouldSimulate) {
+          simAccumRef.current = 0;
+        }
 
         if (state.phase === "gameover" && dirtyRef.current) {
           audioRef.current.stopMusic();
@@ -384,19 +403,6 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
 
   return (
     <div className="bird-game">
-      <Suspense
-        fallback={
-          <div className="bird-roster card">
-            <p className="muted small">{t("common.loading")}</p>
-          </div>
-        }
-      >
-        <BirdRosterPanel
-          selectedBirdId={selectedBirdId}
-          onSelect={handleBirdSelect}
-          disabled={phase === "playing"}
-        />
-      </Suspense>
       <p className="bird-game-daily small muted">
         {dailyHint.done
           ? t("game.dailyDone", { target: dailyHint.target })
@@ -515,6 +521,22 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         <li>{t("game.legendSpeed")}</li>
         <li>{t("game.legendCombo")}</li>
       </ul>
+
+      <section className="bird-nursery" aria-label={t("birds.title")}>
+        <Suspense
+          fallback={
+            <div className="bird-roster card">
+              <p className="muted small">{t("common.loading")}</p>
+            </div>
+          }
+        >
+          <BirdRosterPanel
+            selectedBirdId={selectedBirdId}
+            onSelect={handleBirdSelect}
+            disabled={phase === "playing"}
+          />
+        </Suspense>
+      </section>
     </div>
   );
 }
