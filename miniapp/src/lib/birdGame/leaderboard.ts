@@ -81,7 +81,12 @@ export async function fetchBirdLeaderboard(): Promise<BirdLeaderboardEntry[]> {
   }
 }
 
-export async function submitBirdScore(score: number, level: number, fruits: number): Promise<void> {
+export async function submitBirdScore(
+  score: number,
+  level: number,
+  fruits: number,
+  birdId?: string,
+): Promise<import("../../api/client").BirdScoreResponse | null> {
   const name = displayName();
   const local = loadLocal();
   const prev = local.find((e) => e.name === name);
@@ -93,8 +98,8 @@ export async function submitBirdScore(score: number, level: number, fruits: numb
   }
 
   try {
-    await api.submitBirdScore({ score, level, fruits });
+    return await api.submitBirdScore({ score, level, fruits, birdId });
   } catch {
-    /* local copy already updated */
+    return null;
   }
 }

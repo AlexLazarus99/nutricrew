@@ -150,6 +150,20 @@ export type FruitEatFx = {
   until: number;
 };
 
+export type JuicePopup = {
+  text: string;
+  x: number;
+  y: number;
+  until: number;
+  color: string;
+  scale: number;
+};
+
+export type JuiceEvent = {
+  type: "combo" | "nearMiss" | "levelUp";
+  value?: number;
+};
+
 export type BirdState = {
   y: number;
   vy: number;
@@ -160,6 +174,8 @@ export type GameState = {
   width: number;
   height: number;
   phase: GamePhase;
+  /** Unlockable species — affects visuals and passive boosts */
+  birdSpeciesId: string;
   bird: BirdState;
   trees: TreeObstacle[];
   junks: JunkObstacle[];
@@ -209,6 +225,12 @@ export type GameState = {
   screenFlashUntil: number;
   screenFlashAlpha: number;
   screenFlashColor: string;
+  /** Подряд пройденных деревьев без game over */
+  comboStreak: number;
+  comboBest: number;
+  nearMisses: number;
+  juicePopups: JuicePopup[];
+  juiceEvents: JuiceEvent[];
 };
 
 export const TREE_WIDTH: Record<TreeType, number> = {

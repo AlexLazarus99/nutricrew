@@ -73,3 +73,47 @@ Save → **Manual Deploy**.
 - мигрирует через `DIRECT_URL` (или direct-хост без pooler);
 - снимает зависший lock перед migrate;
 - отключает advisory lock (`PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK`) на Neon.
+
+## Миграция `20250629120000_bird_roster` (птицы / магазин)
+
+Нужна для `/api/game/birds`, покупки птиц и испытаний.
+
+### Способ A — через Render (рекомендуется)
+
+1. Убедитесь, что в Render заданы `DATABASE_URL` (pooler) и `DIRECT_URL` (direct).
+2. Закоммитьте и запушьте код с папкой  
+   `server/prisma/migrations/20250629120000_bird_roster/`.
+3. **Manual Deploy** сервиса API — при старте выполнится `prisma migrate deploy`.
+4. В логах должно быть: `Prisma migrations applied`.
+5. Проверка в Neon SQL Editor:
+
+```sql
+SELECT column_name FROM information_schema.columns
+WHERE table_name = 'users' AND column_name = 'selected_bird_id';
+
+SELECT table_name FROM information_schema.tables
+WHERE table_name IN ('user_birds', 'user_bird_trials');
+```
+
+### Способ B — вручную в Neon SQL Editor
+
+Если deploy падает на P1002 или migrate не доезжает:
+
+1. [console.neon.tech](https://console.neon.tech) → проект → **SQL Editor**.
+2. Откройте файл  
+   `server/prisma/migrations/20250629120000_bird_roster/neon_manual_run.sql`.
+3. Выполните **Block 1 → 2 → 3 → 4** по очереди (Block 5 — только если не будете делать deploy).
+4. При P1002 перед deploy выполните SQL снятия advisory lock (см. выше).
+5. Сделайте **Manual Deploy** на Render (код API с bird roster должен быть задеплоен).
+
+### Способ C — с локальной машины
+
+```powershell
+cd server
+$env:DATABASE_URL = "<Neon DIRECT URL, без -pooler>"
+$env:DIRECT_URL = "<тот же direct URL>"
+$env:PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK = "true"
+npx prisma migrate deploy
+```
+
+Подставьте direct connection string из Neon (**Connection details → Direct**).

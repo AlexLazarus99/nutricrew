@@ -5,12 +5,14 @@ import { config } from "../config.js";
 import * as prizesRepo from "../repositories/prizes.js";
 import * as teamsRepo from "../repositories/teams.js";
 import { getCurrentWeekKey } from "../lib/week.js";
+import { getBirdDef, isBirdId } from "../lib/birdCatalog.js";
+import { grantBirdFromPayment } from "./birdRoster.js";
 
 export async function createStarsInvoice(
   bot: Telegraf<Context>,
   input: {
     userId: number;
-    teamId: string;
+    teamId: string | null;
     paymentType: "pool_fund" | "premium";
     stars: number;
     title: string;
@@ -40,6 +42,40 @@ export async function createStarsInvoice(
   });
 }
 
+export async function createBirdUnlockInvoice(
+  bot: Telegraf<Context>,
+  input: {
+    userId: number;
+    birdId: string;
+    stars: number;
+    title: string;
+    description: string;
+  },
+): Promise<string> {
+  if (!isBirdId(input.birdId)) throw new Error("INVALID_BIRD");
+  const def = getBirdDef(input.birdId)!;
+  const stars = Math.max(1, Math.round(input.stars || def.invoiceStars));
+  const payload = `nc_bird_${crypto.randomUUID().replace(/-/g, "")}`;
+
+  await prizesRepo.createPayment({
+    userId: input.userId,
+    teamId: null,
+    payload,
+    paymentType: "bird_unlock",
+    starsAmount: stars,
+    referenceId: input.birdId,
+  });
+
+  return bot.telegram.createInvoiceLink({
+    title: input.title,
+    description: input.description,
+    payload,
+    provider_token: "",
+    currency: "XTR",
+    prices: [{ label: "Stars", amount: stars }],
+  });
+}
+
 function clampStars(amount: number): number {
   return Math.min(
     config.stars.maxPoolFund,
@@ -51,7 +87,7 @@ export async function handleSuccessfulPayment(
   payload: string,
   totalAmount: number,
   chargeId: string,
-): Promise<{ type: string; stars: number } | null> {
+): Promise<{ type: string; stars: number; birdId?: string } | null> {
   const payment = await prizesRepo.findPayment(payload);
   if (!payment || payment.status === "completed") return null;
 
@@ -66,6 +102,11 @@ export async function handleSuccessfulPayment(
   if (payment.paymentType === "premium" && payment.teamId) {
     await teamsRepo.setPremium(payment.teamId, config.stars.premiumDays);
     return { type: "premium", stars: totalAmount };
+  }
+
+  if (payment.paymentType === "bird_unlock" && payment.referenceId) {
+    await grantBirdFromPayment(Number(payment.userId), payment.referenceId);
+    return { type: "bird_unlock", stars: totalAmount, birdId: payment.referenceId };
   }
 
   return null;
@@ -101,6 +142,12 @@ export function registerPaymentHandlers(bot: Telegraf<Context>): void {
         locale === "ru"
           ? `⭐ Premium команда на ${config.stars.premiumDays} дней!`
           : `⭐ Team Premium for ${config.stars.premiumDays} days!`,
+      );
+    } else if (result?.type === "bird_unlock") {
+      await ctx.reply(
+        locale === "ru"
+          ? `🐦 Птица разблокирована! Откройте NutriBird в приложении.`
+          : `🐦 Bird unlocked! Open NutriBird in the app.`,
       );
     }
   });

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   createGame,
@@ -15,7 +15,19 @@ import {
 } from "../../lib/birdGame/leaderboard";
 import { createBirdGameAudio, loadMusicMuted } from "../../lib/birdGame/birdGameAudio";
 import type { GamePhase, GameState } from "../../lib/birdGame/types";
+import { DEFAULT_BIRD_ID } from "../../lib/birdGame/birdCatalog";
+import { resolveBirdId } from "../../lib/birdGame/birdModifiers";
 import { tryClaimDailyBonus } from "../../lib/claimDailyBonus";
+import { clearJuiceEvents } from "../../lib/birdGame/gameJuice";
+import { getDailyProgress, recordDailyRun } from "../../lib/birdGame/dailyChallenge";
+import { gameHaptic } from "../../lib/birdGame/gameHaptics";
+import { hudSnapshot } from "../../lib/birdGame/gameRuntime";
+
+const BirdRosterPanel = lazy(() =>
+  import("./BirdRosterPanel").then((m) => ({ default: m.BirdRosterPanel })),
+);
+
+const HUD_SYNC_MS = 140;
 
 function measureWrap(wrap: HTMLDivElement): { w: number; h: number } {
   const measuredW = wrap.clientWidth;
@@ -51,16 +63,42 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const [leaderboardLoading, setLeaderboardLoading] = useState(true);
   const [musicMuted, setMusicMuted] = useState(loadMusicMuted);
   const [bonusToast, setBonusToast] = useState<string | null>(null);
+  const [selectedBirdId, setSelectedBirdId] = useState<string>(DEFAULT_BIRD_ID);
+  const [trialToast, setTrialToast] = useState<string | null>(null);
+  const [comboStreak, setComboStreak] = useState(0);
+  const [dailyHint, setDailyHint] = useState(() => getDailyProgress());
+  const [dailyDoneToast, setDailyDoneToast] = useState(false);
   const audioRef = useRef(createBirdGameAudio());
   const prevPhaseRef = useRef<GamePhase>("idle");
   const prevFruitsRef = useRef(0);
+  const tabVisibleRef = useRef(true);
+  const dirtyRef = useRef(true);
+  const lastHudSyncRef = useRef(0);
 
-  const syncHud = useCallback((state: GameState) => {
-    setHudScore(state.score);
-    setNutrition(Math.round(state.bird.nutrition));
-    setLevel(state.level);
-    setPhase(state.phase);
-    setFruits(state.fruitsCollected);
+  const syncHud = useCallback((snap: ReturnType<typeof hudSnapshot>) => {
+    setHudScore(snap.score);
+    setNutrition(snap.nutrition);
+    setLevel(snap.level);
+    setPhase(snap.phase);
+    setFruits(snap.fruitsCollected);
+    setComboStreak(snap.comboStreak);
+  }, []);
+
+  const processJuiceEvents = useCallback((state: GameState) => {
+    if (state.juiceEvents.length === 0) return;
+    const audio = audioRef.current;
+    for (const e of state.juiceEvents) {
+      if (e.type === "nearMiss") {
+        audio.onNearMiss();
+        gameHaptic("light");
+      } else if (e.type === "combo") {
+        audio.onCombo();
+        gameHaptic("medium");
+      } else if (e.type === "levelUp") {
+        gameHaptic("success");
+      }
+    }
+    stateRef.current = clearJuiceEvents(state);
   }, []);
 
   /** Resize canvas bitmap and game world — never triggers React state except first ready. */
@@ -81,16 +119,17 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     canvas.height = Math.max(1, Math.floor(h * dpr));
 
     const prev = stateRef.current;
+    const species = resolveBirdId(selectedBirdId);
     if (resetWorld || !prev) {
-      stateRef.current = createGame(w, h);
+      stateRef.current = createGame(w, h, species);
     } else if (prev.phase === "playing") {
       stateRef.current = { ...prev, width: w, height: h };
     } else if (sizeChanged) {
-      stateRef.current = createGame(w, h);
+      stateRef.current = createGame(w, h, species);
     }
 
     return true;
-  }, []);
+  }, [selectedBirdId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -99,7 +138,8 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     const init = () => {
       if (cancelled) return;
       if (applySize(true)) {
-        if (stateRef.current) syncHud(stateRef.current);
+        if (stateRef.current) syncHud(hudSnapshot(stateRef.current));
+        dirtyRef.current = true;
         setCanvasReady(true);
         return;
       }
@@ -117,7 +157,8 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
       resizeTimer = window.setTimeout(() => {
         const playing = stateRef.current?.phase === "playing";
         if (applySize(!playing) && stateRef.current && !playing) {
-          syncHud(stateRef.current);
+          syncHud(hudSnapshot(stateRef.current));
+          dirtyRef.current = true;
         }
       }, 100);
     };
@@ -144,10 +185,16 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   useEffect(() => {
     const audio = audioRef.current;
     const onVisible = () => {
-      if (document.visibilityState === "visible" && stateRef.current?.phase === "playing") {
+      tabVisibleRef.current = document.visibilityState === "visible";
+      dirtyRef.current = true;
+      if (tabVisibleRef.current && stateRef.current?.phase === "playing") {
         void audio.startMusic();
+        lastTsRef.current = 0;
+      } else if (!tabVisibleRef.current) {
+        audio.stopMusic();
       }
     };
+    tabVisibleRef.current = document.visibilityState === "visible";
     document.addEventListener("visibilitychange", onVisible);
     return () => {
       document.removeEventListener("visibilitychange", onVisible);
@@ -156,71 +203,89 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   }, []);
 
   useEffect(() => {
-    const lastHudRef = { score: -1, nutrition: -1, phase: "idle" as GamePhase };
-
     const loop = (ts: number) => {
       const canvas = canvasRef.current;
       const ctx = canvas?.getContext("2d");
       const dpr = dprRef.current;
       let state = stateRef.current;
+      const playing = state?.phase === "playing";
+      const shouldSimulate = playing && tabVisibleRef.current;
 
-      if (ctx) {
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        if (state?.phase === "playing") {
+      if (ctx && state) {
+        if (shouldSimulate) {
           const dt = lastTsRef.current ? ts - lastTsRef.current : 16;
           try {
             state = tick(state, dt);
             stateRef.current = state;
+            processJuiceEvents(state);
+            dirtyRef.current = true;
           } catch (err) {
             console.error("[NutriBird] tick failed", err);
             state = { ...state, phase: "gameover" };
             stateRef.current = state;
+            dirtyRef.current = true;
           }
 
-          if (state.phase === "gameover" && prevPhaseRef.current === "playing") {
-            audioRef.current.onGameOver();
-          }
           if (state.fruitsCollected > prevFruitsRef.current) {
             audioRef.current.onFruit();
+            gameHaptic("light");
           }
           prevFruitsRef.current = state.fruitsCollected;
-          prevPhaseRef.current = state.phase;
 
-          if (state.phase === "gameover") {
-            audioRef.current.stopMusic();
-            if (state.score > bestScore) {
-              saveBestScore(state.score);
-              setBestScore(state.score);
-            }
-            void submitBirdScore(state.score, state.level, state.fruitsCollected).then(() =>
-              refreshLeaderboard(),
-            );
-            void tryClaimDailyBonus("game").then((pts) => {
-              if (pts) {
-                setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
-                onActivity?.();
-                window.setTimeout(() => setBonusToast(null), 4000);
-              }
-            });
-          } else if (state.phase === "playing") {
-            void audioRef.current.startMusic();
-          }
-
-          const n = Math.round(state.bird.nutrition);
-          if (
-            state.score !== lastHudRef.score ||
-            n !== lastHudRef.nutrition ||
-            state.phase !== lastHudRef.phase
-          ) {
-            lastHudRef.score = state.score;
-            lastHudRef.nutrition = n;
-            lastHudRef.phase = state.phase;
-            syncHud(state);
+          if (ts - lastHudSyncRef.current >= HUD_SYNC_MS) {
+            lastHudSyncRef.current = ts;
+            syncHud(hudSnapshot(state));
           }
         }
 
-        if (state) {
+        if (state.phase === "gameover" && prevPhaseRef.current === "playing") {
+          audioRef.current.onGameOver();
+          gameHaptic("warning");
+          const daily = recordDailyRun(state.score);
+          setDailyHint(getDailyProgress());
+          if (daily.justBeat) {
+            setDailyDoneToast(true);
+            window.setTimeout(() => setDailyDoneToast(false), 5000);
+          }
+        }
+        prevPhaseRef.current = state.phase;
+
+        if (state.phase === "gameover" && dirtyRef.current) {
+          audioRef.current.stopMusic();
+          dirtyRef.current = false;
+          syncHud(hudSnapshot(state));
+          if (state.score > bestScore) {
+            saveBestScore(state.score);
+            setBestScore(state.score);
+          }
+          void submitBirdScore(
+            state.score,
+            state.level,
+            state.fruitsCollected,
+            state.birdSpeciesId,
+          ).then((res) => {
+            refreshLeaderboard();
+            const done = res?.trials?.newlyCompleted ?? [];
+            if (done.length > 0) {
+              const total = done.reduce((s, x) => s + x.rewardStars, 0);
+              setTrialToast(t("birds.trialComplete", { stars: total }));
+              window.setTimeout(() => setTrialToast(null), 5000);
+            }
+          });
+          void tryClaimDailyBonus("game").then((pts) => {
+            if (pts) {
+              setBonusToast(t("growth.dailyBonusClaimed", { points: pts }));
+              onActivity?.();
+              window.setTimeout(() => setBonusToast(null), 4000);
+            }
+          });
+        } else if (state.phase === "playing" && tabVisibleRef.current) {
+          void audioRef.current.startMusic();
+        }
+
+        const shouldDraw = dirtyRef.current || shouldSimulate;
+        if (shouldDraw) {
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           try {
             drawGame(ctx, state);
           } catch (err) {
@@ -229,24 +294,28 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
             ctx.globalAlpha = 1;
             ctx.fillStyle = "#5eb3e8";
             ctx.fillRect(0, 0, w || 320, h || 480);
-            ctx.fillStyle = "#1a2e26";
-            ctx.font = "600 14px Plus Jakarta Sans, sans-serif";
-            ctx.textAlign = "center";
-            ctx.fillText(`Lv ${state.level} — redraw…`, (w || 320) / 2, (h || 480) / 2);
           }
-        } else if (canvas) {
-          ctx.fillStyle = "#87CEEB";
-          ctx.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+          if (!shouldSimulate) dirtyRef.current = false;
         }
+      } else if (canvas && dirtyRef.current) {
+        const ctx2 = canvas.getContext("2d");
+        if (ctx2) {
+          ctx2.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx2.fillStyle = "#87CEEB";
+          ctx2.fillRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+        }
+        dirtyRef.current = false;
       }
 
-      lastTsRef.current = ts;
+      if (shouldSimulate) lastTsRef.current = ts;
+      else if (!playing) lastTsRef.current = 0;
+
       rafRef.current = requestAnimationFrame(loop);
     };
 
     rafRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [bestScore, syncHud, refreshLeaderboard]);
+  }, [bestScore, syncHud, refreshLeaderboard, processJuiceEvents, onActivity, t]);
 
   const handleTap = useCallback(async () => {
     const playing = stateRef.current?.phase === "playing";
@@ -257,15 +326,18 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     const audio = audioRef.current;
     await audio.unlock();
     audio.onFlap();
+    gameHaptic("light");
 
     stateRef.current = flap(state);
     const next = stateRef.current;
+    dirtyRef.current = true;
     if (next.phase === "playing") {
       await audio.startMusic();
       prevFruitsRef.current = next.fruitsCollected;
       prevPhaseRef.current = "playing";
+      lastTsRef.current = 0;
     }
-    syncHud(next);
+    syncHud(hudSnapshot(next));
   }, [applySize, syncHud]);
 
   const toggleMusic = useCallback(() => {
@@ -289,8 +361,45 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     return () => window.removeEventListener("keydown", onKey);
   }, [handleTap]);
 
+  const handleBirdSelect = useCallback(
+    (birdId: string) => {
+      setSelectedBirdId(birdId);
+      const wrap = wrapRef.current;
+      if (!wrap) return;
+      const { w, h } = measureWrap(wrap);
+      const prev = stateRef.current;
+      if (!prev || prev.phase !== "playing") {
+        stateRef.current = createGame(w, h, resolveBirdId(birdId));
+        syncHud(hudSnapshot(stateRef.current));
+        dirtyRef.current = true;
+      } else {
+        stateRef.current = { ...prev, birdSpeciesId: resolveBirdId(birdId) };
+        dirtyRef.current = true;
+      }
+    },
+    [syncHud],
+  );
+
   return (
     <div className="bird-game">
+      <Suspense
+        fallback={
+          <div className="bird-roster card">
+            <p className="muted small">{t("common.loading")}</p>
+          </div>
+        }
+      >
+        <BirdRosterPanel
+          selectedBirdId={selectedBirdId}
+          onSelect={handleBirdSelect}
+          disabled={phase === "playing"}
+        />
+      </Suspense>
+      <p className="bird-game-daily small muted">
+        {dailyHint.done
+          ? t("game.dailyDone", { target: dailyHint.target })
+          : t("game.dailyProgress", { best: dailyHint.best, target: dailyHint.target })}
+      </p>
       <div className="bird-game-meta">
         <button
           type="button"
@@ -313,6 +422,11 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         <span>
           {t("game.nutrition")}: <strong>{nutrition}%</strong>
         </span>
+        {comboStreak >= 3 && phase === "playing" && (
+          <span className="bird-game-combo">
+            {t("game.combo", { count: comboStreak })}
+          </span>
+        )}
       </div>
       <div
         ref={wrapRef}
@@ -344,6 +458,8 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
                   : t("game.overHint", { score: hudScore, fruit: fruits })}
               </p>
               {bonusToast && <p className="success small">{bonusToast}</p>}
+              {trialToast && <p className="success small">{trialToast}</p>}
+              {dailyDoneToast && <p className="success small">{t("game.dailyDoneToast")}</p>}
             </div>
           </div>
         )}
@@ -394,6 +510,7 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         <li>{t("game.legendBoss")}</li>
         <li>{t("game.legendFruit")}</li>
         <li>{t("game.legendSpeed")}</li>
+        <li>{t("game.legendCombo")}</li>
       </ul>
     </div>
   );

@@ -599,10 +599,11 @@ apiRouter.get("/game/leaderboard", ...authed, async (req, res) => {
 });
 
 apiRouter.post("/game/score", ...authed, async (req, res) => {
-  const { score, level, fruits } = req.body as {
+  const { score, level, fruits, birdId } = req.body as {
     score?: number;
     level?: number;
     fruits?: number;
+    birdId?: string;
   };
   const parsedScore = Math.round(Number(score) || 0);
   if (parsedScore < 0) {
@@ -615,13 +616,76 @@ apiRouter.post("/game/score", ...authed, async (req, res) => {
     [user.first_name, user.last_name].filter(Boolean).join(" ").trim() ||
     user.username ||
     "Player";
+  const parsedLevel = Math.max(1, Math.round(Number(level) || 1));
   const improved = await birdGameRepo.upsertBestScore(
     user.id,
     displayName,
     parsedScore,
-    Math.max(1, Math.round(Number(level) || 1)),
+    parsedLevel,
     Math.max(0, Math.round(Number(fruits) || 0)),
   );
 
-  res.json({ ok: true, improved });
+  const speciesId =
+    typeof birdId === "string" && birdId.trim() ? birdId.trim() : "classic";
+  const trials = await import("../../services/birdRoster.js").then((m) =>
+    m.processTrialsOnScore(user.id, speciesId, parsedLevel),
+  );
+
+  res.json({ ok: true, improved, trials });
+});
+
+apiRouter.get("/game/birds", ...authed, async (req, res) => {
+  const roster = await import("../../services/birdRoster.js").then((m) =>
+    m.getBirdRoster(req.dbUser!.id),
+  );
+  res.json(roster);
+});
+
+apiRouter.post("/game/birds/select", ...authed, async (req, res) => {
+  const { birdId } = req.body as { birdId?: string };
+  if (!birdId?.trim()) {
+    res.status(400).json({ error: "birdId required" });
+    return;
+  }
+  const result = await import("../../services/birdRoster.js").then((m) =>
+    m.selectBird(req.dbUser!.id, birdId.trim()),
+  );
+  if (!result.ok) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
+  res.json({ ok: true, selectedBirdId: birdId.trim() });
+});
+
+apiRouter.post("/game/birds/unlock-stars", ...authed, async (req, res) => {
+  const { birdId } = req.body as { birdId?: string };
+  if (!birdId?.trim()) {
+    res.status(400).json({ error: "birdId required" });
+    return;
+  }
+  const result = await import("../../services/birdRoster.js").then((m) =>
+    m.unlockWithStars(req.dbUser!.id, birdId.trim()),
+  );
+  if (!result.ok) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
+  res.json({ ok: true, starBalance: result.starBalance, selectedBirdId: birdId.trim() });
+});
+
+apiRouter.post("/game/birds/invoice", ...authed, async (req, res) => {
+  const { birdId } = req.body as { birdId?: string };
+  if (!birdId?.trim()) {
+    res.status(400).json({ error: "birdId required" });
+    return;
+  }
+  const { getAppBot } = await import("../../services/botInstance.js");
+  const result = await import("../../services/birdRoster.js").then((m) =>
+    m.createBirdInvoice(getAppBot(), req.dbUser!.id, birdId.trim(), req.dbUser!.locale),
+  );
+  if ("error" in result) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
+  res.json({ invoiceLink: result.invoiceLink });
 });

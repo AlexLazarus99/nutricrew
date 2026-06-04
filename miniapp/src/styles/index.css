@@ -1801,6 +1801,26 @@ button {
   color: var(--accent);
 }
 
+.bird-game-combo {
+  color: #ff6d00;
+  font-weight: 700;
+  animation: bird-combo-pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes bird-combo-pulse {
+  50% {
+    opacity: 0.75;
+    transform: scale(1.04);
+  }
+}
+
+.bird-game-daily {
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .bird-game-canvas-wrap {
   position: relative;
   width: 100%;
@@ -1920,6 +1940,90 @@ button {
   color: var(--muted);
   font-size: 0.75rem;
   white-space: nowrap;
+}
+
+.bird-roster {
+  margin-bottom: 12px;
+}
+
+.bird-roster-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.bird-roster-head h3 {
+  margin: 0;
+}
+
+.bird-roster-stars {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.bird-roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.bird-roster-card {
+  border-radius: 14px;
+  padding: 10px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(0, 0, 0, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--bird-accent, #ffd54f) 25%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bird-roster-card--active {
+  border-color: color-mix(in srgb, var(--bird-accent, #ffd54f) 65%, transparent);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--bird-accent, #ffd54f) 35%, transparent);
+}
+
+.bird-roster-card--locked {
+  opacity: 0.92;
+}
+
+.bird-roster-card h4 {
+  margin: 6px 0 4px;
+  font-size: 0.9rem;
+}
+
+.bird-roster-preview {
+  width: 100%;
+  height: 72px;
+  border-radius: 10px;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--bird-accent, #ffd54f) 18%, transparent),
+    transparent 70%
+  );
+}
+
+.bird-roster-skills {
+  line-height: 1.35;
+  min-height: 2.6em;
+}
+
+.bird-roster-trials {
+  margin: 6px 0 8px;
+  padding-left: 1.1em;
+  list-style: none;
+}
+
+.bird-roster-trial-done {
+  color: var(--success, #4ade80);
+}
+
+.bird-roster-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .calorie-quiz-page {

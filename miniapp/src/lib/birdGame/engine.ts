@@ -49,6 +49,25 @@ import {
   drawAnimalBoss,
   drawBossFloatingTitle,
 } from "./bosses";
+import { getBirdModifiers } from "./birdModifiers";
+import { drawBirdTrail, drawSpeciesBird } from "./birdSprites";
+import {
+  clampTickDt,
+  scrollHazards,
+  scrollJunks,
+  scrollPickups,
+  scrollTentacles,
+  scrollTrees,
+  updateDebrisInPlace,
+} from "./gameRuntime";
+import {
+  drawComboHud,
+  drawJuicePopups,
+  emptyJuiceFields,
+  onLevelUp,
+  onTreePassed,
+  pruneJuice,
+} from "./gameJuice";
 import {
   drawBirdWake,
   drawBoostVignette,
@@ -85,7 +104,7 @@ const BOAR_EXPLOSION_MS = 9000;
 const BOSS_ENERGY_ABSORB_MS = 3200;
 const BOSS_ENERGY_BOOST_MS = 5000;
 const BOSS_ENERGY_SPEED_MULT = 7;
-const MAX_NITRO_STACKS = 5;
+/** Default cap; species may raise via getBirdModifiers().maxNitroStacks */
 const MAX_NITRO_TOTAL_MS = 10000;
 const SPEED_PICKUP_CHANCE = 0.13;
 const FLOATING_SPEED_PICKUP_CHANCE = 0.11;
@@ -236,20 +255,26 @@ function speedRampProgress(state: GameState, rampMs: number): number {
 
 function extendGhostUntil(state: GameState, extraMs: number): number {
   const cap = state.elapsed + MAX_GHOST_MS;
-  return Math.min(Math.max(state.ghostUntil, state.elapsed + extraMs), cap);
+  const bonus = getBirdModifiers(state.birdSpeciesId).ghostExtraMs;
+  return Math.min(Math.max(state.ghostUntil, state.elapsed + extraMs + bonus), cap);
+}
+
+function maxNitroStacks(state: GameState): number {
+  return getBirdModifiers(state.birdSpeciesId).maxNitroStacks;
 }
 
 function worldSpeedMult(state: GameState): number {
+  const speciesMult = getBirdModifiers(state.birdSpeciesId).speedMult;
   if (isBossEnergyBoostActive(state)) {
     const t = speedRampProgress(state, BOSS_BOOST_RAMP_MS);
-    return 1 + (BOSS_ENERGY_SPEED_MULT - 1) * t;
+    return (1 + (BOSS_ENERGY_SPEED_MULT - 1) * t) * speciesMult;
   }
   if (isNitroActive(state)) {
     const target = nitroSpeedMult(state);
     const t = speedRampProgress(state, NITRO_RAMP_MS);
-    return 1 + (target - 1) * t;
+    return (1 + (target - 1) * t) * speciesMult;
   }
-  return 1;
+  return speciesMult;
 }
 
 function applySpeedPickup(state: GameState): {
@@ -258,7 +283,7 @@ function applySpeedPickup(state: GameState): {
   speedMultRampStart: number;
 } {
   const active = isNitroActive(state);
-  const stacks = active ? Math.min(MAX_NITRO_STACKS, state.nitroStacks + 1) : 1;
+  const stacks = active ? Math.min(maxNitroStacks(state), state.nitroStacks + 1) : 1;
   let until = active ? state.speedBoostUntil + SPEED_BOOST_MS : state.elapsed + SPEED_BOOST_MS;
   const remaining = until - state.elapsed;
   until = state.elapsed + Math.min(remaining, MAX_NITRO_TOTAL_MS);
@@ -267,12 +292,13 @@ function applySpeedPickup(state: GameState): {
 
 function slowMoFactor(state: GameState): number {
   if (!isSlowMoActive(state)) return 1;
-  if (state.bossExplosion) return BOSS_EXPLOSION_SLOW_MO_FACTOR;
-  if (state.animalBoss?.defeatPendingAt) return BOSS_EXPLOSION_SLOW_MO_FACTOR;
+  const birdSlow = getBirdModifiers(state.birdSpeciesId).slowMoFactorMult;
+  if (state.bossExplosion) return BOSS_EXPLOSION_SLOW_MO_FACTOR * birdSlow;
+  if (state.animalBoss?.defeatPendingAt) return BOSS_EXPLOSION_SLOW_MO_FACTOR * birdSlow;
   if (state.animalBoss && state.bossApproachSlowMoUsed) {
-    return BOSS_APPROACH_SLOW_MO_FACTOR;
+    return BOSS_APPROACH_SLOW_MO_FACTOR * birdSlow;
   }
-  return SLOW_MO_FACTOR;
+  return SLOW_MO_FACTOR * birdSlow;
 }
 
 function maybeBossApproachSlowMo(state: GameState): GameState {
@@ -366,10 +392,11 @@ function treeSpacing(level: number): number {
   return Math.max(132, 228 - level * 5);
 }
 
-function gapHeightFor(score: number, nutrition: number, level: number): number {
+function gapHeightFor(score: number, nutrition: number, level: number, speciesId: string): number {
   const base = 238 - score * 0.28 - (level - 1) * 3;
   const nutritionBonus = nutrition * GAP_NUTRITION_BONUS;
-  return Math.max(108, base + nutritionBonus);
+  const gapBonus = getBirdModifiers(speciesId).gapBonus;
+  return Math.max(108, base + nutritionBonus + gapBonus);
 }
 
 function pickTreeType(score: number): TreeType {
@@ -406,7 +433,12 @@ function junkSize(type: JunkType): number {
 
 function spawnSegment(state: GameState, x: number): { tree: TreeObstacle; junk: JunkObstacle } {
   const ground = treeGroundY(state);
-  const minGap = gapHeightFor(state.score, state.bird.nutrition, levelFromScore(state.score));
+  const minGap = gapHeightFor(
+    state.score,
+    state.bird.nutrition,
+    levelFromScore(state.score),
+    state.birdSpeciesId,
+  );
   const skyTop = 32;
   const minTreeH = 38;
   const maxTreeH = Math.max(minTreeH, Math.max(48, ground - minGap - skyTop - 36));
@@ -567,6 +599,7 @@ function seedInitialSegments(width: number, height: number): {
     width,
     height,
     phase: "idle",
+    birdSpeciesId: "classic",
     bird: { y: height * 0.45, vy: 0, nutrition: 0 },
     trees: [],
     junks: [],
@@ -606,6 +639,7 @@ function seedInitialSegments(width: number, height: number): {
     screenFlashUntil: 0,
     screenFlashAlpha: 0,
     screenFlashColor: "#FFFFFF",
+    ...emptyJuiceFields(),
   };
   const trees: TreeObstacle[] = [];
   const junks: JunkObstacle[] = [];
@@ -622,12 +656,17 @@ function seedInitialSegments(width: number, height: number): {
   return { trees, junks, nextX: x, segmentIndex: seg };
 }
 
-export function createGame(width: number, height: number): GameState {
+export function createGame(
+  width: number,
+  height: number,
+  birdSpeciesId = "classic",
+): GameState {
   const { trees, junks, nextX, segmentIndex } = seedInitialSegments(width, height);
   return {
     width,
     height,
     phase: "idle",
+    birdSpeciesId,
     bird: { y: height * 0.45, vy: 0, nutrition: 0 },
     trees,
     junks,
@@ -667,16 +706,18 @@ export function createGame(width: number, height: number): GameState {
     screenFlashUntil: 0,
     screenFlashAlpha: 0,
     screenFlashColor: "#FFFFFF",
+    ...emptyJuiceFields(),
   };
 }
 
 export function startGame(state: GameState): GameState {
-  const fresh = createGame(state.width, state.height);
+  const fresh = createGame(state.width, state.height, state.birdSpeciesId);
   return {
     ...fresh,
     phase: "playing",
     bird: { ...fresh.bird, vy: FLAP_VELOCITY },
     flapAnim: 1,
+    ...emptyJuiceFields(),
   };
 }
 
@@ -1152,20 +1193,6 @@ function updatePterodactyl(state: GameState, dt: number, move: number): GameStat
   return { ...state, pterodactyl };
 }
 
-function updateDebris(debris: DebrisParticle[], move: number, dt: number): DebrisParticle[] {
-  return debris
-    .map((d) => ({
-      ...d,
-      x: d.x - move + d.vx * dt,
-      y: d.y + d.vy * dt,
-      vy: d.vy + 0.14 * dt,
-      vx: d.vx * (1 - 0.02 * dt),
-      life: d.life - dt * 0.045,
-      rotation: d.rotation + d.spin * dt,
-    }))
-    .filter((d) => d.life > 0);
-}
-
 function spawnFruitEatParticles(
   state: GameState,
   fruit: FruitType,
@@ -1216,7 +1243,9 @@ function collectPickup(state: GameState, pickup: Pickup): GameState {
       ...nitro,
     };
   }
-  const gain = NUTRITION_GAIN[pickup.type] / NUTRITION_THIN_SLOWDOWN;
+  const gain =
+    (NUTRITION_GAIN[pickup.type] / NUTRITION_THIN_SLOWDOWN) *
+    getBirdModifiers(state.birdSpeciesId).fruitNutritionMult;
   const debris = [...state.debris];
   spawnFruitEatParticles(state, pickup.type, debris);
   spawnGoldSparkBurst(debris, bx, by, 3, pushDebris);
@@ -1467,7 +1496,8 @@ function tryDefeatAnimalBoss(state: GameState): GameState {
       },
       slowMoUntil: Math.max(state.slowMoUntil, state.elapsed + BOAR_EXPLOSION_MS * 0.92),
       bossEnergyAbsorbUntil: absorbUntil,
-      bossEnergyBoostUntil: absorbUntil + BOSS_ENERGY_BOOST_MS,
+      bossEnergyBoostUntil:
+        absorbUntil + BOSS_ENERGY_BOOST_MS + getBirdModifiers(state.birdSpeciesId).bossBoostExtraMs,
       speedMultRampStart: absorbUntil,
       debris,
       score,
@@ -1482,6 +1512,44 @@ function tryDefeatAnimalBoss(state: GameState): GameState {
     ...state,
     animalBoss: { ...boss, defeatPendingAt: explodeAt, bitePhase: 0, biteCooldown: 999999 },
     slowMoUntil: Math.max(state.slowMoUntil, explodeAt + BOAR_EXPLOSION_MS * 0.92),
+  };
+}
+
+function burnEmberJunks(state: GameState): GameState {
+  if (!getBirdModifiers(state.birdSpeciesId).junkBurn) return state;
+  if (state.elapsed < START_INVULN_MS || canPassObstacles(state)) return state;
+
+  const burning = state.junks.filter(
+    (j) => !isJunkRecoveryFood(j.type) && collideJunk(state, j),
+  );
+  if (burning.length === 0) return state;
+
+  const burnSet = new Set(burning);
+  const debris = [...state.debris];
+  const bx = birdX(state);
+  const by = state.bird.y;
+  const pushDebris = (d: DebrisParticle[], p: DebrisParticle) => {
+    d.push(p);
+  };
+  for (const junk of burning) {
+    spawnGoldSparkBurst(
+      debris,
+      junk.x + junk.size * 0.5,
+      junk.bottomY - junk.size * 0.4,
+      5,
+      pushDebris,
+    );
+  }
+  spawnGoldSparkBurst(debris, bx, by, 4, pushDebris);
+
+  return {
+    ...state,
+    junks: state.junks.filter((j) => !burnSet.has(j)),
+    debris,
+    screenFlashUntil: state.elapsed + 140,
+    screenFlashAlpha: 0.35,
+    screenFlashColor: "#FF6F00",
+    flapAnim: 1,
   };
 }
 
@@ -1522,7 +1590,8 @@ function checkCollisions(state: GameState): GamePhase {
 export function tick(state: GameState, dtMs: number): GameState {
   if (state.phase !== "playing") return state;
 
-  let next: GameState = { ...state, elapsed: state.elapsed + dtMs };
+  const safeDt = clampTickDt(dtMs);
+  let next: GameState = { ...state, elapsed: state.elapsed + safeDt };
 
   if (isBossEnergyBoostActive(next) && !isBossEnergyBoostActive(state)) {
     next.slowMoUntil = next.elapsed;
@@ -1544,7 +1613,7 @@ export function tick(state: GameState, dtMs: number): GameState {
 
   const slowActive =
     isSlowMoActive(next) && !isBossEnergyBoostActive(next) && !isCityLevel(levelFromScore(next.score));
-  const scaledDtMs = dtMs * (slowActive ? slowMoFactor(next) : 1);
+  const scaledDtMs = safeDt * (slowActive ? slowMoFactor(next) : 1);
   const dt = Math.min(scaledDtMs, 32) / 16.67;
 
   if (!isNitroActive(next)) next.nitroStacks = 0;
@@ -1582,30 +1651,12 @@ export function tick(state: GameState, dtMs: number): GameState {
   };
   next.flapAnim = Math.max(0, next.flapAnim - dt * 0.1);
 
-  next.trees = next.trees
-    .map((t) => ({ ...t, x: t.x - move }))
-    .filter((t) => t.x + TREE_WIDTH[t.type] > -30);
-
-  next.junks = next.junks
-    .map((j) => ({ ...j, x: j.x - move }))
-    .filter((j) => j.x + j.size > -30);
-
-  next.hazards = next.hazards
-    .map((h) => ({ ...h, x: h.x - move }))
-    .filter((h) => {
-      if (h.kind === "mountain") return h.x + h.width > -40;
-      return h.x + 100 > -40;
-    });
-
-  next.octopusTentacles = next.octopusTentacles
-    .map((t) => ({ ...t, x: t.x - move }))
-    .filter((t) => t.x + 80 > -40);
-
-  next.pickups = next.pickups
-    .map((p) => ({ ...p, x: p.x - move }))
-    .filter((p) => p.x > -30 && !p.collected);
-
-  next.debris = updateDebris(next.debris, move, dt);
+  scrollTrees(next.trees, move);
+  scrollJunks(next.junks, move);
+  scrollHazards(next.hazards, move);
+  scrollTentacles(next.octopusTentacles, move);
+  scrollPickups(next.pickups, move);
+  updateDebrisInPlace(next.debris, move, dt);
 
   if (inCity) {
     if (!next.cityLandmarkDone) {
@@ -1674,27 +1725,31 @@ export function tick(state: GameState, dtMs: number): GameState {
   while (next.nextTreeX < spawnHorizon && spawnSteps < maxSpawnSteps) {
     spawnSteps += 1;
     const segment = spawnSegment(next, next.nextTreeX);
-    next.trees = [...next.trees, segment.tree];
-    next.junks = [...next.junks, segment.junk];
+    next.trees.push(segment.tree);
+    next.junks.push(segment.junk);
     next.segmentIndex += 1;
 
     const pickup = maybeSpawnPickup(next, segment.tree, segment.junk, level);
-    if (pickup) next.pickups = [...next.pickups, pickup];
+    if (pickup) next.pickups.push(pickup);
 
     const extras = spawnSegmentExtras(next, next.nextTreeX, next.segmentIndex);
-    next.hazards = [...next.hazards, ...extras.hazards];
-    next.octopusTentacles = [...next.octopusTentacles, ...extras.octopusTentacles];
-    next.trees = [...next.trees, ...extras.extraTrees];
-    next.junks = [...next.junks, ...extras.extraJunks];
-    next.pickups = [...next.pickups, ...extras.pickups];
+    for (const h of extras.hazards) next.hazards.push(h);
+    for (const t of extras.octopusTentacles) next.octopusTentacles.push(t);
+    for (const t of extras.extraTrees) next.trees.push(t);
+    for (const j of extras.extraJunks) next.junks.push(j);
+    for (const p of extras.pickups) next.pickups.push(p);
 
     next.nextTreeX += spacing * (0.88 + Math.random() * 0.18);
   }
 
+  const passOpts = {
+    groundY: treeGroundY(next),
+    birdR: birdRadius(next.bird.nutrition) * 0.88,
+  };
   for (const tree of next.trees) {
     if (!tree.passed && tree.x + TREE_WIDTH[tree.type] < bx) {
       tree.passed = true;
-      next = { ...next, score: next.score + 1, level: levelFromScore(next.score + 1) };
+      next = onTreePassed(next, tree, passOpts);
     }
   }
 
@@ -1717,6 +1772,16 @@ export function tick(state: GameState, dtMs: number): GameState {
   if (next.pickups.length > MAX_PICKUPS) {
     next.pickups = next.pickups.slice(-MAX_PICKUPS);
   }
+
+  next = burnEmberJunks(next);
+
+  const levelAfter = levelFromScore(next.score);
+  if (levelAfter > prevLevel) {
+    next = onLevelUp(next, prevLevel, levelAfter);
+  }
+  next.level = levelAfter;
+
+  next = pruneJuice(next);
 
   const phase = checkCollisions(next);
   return { ...next, phase };
@@ -1919,6 +1984,9 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   drawSpeedStreaks(ctx, fxCtx);
   drawBoostVignette(ctx, fxCtx);
   drawBirdWake(ctx, fxCtx);
+  if (state.phase === "playing") {
+    drawBirdTrail(ctx, birdX(state), state.bird.y, state.birdSpeciesId, state.elapsed);
+  }
   drawBird(ctx, state);
   if (state.fruitEatFx && state.elapsed < state.fruitEatFx.until) {
     drawFruitEatFx(ctx, state);
@@ -1932,7 +2000,9 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
     drawSlowMoOverlay(ctx, state);
     ctx.restore();
   }
+  drawJuicePopups(ctx, state);
   drawHud(ctx, state, zv);
+  drawComboHud(ctx, state);
   drawScreenFlash(ctx, state);
   resetCanvasState(ctx);
 }
@@ -4206,7 +4276,9 @@ function drawFlamingOrangePickup(
 function drawPickup(ctx: CanvasRenderingContext2D, pickup: Pickup, state: GameState): void {
   const { x, y, type } = pickup;
   if (type === "speed") {
-    const preview = isNitroActive(state) ? Math.min(MAX_NITRO_STACKS, state.nitroStacks + 1) : undefined;
+    const preview = isNitroActive(state)
+      ? Math.min(maxNitroStacks(state), state.nitroStacks + 1)
+      : undefined;
     drawFlamingOrangePickup(ctx, x, y, state.elapsed, preview);
     return;
   }
@@ -4293,8 +4365,10 @@ function drawBird(ctx: CanvasRenderingContext2D, state: GameState): void {
 
   const underwater = !isCityLevel(state.level) && biomeForLevel(state.level) === "underwater";
 
+  const drawOpts = { nitro, ghost, bossBoost, absorbing };
+
   if (underwater) {
-    ctx.fillStyle = bossBoost ? "#FFF59D" : nitro ? "#FFE082" : absorbing ? "#FFECB3" : "#FFD54F";
+    ctx.fillStyle = bossBoost ? "#FFF59D" : nitro ? "#FFE082" : absorbing ? "#FFECB3" : "#B3E5FC";
     ctx.beginPath();
     ctx.ellipse(0, 0, r * 1.05, r, 0, 0, Math.PI * 2);
     ctx.fill();
@@ -4303,42 +4377,7 @@ function drawBird(ctx: CanvasRenderingContext2D, state: GameState): void {
     return;
   }
 
-  ctx.fillStyle = bossBoost ? "#FFF59D" : nitro ? "#FFE082" : absorbing ? "#FFECB3" : "#FFD54F";
-  ctx.beginPath();
-  ctx.ellipse(0, 0, r * 1.05, r, 0, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = "#F9A825";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-  if (state.bird.nutrition < 60) {
-    ctx.fillStyle = "rgba(255,213,79,0.5)";
-    ctx.beginPath();
-    ctx.ellipse(r * 0.15, r * 0.1, r * 0.35, r * 0.28, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  ctx.fillStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(r * 0.35, -r * 0.15, r * 0.22, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = "#1a1a1a";
-  ctx.beginPath();
-  ctx.arc(r * 0.42, -r * 0.15, r * 0.1, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#FF8F00";
-  ctx.beginPath();
-  ctx.moveTo(r * 0.9, 0);
-  ctx.lineTo(r * 1.35, r * 0.08);
-  ctx.lineTo(r * 0.9, r * 0.18);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = "#FBC02D";
-  ctx.beginPath();
-  ctx.ellipse(-r * 0.2, (state.flapAnim > 0 ? -0.6 : 0.2) * r * 0.3, r * 0.45, r * 0.28, -0.5, 0, Math.PI * 2);
-  ctx.fill();
+  drawSpeciesBird(ctx, state.birdSpeciesId, r, state.flapAnim, state.elapsed, drawOpts);
 
   ctx.restore();
 }

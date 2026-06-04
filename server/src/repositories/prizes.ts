@@ -35,6 +35,7 @@ export async function createPayment(data: {
   payload: string;
   paymentType: string;
   starsAmount: number;
+  referenceId?: string | null;
 }) {
   return prisma.payment.create({
     data: {
@@ -43,6 +44,7 @@ export async function createPayment(data: {
       payload: data.payload,
       paymentType: data.paymentType,
       starsAmount: data.starsAmount,
+      referenceId: data.referenceId ?? null,
       status: "pending",
     },
   });

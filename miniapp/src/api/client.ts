@@ -306,6 +306,38 @@ export interface BirdGameLeaderboardResponse {
   entries: BirdGameLeaderboardEntry[];
 }
 
+export interface BirdTrialEntry {
+  id: string;
+  requiredLevel: number;
+  rewardStars: number;
+  completed: boolean;
+}
+
+export interface BirdCatalogRow {
+  id: string;
+  starPrice: number;
+  invoiceStars: number;
+  free: boolean;
+  owned: boolean;
+  trials: BirdTrialEntry[];
+}
+
+export interface BirdRosterResponse {
+  selectedBirdId: string;
+  starBalance: number;
+  birds: BirdCatalogRow[];
+  trialsCompleted: string[];
+}
+
+export interface BirdScoreResponse {
+  ok: boolean;
+  improved: boolean;
+  trials?: {
+    newlyCompleted: Array<{ trialId: string; rewardStars: number }>;
+    starBalance: number;
+  };
+}
+
 export interface MealAnalysisResponse {
   description: string;
   calories: number;
@@ -409,10 +441,26 @@ export const api = {
   getTeam: () => request<TeamResponse>("/team"),
   getLeaderboard: () => request<LeaderboardResponse>("/leaderboard"),
   getBirdLeaderboard: () => request<BirdGameLeaderboardResponse>("/game/leaderboard"),
-  submitBirdScore: (body: { score: number; level: number; fruits: number }) =>
-    request<{ ok: boolean; improved: boolean }>("/game/score", {
+  submitBirdScore: (body: { score: number; level: number; fruits: number; birdId?: string }) =>
+    request<BirdScoreResponse>("/game/score", {
       method: "POST",
       body: JSON.stringify(body),
+    }),
+  getGameBirds: () => request<BirdRosterResponse>("/game/birds"),
+  selectGameBird: (birdId: string) =>
+    request<{ ok: boolean; selectedBirdId: string }>("/game/birds/select", {
+      method: "POST",
+      body: JSON.stringify({ birdId }),
+    }),
+  unlockGameBirdStars: (birdId: string) =>
+    request<{ ok: boolean; starBalance: number; selectedBirdId: string }>(
+      "/game/birds/unlock-stars",
+      { method: "POST", body: JSON.stringify({ birdId }) },
+    ),
+  createGameBirdInvoice: (birdId: string) =>
+    request<{ invoiceLink: string }>("/game/birds/invoice", {
+      method: "POST",
+      body: JSON.stringify({ birdId }),
     }),
   analyzeMeal: (imageBase64: string) =>
     request<MealAnalysisResponse>("/meals/analyze", {

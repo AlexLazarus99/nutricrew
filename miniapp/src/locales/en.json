@@ -655,7 +655,41 @@
     "leaderboardHint": "Best score of all time",
     "leaderboardEmpty": "No scores yet — be the first!",
     "leaderboardYou": "you",
-    "leaderboardRow": "{{score}} pts · lvl {{level}}"
+    "leaderboardRow": "{{score}} pts · lvl {{level}}",
+    "combo": "Combo ×{{count}}",
+    "dailyProgress": "Daily goal: {{best}} / {{target}} pts",
+    "dailyDone": "Daily goal {{target}} pts — done!",
+    "dailyDoneToast": "Daily challenge complete!",
+    "legendCombo": "🔥 Combo ×5 every 5 trees in a row — bonus points. Close brush past a tree: +1."
+  },
+  "birds": {
+    "title": "Bird aviary",
+    "subtitle": "Unlock birds with Telegram Stars or your star balance. Each bird has unique boosts and level trials.",
+    "balance": "balance",
+    "equip": "Equip",
+    "equipped": "Equipped",
+    "buyTelegram": "Buy {{stars}} ⭐",
+    "unlocked": "Bird unlocked!",
+    "errorStars": "Not enough stars or already owned.",
+    "errorInvoice": "Could not open payment.",
+    "trialRow": "Trial: reach level {{level}} · +{{stars}} ⭐",
+    "trialComplete": "Bird trial complete! +{{stars}} ⭐",
+    "names": {
+      "classic": "Classic NutriBird",
+      "ember": "Ember Phoenix",
+      "frost": "Frost Glider",
+      "neon": "Neon Comet",
+      "royal": "Royal Aurora",
+      "storm": "Storm Titan"
+    },
+    "skills": {
+      "classic": "Balanced starter — great for learning the game.",
+      "ember": "Burns junk food on contact · +18% fruit nutrition.",
+      "frost": "Longer slow-mo · wider gaps · ice trail.",
+      "neon": "Faster flight · +1 nitro stack cap · rainbow trail.",
+      "royal": "Longer ghost after fruit · extra-wide gaps.",
+      "storm": "Longer boss energy boost · lightning trail."
+    }
   },
   "quiz": {
     "title": "Calorie Quiz",

@@ -54,6 +54,7 @@ model User {
   dailyGoalTarget       Int      @default(3) @map("daily_goal_target")
   photoPrivacy          String   @default("team") @map("photo_privacy") @db.VarChar(16)
   birdBoostUntil        DateTime? @map("bird_boost_until")
+  selectedBirdId        String   @default("classic") @map("selected_bird_id") @db.VarChar(32)
   doublePointsWeekKey   String?  @map("double_points_week_key") @db.VarChar(10)
   onboardingVariant     String   @default("team_first") @map("onboarding_variant") @db.VarChar(16)
   createdAt     DateTime  @default(now()) @map("created_at")
@@ -73,6 +74,8 @@ model User {
   starTransactions  StarTransaction[]
   prizeAwards       PrizeAward[]
   birdGameBest      BirdGameBest?
+  ownedBirds        UserBird[]
+  birdTrials        UserBirdTrial[]
   achievements      UserAchievement[]
   battlePass        BattlePassProgress?
   duelsAsChallenger TeamDuel[] @relation("DuelChallenger")
@@ -153,6 +156,29 @@ model BirdGameBest {
 
   @@index([score(sort: Desc)])
   @@map("bird_game_bests")
+}
+
+model UserBird {
+  userId     BigInt   @map("user_id")
+  birdId     String   @map("bird_id") @db.VarChar(32)
+  unlockedAt DateTime @default(now()) @map("unlocked_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, birdId])
+  @@map("user_birds")
+}
+
+model UserBirdTrial {
+  userId        BigInt   @map("user_id")
+  trialId       String   @map("trial_id") @db.VarChar(64)
+  levelReached  Int      @map("level_reached")
+  completedAt   DateTime @default(now()) @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, trialId])
+  @@map("user_bird_trials")
 }
 
 model TeamMember {
@@ -313,6 +339,7 @@ model Payment {
   teamId                    String?  @map("team_id") @db.Uuid
   payload                   String   @unique
   paymentType               String   @map("payment_type") @db.VarChar(32)
+  referenceId               String?  @map("reference_id") @db.VarChar(64)
   starsAmount               Int      @map("stars_amount")
   status                    String   @default("pending") @db.VarChar(16)
   telegramPaymentChargeId   String?  @map("telegram_payment_charge_id")

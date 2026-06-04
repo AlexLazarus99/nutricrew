@@ -24,6 +24,8 @@ export type BirdGameAudio = {
   stopMusic: () => void;
   onFlap: () => void;
   onFruit: () => void;
+  onNearMiss: () => void;
+  onCombo: () => void;
   onGameOver: () => void;
   toggleMute: () => boolean;
   isMuted: () => boolean;
@@ -45,6 +47,8 @@ export function createBirdGameAudio(): BirdGameAudio {
     stopMusic: () => player.stopLoop(),
     onFlap: () => player.playFlap(),
     onFruit: () => player.playFruit(),
+    onNearMiss: () => player.playNearMiss(),
+    onCombo: () => player.playCombo(),
     onGameOver: () => {
       player.stopLoop();
       player.playGameOver();

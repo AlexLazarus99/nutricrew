@@ -173,6 +173,19 @@ export class ChiptunePlayer {
     this.unlocked = false;
   }
 
+  playNearMiss(): void {
+    if (this.muted || !this.sfxBus || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    playTone(this.ctx, this.sfxBus, 659, t, 0.06, "triangle", 0.32);
+  }
+
+  playCombo(): void {
+    if (this.muted || !this.sfxBus || !this.ctx) return;
+    const t = this.ctx.currentTime;
+    playTone(this.ctx, this.sfxBus, 1046, t, 0.09, "square", 0.4);
+    playTone(this.ctx, this.sfxBus, 1318, t + 0.05, 0.08, "square", 0.28);
+  }
+
   playFlap(): void {
     if (this.muted || !this.sfxBus || !this.ctx) return;
     const t = this.ctx.currentTime;

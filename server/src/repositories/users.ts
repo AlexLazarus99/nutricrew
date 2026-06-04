@@ -106,6 +106,40 @@ export async function creditStars(
   ]);
 }
 
+export async function spendStars(
+  userId: number,
+  amount: number,
+  type: string,
+  referenceId?: string,
+): Promise<boolean> {
+  const cost = Math.max(0, Math.round(amount));
+  if (cost <= 0) return true;
+
+  const ok = await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({
+      where: { id: BigInt(userId) },
+      select: { starBalance: true },
+    });
+    if (!user || user.starBalance < cost) return false;
+
+    await tx.user.update({
+      where: { id: BigInt(userId) },
+      data: { starBalance: { decrement: cost } },
+    });
+    await tx.starTransaction.create({
+      data: {
+        userId: BigInt(userId),
+        amount: -cost,
+        type,
+        referenceId: referenceId ?? null,
+      },
+    });
+    return true;
+  });
+
+  return ok;
+}
+
 export async function listTeamMemberTelegramIds(teamId: string): Promise<number[]> {
   const rows = await prisma.user.findMany({
     where: { teamMemberships: { some: { teamId } } },
