@@ -94,16 +94,58 @@
   animation: splash-logo-reveal 0.9s ease-out 0.12s forwards;
 }
 
-.splash-peach-svg {
+/* Brand peach PNG (transparent) from real logo artwork */
+.splash-peach-mark {
+  position: relative;
   width: var(--splash-peach-size);
-  height: auto;
-  display: block;
-  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.3));
+  aspect-ratio: 1024 / 593;
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.32));
 }
 
-.splash-peach-shimmer {
+.splash-peach-mark__art {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.splash-peach-mark__shimmer {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(
+    125deg,
+    #fff5ee 0%,
+    #f5c4a0 22%,
+    #b8e0c8 48%,
+    #f5a285 68%,
+    #d4f0e4 88%,
+    #fff0e6 100%
+  );
+  background-size: 300% 300%;
+  animation: splash-gradient-flow 5.5s ease-in-out infinite;
+  -webkit-mask-image: url(/splash/nutricrew-peach.png);
+  mask-image: url(/splash/nutricrew-peach.png);
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
   mix-blend-mode: soft-light;
-  opacity: 0.72;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+@keyframes splash-gradient-flow {
+  0%,
+  100% {
+    background-position: 0% 42%;
+  }
+  50% {
+    background-position: 100% 58%;
+  }
 }
 
 .splash-brand-wordmark {
@@ -119,12 +161,12 @@
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1;
-  color: #f9a886;
+  color: #f5a285;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .splash-brand-wordmark-crew {
-  color: #f9a886;
+  color: #f5a285;
 }
 
 @keyframes splash-logo-reveal {
@@ -348,8 +390,7 @@
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
   .splash-brand-logo__reveal,
-  .splash-peach-svg,
-  .splash-peach-svg animate,
+  .splash-peach-mark__shimmer,
   .splash-tagline,
   .splash-loader,
   .splash-orb,
