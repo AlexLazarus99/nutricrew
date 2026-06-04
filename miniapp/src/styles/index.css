@@ -1759,10 +1759,7 @@ button {
   gap: 12px;
 }
 
-.bird-game-hero {
-  text-align: center;
-  padding-bottom: 12px;
-}
+/* bird-game-hero layout — see nutribird-mark.css */
 
 .bird-game {
   display: flex;

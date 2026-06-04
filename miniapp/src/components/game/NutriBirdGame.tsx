@@ -23,6 +23,8 @@ import { getDailyProgress, recordDailyRun } from "../../lib/birdGame/dailyChalle
 import { gameHaptic } from "../../lib/birdGame/gameHaptics";
 import { hudSnapshot } from "../../lib/birdGame/gameRuntime";
 
+import { NutriBirdMark } from "./NutriBirdMark";
+
 const BirdRosterPanel = lazy(() =>
   import("./BirdRosterPanel").then((m) => ({ default: m.BirdRosterPanel })),
 );
@@ -450,7 +452,8 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         )}
         {canvasReady && (phase === "idle" || phase === "gameover") && (
           <div className="bird-game-overlay">
-            <div className="bird-game-overlay-card">
+            <div className="bird-game-overlay-card bird-game-overlay-card--splash">
+              <NutriBirdMark size={64} showWordmark={phase === "idle"} animated={phase === "idle"} />
               <h3>{phase === "idle" ? t("game.startTitle") : t("game.overTitle")}</h3>
               <p>
                 {phase === "idle"

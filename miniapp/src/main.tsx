@@ -9,6 +9,7 @@ import "./styles/index.css";
 import "./styles/wellness-theme.css";
 import "./styles/animations.css";
 import "./styles/splash.css";
+import "./styles/nutribird-mark.css";
 
 bootstrapTelegramWebApp();
 wakeApi();

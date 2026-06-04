@@ -88,13 +88,13 @@ function LayoutShell() {
           >
             {t("nav.log")}
           </NavLink>
-          <NavLink to="/game" data-tutorial="nav-game">
-            {t("nav.game")}
-          </NavLink>
           {compactNav ? (
             <>
               <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
               <NavLink to="/guide">{t("nav.guide")}</NavLink>
+              <NavLink to="/game" data-tutorial="nav-game">
+                {t("nav.game")}
+              </NavLink>
             </>
           ) : (
             <>
@@ -105,6 +105,9 @@ function LayoutShell() {
               </NavLink>
               {me.teamId ? <NavLink to="/chat">{t("nav.chat")}</NavLink> : null}
               <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
+              <NavLink to="/game" data-tutorial="nav-game">
+                {t("nav.game")}
+              </NavLink>
               <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
             </>
           )}

@@ -239,11 +239,11 @@ export function HomePage() {
       <Link to="/guide" className="btn btn-secondary btn-block">
         🥗 {t("home.guideCta")}
       </Link>
-      <Link to="/game" className="btn btn-secondary btn-block">
-        🐦 {t("home.gameCta")}
-      </Link>
       <Link to="/quiz" className="btn btn-secondary btn-block">
         🔥 {t("home.quizCta")}
+      </Link>
+      <Link to="/game" className="btn btn-secondary btn-block">
+        🐦 {t("home.gameCta")}
       </Link>
       <Link to="/prizes" className="btn btn-secondary btn-block">
         ⭐ {t("nav.prizes")} ({me.starBalance})

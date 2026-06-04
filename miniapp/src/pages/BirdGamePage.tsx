@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { NutriBirdGame } from "../components/game/NutriBirdGame";
+import { NutriBirdMark } from "../components/game/NutriBirdMark";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { useMe } from "../hooks/useMe";
@@ -13,8 +14,8 @@ export function BirdGamePage() {
     <section className="stack bird-game-page">
       <TutorialCoach {...gameTour} />
       <div className="card hero bird-game-hero">
-        <h2>{t("game.title")}</h2>
-        <p className="muted small">{t("game.subtitle")}</p>
+        <NutriBirdMark size={84} showWordmark animated />
+        <p className="muted small bird-game-hero-tagline">{t("game.subtitle")}</p>
       </div>
       <NutriBirdGame onActivity={refresh} />
     </section>

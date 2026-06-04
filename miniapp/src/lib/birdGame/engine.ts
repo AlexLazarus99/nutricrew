@@ -83,6 +83,9 @@ const MAX_FALL_SPEED = 5.2;
 const BASE_SPEED = 2.35;
 const SPEED_BOOST_MULT = 2.85;
 const SPEED_BOOST_MS = 4000;
+/** HUD shows x1–x5 stacks; x3+ is short burst only */
+const NITRO_HIGH_STACK_MIN = 3;
+const NITRO_HIGH_STACK_MAX_MS = 4000;
 const GHOST_MS = 2600;
 const MAX_GHOST_MS = 10000;
 const FRUIT_EAT_FX_MS = 520;
@@ -263,6 +266,10 @@ function maxNitroStacks(state: GameState): number {
   return getBirdModifiers(state.birdSpeciesId).maxNitroStacks;
 }
 
+function nitroDurationCapMs(stacks: number): number {
+  return stacks >= NITRO_HIGH_STACK_MIN ? NITRO_HIGH_STACK_MAX_MS : MAX_NITRO_TOTAL_MS;
+}
+
 function worldSpeedMult(state: GameState): number {
   const speciesMult = getBirdModifiers(state.birdSpeciesId).speedMult;
   if (isBossEnergyBoostActive(state)) {
@@ -286,7 +293,7 @@ function applySpeedPickup(state: GameState): {
   const stacks = active ? Math.min(maxNitroStacks(state), state.nitroStacks + 1) : 1;
   let until = active ? state.speedBoostUntil + SPEED_BOOST_MS : state.elapsed + SPEED_BOOST_MS;
   const remaining = until - state.elapsed;
-  until = state.elapsed + Math.min(remaining, MAX_NITRO_TOTAL_MS);
+  until = state.elapsed + Math.min(remaining, nitroDurationCapMs(stacks));
   return { speedBoostUntil: until, nitroStacks: stacks, speedMultRampStart: state.elapsed };
 }
 

@@ -98,7 +98,7 @@ body {
 .bird-game-overlay-card h3,
 .bird-game-leaderboard h3,
 .calorie-quiz-product h3,
-.bird-game-hero h2,
+.nutribird-mark-wordmark,
 .feature-card h3 {
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -704,7 +704,7 @@ body {
 .app-shell[data-color-scheme="dark"] .tutorial-title,
 .app-shell[data-color-scheme="dark"] .daily-meals-card h3,
 .app-shell[data-color-scheme="dark"] .chat-header h2,
-.app-shell[data-color-scheme="dark"] .bird-game-hero h2 {
+.app-shell[data-color-scheme="dark"] .nutribird-mark-wordmark {
   background: linear-gradient(118deg, #f8fffb 0%, #d0efe0 45%, #9fd9b8 100%);
   -webkit-background-clip: text;
   background-clip: text;
