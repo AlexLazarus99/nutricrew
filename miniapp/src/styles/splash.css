@@ -66,14 +66,14 @@
   animation: nutricrew-mark-crew 4.2s ease-in-out infinite;
 }
 
-/* Splash: vector peach (transparent) + inner gradient */
+/* Splash: brand peach artwork + inner gradient */
 .splash-logo-stage {
-  --splash-peach-size: min(220px, 62vw);
+  --splash-peach-size: min(260px, 72vw);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 280px;
+  min-height: 300px;
 }
 
 .splash-brand-logo {
@@ -82,23 +82,78 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
 }
 
 .splash-brand-logo__reveal {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   opacity: 0;
   animation: splash-logo-reveal 0.9s ease-out 0.12s forwards;
 }
 
-.splash-peach-svg {
+/* Icon only — crop wordmark from source PNG */
+.splash-peach-mark {
+  position: relative;
   width: var(--splash-peach-size);
+  height: calc(var(--splash-peach-size) * 0.78);
+  overflow: hidden;
+  filter: drop-shadow(0 10px 28px rgba(0, 0, 0, 0.32));
+}
+
+.splash-peach-mark__art {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 108%;
+  max-width: none;
   height: auto;
+  transform: translateX(-50%);
+  clip-path: inset(0 0 34% 0);
+  -webkit-clip-path: inset(0 0 34% 0);
   display: block;
-  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.28));
+  pointer-events: none;
+}
+
+.splash-peach-mark__gradient {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 108%;
+  height: 66%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    125deg,
+    #fff5ee 0%,
+    #f5c4a0 22%,
+    #9fd9b8 48%,
+    #e8a078 68%,
+    #d4f0e4 88%,
+    #fff0e6 100%
+  );
+  background-size: 300% 300%;
+  animation: splash-gradient-flow 5.5s ease-in-out infinite;
+  -webkit-mask-size: 100% auto;
+  mask-size: 100% auto;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center top;
+  mask-position: center top;
+  mix-blend-mode: soft-light;
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+@keyframes splash-gradient-flow {
+  0%,
+  100% {
+    background-position: 0% 42%;
+  }
+  50% {
+    background-position: 100% 58%;
+  }
 }
 
 .splash-brand-wordmark {
@@ -110,11 +165,12 @@
     "Segoe UI",
     system-ui,
     sans-serif;
-  font-size: clamp(1.65rem, 7vw, 2.15rem);
+  font-size: clamp(1.75rem, 7.2vw, 2.25rem);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1;
-  color: #f0b898;
+  color: #e8a078;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .splash-brand-wordmark-crew {
@@ -342,7 +398,7 @@
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
   .splash-brand-logo__reveal,
-  .splash-peach-svg animate,
+  .splash-peach-mark__gradient,
   .splash-tagline,
   .splash-loader,
   .splash-orb,
@@ -350,7 +406,6 @@
     animation: none;
     opacity: 1;
     transform: none;
-    filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.28));
   }
 
   .splash-loader-bar {
