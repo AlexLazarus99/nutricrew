@@ -5,104 +5,141 @@ type SplashGradientLogoProps = {
   peachSize?: number;
 };
 
-/** Vector peach — no raster masks; works in Telegram WebView */
+/** Heart-shaped brand peach + animated inner gradient shimmer */
 export function SplashGradientLogo({ peachSize }: SplashGradientLogoProps) {
   const uid = useId().replace(/:/g, "");
-  const gradId = `peach-grad-${uid}`;
-  const shineId = `peach-shine-${uid}`;
+  const clipLeftId = `peach-left-${uid}`;
+  const clipPeachId = `peach-shape-${uid}`;
+  const bodyGradId = `peach-body-grad-${uid}`;
+  const pitGradId = `peach-pit-grad-${uid}`;
 
   const style = peachSize
     ? ({ "--splash-peach-size": `${peachSize}px` } as CSSProperties)
     : undefined;
 
   const peachBody =
-    "M60 24c-19 0-34 15-35 36-1 12 5 25 16 32 3 2 6.5 3 10 3 18 0 34-13 35-33 0-10-5-20-13-26-2-1.5-5-2.5-8-7 1.5-5.5 6-9.5 11.5-11 2.5-.8 5-.5 7.5 0z";
-  const peachHeart =
-    "M60 52c-4-6-11.5-5.2-14.2 1.5-2 5.2.8 10.8 6.5 12.6 2.6.9 5.5.7 8-.8 6.2-3.8 8.2-9.5 6-12.2-1-1.6-3-3-6-2.6-8.2 1.4-4.2 4.8-7 9-6.2z";
+    "M60 100 C34 92 18 72 22 52 C24 34 38 22 50 19 C54 17 57 26 60 30 C63 26 66 17 70 19 C82 22 96 34 98 52 C102 72 86 92 60 100 Z";
+  const peachPit =
+    "M60 76 C54 70 46 72 44 80 C43 88 52 94 60 96 C68 94 77 88 76 80 C74 72 66 70 60 76 Z";
 
   return (
     <div className="splash-brand-logo" style={style}>
       <div className="splash-brand-logo__reveal">
         <svg
           className="splash-peach-svg"
-          viewBox="0 0 120 128"
+          viewBox="0 0 120 115"
           xmlns="http://www.w3.org/2000/svg"
           role="img"
           aria-label="NutriCrew"
         >
           <defs>
-            <linearGradient id={shineId} x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#fff8f2" stopOpacity="0.85" />
-              <stop offset="55%" stopColor="#fff8f2" stopOpacity="0" />
-            </linearGradient>
+            <clipPath id={clipLeftId}>
+              <rect x="0" y="0" width="61" height="115" />
+            </clipPath>
+            <clipPath id={clipPeachId}>
+              <path d={peachBody} />
+            </clipPath>
+
             <linearGradient
-              id={gradId}
+              id={bodyGradId}
               gradientUnits="userSpaceOnUse"
-              x1="24"
-              y1="30"
-              x2="96"
-              y2="102"
+              x1="22"
+              y1="24"
+              x2="98"
+              y2="100"
             >
-              <stop offset="0%" stopColor="#fff0e6" />
-              <stop offset="22%" stopColor="#f5c4a0" />
-              <stop offset="48%" stopColor="#b8e0c8" />
-              <stop offset="72%" stopColor="#e8a078" />
+              <stop offset="0%" stopColor="#fff5ee" />
+              <stop offset="28%" stopColor="#f5c4a0" />
+              <stop offset="52%" stopColor="#b8e0c8" />
+              <stop offset="74%" stopColor="#f9a886" />
               <stop offset="100%" stopColor="#d8f2e4" />
               <animate
                 attributeName="x1"
-                values="24;86;30;24"
+                values="22;88;30;22"
                 dur="5.5s"
                 repeatCount="indefinite"
               />
               <animate
                 attributeName="y1"
-                values="30;42;70;30"
+                values="24;40;72;24"
                 dur="5.5s"
                 repeatCount="indefinite"
               />
               <animate
                 attributeName="x2"
-                values="96;42;94;96"
+                values="98;42;94;98"
                 dur="5.5s"
                 repeatCount="indefinite"
               />
               <animate
                 attributeName="y2"
-                values="102;94;50;102"
+                values="100;92;48;100"
                 dur="5.5s"
+                repeatCount="indefinite"
+              />
+            </linearGradient>
+
+            <linearGradient
+              id={pitGradId}
+              gradientUnits="userSpaceOnUse"
+              x1="44"
+              y1="72"
+              x2="76"
+              y2="96"
+            >
+              <stop offset="0%" stopColor="#ffc9b8" />
+              <stop offset="50%" stopColor="#f7946d" />
+              <stop offset="100%" stopColor="#f9a886" />
+              <animate
+                attributeName="x1"
+                values="44;68;48;44"
+                dur="4.2s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="y1"
+                values="72;78;88;72"
+                dur="4.2s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="x2"
+                values="76;52;72;76"
+                dur="4.2s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="y2"
+                values="96;90;80;96"
+                dur="4.2s"
                 repeatCount="indefinite"
               />
             </linearGradient>
           </defs>
 
           <g className="splash-peach-leaves">
-            <ellipse cx="44" cy="14" rx="10" ry="6" fill="#7aab82" transform="rotate(-34 44 14)" />
-            <ellipse cx="76" cy="14" rx="10" ry="6" fill="#7aab82" transform="rotate(34 76 14)" />
+            <ellipse cx="47" cy="13" rx="9" ry="5" fill="#a8b89f" transform="rotate(-36 47 13)" />
+            <ellipse cx="73" cy="13" rx="9" ry="5" fill="#a8b89f" transform="rotate(36 73 13)" />
+            <path d="M60 17 L60 24" stroke="#95a892" strokeWidth="2" strokeLinecap="round" />
+          </g>
+
+          <g clipPath={`url(#${clipPeachId})`}>
+            <path fill="#f7946d" d={peachBody} clipPath={`url(#${clipLeftId})`} />
+            <path fill="#fde2cc" d={peachBody} />
             <path
-              d="M60 18 L60 24"
-              stroke="#6b9470"
-              strokeWidth="2.5"
-              strokeLinecap="round"
+              className="splash-peach-shimmer"
+              fill={`url(#${bodyGradId})`}
+              d={peachBody}
             />
           </g>
 
-          <path fill="#f5d0b4" d={peachBody} />
-          <path fill={`url(#${gradId})`} d={peachBody} />
-          <ellipse cx="48" cy="44" rx="14" ry="10" fill={`url(#${shineId})`} opacity="0.55" />
-
-          <path fill="#ef8a78" d={peachHeart} />
-          <path
-            fill="none"
-            stroke="#e07a6a"
-            strokeWidth="1.25"
-            strokeLinejoin="round"
-            d={peachHeart}
-          />
+          <path fill="#f9a886" d={peachPit} />
+          <path className="splash-peach-shimmer" fill={`url(#${pitGradId})`} d={peachPit} />
 
           <path
             fill="none"
-            stroke="#e8a882"
-            strokeWidth="3.5"
+            stroke="#f0b898"
+            strokeWidth="3"
             strokeLinejoin="round"
             strokeLinecap="round"
             d={peachBody}

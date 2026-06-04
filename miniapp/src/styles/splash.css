@@ -101,6 +101,11 @@
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.3));
 }
 
+.splash-peach-shimmer {
+  mix-blend-mode: soft-light;
+  opacity: 0.72;
+}
+
 .splash-brand-wordmark {
   margin: 0;
   font-family:
@@ -114,12 +119,12 @@
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1;
-  color: #e8a078;
+  color: #f9a886;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 }
 
 .splash-brand-wordmark-crew {
-  color: #e8a078;
+  color: #f9a886;
 }
 
 @keyframes splash-logo-reveal {
@@ -343,6 +348,7 @@
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
   .splash-brand-logo__reveal,
+  .splash-peach-svg,
   .splash-peach-svg animate,
   .splash-tagline,
   .splash-loader,
