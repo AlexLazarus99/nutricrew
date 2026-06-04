@@ -24,8 +24,8 @@ export function BrandPeachIcon({
     <img
       className={rootClass}
       src={BRAND_PEACH_SRC}
-      width={1024}
-      height={593}
+      width={409}
+      height={480}
       alt=""
       decoding="async"
       draggable={false}

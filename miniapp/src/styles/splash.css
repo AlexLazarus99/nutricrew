@@ -68,12 +68,12 @@
 
 /* Splash: brand peach artwork + inner gradient */
 .splash-logo-stage {
-  --splash-peach-size: min(260px, 72vw);
+  --splash-peach-size: min(300px, 80vw);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: 300px;
+  min-height: 340px;
 }
 
 .splash-brand-logo {
@@ -98,7 +98,7 @@
 .splash-peach-mark {
   position: relative;
   width: var(--splash-peach-size);
-  aspect-ratio: 1024 / 593;
+  aspect-ratio: 409 / 480;
   filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.32));
 }
 

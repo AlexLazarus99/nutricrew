@@ -19,8 +19,8 @@ export function SplashGradientLogo({ peachSize }: SplashGradientLogoProps) {
           <img
             className="splash-peach-mark__art"
             src={BRAND_PEACH_SRC}
-            width={1024}
-            height={593}
+            width={409}
+            height={480}
             alt=""
             decoding="async"
             draggable={false}

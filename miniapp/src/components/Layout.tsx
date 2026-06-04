@@ -44,7 +44,7 @@ function LayoutShell() {
         <div>
           <h1 className="app-title">
             <span className="app-title__text">{t("app.name")}</span>
-            <BrandPeachIcon size={26} className="app-title__peach" animated />
+            <BrandPeachIcon size={36} className="app-title__peach" animated />
           </h1>
           <p className="tagline">{t("app.tagline")}</p>
         </div>
