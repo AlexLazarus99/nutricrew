@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type QuestBoard, type QuestItem } from "../api/client";
+import { QuestIcon } from "./QuestIcon";
 
 type Tab = "daily" | "weekly" | "once";
 
@@ -101,9 +102,12 @@ export function QuestsPanel({ onClaimed }: Props) {
         )}
         {list.map((quest) => (
           <li key={quest.id} className={`quest-item quest-item--${quest.status}`}>
-            <span className="quest-emoji" aria-hidden>
-              {quest.emoji}
-            </span>
+            <QuestIcon
+              questId={quest.id}
+              status={quest.status}
+              emoji={quest.emoji}
+              size={54}
+            />
             <div className="quest-body">
               <span className="quest-name">{t(`quests.items.${quest.titleKey}.title`)}</span>
               <span className="quest-desc muted small">

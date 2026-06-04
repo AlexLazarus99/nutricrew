@@ -10,6 +10,7 @@ import "./styles/wellness-theme.css";
 import "./styles/animations.css";
 import "./styles/splash.css";
 import "./styles/nutribird-mark.css";
+import "./styles/quest-icons.css";
 
 bootstrapTelegramWebApp();
 wakeApi();

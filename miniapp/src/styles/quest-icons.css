@@ -1,0 +1,478 @@
+/* Animated quest & challenge icons */
+
+.quest-icon {
+  --quest-icon-size: 52px;
+  position: relative;
+  width: var(--quest-icon-size);
+  height: var(--quest-icon-size);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.quest-icon__svg {
+  width: 88%;
+  height: 88%;
+  display: block;
+  overflow: visible;
+}
+
+.quest-icon__ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 22%;
+  border: 2px solid transparent;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.quest-icon__sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.quest-icon__sparkles::before,
+.quest-icon__sparkles::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff6a8;
+  opacity: 0;
+}
+
+.quest-icon__check,
+.quest-icon__lock {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  font-size: 0.65rem;
+  line-height: 1;
+  border-radius: 50%;
+  width: 1.1rem;
+  height: 1.1rem;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.quest-icon__check {
+  background: linear-gradient(135deg, #6ec4a0, #3d9e78);
+  color: #fff;
+  font-weight: 800;
+}
+
+.quest-icon__lock {
+  background: color-mix(in srgb, var(--surface-2) 90%, #000);
+  font-size: 0.55rem;
+}
+
+/* —— Shared fills & strokes —— */
+.quest-icon__plate,
+.quest-icon__bowl,
+.quest-icon__hill {
+  fill: color-mix(in srgb, var(--section-accent-soft) 55%, #fff);
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+.quest-icon__steam,
+.quest-icon__ray,
+.quest-icon__crew-arc,
+.quest-icon__cal-line {
+  fill: none;
+  stroke: var(--section-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.quest-icon__flame {
+  fill: #ff9a6c;
+  stroke: #e07a5f;
+  stroke-width: 1.5;
+}
+
+.quest-icon__bolt {
+  fill: #ffd54f;
+  stroke: #f9a825;
+  stroke-width: 1.25;
+}
+
+.quest-icon__bird-body {
+  fill: #a8dcc0;
+  stroke: #5a9e78;
+  stroke-width: 2;
+}
+
+.quest-icon__bird-wing {
+  fill: none;
+  stroke: #3d7d5c;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.quest-icon__bird-eye {
+  fill: #1a3d2a;
+}
+
+.quest-icon__brain {
+  fill: #c5b8e8;
+  stroke: #8e7cc4;
+  stroke-width: 1.5;
+}
+
+.quest-icon__crew {
+  fill: #9ec8e8;
+  stroke: #6a9ebe;
+  stroke-width: 1.5;
+}
+
+.quest-icon__crew--lead {
+  fill: #7ec4a0;
+  stroke: #4a8f66;
+}
+
+.quest-icon__shield {
+  fill: #b8d4e8;
+  stroke: #6a9ebe;
+  stroke-width: 2;
+}
+
+.quest-icon__cal {
+  fill: var(--section-surface);
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+.quest-icon__cal-dot {
+  fill: color-mix(in srgb, var(--muted) 40%, transparent);
+}
+
+.quest-icon__cal-dot--on {
+  fill: var(--section-accent);
+}
+
+.quest-icon__run {
+  fill: #ffab91;
+  stroke: #e07a5f;
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+.quest-icon__star {
+  fill: #ffe082;
+  stroke: #ffb74d;
+  stroke-width: 1.25;
+}
+
+.quest-icon__spark {
+  fill: #fff9c4;
+}
+
+.quest-icon__medal {
+  fill: #ffd54f;
+  stroke: #f9a825;
+  stroke-width: 2;
+}
+
+.quest-icon__ribbon {
+  fill: #ff8a65;
+  stroke: none;
+}
+
+.quest-icon__pad {
+  fill: #5c6bc0;
+  stroke: #3949ab;
+  stroke-width: 2;
+}
+
+.quest-icon__pad-btn {
+  fill: #e8eaf6;
+}
+
+.quest-icon__leaf {
+  fill: #a8c99a;
+}
+
+.quest-icon__berry {
+  fill: #ef8a78;
+}
+
+.quest-icon__orb--sun {
+  fill: #ffe082;
+  stroke: #ffb300;
+  stroke-width: 1.5;
+}
+
+/* —— Animations by variant —— */
+.quest-icon--ready .quest-icon__ring {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--section-accent) 70%, #ffe082);
+  animation: quest-icon-ring 2s ease-in-out infinite;
+}
+
+.quest-icon--ready .quest-icon__sparkles::before {
+  top: 8%;
+  left: 78%;
+  animation: quest-icon-spark 2.4s ease-in-out infinite;
+}
+
+.quest-icon--ready .quest-icon__sparkles::after {
+  bottom: 12%;
+  left: 6%;
+  animation: quest-icon-spark 2.4s ease-in-out 0.8s infinite;
+}
+
+.quest-icon--ready {
+  animation: quest-icon-pop 2.2s ease-in-out infinite;
+}
+
+.quest-icon--active:not(.quest-icon--claimed) .quest-icon__svg {
+  animation: quest-icon-float 3s ease-in-out infinite;
+}
+
+.quest-icon--meals .quest-icon__steam--1 {
+  animation: quest-icon-steam 2.2s ease-in-out infinite;
+}
+
+.quest-icon--meals .quest-icon__steam--2 {
+  animation: quest-icon-steam 2.2s ease-in-out 0.35s infinite;
+}
+
+.quest-icon--meals .quest-icon__steam--3 {
+  animation: quest-icon-steam 2.2s ease-in-out 0.7s infinite;
+}
+
+.quest-icon--flame .quest-icon__flame {
+  transform-origin: 40px 44px;
+  animation: quest-icon-flicker 1.4s ease-in-out infinite;
+}
+
+.quest-icon--bolt .quest-icon__bolt {
+  animation: quest-icon-zap 2.5s ease-in-out infinite;
+}
+
+.quest-icon--bird .quest-icon__bird-wing {
+  transform-origin: 40px 40px;
+  animation: quest-icon-wing 1.8s ease-in-out infinite;
+}
+
+.quest-icon--brain .quest-icon__brain {
+  animation: quest-icon-pulse 2.8s ease-in-out infinite;
+}
+
+.quest-icon--team .quest-icon__crew--lead {
+  animation: quest-icon-bounce 2.4s ease-in-out infinite;
+}
+
+.quest-icon--sunrise .quest-icon__orb--sun {
+  animation: quest-icon-sun 4s ease-in-out infinite;
+}
+
+.quest-icon--sunrise .quest-icon__ray {
+  transform-origin: 40px 32px;
+  animation: quest-icon-rays 6s linear infinite;
+}
+
+.quest-icon--challenge .quest-icon__bowl,
+.quest-icon--meals .quest-icon__plate {
+  animation: quest-icon-pulse 3.2s ease-in-out infinite;
+}
+
+.quest-icon--sparkle .quest-icon__star {
+  transform-origin: 40px 36px;
+  animation: quest-icon-twinkle 2s ease-in-out infinite;
+}
+
+.quest-icon--sparkle .quest-icon__spark {
+  animation: quest-icon-spark 1.8s ease-in-out infinite;
+}
+
+.quest-icon--locked {
+  opacity: 0.55;
+  filter: grayscale(0.35);
+}
+
+.quest-icon--locked .quest-icon__svg {
+  animation: none;
+}
+
+.quest-icon--claimed {
+  opacity: 0.72;
+}
+
+.quest-icon--claimed .quest-icon__svg {
+  animation: none;
+}
+
+@keyframes quest-icon-ring {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes quest-icon-pop {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes quest-icon-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes quest-icon-steam {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes quest-icon-flicker {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  40% {
+    transform: scale(1.05) rotate(-2deg);
+  }
+  70% {
+    transform: scale(0.98) rotate(2deg);
+  }
+}
+
+@keyframes quest-icon-zap {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  92% {
+    opacity: 0.7;
+    filter: brightness(1.4);
+  }
+}
+
+@keyframes quest-icon-wing {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-12deg);
+  }
+}
+
+@keyframes quest-icon-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+
+@keyframes quest-icon-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes quest-icon-sun {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes quest-icon-rays {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes quest-icon-twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08) rotate(8deg);
+    opacity: 0.85;
+  }
+}
+
+@keyframes quest-icon-spark {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  40%,
+  60% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Challenge card layout */
+.challenge-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.challenge-card-head h3 {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quest-icon,
+  .quest-icon__svg,
+  .quest-icon__ring,
+  .quest-icon__flame,
+  .quest-icon__steam,
+  .quest-icon__sparkles::before,
+  .quest-icon__sparkles::after {
+    animation: none !important;
+  }
+}

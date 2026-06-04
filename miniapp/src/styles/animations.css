@@ -283,10 +283,9 @@
 }
 
 /* Quests & achievements */
-.quest-card.ready,
-.achievement-tile.unlocked {
-  animation: nc-pulse-soft 2.5s ease-in-out infinite;
-}
+  .achievement-tile.unlocked {
+    animation: nc-pulse-soft 2.5s ease-in-out infinite;
+  }
 
 .feature-chip {
   transition:

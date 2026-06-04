@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, type GrowthPayload } from "../api/client";
 import { useMe } from "../hooks/useMe";
 import "../styles/features.css";
+import { ChallengeIcon } from "../components/QuestIcon";
 
 export function FeaturesPage() {
   const { t } = useTranslation();
@@ -234,10 +235,17 @@ function ChallengeCard({ growth }: { growth: GrowthPayload }) {
   const { t } = useTranslation();
   const ch = growth.challenge!;
   return (
-    <div className="card feature-card">
-      <h3>
-        {ch.emoji} {t(`features.challenges.${ch.titleKey}`)}
-      </h3>
+    <div className="card feature-card challenge-card">
+      <div className="challenge-card-head">
+        <ChallengeIcon
+          challengeId={ch.id}
+          completed={ch.completed}
+          progress={ch.progress}
+          target={ch.target}
+          size={58}
+        />
+        <h3>{t(`features.challenges.${ch.titleKey}`)}</h3>
+      </div>
       <p className="muted small">{t(`features.challenges.${ch.descKey}`)}</p>
       <div className="daily-meals-bar">
         <div

@@ -1273,9 +1273,9 @@ body {
 .quest-item {
   display: grid;
   grid-template-columns: auto 1fr auto;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  padding: 12px;
+  padding: 14px 12px;
   border-radius: var(--radius-sm);
   background: color-mix(in srgb, var(--section-accent-soft) 35%, var(--surface));
   border: 1px solid color-mix(in srgb, var(--section-accent) 12%, transparent);
@@ -1283,16 +1283,14 @@ body {
 
 .quest-item--ready {
   border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
-  box-shadow: 0 0 0 2px var(--section-accent-soft);
+  box-shadow:
+    0 0 0 2px var(--section-accent-soft),
+    0 8px 24px color-mix(in srgb, var(--section-accent) 18%, transparent);
+  background: color-mix(in srgb, var(--section-accent-soft) 48%, var(--surface));
 }
 
 .quest-item--claimed {
   opacity: 0.65;
-}
-
-.quest-emoji {
-  font-size: 1.6rem;
-  line-height: 1;
 }
 
 .quest-body {
@@ -1326,6 +1324,28 @@ body {
   background: linear-gradient(90deg, var(--accent-dim), var(--section-accent));
   border-radius: var(--radius-pill);
   transition: width 0.3s ease;
+}
+
+.quest-item--ready .quest-progress-fill {
+  background: linear-gradient(
+    90deg,
+    var(--accent-dim),
+    var(--section-accent),
+    #ffe082,
+    var(--section-accent)
+  );
+  background-size: 200% 100%;
+  animation: quest-progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes quest-progress-shine {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 .quest-rewards {
