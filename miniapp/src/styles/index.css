@@ -1,14 +1,14 @@
 :root {
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", "Georgia", serif;
-  --bg: #f7f5f0;
-  --surface: #fffefb;
-  --surface-2: #eef4f0;
-  --text: #2a3d34;
-  --muted: #5f7268;
-  --accent: #5ba88a;
-  --accent-dim: #468a70;
-  --warn: #c4925a;
+  --bg: #141a17;
+  --surface: #1e2a24;
+  --surface-2: #283530;
+  --text: #eef5f0;
+  --muted: #a8b8ae;
+  --accent: #7ec4a0;
+  --accent-dim: #9fd9b8;
+  --warn: #e8c080;
   --radius: 12px;
   font-family: var(--font-sans);
   color: var(--text);

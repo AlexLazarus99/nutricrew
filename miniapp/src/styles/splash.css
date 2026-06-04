@@ -1,4 +1,4 @@
-/* NutriCrew splash — soft sage / cream (matches app theme) */
+/* NutriCrew splash — soft sage gradient (matches home section) */
 
 .nutricrew-splash {
   position: fixed;
@@ -12,11 +12,10 @@
   padding: 24px 20px 32px;
   overflow: hidden;
   background: linear-gradient(
-    155deg,
-    #f7f5f0 0%,
-    #eef6f1 35%,
-    #e8f0eb 65%,
-    #f0ebe4 100%
+    168deg,
+    #121a16 0%,
+    #182820 48%,
+    #1a3228 100%
   );
 }
 
@@ -31,7 +30,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(40px);
-  opacity: 0.55;
+  opacity: 0.45;
   animation: splash-orb-float 8s ease-in-out infinite;
 }
 
@@ -40,7 +39,7 @@
   height: 220px;
   top: -8%;
   left: -12%;
-  background: #a8d4bc;
+  background: #7ec4a0;
   animation-delay: 0s;
 }
 
@@ -49,7 +48,7 @@
   height: 260px;
   bottom: -15%;
   right: -18%;
-  background: #e8d4a8;
+  background: #9ec0e8;
   animation-delay: -2.5s;
 }
 
@@ -58,7 +57,7 @@
   height: 180px;
   top: 40%;
   right: 5%;
-  background: #9cc9b8;
+  background: #6ec4b8;
   animation-delay: -4s;
 }
 
@@ -75,8 +74,8 @@
 .splash-spark {
   position: absolute;
   font-size: 1.4rem;
-  color: #7ab89a;
-  text-shadow: 0 0 10px rgba(91, 168, 138, 0.45);
+  color: #b8e8d0;
+  text-shadow: 0 0 12px rgba(126, 196, 160, 0.5);
   animation: splash-spark-pulse 2s ease-in-out infinite;
 }
 
@@ -85,13 +84,12 @@
   left: 14%;
 }
 .splash-spark-2 {
-  top: 22%;
+  top: 28%;
   right: 12%;
   animation-delay: -0.6s;
-  color: #b2ebf2;
 }
 .splash-spark-3 {
-  bottom: 28%;
+  bottom: 38%;
   left: 10%;
   animation-delay: -1.2s;
 }
@@ -140,18 +138,18 @@
 }
 
 .splash-ring-outer {
-  border-top-color: #9cc9b8;
-  border-right-color: #c9a8d4;
-  border-bottom-color: #7ab89a;
-  border-left-color: #d4c49a;
+  border-top-color: #9fd9b8;
+  border-right-color: #b8b0e8;
+  border-bottom-color: #7ec4a0;
+  border-left-color: #e8d080;
   animation: splash-ring-spin 2.4s linear infinite;
 }
 
 .splash-ring-inner {
   inset: 14px;
-  border-top-color: rgba(255, 255, 255, 0.5);
+  border-top-color: rgba(200, 240, 220, 0.5);
   border-right-color: transparent;
-  border-bottom-color: rgba(78, 205, 196, 0.7);
+  border-bottom-color: rgba(126, 196, 160, 0.6);
   border-left-color: transparent;
   animation: splash-ring-spin 1.6s linear infinite reverse;
 }
@@ -167,7 +165,7 @@
   height: auto;
   display: block;
   animation: splash-mascot-bounce 2.2s ease-in-out infinite;
-  filter: drop-shadow(0 8px 20px rgba(42, 61, 52, 0.12));
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.35));
 }
 
 @keyframes splash-mascot-bounce {
@@ -222,17 +220,19 @@
 }
 
 .splash-word-nutri {
-  color: #2d5242;
-  background: none;
-  -webkit-text-fill-color: currentColor;
-  filter: none;
+  background: linear-gradient(105deg, #f8fcfa 0%, #cfe8dc 50%, #8fd4b4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .splash-word-crew {
-  color: #5ba88a;
-  background: none;
-  -webkit-text-fill-color: currentColor;
-  filter: none;
+  background: linear-gradient(105deg, #faf8ff 0%, #d8d4f4 50%, #b8b0e8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   animation-delay: -0.35s;
 }
 
@@ -252,7 +252,7 @@
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #5f7268;
+  color: #a8b8ae;
   text-align: center;
   max-width: 280px;
 }
@@ -271,19 +271,19 @@
   width: 100%;
   height: 10px;
   border-radius: 999px;
-  background: rgba(91, 168, 138, 0.15);
+  background: rgba(126, 196, 160, 0.15);
   overflow: hidden;
-  box-shadow: inset 0 1px 3px rgba(42, 61, 52, 0.08);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .splash-loader-bar {
   height: 100%;
   width: 42%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #7ab89a, #a8d4bc, #5ba88a, #c9d4a8, #7ab89a);
+  background: linear-gradient(90deg, #7ec4a0, #9fd9b8, #b8b0e8, #7ec4a0);
   background-size: 200% 100%;
   animation: splash-bar-slide 1.35s ease-in-out infinite;
-  box-shadow: 0 0 12px rgba(91, 168, 138, 0.35);
+  box-shadow: 0 0 14px rgba(126, 196, 160, 0.45);
 }
 
 @keyframes splash-bar-slide {
@@ -301,7 +301,7 @@
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
-  color: #2a3d34;
+  color: #eef5f0;
   text-align: center;
 }
 
@@ -309,7 +309,7 @@
   margin: 0;
   font-size: 0.8rem;
   line-height: 1.45;
-  color: #5f7268;
+  color: #a8b8ae;
   text-align: center;
   max-width: 300px;
   animation: splash-hint-fade 2s ease-in-out infinite;

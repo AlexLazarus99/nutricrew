@@ -1,39 +1,38 @@
 /**
- * NutriCrew wellness UI — warm light base, sage accents, soft elevation.
- * Loaded after index.css to refresh tokens for 2024–26 nutrition app trends.
+ * NutriCrew — soft tinted sections (not uniform light), readable text, gradient titles.
  */
 
 :root {
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", "Georgia", serif;
 
-  --bg: #f7f5f0;
-  --surface: #fffefb;
-  --surface-2: #eef4f0;
-  --text: #2a3d34;
-  --muted: #5f7268;
-  --accent: #5ba88a;
-  --accent-dim: #468a70;
-  --accent-soft: rgba(91, 168, 138, 0.16);
-  --warn: #c4925a;
-  --danger: #c97070;
-  --success: #5ba88a;
+  --bg: #141a17;
+  --surface: #1e2a24;
+  --surface-2: #283530;
+  --text: #eef5f0;
+  --muted: #a8b8ae;
+  --accent: #7ec4a0;
+  --accent-dim: #9fd9b8;
+  --accent-soft: rgba(126, 196, 160, 0.18);
+  --warn: #e8c080;
+  --danger: #e8a0a0;
+  --success: #7ec4a0;
 
   --radius: 18px;
   --radius-sm: 12px;
   --radius-lg: 24px;
   --radius-pill: 999px;
 
-  --shadow-sm: 0 2px 12px rgba(42, 61, 52, 0.05);
-  --shadow-md: 0 12px 32px rgba(42, 61, 52, 0.07);
-  --shadow-nav: 0 -4px 24px rgba(42, 61, 52, 0.06);
+  --shadow-sm: 0 2px 14px rgba(0, 0, 0, 0.22);
+  --shadow-md: 0 12px 36px rgba(0, 0, 0, 0.28);
+  --shadow-nav: 0 -6px 28px rgba(0, 0, 0, 0.32);
 
-  --heading: #1e3329;
-  --heading-accent: #2d5242;
-  --heading-gradient-a: #1e3329;
-  --heading-gradient-b: #2d5242;
-  --heading-gradient-c: #3d6b55;
-  --heading-subtle: #4d6359;
+  --heading: #f8fcfa;
+  --heading-accent: #d4f0e4;
+  --heading-gradient-a: #f8fcfa;
+  --heading-gradient-b: #cfe8dc;
+  --heading-gradient-c: #8fd4b4;
+  --heading-subtle: #b8ccc2;
 
   color: var(--text);
   background: var(--bg);
@@ -41,25 +40,46 @@
 
 body {
   background: var(--bg);
+  color: var(--text);
 }
 
-/* ——— Section atmospheres (subtle tint shifts) ——— */
+/* ——— Section atmospheres: each tab = own soft gradient, not white ——— */
 .app-shell {
-  --section-bg: #f6f3ed;
-  --section-surface: #ffffff;
-  --section-surface-2: #e8f0eb;
-  --section-accent: #3a8f6e;
-  --section-accent-soft: rgba(58, 143, 110, 0.14);
-  --section-glow: rgba(58, 143, 110, 0.12);
+  --section-bg: #141a17;
+  --section-bg-mid: #1a2420;
+  --section-bg-end: #15221c;
+  --section-surface: #1e2a24;
+  --section-surface-2: #283530;
+  --section-accent: #7ec4a0;
+  --section-accent-soft: rgba(126, 196, 160, 0.16);
+  --section-glow: rgba(126, 196, 160, 0.14);
+  --heading-gradient-a: #f8fcfa;
+  --heading-gradient-b: #cfe8dc;
+  --heading-gradient-c: #8fd4b4;
 
   --bg: var(--section-bg);
   --surface: var(--section-surface);
   --surface-2: var(--section-surface-2);
   --accent: var(--section-accent);
-  --heading: var(--text);
+  --accent-dim: color-mix(in srgb, var(--section-accent) 75%, #fff);
+  --text: #eef5f0;
+  --muted: #a8b8ae;
+  --heading: #f8fcfa;
+  --heading-subtle: #b8ccc2;
+
+  background: linear-gradient(
+    168deg,
+    var(--section-bg) 0%,
+    var(--section-bg-mid) 48%,
+    var(--section-bg-end) 100%
+  );
+  color: var(--text);
+  transition:
+    background 0.55s ease,
+    color 0.35s ease;
 }
 
-/* Card & section titles — solid, high contrast (readable) */
+/* Titles — soft gradient, readable on tinted backgrounds */
 .card > h2,
 .card > h3,
 .hero h2,
@@ -84,11 +104,16 @@ body {
   letter-spacing: -0.02em;
   line-height: 1.25;
   color: var(--heading);
-  background: none;
-  -webkit-background-clip: unset;
-  background-clip: unset;
-  -webkit-text-fill-color: currentColor;
-  filter: none;
+  background: linear-gradient(
+    118deg,
+    var(--heading-gradient-a) 0%,
+    var(--heading-gradient-b) 52%,
+    var(--heading-gradient-c) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
 }
 
 .card > h3,
@@ -112,108 +137,165 @@ body {
 }
 
 .app-shell[data-section="home"] {
-  --section-bg: #f4f7f2;
-  --section-surface: #ffffff;
-  --section-surface-2: #e5efe8;
-  --section-accent: #3a8f6e;
-  --section-accent-soft: rgba(58, 143, 110, 0.16);
-  --section-glow: rgba(58, 143, 110, 0.14);
+  --section-bg: #121a16;
+  --section-bg-mid: #182820;
+  --section-bg-end: #1a3228;
+  --section-surface: #1e2a24;
+  --section-surface-2: #283830;
+  --section-accent: #7ec4a0;
+  --section-accent-soft: rgba(126, 196, 160, 0.18);
+  --section-glow: rgba(126, 196, 160, 0.16);
+  --heading-gradient-a: #f5fbf8;
+  --heading-gradient-b: #b8e8d0;
+  --heading-gradient-c: #7ec4a0;
 }
 
 .app-shell[data-section="log"] {
-  --section-bg: #faf6f1;
-  --section-surface: #ffffff;
-  --section-surface-2: #f0e8df;
-  --section-accent: #d4896a;
-  --section-accent-soft: rgba(212, 137, 106, 0.18);
-  --section-glow: rgba(212, 137, 106, 0.12);
+  --section-bg: #1a1412;
+  --section-bg-mid: #261e18;
+  --section-bg-end: #2e221c;
+  --section-surface: #2a221c;
+  --section-surface-2: #362c24;
+  --section-accent: #e8b098;
+  --section-accent-soft: rgba(232, 176, 152, 0.16);
+  --section-glow: rgba(232, 176, 152, 0.12);
+  --heading-gradient-a: #fff8f4;
+  --heading-gradient-b: #f0d4c4;
+  --heading-gradient-c: #e8b098;
 }
 
 .app-shell[data-section="guide"] {
-  --section-bg: #f2f7f6;
-  --section-surface: #ffffff;
-  --section-surface-2: #dcebe8;
-  --section-accent: #4a9b8e;
-  --section-accent-soft: rgba(74, 155, 142, 0.16);
-  --section-glow: rgba(74, 155, 142, 0.1);
+  --section-bg: #121a1a;
+  --section-bg-mid: #1a2828;
+  --section-bg-end: #1c3230;
+  --section-surface: #1e2c2a;
+  --section-surface-2: #283836;
+  --section-accent: #7ec4bc;
+  --section-accent-soft: rgba(126, 196, 188, 0.16);
+  --section-glow: rgba(126, 196, 188, 0.12);
+  --heading-gradient-a: #f4fbfb;
+  --heading-gradient-b: #b8e8e4;
+  --heading-gradient-c: #7ec4bc;
 }
 
 .app-shell[data-section="team"] {
-  --section-bg: #f3f6fa;
-  --section-surface: #ffffff;
-  --section-surface-2: #e3eaf5;
-  --section-accent: #5b8fd4;
-  --section-accent-soft: rgba(91, 143, 212, 0.16);
-  --section-glow: rgba(91, 143, 212, 0.1);
+  --section-bg: #141820;
+  --section-bg-mid: #1c2838;
+  --section-bg-end: #1e3044;
+  --section-surface: #222e3c;
+  --section-surface-2: #2c3a4c;
+  --section-accent: #9ec0e8;
+  --section-accent-soft: rgba(158, 192, 232, 0.16);
+  --section-glow: rgba(158, 192, 232, 0.12);
+  --heading-gradient-a: #f6faff;
+  --heading-gradient-b: #c4daf0;
+  --heading-gradient-c: #9ec0e8;
 }
 
 .app-shell[data-section="chat"] {
-  --section-bg: #f4f8f6;
-  --section-surface: #ffffff;
-  --section-surface-2: #e0efe8;
-  --section-accent: #3d9b7a;
-  --section-accent-soft: rgba(61, 155, 122, 0.18);
-  --section-glow: rgba(61, 155, 122, 0.12);
+  --section-bg: #121a17;
+  --section-bg-mid: #1a2822;
+  --section-bg-end: #1c3028;
+  --section-surface: #1e2c26;
+  --section-surface-2: #283830;
+  --section-accent: #88d4b0;
+  --section-accent-soft: rgba(136, 212, 176, 0.18);
+  --section-glow: rgba(136, 212, 176, 0.14);
+  --heading-gradient-a: #f5fbf8;
+  --heading-gradient-b: #c0ecd8;
+  --heading-gradient-c: #88d4b0;
 }
 
 .app-shell[data-section="leaderboard"] {
-  --section-bg: #f6f4f9;
-  --section-surface: #ffffff;
-  --section-surface-2: #ebe6f4;
-  --section-accent: #8b7dc8;
-  --section-accent-soft: rgba(139, 125, 200, 0.16);
-  --section-glow: rgba(139, 125, 200, 0.1);
+  --section-bg: #18141f;
+  --section-bg-mid: #221c2c;
+  --section-bg-end: #2a2438;
+  --section-surface: #2a2436;
+  --section-surface-2: #363044;
+  --section-accent: #c4b8e8;
+  --section-accent-soft: rgba(196, 184, 232, 0.16);
+  --section-glow: rgba(196, 184, 232, 0.12);
+  --heading-gradient-a: #faf8ff;
+  --heading-gradient-b: #ddd4f4;
+  --heading-gradient-c: #c4b8e8;
 }
 
 .app-shell[data-section="prizes"] {
-  --section-bg: #faf8f2;
-  --section-surface: #ffffff;
-  --section-surface-2: #f2ebdc;
-  --section-accent: #c9a227;
-  --section-accent-soft: rgba(201, 162, 39, 0.18);
-  --section-glow: rgba(201, 162, 39, 0.1);
+  --section-bg: #1a1810;
+  --section-bg-mid: #262218;
+  --section-bg-end: #302820;
+  --section-surface: #2c261c;
+  --section-surface-2: #383024;
+  --section-accent: #e8d080;
+  --section-accent-soft: rgba(232, 208, 128, 0.16);
+  --section-glow: rgba(232, 208, 128, 0.12);
+  --heading-gradient-a: #fffbf0;
+  --heading-gradient-b: #f0e4b8;
+  --heading-gradient-c: #e8d080;
 }
 
 .app-shell[data-section="game"] {
-  --section-bg: #f2f8f4;
-  --section-surface: #ffffff;
-  --section-surface-2: #dff0e6;
-  --section-accent: #52b788;
-  --section-accent-soft: rgba(82, 183, 136, 0.18);
-  --section-glow: rgba(82, 183, 136, 0.12);
+  --section-bg: #121a15;
+  --section-bg-mid: #1a2a20;
+  --section-bg-end: #1c3428;
+  --section-surface: #1e2c24;
+  --section-surface-2: #283830;
+  --section-accent: #88e0b0;
+  --section-accent-soft: rgba(136, 224, 176, 0.18);
+  --section-glow: rgba(136, 224, 176, 0.14);
+  --heading-gradient-a: #f4fff8;
+  --heading-gradient-b: #b8f0d0;
+  --heading-gradient-c: #88e0b0;
 }
 
 .app-shell[data-section="quiz"] {
-  --section-bg: #faf5f3;
-  --section-surface: #ffffff;
-  --section-surface-2: #f5e8e4;
-  --section-accent: #d4896a;
-  --section-accent-soft: rgba(212, 137, 106, 0.16);
-  --section-glow: rgba(212, 137, 106, 0.1);
+  --section-bg: #1a1614;
+  --section-bg-mid: #261e1a;
+  --section-bg-end: #302420;
+  --section-surface: #2a221e;
+  --section-surface-2: #362c28;
+  --section-accent: #f0b0a0;
+  --section-accent-soft: rgba(240, 176, 160, 0.16);
+  --section-glow: rgba(240, 176, 160, 0.12);
+  --heading-gradient-a: #fff8f6;
+  --heading-gradient-b: #f8d4c8;
+  --heading-gradient-c: #f0b0a0;
 }
 
 .app-shell[data-section="features"] {
-  --section-bg: #f5f4f8;
-  --section-surface: #fffefb;
-  --section-surface-2: #ebe8f2;
-  --section-accent: #7d8fd4;
-  --section-accent-soft: rgba(125, 143, 212, 0.16);
-  --section-glow: rgba(125, 143, 212, 0.1);
+  --section-bg: #18161f;
+  --section-bg-mid: #242030;
+  --section-bg-end: #2c2840;
+  --section-surface: #2a2636;
+  --section-surface-2: #363044;
+  --section-accent: #b8b0e8;
+  --section-accent-soft: rgba(184, 176, 232, 0.16);
+  --section-glow: rgba(184, 176, 232, 0.12);
+  --heading-gradient-a: #faf8ff;
+  --heading-gradient-b: #d8d4f4;
+  --heading-gradient-c: #b8b0e8;
 }
 
 .app-shell[data-section="auth"] {
-  --section-bg: #f5f5f3;
-  --section-surface: #ffffff;
-  --section-surface-2: #e8e8e4;
-  --section-accent: #6b7f75;
-  --section-accent-soft: rgba(107, 127, 117, 0.14);
-  --section-glow: rgba(107, 127, 117, 0.08);
+  --section-bg: #141816;
+  --section-bg-mid: #1c2622;
+  --section-bg-end: #243028;
+  --section-surface: #222c28;
+  --section-surface-2: #2c3632;
+  --section-accent: #a8c4b4;
+  --section-accent-soft: rgba(168, 196, 180, 0.14);
+  --section-glow: rgba(168, 196, 180, 0.1);
+  --heading-gradient-a: #f6faf8;
+  --heading-gradient-b: #d0e4dc;
+  --heading-gradient-c: #a8c4b4;
 }
 
 .app-shell::before {
   background:
-    radial-gradient(ellipse 90% 50% at 50% -10%, var(--section-glow), transparent 72%),
-    radial-gradient(ellipse 60% 40% at 100% 80%, var(--section-accent-soft), transparent 70%);
+    radial-gradient(ellipse 95% 55% at 50% -8%, var(--section-glow), transparent 68%),
+    radial-gradient(ellipse 70% 45% at 100% 85%, var(--section-accent-soft), transparent 72%),
+    radial-gradient(ellipse 50% 35% at 0% 60%, color-mix(in srgb, var(--section-accent) 8%, transparent), transparent 70%);
+  opacity: 1;
 }
 
 .fitness-bg-svg {
@@ -238,9 +320,16 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--heading);
-  background: none;
-  -webkit-text-fill-color: currentColor;
-  filter: none;
+  background: linear-gradient(
+    125deg,
+    var(--heading-gradient-a) 0%,
+    var(--heading-gradient-b) 55%,
+    var(--heading-gradient-c) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
 .tagline {
@@ -261,8 +350,8 @@ body {
   padding: 8px 10px 10px;
   gap: 2px;
   border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 12%, #fff);
-  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--section-surface) 75%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   box-shadow: var(--shadow-nav);
@@ -278,10 +367,14 @@ body {
   transition: background 0.2s ease, color 0.2s ease;
 }
 
+.bottom-nav a {
+  color: var(--muted);
+}
+
 .bottom-nav a.active {
-  color: var(--accent-dim);
+  color: var(--section-accent);
   background: var(--section-accent-soft);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 22%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 32%, transparent);
 }
 
 .bottom-nav-5 a,
@@ -294,21 +387,26 @@ body {
 
 /* ——— Cards & hero ——— */
 .card {
-  background: linear-gradient(180deg, #ffffff 0%, color-mix(in srgb, var(--section-accent-soft) 12%, #ffffff) 100%);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--section-surface) 94%, transparent) 0%,
+    color-mix(in srgb, var(--section-accent-soft) 45%, var(--section-surface)) 100%
+  );
   border-radius: var(--radius);
   padding: 18px;
   margin-bottom: 14px;
-  border: 1px solid color-mix(in srgb, var(--section-accent) 14%, #dce8e2);
-  box-shadow: 0 3px 16px rgba(20, 50, 40, 0.06);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 24%, transparent);
+  box-shadow: var(--shadow-sm);
+  color: var(--text);
 }
 
 .hero {
   background: linear-gradient(
     145deg,
-    color-mix(in srgb, var(--section-surface) 100%, #fff) 0%,
-    color-mix(in srgb, var(--section-accent-soft) 40%, var(--surface)) 100%
+    color-mix(in srgb, var(--section-surface) 100%, transparent) 0%,
+    color-mix(in srgb, var(--section-accent-soft) 55%, var(--section-surface)) 100%
   );
-  border: 1px solid color-mix(in srgb, var(--section-accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 28%, transparent);
 }
 
 .hero h2,
@@ -337,8 +435,8 @@ body {
 }
 
 .stat {
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 10%, #ebe6de);
+  background: color-mix(in srgb, var(--section-surface) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 20%, transparent);
   box-shadow: var(--shadow-sm);
   border-radius: var(--radius);
   padding: 14px 10px;
@@ -348,9 +446,11 @@ body {
   font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 800;
-  color: var(--accent-dim);
-  background: none;
-  -webkit-text-fill-color: currentColor;
+  color: var(--heading);
+  background: linear-gradient(120deg, var(--heading-gradient-b), var(--heading-gradient-c));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .stat-label {
@@ -379,9 +479,9 @@ body {
 }
 
 .btn-secondary {
-  background: var(--surface);
+  background: var(--section-surface);
   color: var(--text);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, #ddd8ce);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 28%, transparent);
   box-shadow: var(--shadow-sm);
 }
 
@@ -400,15 +500,16 @@ body {
 .form textarea,
 .form select {
   border-radius: var(--radius-sm);
-  border: 1px solid color-mix(in srgb, var(--muted) 22%, #e8e4dc);
-  background: var(--surface-2);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: var(--section-surface-2);
   color: var(--text);
 }
 
 .food-section-nav a {
   border-radius: var(--radius-pill);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 12%, #e8e4dc);
-  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: var(--section-surface);
+  color: var(--muted);
   box-shadow: var(--shadow-sm);
 }
 
@@ -743,7 +844,8 @@ body {
 
 .wellness-card {
   border-radius: var(--radius);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 10%, #e8e4dc);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--section-surface) 88%, transparent);
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
@@ -780,8 +882,9 @@ body {
 
 .team-template-btn {
   border-radius: var(--radius-pill);
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 14%, #e8e4dc);
+  background: var(--section-surface);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 24%, transparent);
+  color: var(--text);
 }
 
 .stars {
@@ -792,12 +895,11 @@ body {
 .progress-level-card {
   background: linear-gradient(
     165deg,
-    #ffffff 0%,
-    #f6fbf8 42%,
-    color-mix(in srgb, var(--section-accent-soft) 28%, #ffffff) 100%
+    color-mix(in srgb, var(--section-surface) 96%, transparent) 0%,
+    color-mix(in srgb, var(--section-accent-soft) 40%, var(--section-surface)) 100%
   );
-  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, #dce8e2);
-  box-shadow: 0 4px 20px rgba(20, 50, 40, 0.08);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 26%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .progress-level-card .progress-level-meta {
@@ -1045,9 +1147,9 @@ body {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, #e8e4dc);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 26%, transparent);
   border-radius: var(--radius-pill);
-  background: var(--surface);
+  background: var(--section-surface);
   color: var(--text);
   font-size: 0.78rem;
   font-weight: 600;
@@ -1069,12 +1171,11 @@ body {
   padding: 16px;
   background: linear-gradient(
     165deg,
-    #ffffff 0%,
-    #fafcf9 38%,
-    color-mix(in srgb, var(--section-accent-soft) 22%, #ffffff) 100%
+    color-mix(in srgb, var(--section-surface) 94%, transparent) 0%,
+    color-mix(in srgb, var(--section-accent-soft) 38%, var(--section-surface)) 100%
   );
-  border: 1px solid color-mix(in srgb, var(--section-accent) 16%, #dce8e2);
-  box-shadow: 0 4px 20px rgba(20, 50, 40, 0.07);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 24%, transparent);
+  box-shadow: var(--shadow-md);
 }
 
 .quests-panel-head {
@@ -1146,11 +1247,15 @@ body {
 }
 
 .quests-tabs button.active {
-  background: linear-gradient(135deg, #ffffff, #eef7f1);
-  color: var(--heading);
+  background: linear-gradient(
+    135deg,
+    var(--section-surface),
+    color-mix(in srgb, var(--section-accent-soft) 50%, var(--section-surface))
+  );
+  color: var(--section-accent);
   font-weight: 800;
   box-shadow: var(--shadow-sm);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 20%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 28%, transparent);
 }
 
 .quests-list {
@@ -1343,14 +1448,15 @@ body {
   max-width: 78%;
   padding: 10px 14px;
   border-radius: 18px 18px 18px 6px;
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 10%, #e8e4dc);
+  background: var(--section-surface);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
   box-shadow: var(--shadow-sm);
+  color: var(--text);
 }
 
 .chat-bubble-row.mine .chat-bubble {
   border-radius: 18px 18px 6px 18px;
-  background: color-mix(in srgb, var(--section-accent-soft) 70%, var(--surface));
+  background: color-mix(in srgb, var(--section-accent-soft) 65%, var(--section-surface));
 }
 
 .chat-bubble--mod .chat-body {

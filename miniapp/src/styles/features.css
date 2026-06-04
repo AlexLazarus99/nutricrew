@@ -21,8 +21,8 @@
   gap: 4px;
   padding: 6px 10px;
   border-radius: var(--radius-pill);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 14%, #e8e4dc);
-  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 24%, transparent);
+  background: var(--section-surface);
   color: var(--text);
   font-size: 0.8rem;
   cursor: pointer;
@@ -30,27 +30,27 @@
 
 .feature-chip.active {
   background: linear-gradient(135deg, var(--accent-dim), var(--section-accent));
-  color: #fff;
+  color: #1a2420;
   border-color: transparent;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--section-accent) 28%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--section-accent) 35%, transparent);
 }
 
 .league-badge {
   font-weight: 700;
   text-transform: capitalize;
-  color: var(--accent-dim);
+  color: var(--section-accent);
 }
 
 .battle-pass-bar {
   height: 10px;
   border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--section-accent) 10%, var(--surface-2));
+  background: color-mix(in srgb, var(--section-accent) 12%, var(--section-surface-2));
   overflow: hidden;
 }
 
 .battle-pass-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--warn), #e8c878);
+  background: linear-gradient(90deg, var(--warn), #f0e0a8);
   transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
@@ -63,16 +63,16 @@
 .achievement-tile {
   padding: 10px;
   border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid color-mix(in srgb, var(--muted) 12%, #e8e4dc);
-  opacity: 0.65;
+  background: var(--section-surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 18%, transparent);
+  opacity: 0.55;
   color: var(--text);
 }
 
 .achievement-tile.unlocked {
   opacity: 1;
-  border-color: color-mix(in srgb, var(--section-accent) 35%, transparent);
-  background: color-mix(in srgb, var(--section-accent-soft) 40%, var(--surface));
+  border-color: color-mix(in srgb, var(--section-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--section-accent-soft) 45%, var(--section-surface));
 }
 
 .team-activity-kudos {
@@ -85,8 +85,8 @@
   padding: 2px 8px;
   font-size: 0.85rem;
   border-radius: var(--radius-sm);
-  border: 1px solid color-mix(in srgb, var(--muted) 18%, #e8e4dc);
-  background: var(--surface);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: var(--section-surface);
   color: var(--text);
   cursor: pointer;
 }
@@ -107,6 +107,6 @@
   gap: 8px;
   padding: 8px 10px;
   border-radius: var(--radius-sm);
-  background: var(--surface-2);
+  background: var(--section-surface-2);
   color: var(--text);
 }

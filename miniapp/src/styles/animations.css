@@ -162,6 +162,7 @@
 .hero:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--section-accent) 38%, transparent);
 }
 
 .hero {
