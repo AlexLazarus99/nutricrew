@@ -66,19 +66,82 @@
   animation: nutricrew-mark-crew 4.2s ease-in-out infinite;
 }
 
-/* Splash: reveal from light rays */
+/* Splash: Apple-style logo + light-ray reveal */
 .splash-logo-stage {
-  --nutricrew-size: 120px;
+  --splash-logo-size: 152px;
+  --splash-logo-height: calc(var(--splash-logo-size) * 112 / 96);
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-height: calc(var(--nutricrew-size) + 52px);
+  min-height: calc(var(--splash-logo-height) + 56px);
+}
+
+.splash-apple-logo {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.splash-apple-logo__reveal {
+  opacity: 0;
+  animation: splash-logo-reveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
+}
+
+.splash-apple-logo__icon {
+  width: var(--splash-logo-size);
+  height: var(--splash-logo-height);
+  filter: drop-shadow(0 10px 28px rgba(46, 90, 68, 0.22));
+  animation: splash-apple-float 5.5s ease-in-out 1.35s infinite;
+}
+
+.splash-apple-logo__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.splash-apple-wordmark {
+  margin: 0;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-size: clamp(1.85rem, 8.5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  opacity: 0;
+  animation: splash-word-reveal 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.72s forwards;
+}
+
+.splash-apple-word-nutri {
+  color: #f5faf7;
+}
+
+.splash-apple-word-crew {
+  color: rgba(184, 220, 232, 0.92);
+}
+
+@keyframes splash-apple-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
 }
 
 .splash-light-burst {
   position: absolute;
-  top: calc(var(--nutricrew-size) / 2);
+  top: calc(var(--splash-logo-height) / 2);
   left: 50%;
   width: min(280px, 72vw);
   height: min(280px, 72vw);
@@ -112,7 +175,7 @@
 
 .splash-logo-bloom {
   position: absolute;
-  top: calc(var(--nutricrew-size) / 2);
+  top: calc(var(--splash-logo-height) / 2);
   left: 50%;
   width: min(200px, 55vw);
   height: min(200px, 55vw);
@@ -129,33 +192,6 @@
   );
   opacity: 0;
   animation: splash-logo-bloom 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.nutricrew-mark--splash {
-  position: relative;
-  z-index: 2;
-}
-
-.nutricrew-mark--splash .nutricrew-mark-icon {
-  opacity: 0;
-  animation:
-    splash-logo-reveal 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards,
-    nutricrew-mark-float 5s ease-in-out 1.35s infinite;
-}
-
-.nutricrew-mark--splash .nutricrew-mark-wordmark {
-  opacity: 0;
-  animation: splash-word-reveal 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.72s forwards;
-}
-
-.nutricrew-mark--splash.nutricrew-mark--animated .nutricrew-mark-halo {
-  transform-origin: 40px 40px;
-  animation: nutricrew-mark-halo 4.5s ease-in-out 1.4s infinite;
-}
-
-.nutricrew-mark--splash.nutricrew-mark--animated .nutricrew-mark-leaf {
-  transform-origin: 54px 34px;
-  animation: nutricrew-mark-leaf 3.8s ease-in-out 1.4s infinite;
 }
 
 @keyframes splash-ray-burst {
@@ -417,8 +453,9 @@
   .nutricrew-mark--animated .nutricrew-mark-halo,
   .nutricrew-mark--animated .nutricrew-mark-leaf,
   .nutricrew-mark--animated .nutricrew-mark-crew,
-  .nutricrew-mark--splash .nutricrew-mark-icon,
-  .nutricrew-mark--splash .nutricrew-mark-wordmark,
+  .splash-apple-logo__reveal,
+  .splash-apple-logo__icon,
+  .splash-apple-wordmark,
   .splash-light-ray,
   .splash-logo-bloom,
   .splash-tagline,
@@ -428,7 +465,11 @@
     animation: none;
     opacity: 1;
     transform: none;
-    filter: none;
+    filter: drop-shadow(0 10px 28px rgba(46, 90, 68, 0.22));
+  }
+
+  .splash-apple-logo__icon svg animate {
+    display: none;
   }
 
   .splash-light-ray {

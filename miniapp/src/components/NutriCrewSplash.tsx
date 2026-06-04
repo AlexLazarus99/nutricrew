@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useTranslation } from "react-i18next";
-import { NutriCrewMark } from "./NutriCrewMark";
+import { SplashGradientLogo } from "./SplashGradientLogo";
 
 const LIGHT_RAY_COUNT = 14;
 
@@ -35,7 +35,7 @@ export function NutriCrewSplash({ slow = false }: Props) {
             ))}
           </div>
           <span className="splash-logo-bloom" aria-hidden />
-          <NutriCrewMark size={120} showWordmark splash animated />
+          <SplashGradientLogo size={152} showWordmark />
         </div>
         <p className="splash-tagline">{t("splash.tagline")}</p>
       </div>
