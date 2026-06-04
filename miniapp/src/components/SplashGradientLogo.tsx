@@ -20,7 +20,7 @@ export function SplashGradientLogo({ peachSize }: SplashGradientLogoProps) {
             className="splash-peach-mark__art"
             src={BRAND_PEACH_SRC}
             srcSet={`${BRAND_PEACH_SRC} 1x, ${BRAND_PEACH_SRC_2X} 2x`}
-            sizes="(max-width: 480px) 53vw, 200px"
+            sizes="(max-width: 480px) 27vw, 100px"
             width={410}
             height={481}
             alt=""
