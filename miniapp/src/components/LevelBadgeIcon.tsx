@@ -39,6 +39,11 @@ function BadgeDefs({ uid }: { uid: string }) {
         <stop offset="0%" stopColor="#fffaf5" />
         <stop offset="100%" stopColor="#e8ddd2" />
       </linearGradient>
+      <linearGradient id={p("dawn")} x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stopColor="#c8e6d8" />
+        <stop offset="45%" stopColor="#ffe8c8" />
+        <stop offset="100%" stopColor="#fffaf5" />
+      </linearGradient>
       <radialGradient id={p("glow")} cx="50%" cy="35%" r="55%">
         <stop offset="0%" stopColor="#fff" stopOpacity="0.9" />
         <stop offset="100%" stopColor="#fff" stopOpacity="0" />
@@ -58,13 +63,21 @@ function LevelArt({ titleKey, uid }: { titleKey: string; uid: string }) {
     case "hatchling":
       return (
         <g filter={`url(#${f})`}>
-          <ellipse className="level-badge__nest" cx="40" cy="52" rx="22" ry="7" />
-          <path className="level-badge__nest-straw" d="M22 50 Q28 46 34 50 M46 50 Q52 46 58 50" />
-          <ellipse className="level-badge__egg" cx="40" cy="36" rx="15" ry="19" fill={g("warm")} />
-          <ellipse className="level-badge__egg-shine" cx="34" cy="30" rx="5" ry="7" fill={g("glow")} opacity="0.55" />
-          <path className="level-badge__egg-speck" d="M36 34 a1.2 1.2 0 1 0 0.1 0 M44 38 a1 1 0 1 0 0.1 0 M38 42 a0.8 0.8 0 1 0 0.1 0" />
-          <path className="level-badge__crack" d="M35 26 L38 34 L36 40 M45 26 L42 33 L44 39" />
-          <path className="level-badge__crack-glow" d="M39 24 Q40 30 39 36" opacity="0.5" />
+          <rect className="level-badge__path-sky" x="12" y="12" width="56" height="22" rx="6" fill={g("dawn")} opacity="0.42" />
+          <circle className="level-badge__sun" cx="58" cy="18" r="7" fill={g("warm")} />
+          <circle className="level-badge__sun-core" cx="58" cy="18" r="3.5" fill="#fff8ee" opacity="0.85" />
+          <path className="level-badge__hill-far" d="M10 42 Q28 34 44 38 Q58 42 70 36 V50 H10 Z" fill={g("leaf")} opacity="0.38" />
+          <path className="level-badge__hill" d="M10 46 Q26 38 40 44 Q54 50 70 44 V56 H10 Z" fill={g("leaf")} opacity="0.62" />
+          <path className="level-badge__trail" d="M20 52 Q30 47 38 48 Q48 44 60 38" />
+          <circle className="level-badge__trail-stone" cx="24" cy="50" r="2.2" />
+          <circle className="level-badge__trail-stone" cx="33" cy="47.5" r="2" />
+          <circle className="level-badge__trail-stone" cx="42" cy="45.5" r="1.8" />
+          <circle className="level-badge__trail-stone" cx="52" cy="41" r="1.6" />
+          <rect className="level-badge__sign-post" x="15" y="34" width="2.5" height="20" rx="1" />
+          <path className="level-badge__sign-board" d="M9 24 h18 a2.5 2.5 0 0 1 2.5 2.5 v9 a2.5 2.5 0 0 1-2.5 2.5 H9 Z" fill={g("plate")} />
+          <path className="level-badge__sign-arrow" d="M13 31 h10 M19 28 l4 3 -4 3" />
+          <ellipse className="level-badge__sign-leaf" cx="18" cy="30" rx="3.5" ry="2.2" fill={g("leaf")} transform="rotate(-18 18 30)" />
+          <ellipse className="level-badge__footprint" cx="27" cy="51" rx="2.2" ry="3.2" transform="rotate(-12 27 51)" opacity="0.65" />
         </g>
       );
     case "sprout":

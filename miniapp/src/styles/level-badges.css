@@ -67,8 +67,8 @@
 }
 
 /* Strokes & line art */
-.level-badge__crack,
-.level-badge__crack-glow,
+.level-badge__trail,
+.level-badge__sign-arrow,
 .level-badge__stem,
 .level-badge__leaf-vein,
 .level-badge__journal-line,
@@ -97,9 +97,7 @@
 .level-badge__trophy-handle,
 .level-badge__book-line,
 .level-badge__crown-engrave,
-.level-badge__nest-straw,
-.level-badge__soil-line,
-.level-badge__egg-speck {
+.level-badge__soil-line {
   fill: none;
   stroke: color-mix(in srgb, var(--section-accent) 72%, #3d5c4a);
   stroke-width: 1.6;
@@ -107,7 +105,6 @@
   stroke-linejoin: round;
 }
 
-.level-badge__crack-glow,
 .level-badge__rhythm,
 .level-badge__wave {
   stroke: color-mix(in srgb, var(--section-accent) 45%, transparent);
@@ -119,15 +116,50 @@
 }
 
 /* Filled shapes */
-.level-badge__nest,
+.level-badge__path-sky {
+  stroke: none;
+}
+
+.level-badge__sun-core {
+  stroke: none;
+}
+
+.level-badge__hill,
+.level-badge__hill-far {
+  stroke: none;
+}
+
+.level-badge__trail-stone {
+  fill: #e8ddd0;
+  stroke: #b8a898;
+  stroke-width: 0.8;
+}
+
+.level-badge__sign-post {
+  fill: #b8956a;
+  stroke: #8a6848;
+  stroke-width: 0.8;
+}
+
+.level-badge__sign-board {
+  stroke: color-mix(in srgb, var(--section-accent) 40%, #a8b8ae);
+  stroke-width: 1.2;
+}
+
+.level-badge__sign-leaf {
+  stroke: #4a9e68;
+  stroke-width: 0.8;
+}
+
+.level-badge__footprint {
+  fill: color-mix(in srgb, var(--section-accent) 35%, #8a9a90);
+  stroke: none;
+}
+
 .level-badge__soil {
   fill: #c4a882;
   stroke: #9a7b5c;
   stroke-width: 1.5;
-}
-
-.level-badge__egg-shine {
-  pointer-events: none;
 }
 
 .level-badge__bud,
@@ -273,9 +305,14 @@
 }
 
 /* Subtle per-level accents */
-.level-badge--hatchling .level-badge__egg {
-  animation: level-badge-tilt 5s ease-in-out infinite;
-  transform-origin: 40px 36px;
+.level-badge--hatchling .level-badge__sun {
+  animation: level-badge-breathe 5.5s ease-in-out infinite;
+  transform-origin: 58px 18px;
+}
+
+.level-badge--hatchling .level-badge__sign-board {
+  animation: level-badge-tilt 5.2s ease-in-out infinite;
+  transform-origin: 18px 30px;
 }
 
 .level-badge--sprout .level-badge__leaf--l {

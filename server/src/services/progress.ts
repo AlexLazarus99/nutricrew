@@ -16,7 +16,7 @@ export type ProgressPayload = {
 };
 
 const LEVELS: Array<{ level: number; xp: number; titleKey: string; emoji: string }> = [
-  { level: 1, xp: 0, titleKey: "hatchling", emoji: "🥚" },
+  { level: 1, xp: 0, titleKey: "hatchling", emoji: "🌅" },
   { level: 2, xp: 40, titleKey: "sprout", emoji: "🌱" },
   { level: 3, xp: 100, titleKey: "snacker", emoji: "🥗" },
   { level: 4, xp: 200, titleKey: "logger", emoji: "📸" },
