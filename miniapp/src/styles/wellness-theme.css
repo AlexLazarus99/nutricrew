@@ -419,7 +419,7 @@ body {
   letter-spacing: -0.01em;
 }
 
-.growth-hint-card {
+.growth-hint-card:not(:has(.growth-hint-card__title)) {
   border-left: none;
   background: color-mix(in srgb, var(--section-accent-soft) 55%, var(--surface));
   border-radius: var(--radius-sm);

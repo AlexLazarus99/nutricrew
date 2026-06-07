@@ -58,7 +58,9 @@
     "teamFeedTitle": "Today in your crew",
     "teamFeedEmpty": "No meals logged today yet — be the first!",
     "teamFeedYou": "You",
-    "featuresCta": "All features & leagues"
+    "featuresCta": "All features & leagues",
+    "dailyGoalShort": "Daily goal {{progress}}/{{target}}",
+    "dailyGoalDone": "Daily goal complete"
   },
   "features": {
     "title": "Crew features",

@@ -11,6 +11,50 @@ import { TutorialCoach } from "../components/TutorialCoach";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
+import type { GrowthSummary } from "../api/client";
+
+const LEAGUE_TIER_EMOJI: Record<string, string> = {
+  bronze: "🥉",
+  silver: "🥈",
+  gold: "🥇",
+  platinum: "💠",
+  diamond: "💎",
+};
+
+function GrowthFeaturesLink({ growth }: { growth: GrowthSummary }) {
+  const { t } = useTranslation();
+  const tier = growth.league.tier.toLowerCase();
+  const tierKey = tier in LEAGUE_TIER_EMOJI ? tier : "bronze";
+  const goalDone = growth.dailyGoal.done;
+  const goalLabel = goalDone
+    ? t("growth.dailyGoalDone")
+    : t("growth.dailyGoalShort", {
+        progress: growth.dailyGoal.progress,
+        target: growth.dailyGoal.target,
+      });
+
+  return (
+    <Link to="/features" className="card growth-hint-card">
+      <div className="growth-hint-card__body">
+        <span className="growth-hint-card__title">{t("growth.featuresCta")}</span>
+        <div className="growth-hint-card__chips">
+          <span className={`growth-hint-chip growth-hint-chip--league growth-hint-chip--${tierKey}`}>
+            <span className="growth-hint-chip__emoji" aria-hidden>
+              {LEAGUE_TIER_EMOJI[tierKey]}
+            </span>
+            {t(`features.leagueTiers.${tierKey}`)}
+          </span>
+          <span className={`growth-hint-chip growth-hint-chip--goal${goalDone ? " is-done" : ""}`}>
+            {goalLabel}
+          </span>
+        </div>
+      </div>
+      <span className="growth-hint-card__chevron" aria-hidden>
+        →
+      </span>
+    </Link>
+  );
+}
 
 const TEAM_TEMPLATES = [
   { key: "friends", nameRu: "Друзья", nameEn: "Friends" },
@@ -174,12 +218,7 @@ export function HomePage() {
       />
 
       {me.growth && (
-        <Link to="/features" className="card growth-hint-card">
-          <p>
-            {t("growth.featuresCta")} · {me.growth.league.tier} ·{" "}
-            {me.growth.dailyGoal.done ? "✓" : `${me.growth.dailyGoal.progress}/${me.growth.dailyGoal.target}`}
-          </p>
-        </Link>
+        <GrowthFeaturesLink growth={me.growth} />
       )}
 
       {prizeMembersNeeded > 0 && (

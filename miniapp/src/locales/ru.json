@@ -58,7 +58,9 @@
     "teamFeedTitle": "Сегодня в команде",
     "teamFeedEmpty": "Пока никто не логировал еду сегодня — будь первым!",
     "teamFeedYou": "Ты",
-    "featuresCta": "Все фишки и лиги"
+    "featuresCta": "Все фишки и лиги",
+    "dailyGoalShort": "Цель дня {{progress}}/{{target}}",
+    "dailyGoalDone": "Цель дня выполнена"
   },
   "features": {
     "title": "Фишки NutriCrew",
