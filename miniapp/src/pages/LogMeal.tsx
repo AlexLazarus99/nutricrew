@@ -76,6 +76,8 @@ export function LogMealPage() {
     });
   }, [description, calories, protein, carbs, fat, qualityTag, mealSlot]);
 
+  const MEAL_SLOTS = ["breakfast", "lunch", "dinner", "snack"] as const;
+
   function applyAnalysis(analysis: MealPhotoAnalysis) {
     setCaptureError(null);
     setPreview(analysis.preview);
@@ -84,6 +86,14 @@ export function LogMealPage() {
     setProtein(String(analysis.protein));
     setCarbs(String(analysis.carbs));
     setFat(String(analysis.fat));
+    if (
+      analysis.mealType &&
+      (MEAL_SLOTS as readonly string[]).includes(analysis.mealType)
+    ) {
+      setMealSlot(analysis.mealType);
+    } else if (analysis.mealType === "drink") {
+      setMealSlot("snack");
+    }
     setAiNote(
       t("log.aiNote", {
         confidence: Math.round(analysis.confidence * 100),

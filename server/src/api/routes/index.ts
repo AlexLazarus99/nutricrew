@@ -262,7 +262,7 @@ apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
     return;
   }
 
-  const analysis = await analyzeFoodImage(imageBase64);
+  const analysis = await analyzeFoodImage(imageBase64, req.dbUser!.locale);
   res.json(analysis);
 });
 

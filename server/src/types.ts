@@ -38,6 +38,14 @@ export interface DbTeam {
   created_at: Date;
 }
 
+export type MealType =
+  | "breakfast"
+  | "lunch"
+  | "dinner"
+  | "snack"
+  | "drink"
+  | "unknown";
+
 export interface MealAnalysis {
   description: string;
   calories: number;
@@ -45,5 +53,6 @@ export interface MealAnalysis {
   carbs: number;
   fat: number;
   confidence: number;
+  mealType?: MealType;
   source: "openai" | "fallback";
 }

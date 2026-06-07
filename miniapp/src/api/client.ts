@@ -343,6 +343,14 @@ export interface BirdScoreResponse {
   };
 }
 
+export type MealType =
+  | "breakfast"
+  | "lunch"
+  | "dinner"
+  | "snack"
+  | "drink"
+  | "unknown";
+
 export interface MealAnalysisResponse {
   description: string;
   calories: number;
@@ -350,6 +358,7 @@ export interface MealAnalysisResponse {
   carbs: number;
   fat: number;
   confidence: number;
+  mealType?: MealType;
   source: "openai" | "fallback";
 }
 
