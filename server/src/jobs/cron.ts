@@ -2,6 +2,7 @@ import cron from "node-cron";
 import { config } from "../config.js";
 import { runWeeklyReset } from "./weeklyReset.js";
 import { runMorningReminders, runEveningNudges, runStreakReset } from "./daily.js";
+import { runReengagementNudges } from "./reengagement.js";
 
 export function startCronJobs(): void {
   if (!config.cronEnabled) {
@@ -29,7 +30,12 @@ export function startCronJobs(): void {
     void runEveningNudges().catch(console.error);
   });
 
+  // Re-engagement for dormant users — Tue/Fri 11:00 UTC
+  cron.schedule("0 11 * * 2,5", () => {
+    void runReengagementNudges().catch(console.error);
+  });
+
   console.log(
-    `Cron started (weekly Mon 00:05 UTC, reminders ${config.reminderHourUtc}:00 UTC, evening 18:00 UTC)`,
+    `Cron started (weekly Mon 00:05 UTC, reminders ${config.reminderHourUtc}:00 UTC, evening 18:00 UTC, reengagement Tue/Fri 11:00 UTC)`,
   );
 }

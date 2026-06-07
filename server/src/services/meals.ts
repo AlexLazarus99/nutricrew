@@ -8,6 +8,8 @@ import { calculateMealPoints, maxMealsPerDay, teamMultiplier } from "./points.js
 import { computeNextStreak, streakMultiplier } from "./streak.js";
 import { leagueXpForMeal, tierFromWeeklyXp } from "../lib/leagueTiers.js";
 import { checkAchievementsAfterMeal, checkLeagueAchievement } from "./achievements.js";
+import { validateMealInput } from "./mealValidation.js";
+import { trackEvents } from "./analytics.js";
 import type { DbUser } from "../types.js";
 import type { MealAnalysis } from "../types.js";
 
@@ -38,7 +40,16 @@ export async function logMealForUser(
     throw new Error("DAILY_MEAL_LIMIT");
   }
 
+  const validation = await validateMealInput(user.id, input);
+  if (!validation.ok) {
+    await trackEvents(user.id, [{ name: "meal_rejected", props: { reason: validation.error } }]);
+    throw new Error(validation.error);
+  }
+
   let basePoints = calculateMealPoints(input.calories, input.protein);
+  if (validation.pointsPenalty > 0) {
+    basePoints = Math.max(1, Math.round(basePoints * (1 - validation.pointsPenalty)));
+  }
   const qMult = input.qualityTag ? (QUALITY_BONUS[input.qualityTag] ?? 1) : 1;
   basePoints = Math.round(basePoints * qMult);
 
@@ -95,7 +106,20 @@ export async function logMealForUser(
     aiConfidence: input.analysis?.confidence,
     mealSlot: input.mealSlot ?? null,
     qualityTag: input.qualityTag ?? null,
+    imageHash: validation.imageHash,
+    verificationStatus: validation.verificationStatus,
   });
+
+  await trackEvents(user.id, [
+    {
+      name: "meal_logged",
+      props: {
+        calories: input.calories,
+        hasPhoto: !!input.photoBase64,
+        verification: validation.verificationStatus,
+      },
+    },
+  ]);
 
   await usersRepo.updateStreak(
     user.id,

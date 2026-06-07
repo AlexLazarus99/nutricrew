@@ -23,7 +23,7 @@ growthRouter.get("/", ...authedProfile, async (req, res) => {
 growthRouter.patch("/settings", ...authedProfile, async (req, res) => {
   const { dailyGoalType, dailyGoalTarget, photoPrivacy, onboardingVariant } =
     req.body as Record<string, unknown>;
-  const allowedGoals = ["meals", "points", "protein"];
+  const allowedGoals = ["meals", "points", "protein", "calories"];
   const allowedPrivacy = ["team", "private", "hidden"];
   const data: Parameters<typeof growthRepo.updateUserSettings>[1] = {};
   if (typeof dailyGoalType === "string" && allowedGoals.includes(dailyGoalType)) {
@@ -157,6 +157,18 @@ growthRouter.post("/team/league-tag", ...authedProfile, async (req, res) => {
         : null;
   await growthRepo.setTeamLeagueTag(user.team_id, normalized);
   res.json({ ok: true, tag: normalized });
+});
+
+growthRouter.get("/team/admin", ...authedProfile, async (req, res) => {
+  const { buildTeamAdminDashboard } = await import("../../services/teamAdmin.js");
+  const { trackEvents } = await import("../../services/analytics.js");
+  const dashboard = await buildTeamAdminDashboard(req.dbUser!);
+  if (!dashboard) {
+    res.status(403).json({ error: "NOT_CAPTAIN" });
+    return;
+  }
+  await trackEvents(req.dbUser!.id, [{ name: "team_admin_view" }]);
+  res.json(dashboard);
 });
 
 growthRouter.post("/team/promote", ...authedProfile, async (req, res) => {

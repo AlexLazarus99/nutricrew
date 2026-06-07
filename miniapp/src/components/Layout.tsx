@@ -69,6 +69,11 @@ function LayoutShell() {
       {registered && !showWellnessOffer && (
         <footer className="app-footer">
           <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
+          <nav className="footer-legal">
+            <NavLink to="/report">{t("nav.report")}</NavLink>
+            <NavLink to="/settings">{t("nav.settings")}</NavLink>
+            <NavLink to="/privacy">{t("nav.privacy")}</NavLink>
+          </nav>
           <p className="muted build-stamp">build {APP_BUILD}</p>
         </footer>
       )}

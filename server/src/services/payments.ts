@@ -13,15 +13,18 @@ export async function createStarsInvoice(
   input: {
     userId: number;
     teamId: string | null;
-    paymentType: "pool_fund" | "premium";
+    paymentType: "pool_fund" | "premium" | "user_pro";
     stars: number;
     title: string;
     description: string;
   },
 ): Promise<string> {
-  const stars = clampStars(
-    input.paymentType === "premium" ? config.stars.premiumPrice : input.stars,
-  );
+  const stars =
+    input.paymentType === "premium"
+      ? config.stars.premiumPrice
+      : input.paymentType === "user_pro"
+        ? config.stars.proPrice
+        : clampStars(input.stars);
   const payload = `nc_${crypto.randomUUID().replace(/-/g, "")}`;
 
   await prizesRepo.createPayment({
@@ -109,6 +112,14 @@ export async function handleSuccessfulPayment(
     return { type: "bird_unlock", stars: totalAmount, birdId: payment.referenceId };
   }
 
+  if (payment.paymentType === "user_pro") {
+    const { setUserPro } = await import("./userPro.js");
+    const { grantStreakFreeze } = await import("../repositories/growth.js");
+    await setUserPro(Number(payment.userId), config.stars.proDays);
+    await grantStreakFreeze(Number(payment.userId), 2);
+    return { type: "user_pro", stars: totalAmount };
+  }
+
   return null;
 }
 
@@ -148,6 +159,12 @@ export function registerPaymentHandlers(bot: Telegraf<Context>): void {
         locale === "ru"
           ? `🐦 Птица разблокирована! Откройте NutriBird в приложении.`
           : `🐦 Bird unlocked! Open NutriBird in the app.`,
+      );
+    } else if (result?.type === "user_pro") {
+      await ctx.reply(
+        locale === "ru"
+          ? `⭐ NutriCrew Pro на ${config.stars.proDays} дней! Безлимит ИИ и отчёты.`
+          : `⭐ NutriCrew Pro for ${config.stars.proDays} days! Unlimited AI & reports.`,
       );
     }
   });

@@ -36,6 +36,21 @@ const ChatPage = lazy(() =>
 const FeaturesPage = lazy(() =>
   import("./pages/FeaturesPage").then((m) => ({ default: m.FeaturesPage })),
 );
+const SettingsPage = lazy(() =>
+  import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
+);
+const PrivacyPolicyPage = lazy(() =>
+  import("./pages/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
+);
+const TermsPage = lazy(() =>
+  import("./pages/TermsPage").then((m) => ({ default: m.TermsPage })),
+);
+const WeeklyReportPage = lazy(() =>
+  import("./pages/WeeklyReportPage").then((m) => ({ default: m.WeeklyReportPage })),
+);
+const TeamAdminPage = lazy(() =>
+  import("./pages/TeamAdminPage").then((m) => ({ default: m.TeamAdminPage })),
+);
 
 export default function App() {
   return (
@@ -53,6 +68,11 @@ export default function App() {
         <Route path="guide/:category/:id" element={<WellnessDetailPage />} />
         <Route path="game" element={<BirdGamePage />} />
         <Route path="quiz" element={<CalorieQuizPage />} />
+        <Route path="settings" element={<SettingsPage />} />
+        <Route path="privacy" element={<PrivacyPolicyPage />} />
+        <Route path="terms" element={<TermsPage />} />
+        <Route path="report" element={<WeeklyReportPage />} />
+        <Route path="team/admin" element={<TeamAdminPage />} />
       </Route>
     </Routes>
   );

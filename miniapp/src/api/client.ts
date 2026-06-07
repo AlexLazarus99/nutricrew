@@ -154,6 +154,7 @@ export interface MeResponse {
     tiktok: string;
   }>;
   growth?: GrowthSummary;
+  pro?: { isPro: boolean; proUntil: string | null };
 }
 
 export type GrowthSummary = {
@@ -267,6 +268,47 @@ export interface PrizesResponse {
   awards: Array<{ weekKey: string; stars: number; at: string }>;
 }
 
+export interface WeeklyReportResponse {
+  weekKey: string;
+  mealsLogged: number;
+  daysLogged: number;
+  calories: number;
+  protein: number;
+  points: number;
+  streak: number;
+  longestStreak: number;
+  teamName: string | null;
+  teamRank: number | null;
+  teamPoints: number | null;
+  avgCaloriesPerMeal: number;
+}
+
+export interface TeamAdminResponse {
+  team: {
+    id: string;
+    name: string;
+    inviteCode: string;
+    leagueTag: string | null;
+    isPremium: boolean;
+    weeklyGoalType: string;
+    weeklyGoalTarget: number;
+  };
+  weekKey: string;
+  weekPoints: number;
+  membersTotal: number;
+  membersLoggedToday: number;
+  participationRate: number;
+  members: Array<{
+    telegramId: number;
+    firstName: string;
+    role: string;
+    mealsToday: number;
+    mealsThisWeek: number;
+    weekPoints: number;
+    lastMealDate: string | null;
+  }>;
+}
+
 export interface TeamResponse {
   id: string;
   name: string;
@@ -363,6 +405,8 @@ export interface MealAnalysisResponse {
   mealType?: MealType;
   source: "openai" | "fallback";
   visionReason?: VisionFallbackReason;
+  imageHash?: string;
+  cacheHit?: boolean;
 }
 
 export interface MealResponse {
@@ -499,7 +543,21 @@ export const api = {
     mealSlot?: string;
     qualityTag?: string;
     favoriteId?: string;
+    analysis?: MealAnalysisResponse;
   }) => request<MealResponse>("/meals", { method: "POST", body: JSON.stringify(body) }),
+  trackEvents: (events: Array<{ name: string; props?: Record<string, unknown> }>) =>
+    request<{ ok: boolean }>("/analytics/events", {
+      method: "POST",
+      body: JSON.stringify({ events }),
+    }),
+  getWeeklyReport: (weekKey?: string) =>
+    request<WeeklyReportResponse>(
+      weekKey ? `/me/weekly-report?weekKey=${encodeURIComponent(weekKey)}` : "/me/weekly-report",
+    ),
+  getTeamAdmin: () => request<TeamAdminResponse>("/growth/team/admin"),
+  exportMyData: () => request<Record<string, unknown>>("/privacy/export"),
+  deleteMyAccount: () =>
+    request<{ ok: boolean }>("/privacy/account", { method: "DELETE", body: "{}" }),
   postMealKudos: (mealId: string, emoji: string) =>
     request<{ ok: boolean; added: boolean; kudosCount: number }>(
       `/meals/${encodeURIComponent(mealId)}/kudos`,
@@ -556,6 +614,8 @@ export const api = {
     }),
   createPremiumInvoice: () =>
     request<{ invoiceLink: string }>("/prizes/premium-invoice", { method: "POST", body: "{}" }),
+  createProInvoice: () =>
+    request<{ invoiceLink: string }>("/prizes/pro-invoice", { method: "POST", body: "{}" }),
   createTeam: (name: string, leagueTag?: string) =>
     request<{ id: string; name: string; inviteCode: string }>("/teams/create", {
       method: "POST",

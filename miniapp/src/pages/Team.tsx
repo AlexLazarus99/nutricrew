@@ -13,12 +13,15 @@ export function TeamPage() {
   const { me } = useMe();
   const teamTour = useTutorialTour("team", true);
   const [team, setTeam] = useState<TeamResponse | null>(null);
+  const [isCaptain, setIsCaptain] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    api
-      .getTeam()
-      .then(setTeam)
+    Promise.all([api.getTeam(), api.getGrowth()])
+      .then(([teamData, growth]) => {
+        setTeam(teamData);
+        setIsCaptain(growth.teamRole === "captain");
+      })
       .catch((e: Error) => setError(e.message));
   }, []);
 
@@ -66,6 +69,11 @@ export function TeamPage() {
         <Link to="/chat" className="btn btn-secondary btn-block chat-team-cta">
           💬 {t("chat.openFromTeam")}
         </Link>
+        {isCaptain && (
+          <Link to="/team/admin" className="btn btn-primary btn-block">
+            📊 {t("teamAdmin.open")}
+          </Link>
+        )}
         <p className="muted">
           {t("team.weeklyGoal", { type: goal.type })} —{" "}
           {t("team.progress", {

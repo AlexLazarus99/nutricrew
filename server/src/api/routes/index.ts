@@ -23,6 +23,8 @@ import { computeUserProgress } from "../../services/progress.js";
 import { claimQuest, getQuestBoard } from "../../services/quests.js";
 import { chatRouter } from "./chat.js";
 import { growthRouter } from "./growth.js";
+import { analyticsRouter } from "./analytics.js";
+import { privacyRouter } from "./privacy.js";
 import * as growthRepo from "../../repositories/growth.js";
 import { buildGrowthSummary } from "../../services/growthHub.js";
 import { KUDOS_EMOJIS } from "../../lib/challengeDefinitions.js";
@@ -30,6 +32,8 @@ import { KUDOS_EMOJIS } from "../../lib/challengeDefinitions.js";
 export const apiRouter = Router();
 apiRouter.use("/chat", chatRouter);
 apiRouter.use("/growth", growthRouter);
+apiRouter.use("/analytics", analyticsRouter);
+apiRouter.use("/privacy", privacyRouter);
 
 const authed = [authInitData, ensureUser] as const;
 const authedProfile = [...authed, requireProfile] as const;
@@ -138,6 +142,8 @@ apiRouter.get("/me", ...authed, async (req, res) => {
 
   const parsedStart = parseInviteStartParam(req.telegram!.startParam);
   const growth = await buildGrowthSummary(user, { mealsToday, todayPoints });
+  const { getUserProStatus } = await import("../../services/userPro.js");
+  const pro = await getUserProStatus(user.id);
 
   res.json({
     user: {
@@ -170,7 +176,17 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     progress,
     socialLinks: getPublicSocialLinks(),
     growth,
+    pro,
   });
+});
+
+apiRouter.get("/me/weekly-report", ...authedProfile, async (req, res) => {
+  const { buildWeeklyReport } = await import("../../services/weeklyReport.js");
+  const weekKey = (req.query.weekKey as string) || undefined;
+  const report = await buildWeeklyReport(req.dbUser!, weekKey);
+  const { trackEvents } = await import("../../services/analytics.js");
+  await trackEvents(req.dbUser!.id, [{ name: "weekly_report_view" }]);
+  res.json(report);
 });
 
 apiRouter.get("/quests", ...authedProfile, async (req, res) => {
@@ -265,6 +281,13 @@ apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
   }
 
   const analysis = await analyzeFoodImage(imageBase64, req.dbUser!.locale);
+  const { trackEvents } = await import("../../services/analytics.js");
+  await trackEvents(req.dbUser!.id, [
+    {
+      name: "meal_analyze",
+      props: { source: analysis.source, cacheHit: !!analysis.cacheHit },
+    },
+  ]);
   res.json(analysis);
 });
 
@@ -280,6 +303,7 @@ apiRouter.post("/meals", ...authedProfile, async (req, res) => {
     mealSlot,
     qualityTag,
     favoriteId,
+    analysis,
   } = req.body as {
     description?: string;
     calories?: number;
@@ -290,6 +314,7 @@ apiRouter.post("/meals", ...authedProfile, async (req, res) => {
     mealSlot?: string;
     qualityTag?: string;
     favoriteId?: string;
+    analysis?: import("../../types.js").MealAnalysis;
   };
 
   let result;
@@ -304,10 +329,21 @@ apiRouter.post("/meals", ...authedProfile, async (req, res) => {
       mealSlot,
       qualityTag,
       favoriteId,
+      analysis,
     });
   } catch (e) {
-    if ((e as Error).message === "DAILY_MEAL_LIMIT") {
+    const code = (e as Error).message;
+    if (code === "DAILY_MEAL_LIMIT") {
       res.status(429).json({ error: "DAILY_MEAL_LIMIT" });
+      return;
+    }
+    if (
+      code === "NOT_FOOD" ||
+      code === "DUPLICATE_PHOTO" ||
+      code === "MACRO_OUT_OF_RANGE" ||
+      code === "ANALYZE_LIMIT"
+    ) {
+      res.status(400).json({ error: code });
       return;
     }
     throw e;
@@ -416,6 +452,15 @@ apiRouter.post("/prizes/fund-invoice", ...authedProfile, async (req, res) => {
       Number(stars) || 50,
       user.locale,
     ),
+  );
+  res.json({ invoiceLink: link });
+});
+
+apiRouter.post("/prizes/pro-invoice", ...authedProfile, async (req, res) => {
+  const user = req.dbUser!;
+  const { getAppBot } = await import("../../services/botInstance.js");
+  const link = await import("../../services/stars.js").then((m) =>
+    m.createProInvoice(getAppBot(), user.id, user.locale),
   );
   res.json({ invoiceLink: link });
 });

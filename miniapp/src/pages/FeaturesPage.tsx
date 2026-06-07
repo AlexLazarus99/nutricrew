@@ -99,7 +99,7 @@ function DailyGoalCard({
   run: (k: string, fn: () => Promise<unknown>) => void;
 }) {
   const { t } = useTranslation();
-  const types = ["meals", "points", "protein"] as const;
+  const types = ["meals", "points", "protein", "calories"] as const;
   return (
     <div className="card feature-card">
       <h3>{t("features.dailyGoalTitle")}</h3>
@@ -120,7 +120,14 @@ function DailyGoalCard({
               run(`goal-${type}`, () =>
                 api.patchGrowthSettings({
                   dailyGoalType: type,
-                  dailyGoalTarget: type === "protein" ? 80 : type === "points" ? 50 : 3,
+                  dailyGoalTarget:
+                    type === "protein"
+                      ? 80
+                      : type === "points"
+                        ? 50
+                        : type === "calories"
+                          ? 2000
+                          : 3,
                 }),
               )
             }

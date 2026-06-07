@@ -57,9 +57,12 @@ model User {
   selectedBirdId        String   @default("classic") @map("selected_bird_id") @db.VarChar(32)
   doublePointsWeekKey   String?  @map("double_points_week_key") @db.VarChar(10)
   onboardingVariant     String   @default("team_first") @map("onboarding_variant") @db.VarChar(16)
+  isPro                 Boolean  @default(false) @map("is_pro")
+  proUntil              DateTime? @map("pro_until")
   createdAt     DateTime  @default(now()) @map("created_at")
 
   referredBy        User?  @relation("UserReferrals", fields: [referredByUserId], references: [id], onDelete: SetNull)
+  analyticsEvents   AnalyticsEvent[]
   referrals         User[] @relation("UserReferrals")
   team              Team?              @relation(fields: [teamId], references: [id], onDelete: SetNull)
   dailyBonuses      UserDailyBonus[]
@@ -224,6 +227,8 @@ model Meal {
   aiConfidence Float?   @map("ai_confidence")
   mealSlot     String?  @map("meal_slot") @db.VarChar(16)
   qualityTag   String?  @map("quality_tag") @db.VarChar(16)
+  imageHash    String?  @map("image_hash") @db.VarChar(64)
+  verificationStatus String @default("ok") @map("verification_status") @db.VarChar(16)
   kudosCount   Int      @default(0) @map("kudos_count")
   createdAt    DateTime @default(now()) @map("created_at")
 
@@ -233,7 +238,34 @@ model Meal {
 
   @@index([userId, createdAt])
   @@index([teamId, createdAt])
+  @@index([userId, imageHash])
   @@map("meals")
+}
+
+model AnalyticsEvent {
+  id        BigInt   @id @default(autoincrement())
+  userId    BigInt?  @map("user_id")
+  eventName String   @map("event_name") @db.VarChar(64)
+  props     Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([eventName, createdAt])
+  @@index([userId, createdAt])
+  @@map("analytics_events")
+}
+
+model VisionCache {
+  imageHash String   @map("image_hash") @db.VarChar(64)
+  locale    String   @db.VarChar(5)
+  result    Json
+  hitCount  Int      @default(0) @map("hit_count")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@id([imageHash, locale])
+  @@map("vision_cache")
 }
 
 model MealKudos {

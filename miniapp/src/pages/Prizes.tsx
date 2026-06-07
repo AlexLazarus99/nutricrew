@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type PrizesResponse } from "../api/client";
+import { useMe } from "../hooks/useMe";
+import { trackEvent } from "../lib/analytics";
 
 export function PrizesPage() {
   const { t } = useTranslation();
+  const { me } = useMe();
   const [data, setData] = useState<PrizesResponse | null>(null);
   const [fundStars, setFundStars] = useState("50");
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +90,28 @@ export function PrizesPage() {
           </button>
         </div>
       )}
+
+      <div className="card">
+        <h3>{t("prizes.proTitle")}</h3>
+        {me.pro?.isPro ? (
+          <p className="success">{t("prizes.proActive")}</p>
+        ) : (
+          <>
+            <p className="muted">{t("prizes.proHint")}</p>
+            <button
+              type="button"
+              className="btn btn-primary btn-block"
+              disabled={busy}
+              onClick={() => {
+                trackEvent("pro_purchase_start");
+                void openInvoice(() => api.createProInvoice());
+              }}
+            >
+              {t("prizes.proBtn")}
+            </button>
+          </>
+        )}
+      </div>
 
       <div className="card">
         <h3>{t("prizes.premiumTitle")}</h3>

@@ -1,4 +1,6 @@
 import { config } from "../config.js";
+import { hashImageBase64 } from "../lib/imageHash.js";
+import * as visionCacheRepo from "../repositories/visionCache.js";
 import type { AppLocale, MealAnalysis, MealType, VisionFallbackReason } from "../types.js";
 
 const MEAL_TYPES = new Set<MealType>([
@@ -60,12 +62,18 @@ export async function analyzeFoodImage(
   base64Image: string,
   locale: AppLocale = "en",
 ): Promise<MealAnalysis> {
+  const imageHash = hashImageBase64(base64Image);
+  const cached = await visionCacheRepo.getCachedAnalysis(imageHash, locale);
+  if (cached) {
+    return { ...cached, imageHash, cacheHit: true };
+  }
+
   const dataUrl = base64Image.startsWith("data:")
     ? base64Image
     : `data:image/jpeg;base64,${base64Image}`;
 
   if (!config.openaiApiKey) {
-    return fallbackAnalysis("no_key");
+    return { ...fallbackAnalysis("no_key"), imageHash, cacheHit: false };
   }
 
   try {
@@ -97,7 +105,7 @@ export async function analyzeFoodImage(
     if (!res.ok) {
       const errText = await res.text();
       console.error("OpenAI vision error", res.status, errText.slice(0, 500));
-      return fallbackAnalysis("api_error");
+      return { ...fallbackAnalysis("api_error"), imageHash, cacheHit: false };
     }
 
     const data = (await res.json()) as {
@@ -106,7 +114,7 @@ export async function analyzeFoodImage(
     const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
     if (!raw) {
       console.error("OpenAI vision empty response");
-      return fallbackAnalysis("parse_error");
+      return { ...fallbackAnalysis("parse_error"), imageHash, cacheHit: false };
     }
 
     const json = JSON.parse(extractJsonObject(raw)) as {
@@ -133,7 +141,7 @@ export async function analyzeFoodImage(
       confidence = Math.min(confidence, 0.29);
     }
 
-    return {
+    const result: MealAnalysis = {
       description: json.description ?? (locale === "ru" ? "Блюдо" : "Meal"),
       calories,
       protein,
@@ -142,10 +150,18 @@ export async function analyzeFoodImage(
       confidence,
       mealType,
       source: "openai",
+      imageHash,
+      cacheHit: false,
     };
+
+    if (result.source === "openai") {
+      await visionCacheRepo.setCachedAnalysis(imageHash, locale, result);
+    }
+
+    return result;
   } catch (err) {
     console.error("Vision parse failed", err);
-    return fallbackAnalysis("parse_error");
+    return { ...fallbackAnalysis("parse_error"), imageHash, cacheHit: false };
   }
 }
 

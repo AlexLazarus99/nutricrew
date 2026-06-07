@@ -139,3 +139,21 @@ export async function createPremiumInvoice(
         : `Premium badge · ${config.stars.premiumDays} days`,
   });
 }
+
+export async function createProInvoice(
+  bot: Telegraf<Context>,
+  userId: number,
+  locale: "en" | "ru",
+): Promise<string> {
+  return createStarsInvoice(bot, {
+    userId,
+    teamId: null,
+    paymentType: "user_pro",
+    stars: config.stars.proPrice,
+    title: locale === "ru" ? "NutriCrew Pro" : "NutriCrew Pro",
+    description:
+      locale === "ru"
+        ? `Безлимит ИИ · отчёты · ${config.stars.proDays} дней`
+        : `Unlimited AI · reports · ${config.stars.proDays} days`,
+  });
+}

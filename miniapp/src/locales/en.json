@@ -13,7 +13,10 @@
     "game": "NutriBird",
     "quiz": "Quiz",
     "chat": "Chat",
-    "features": "Features"
+    "features": "Features",
+    "report": "Report",
+    "settings": "Settings",
+    "privacy": "Privacy"
   },
   "chat": {
     "title": "Team chat",
@@ -63,6 +66,7 @@
     "goal_meals": "3 meals",
     "goal_points": "Points",
     "goal_protein": "Protein",
+    "goal_calories": "Calories",
     "leagueTitle": "Weekly league",
     "leagueNext": "{{xp}} XP to next tier",
     "leagueMax": "Top tier this week!",
@@ -335,6 +339,10 @@
     "aiFallbackNoKey": "AI unavailable: OPENAI_API_KEY is not set on the server (using 450 kcal template).",
     "aiFallbackApiError": "AI unavailable: OpenAI API error — check your key and billing at platform.openai.com.",
     "aiFallbackParseError": "AI could not read this photo — try another shot or enter values manually.",
+    "error_NOT_FOOD": "This doesn't look like food. Try another photo.",
+    "error_DUPLICATE_PHOTO": "You already logged this photo recently.",
+    "error_MACRO_OUT_OF_RANGE": "Values look unrealistic — please adjust.",
+    "error_ANALYZE_LIMIT": "Daily AI scan limit reached. Upgrade to Pro or enter manually.",
     "qualityTitle": "Meal quality",
     "quality_balanced": "Balanced",
     "quality_light": "Light",
@@ -408,11 +416,65 @@
     "premiumActive": "Premium is active",
     "premiumHint": "Badge + bragging rights · {{price}} Stars / month",
     "premiumBtn": "Upgrade · {{price}} ⭐",
+    "proTitle": "NutriCrew Pro",
+    "proHint": "Unlimited AI scans, weekly reports, +2 streak freezes · 149 Stars / 30 days",
+    "proActive": "Pro is active",
+    "proBtn": "Get Pro · 149 ⭐",
     "history": "Your wins",
     "needTeam": "Join a team to use prizes"
   },
   "settings": {
-    "language": "Language"
+    "language": "Language",
+    "title": "Settings & privacy",
+    "subtitle": "Export your data or manage your account (GDPR).",
+    "dataTitle": "Your data",
+    "exportBtn": "Download my data (JSON)",
+    "exportDone": "Export downloaded.",
+    "deleteBtn": "Delete my account",
+    "deleteConfirm": "Delete all your NutriCrew data permanently?",
+    "legalTitle": "Legal",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Use"
+  },
+  "legal": {
+    "updated": "Last updated: June 2026",
+    "privacyTitle": "Privacy Policy",
+    "termsTitle": "Terms of Use",
+    "privacySections": [
+      "NutriCrew processes Telegram profile data, meal logs, photos, and team activity to provide the service.",
+      "Meal photos may be analyzed by OpenAI Vision when you use AI logging. We cache results to reduce API costs.",
+      "You can export or delete your data anytime in Settings. Deletion is permanent.",
+      "We do not sell personal data. Team captains see aggregate participation stats, not private photos set to hidden.",
+      "Contact: hello@nutricrew.app for data requests."
+    ],
+    "termsSections": [
+      "NutriCrew provides estimated nutrition information — not medical advice. Consult professionals for health decisions.",
+      "Fair play: duplicate photos and non-food images may be rejected. Cheating reduces points.",
+      "Telegram Stars purchases are processed by Telegram. Refunds follow Telegram policies.",
+      "We may update features and pricing. Continued use means acceptance of updates.",
+      "Misuse (spam, harassment) may result in account removal."
+    ]
+  },
+  "report": {
+    "title": "Weekly report",
+    "meals": "Meals",
+    "days": "Active days",
+    "calories": "Calories",
+    "protein": "Protein",
+    "points": "Points",
+    "streak": "Streak",
+    "teamBlock": "Team",
+    "teamRank": "Rank #{{rank}} · {{points}} pts",
+    "avgCalories": "Avg {{value}} kcal per meal"
+  },
+  "teamAdmin": {
+    "title": "Team dashboard",
+    "open": "Team dashboard",
+    "participation": "{{logged}}/{{total}} logged today · {{rate}}% active",
+    "weekPts": "pts this week",
+    "members": "Members",
+    "memberStats": "Today {{today}} · week {{week}} meals · {{pts}} pts",
+    "back": "Back to team"
   },
   "splash": {
     "loading": "Connecting NutriCrew…",

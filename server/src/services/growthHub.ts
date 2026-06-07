@@ -25,7 +25,8 @@ export async function buildGrowthSummary(user: DbUser, ctx: GrowthMeContext) {
   const dailyGoalTarget = fields?.dailyGoalTarget ?? 3;
   let dailyProgress = ctx.mealsToday;
   if (dailyGoalType === "points") dailyProgress = ctx.todayPoints;
-  if (dailyGoalType === "protein") dailyProgress = await sumProteinThisWeek(user.id);
+  if (dailyGoalType === "protein") dailyProgress = await mealsRepo.sumProteinToday(user.id);
+  if (dailyGoalType === "calories") dailyProgress = await mealsRepo.sumCaloriesToday(user.id);
 
   const leagueXp = fields?.weeklyLeagueXp ?? 0;
   const leagueTier = tierFromWeeklyXp(leagueXp);
@@ -67,12 +68,16 @@ export async function buildGrowthPayload(user: DbUser, ctx?: Partial<GrowthMeCon
 
   const dailyGoalType = fields?.dailyGoalType ?? "meals";
   const dailyGoalTarget = fields?.dailyGoalTarget ?? 3;
-  const needProtein = dailyGoalType === "protein";
+  const needDailyMacro = dailyGoalType === "protein" || dailyGoalType === "calories";
 
   const teamId = user.team_id;
-  const [weekProtein, favorites, achievements, battlePass, teamBundle] =
+  const [dailyMacro, favorites, achievements, battlePass, teamBundle] =
     await Promise.all([
-      needProtein ? sumProteinThisWeek(user.id) : Promise.resolve(0),
+      needDailyMacro && dailyGoalType === "protein"
+        ? mealsRepo.sumProteinToday(user.id)
+        : needDailyMacro && dailyGoalType === "calories"
+          ? mealsRepo.sumCaloriesToday(user.id)
+          : Promise.resolve(0),
       growthRepo.listFavorites(user.id),
       getAchievementsBoard(user.id),
       growthRepo.getBattlePass(user.id),
@@ -88,7 +93,7 @@ export async function buildGrowthPayload(user: DbUser, ctx?: Partial<GrowthMeCon
 
   let dailyProgress = mealsToday;
   if (dailyGoalType === "points") dailyProgress = todayPoints;
-  if (dailyGoalType === "protein") dailyProgress = weekProtein;
+  if (dailyGoalType === "protein" || dailyGoalType === "calories") dailyProgress = dailyMacro;
 
   const leagueXp = fields?.weeklyLeagueXp ?? 0;
   const leagueTier = tierFromWeeklyXp(leagueXp);
@@ -182,18 +187,6 @@ export async function buildGrowthPayload(user: DbUser, ctx?: Partial<GrowthMeCon
       photoPrivacyOptions: ["team", "private", "hidden"],
     },
   };
-}
-
-async function sumProteinThisWeek(userId: number): Promise<number> {
-  const weekKey = getCurrentWeekKey();
-  const [y, w] = weekKey.split("-W").map(Number);
-  const jan4 = new Date(Date.UTC(y, 0, 4));
-  const day = jan4.getUTCDay() || 7;
-  const weekStart = new Date(jan4);
-  weekStart.setUTCDate(jan4.getUTCDate() - day + 1 + (w - 1) * 7);
-  weekStart.setUTCHours(0, 0, 0, 0);
-  const meals = await mealsRepo.findMealsInRange(userId, weekStart, new Date());
-  return meals.reduce((s, m) => s + m.protein, 0);
 }
 
 export async function startDuelForUser(user: DbUser) {

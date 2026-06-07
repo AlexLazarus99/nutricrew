@@ -59,6 +59,8 @@ export const config = {
   stars: {
     premiumPrice: Number(process.env.PREMIUM_STARS_PRICE ?? 99),
     premiumDays: Number(process.env.PREMIUM_DAYS ?? 30),
+    proPrice: Number(process.env.PRO_STARS_PRICE ?? 149),
+    proDays: Number(process.env.PRO_DAYS ?? 30),
     minPoolFund: Number(process.env.MIN_POOL_FUND_STARS ?? 10),
     maxPoolFund: Number(process.env.MAX_POOL_FUND_STARS ?? 1000),
     winnerSharePercent: Number(process.env.WINNER_POOL_SHARE_PERCENT ?? 80),

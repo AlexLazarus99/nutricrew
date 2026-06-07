@@ -1,7 +1,8 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type MealResponse } from "../api/client";
+import { api, type MealAnalysisResponse, type MealResponse } from "../api/client";
+import { trackEvent } from "../lib/analytics";
 import { MealShareCard } from "../components/MealShareCard";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { useTutorialTour } from "../hooks/useTutorialTour";
@@ -30,6 +31,7 @@ export function LogMealPage() {
   const [mealSlot, setMealSlot] = useState("");
   const [favoriteId, setFavoriteId] = useState<string | undefined>();
   const [draftNote, setDraftNote] = useState<string | null>(null);
+  const [lastAnalysis, setLastAnalysis] = useState<MealAnalysisResponse | null>(null);
 
   const [favorites, setFavorites] = useState<
     Array<{
@@ -80,6 +82,7 @@ export function LogMealPage() {
 
   function applyAnalysis(analysis: MealPhotoAnalysis) {
     setCaptureError(null);
+    setLastAnalysis(analysis);
     setPreview(analysis.preview);
     setDescription(analysis.description);
     setCalories(String(analysis.calories));
@@ -130,13 +133,18 @@ export function LogMealPage() {
         mealSlot: mealSlot || undefined,
         qualityTag: qualityTag || undefined,
         favoriteId,
+        analysis: lastAnalysis ?? undefined,
       });
+      trackEvent("meal_logged", { calories: Number(calories) || 0 });
       setMealResult(res);
+      setLastAnalysis(null);
       clearMealDraft();
       setFavoriteId(undefined);
       await refresh();
     } catch (err) {
-      setResultError((err as Error).message);
+      const msg = (err as Error).message;
+      const known = ["NOT_FOOD", "DUPLICATE_PHOTO", "MACRO_OUT_OF_RANGE", "ANALYZE_LIMIT"];
+      setResultError(known.includes(msg) ? t(`log.error_${msg}`) : msg);
     } finally {
       setLoading(false);
     }

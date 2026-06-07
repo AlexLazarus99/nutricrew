@@ -2,7 +2,7 @@ export type AppLocale = "en" | "ru";
 
 export type WeeklyGoalType = "points" | "protein" | "calories";
 
-export type PaymentType = "pool_fund" | "premium" | "bird_unlock";
+export type PaymentType = "pool_fund" | "premium" | "bird_unlock" | "user_pro";
 
 export interface DbUser {
   id: number;
@@ -58,4 +58,6 @@ export interface MealAnalysis {
   mealType?: MealType;
   source: "openai" | "fallback";
   visionReason?: VisionFallbackReason;
+  imageHash?: string;
+  cacheHit?: boolean;
 }

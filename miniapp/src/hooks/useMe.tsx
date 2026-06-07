@@ -14,6 +14,7 @@ import { syncTimezoneOnce } from "../lib/syncTimezone";
 import { waitForServerReady, wakeApi } from "../lib/apiWarmup";
 import { getTelegramAuthDebug, waitForTelegramInitData } from "../lib/telegramReady";
 import { NutriCrewSplash } from "../components/NutriCrewSplash";
+import { trackEvent } from "../lib/analytics";
 
 const BOOT_MAX_MS = 90_000;
 
@@ -111,6 +112,7 @@ export function MeProvider({ children }: { children: ReactNode }) {
         }
         if (profileLoaded) {
           syncTimezoneOnce();
+          trackEvent("app_open");
         }
         if (!cancelled) setError(null);
       } catch (e) {

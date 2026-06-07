@@ -2267,3 +2267,62 @@ button {
   text-align: center;
   margin: 0;
 }
+
+.footer-legal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 8px 0;
+  font-size: 0.85rem;
+}
+
+.footer-legal a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.footer-legal a.active,
+.footer-legal a:hover {
+  color: var(--accent);
+}
+
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.report-grid .stat-value {
+  margin: 4px 0 0;
+  font-size: 1.35rem;
+}
+
+.admin-member-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-member-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-page .legal-paragraph {
+  line-height: 1.5;
+  margin: 0 0 12px;
+}
+
+.btn-danger {
+  background: #c0392b;
+  color: #fff;
+  margin-top: 8px;
+}

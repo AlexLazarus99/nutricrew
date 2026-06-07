@@ -16,6 +16,8 @@ export async function insertMeal(input: {
   aiConfidence?: number;
   mealSlot?: string | null;
   qualityTag?: string | null;
+  imageHash?: string | null;
+  verificationStatus?: string;
 }) {
   const meal = await prisma.meal.create({
     data: {
@@ -33,9 +35,54 @@ export async function insertMeal(input: {
       aiConfidence: input.aiConfidence ?? null,
       mealSlot: input.mealSlot ?? null,
       qualityTag: input.qualityTag ?? null,
+      imageHash: input.imageHash ?? null,
+      verificationStatus: input.verificationStatus ?? "ok",
     },
   });
   return mapMeal(meal);
+}
+
+export async function findRecentMealByImageHash(
+  userId: number,
+  imageHash: string,
+  withinHours: number,
+): Promise<boolean> {
+  const since = new Date(Date.now() - withinHours * 60 * 60 * 1000);
+  const row = await prisma.meal.findFirst({
+    where: {
+      userId: BigInt(userId),
+      imageHash,
+      createdAt: { gte: since },
+    },
+    select: { id: true },
+  });
+  return !!row;
+}
+
+export async function sumProteinToday(userId: number): Promise<number> {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  const agg = await prisma.meal.aggregate({
+    where: {
+      userId: BigInt(userId),
+      createdAt: { gte: start },
+    },
+    _sum: { protein: true },
+  });
+  return agg._sum.protein ?? 0;
+}
+
+export async function sumCaloriesToday(userId: number): Promise<number> {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  const agg = await prisma.meal.aggregate({
+    where: {
+      userId: BigInt(userId),
+      createdAt: { gte: start },
+    },
+    _sum: { calories: true },
+  });
+  return agg._sum.calories ?? 0;
 }
 
 export async function getTodayPoints(userId: number): Promise<number> {
