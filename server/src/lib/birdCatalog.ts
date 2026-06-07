@@ -21,8 +21,8 @@ export type BirdDef = {
 
 export const BIRD_CATALOG: BirdDef[] = [
   { id: "classic", starPrice: 0, invoiceStars: 0, xpPrice: null, starsOnly: false, free: true, sortOrder: 0 },
-  { id: "ember", starPrice: 120, invoiceStars: 99, xpPrice: 3500, starsOnly: false, free: false, sortOrder: 1 },
-  { id: "frost", starPrice: 150, invoiceStars: 129, xpPrice: 5000, starsOnly: false, free: false, sortOrder: 2 },
+  { id: "ember", starPrice: 120, invoiceStars: 99, xpPrice: 5100, starsOnly: false, free: false, sortOrder: 1 },
+  { id: "frost", starPrice: 150, invoiceStars: 129, xpPrice: 7250, starsOnly: false, free: false, sortOrder: 2 },
   { id: "neon", starPrice: 200, invoiceStars: 169, xpPrice: null, starsOnly: true, free: false, sortOrder: 3 },
   { id: "royal", starPrice: 280, invoiceStars: 229, xpPrice: null, starsOnly: true, free: false, sortOrder: 4 },
   { id: "storm", starPrice: 350, invoiceStars: 289, xpPrice: null, starsOnly: true, free: false, sortOrder: 5 },
