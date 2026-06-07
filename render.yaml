@@ -55,3 +55,8 @@ services:
         value: "false"
       - key: DEV_BYPASS_AUTH
         value: "false"
+      # Meal photo AI — set in Render Dashboard (Environment), never commit the key.
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: VISION_MODEL
+        value: gpt-4o-mini

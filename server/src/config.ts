@@ -26,7 +26,7 @@ export const config = {
   databaseUrl:
     process.env.DATABASE_URL ??
     "postgresql://nutricrew:nutricrew@localhost:5432/nutricrew",
-  openaiApiKey: process.env.OPENAI_API_KEY ?? "",
+  openaiApiKey: (process.env.OPENAI_API_KEY ?? "").trim(),
   visionModel: process.env.VISION_MODEL ?? "gpt-4o-mini",
   cronEnabled: process.env.CRON_ENABLED !== "false",
   reminderHourUtc: Number(process.env.REMINDER_HOUR_UTC ?? 8),
@@ -86,6 +86,12 @@ export function assertConfig(): void {
     console.warn(
       "BOT_TOKEN is not set — API starts without Telegram bot. " +
         "Set BOT_TOKEN in Render Environment (Dashboard → your service → Environment).",
+    );
+  }
+  if (!config.openaiApiKey) {
+    console.warn(
+      "OPENAI_API_KEY is not set — meal photo analysis will use fallback estimates (450 kcal). " +
+        "Add OPENAI_API_KEY in Render Environment.",
     );
   }
 }

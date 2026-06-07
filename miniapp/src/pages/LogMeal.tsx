@@ -94,12 +94,22 @@ export function LogMealPage() {
     } else if (analysis.mealType === "drink") {
       setMealSlot("snack");
     }
-    setAiNote(
-      t("log.aiNote", {
-        confidence: Math.round(analysis.confidence * 100),
-        source: analysis.source,
-      }),
-    );
+    if (analysis.source === "fallback") {
+      const reasonKey =
+        analysis.visionReason === "no_key"
+          ? "log.aiFallbackNoKey"
+          : analysis.visionReason === "api_error"
+            ? "log.aiFallbackApiError"
+            : "log.aiFallbackParseError";
+      setAiNote(t(reasonKey));
+    } else {
+      setAiNote(
+        t("log.aiNote", {
+          confidence: Math.round(analysis.confidence * 100),
+          source: analysis.source,
+        }),
+      );
+    }
     setMealResult(null);
     setResultError(null);
   }

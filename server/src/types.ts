@@ -46,6 +46,8 @@ export type MealType =
   | "drink"
   | "unknown";
 
+export type VisionFallbackReason = "no_key" | "api_error" | "parse_error";
+
 export interface MealAnalysis {
   description: string;
   calories: number;
@@ -55,4 +57,5 @@ export interface MealAnalysis {
   confidence: number;
   mealType?: MealType;
   source: "openai" | "fallback";
+  visionReason?: VisionFallbackReason;
 }

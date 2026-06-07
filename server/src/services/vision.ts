@@ -1,5 +1,5 @@
 import { config } from "../config.js";
-import type { AppLocale, MealAnalysis, MealType } from "../types.js";
+import type { AppLocale, MealAnalysis, MealType, VisionFallbackReason } from "../types.js";
 
 const MEAL_TYPES = new Set<MealType>([
   "breakfast",
@@ -18,7 +18,7 @@ function buildFoodPrompt(locale: AppLocale): string {
 
 Estimate the portion realistically (typical home or café serving, not an ideal nutrition label).
 
-Respond with ONLY valid JSON (no markdown):
+Respond with ONLY valid JSON (no markdown, no extra text):
 {"description":"short meal name in ${lang}","calories":number,"protein":number,"carbs":number,"fat":number,"confidence":0.0-1.0,"mealType":"breakfast|lunch|dinner|snack|drink|unknown"}
 
 Rules:
@@ -44,6 +44,18 @@ function parseMealType(value: unknown): MealType | undefined {
   return MEAL_TYPES.has(normalized) ? normalized : undefined;
 }
 
+function extractJsonObject(raw: string): string {
+  const trimmed = raw.trim().replace(/^```json?\s*|\s*```$/g, "");
+  if (trimmed.startsWith("{")) return trimmed;
+
+  const start = trimmed.indexOf("{");
+  const end = trimmed.lastIndexOf("}");
+  if (start >= 0 && end > start) {
+    return trimmed.slice(start, end + 1);
+  }
+  return trimmed;
+}
+
 export async function analyzeFoodImage(
   base64Image: string,
   locale: AppLocale = "en",
@@ -53,7 +65,7 @@ export async function analyzeFoodImage(
     : `data:image/jpeg;base64,${base64Image}`;
 
   if (!config.openaiApiKey) {
-    return fallbackAnalysis();
+    return fallbackAnalysis("no_key");
   }
 
   try {
@@ -66,12 +78,16 @@ export async function analyzeFoodImage(
       body: JSON.stringify({
         model: config.visionModel,
         max_tokens: 350,
+        response_format: { type: "json_object" },
         messages: [
           {
             role: "user",
             content: [
               { type: "text", text: buildFoodPrompt(locale) },
-              { type: "image_url", image_url: { url: dataUrl } },
+              {
+                type: "image_url",
+                image_url: { url: dataUrl, detail: "low" },
+              },
             ],
           },
         ],
@@ -79,15 +95,21 @@ export async function analyzeFoodImage(
     });
 
     if (!res.ok) {
-      console.error("OpenAI vision error", await res.text());
-      return fallbackAnalysis();
+      const errText = await res.text();
+      console.error("OpenAI vision error", res.status, errText.slice(0, 500));
+      return fallbackAnalysis("api_error");
     }
 
     const data = (await res.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
     };
     const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
-    const json = JSON.parse(raw.replace(/^```json?\s*|\s*```$/g, "")) as {
+    if (!raw) {
+      console.error("OpenAI vision empty response");
+      return fallbackAnalysis("parse_error");
+    }
+
+    const json = JSON.parse(extractJsonObject(raw)) as {
       description?: string;
       calories?: number;
       protein?: number;
@@ -123,11 +145,11 @@ export async function analyzeFoodImage(
     };
   } catch (err) {
     console.error("Vision parse failed", err);
-    return fallbackAnalysis();
+    return fallbackAnalysis("parse_error");
   }
 }
 
-function fallbackAnalysis(): MealAnalysis {
+function fallbackAnalysis(reason: VisionFallbackReason): MealAnalysis {
   const calories = 450;
   const protein = 25;
   const { carbs, fat } = estimateCarbsFat(calories, protein);
@@ -140,5 +162,6 @@ function fallbackAnalysis(): MealAnalysis {
     confidence: 0.4,
     mealType: "unknown",
     source: "fallback",
+    visionReason: reason,
   };
 }

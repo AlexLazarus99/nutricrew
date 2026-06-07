@@ -45,6 +45,8 @@ apiRouter.get("/ping", (_req, res) => {
     ready: apiReady,
     webappUrl: config.webappUrl,
     botUsername: config.botUsername || null,
+    visionConfigured: Boolean(config.openaiApiKey),
+    visionModel: config.openaiApiKey ? config.visionModel : null,
     socialLinks: getPublicSocialLinks(),
   });
 });
