@@ -65,7 +65,7 @@ export function MealPhotoCapture({
   }
 
   return (
-    <div className="meal-photo-capture">
+    <div className={`meal-photo-capture${analyzing ? " meal-photo-capture--analyzing" : ""}`}>
       <input
         ref={galleryRef}
         type="file"
@@ -111,7 +111,11 @@ export function MealPhotoCapture({
         </div>
       </div>
 
-      {preview && <img src={preview} alt="" className="meal-preview" />}
+      {preview && (
+        <div className="meal-preview-wrap">
+          <img src={preview} alt="" className="meal-preview meal-preview--reveal" />
+        </div>
+      )}
       {aiNote && <p className="muted small">{aiNote}</p>}
     </div>
   );

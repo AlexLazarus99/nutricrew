@@ -10,7 +10,9 @@ export function DailyMealsProgress({ mealsToday, target = 3 }: Props) {
   const pct = Math.min(100, Math.round((mealsToday / target) * 100));
 
   return (
-    <div className="card daily-meals-card">
+    <div
+      className={`card daily-meals-card${mealsToday >= target ? " daily-meals-card--complete" : ""}`}
+    >
       <h3>{t("growth.dailyMealsTitle")}</h3>
       <p className="muted small">{t("growth.dailyMealsHint", { count: mealsToday, target })}</p>
       <div className="progress-bar daily-meals-bar">

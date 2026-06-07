@@ -294,7 +294,7 @@ export function LogMealPage() {
         </div>
         <button
           type="submit"
-          className="btn btn-primary btn-block"
+          className={`btn btn-primary btn-block${loading ? " btn--loading" : ""}`}
           disabled={loading || analyzing}
           data-tutorial="log-submit"
         >

@@ -62,7 +62,7 @@ function LayoutShell() {
           />
         ) : (
           <Suspense fallback={<PageLoader />}>
-            <Outlet />
+            <Outlet key={pathname} />
           </Suspense>
         )}
       </main>

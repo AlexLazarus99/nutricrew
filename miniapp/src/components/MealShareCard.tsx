@@ -27,8 +27,10 @@ export function MealShareCard({ points, teamPoints, streak, inviteUrl }: Props) 
   }
 
   return (
-    <div className="card meal-share-card">
-      <p className="success">{t("log.success", { points, team: teamPoints, streak })}</p>
+    <div className="card meal-share-card meal-celebrate">
+      <p className="success meal-success-text">
+        {t("log.success", { points, team: teamPoints, streak })}
+      </p>
       <button type="button" className="btn btn-secondary btn-block" onClick={onShare}>
         {t("growth.mealShareBtn")}
       </button>

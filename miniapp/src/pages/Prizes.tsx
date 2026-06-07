@@ -91,7 +91,7 @@ export function PrizesPage() {
         </div>
       )}
 
-      <div className="card">
+      <div className="card pro-card">
         <h3>{t("prizes.proTitle")}</h3>
         {me.pro?.isPro ? (
           <p className="success">{t("prizes.proActive")}</p>

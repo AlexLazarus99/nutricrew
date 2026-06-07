@@ -17,7 +17,7 @@ export function ProgressLevelCard({ progress, compact = false }: Props) {
   return (
     <div className="card progress-level-card" data-tutorial="progress-card">
       <div className="progress-level-header">
-        <span className="progress-level-emoji" aria-hidden>
+        <span className="progress-level-emoji progress-level-emoji--live" aria-hidden>
           {progress.emoji}
         </span>
         <div className="progress-level-meta">
