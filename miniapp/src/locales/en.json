@@ -16,7 +16,10 @@
     "features": "Features",
     "report": "Report",
     "settings": "Settings",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "menu": "Menu",
+    "collapseMenu": "Hide menu",
+    "expandMenu": "Show menu"
   },
   "chat": {
     "title": "Team chat",

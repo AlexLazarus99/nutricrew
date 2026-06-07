@@ -13,6 +13,7 @@ import { sectionFromPath, type AppSection } from "../lib/appSection";
 import { APP_BUILD } from "../lib/apiBase";
 import { SocialLinks } from "./SocialLinks";
 import { BrandPeachIcon } from "./BrandPeachIcon";
+import { BottomNav } from "./BottomNav";
 
 function resolveSection(
   registered: boolean,
@@ -80,47 +81,7 @@ function LayoutShell() {
 
       {registered &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
-        <nav
-          className={`bottom-nav ${
-            compactNav ? "bottom-nav-5" : me.teamId ? "bottom-nav-9" : "bottom-nav-8"
-          }`}
-        >
-          <NavLink to="/" end>
-            {t("nav.home")}
-          </NavLink>
-          <NavLink
-            to="/log"
-            data-tutorial="nav-log"
-            className={({ isActive }) =>
-              isActive || pathname.startsWith("/diary") ? "active" : undefined
-            }
-          >
-            {t("nav.log")}
-          </NavLink>
-          {compactNav ? (
-            <>
-              <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
-              <NavLink to="/guide">{t("nav.guide")}</NavLink>
-              <NavLink to="/game" data-tutorial="nav-game">
-                {t("nav.game")}
-              </NavLink>
-            </>
-          ) : (
-            <>
-              <NavLink to="/guide">{t("nav.guide")}</NavLink>
-              <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
-              <NavLink to="/team" data-tutorial="nav-team">
-                {t("nav.team")}
-              </NavLink>
-              {me.teamId ? <NavLink to="/chat">{t("nav.chat")}</NavLink> : null}
-              <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
-              <NavLink to="/game" data-tutorial="nav-game">
-                {t("nav.game")}
-              </NavLink>
-              <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
-            </>
-          )}
-        </nav>
+        <BottomNav compactNav={compactNav} hasTeam={!!me.teamId} />
       )}
     </div>
   );
