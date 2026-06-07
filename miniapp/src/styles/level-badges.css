@@ -1,0 +1,468 @@
+/* Animated crew level badges */
+
+.level-badge {
+  --level-badge-size: 56px;
+  position: relative;
+  width: var(--level-badge-size);
+  height: var(--level-badge-size);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+.level-badge__svg {
+  width: 92%;
+  height: 92%;
+  display: block;
+  overflow: visible;
+}
+
+.level-badge__glow {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--section-accent) 28%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.level-badge--active .level-badge__glow {
+  opacity: 1;
+  animation: level-badge-glow 3s ease-in-out infinite;
+}
+
+.level-badge--dimmed {
+  opacity: 0.42;
+  filter: grayscale(0.25) saturate(0.7);
+}
+
+.level-badge--dimmed .level-badge__svg {
+  animation: none !important;
+}
+
+/* Shared shapes */
+.level-badge__egg,
+.level-badge__soil,
+.level-badge__bowl,
+.level-badge__plate,
+.level-badge__scale-pan {
+  fill: color-mix(in srgb, var(--section-accent-soft) 55%, #fff);
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+.level-badge__crack,
+.level-badge__stem,
+.level-badge__journal-line,
+.level-badge__cal-line,
+.level-badge__scale-beam,
+.level-badge__scale-stand,
+.level-badge__crew-arc,
+.level-badge__magnifier,
+.level-badge__spoon,
+.level-badge__wheel-spoke,
+.level-badge__wave {
+  fill: none;
+  stroke: var(--section-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.level-badge__leaf,
+.level-badge__fruit--g {
+  fill: #a8c99a;
+  stroke: #6a9e78;
+  stroke-width: 1.5;
+}
+
+.level-badge__leaf--l,
+.level-badge__leaf--r {
+  fill: #8fd4a8;
+  stroke: #5a9e78;
+  stroke-width: 1.5;
+}
+
+.level-badge__berry,
+.level-badge__fruit,
+.level-badge__protein-dot {
+  fill: #ef8a78;
+  stroke: none;
+}
+
+.level-badge__spark {
+  fill: #ffe082;
+}
+
+.level-badge__journal,
+.level-badge__cal,
+.level-badge__toque-band,
+.level-badge__book {
+  fill: var(--section-surface);
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+.level-badge__lens {
+  fill: #c5dff0;
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+.level-badge__lens-inner {
+  fill: #8ec8e8;
+}
+
+.level-badge__cal-dot {
+  fill: color-mix(in srgb, var(--muted) 35%, transparent);
+}
+
+.level-badge__cal-dot--on {
+  fill: var(--section-accent);
+}
+
+.level-badge__protein-main {
+  fill: #e8c4a0;
+  stroke: #c49a6c;
+  stroke-width: 1.5;
+}
+
+.level-badge__crew {
+  fill: #9ec8e8;
+  stroke: #6a9ebe;
+  stroke-width: 1.5;
+}
+
+.level-badge__crew--lead {
+  fill: #7ec4a0;
+  stroke: #4a8f66;
+}
+
+.level-badge__toque {
+  fill: #fff8f0;
+  stroke: #d4b8a0;
+  stroke-width: 1.5;
+}
+
+.level-badge__eye-white {
+  fill: #fff;
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+.level-badge__eye-iris {
+  fill: #8ec8e8;
+  stroke: #5a9ebe;
+  stroke-width: 1.5;
+}
+
+.level-badge__eye-pupil {
+  fill: #2a3d34;
+}
+
+.level-badge__flame {
+  fill: #ff9a6c;
+  stroke: #e07a5f;
+  stroke-width: 1.5;
+}
+
+.level-badge__wheel {
+  fill: #c5dff0;
+  stroke: #6a9ebe;
+  stroke-width: 2;
+}
+
+.level-badge__wheel-hub {
+  fill: var(--section-accent);
+}
+
+.level-badge__trophy,
+.level-badge__trophy-cup,
+.level-badge__trophy-handle {
+  fill: #ffd54f;
+  stroke: #f9a825;
+  stroke-width: 1.5;
+}
+
+.level-badge__star {
+  fill: #ffe082;
+  stroke: #ffb74d;
+  stroke-width: 1.25;
+}
+
+.level-badge__crown,
+.level-badge__crown-base {
+  fill: #ffd54f;
+  stroke: #f9a825;
+  stroke-width: 1.5;
+}
+
+.level-badge__gem {
+  fill: #ef8a78;
+}
+
+.level-badge__fallback {
+  fill: color-mix(in srgb, var(--section-accent-soft) 60%, #fff);
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+/* Per-level motion */
+.level-badge--active .level-badge__svg {
+  animation: level-badge-float 3.2s ease-in-out infinite;
+}
+
+.level-badge--hatchling .level-badge__egg {
+  transform-origin: 40px 40px;
+  animation: level-badge-wobble 2.8s ease-in-out infinite;
+}
+
+.level-badge--sprout .level-badge__leaf--l {
+  transform-origin: 30px 30px;
+  animation: level-badge-sway 2.4s ease-in-out infinite;
+}
+
+.level-badge--sprout .level-badge__leaf--r {
+  transform-origin: 50px 30px;
+  animation: level-badge-sway 2.4s ease-in-out 0.4s infinite reverse;
+}
+
+.level-badge--snacker .level-badge__magnifier {
+  transform-origin: 48px 24px;
+  animation: level-badge-scan 2.6s ease-in-out infinite;
+}
+
+.level-badge--logger .level-badge__lens {
+  animation: level-badge-pulse 2.2s ease-in-out infinite;
+}
+
+.level-badge--regular .level-badge__cal-dot--on {
+  animation: level-badge-blink 1.8s ease-in-out infinite;
+}
+
+.level-badge--balanced .level-badge__scale-beam {
+  transform-origin: 40px 30px;
+  animation: level-badge-tilt 3s ease-in-out infinite;
+}
+
+.level-badge--protein .level-badge__protein-main {
+  animation: level-badge-pulse 2.6s ease-in-out infinite;
+}
+
+.level-badge--crewmate .level-badge__crew--lead {
+  animation: level-badge-bounce 2.4s ease-in-out infinite;
+}
+
+.level-badge--chef .level-badge__toque {
+  transform-origin: 40px 42px;
+  animation: level-badge-bob 2.8s ease-in-out infinite;
+}
+
+.level-badge--hawk .level-badge__eye-iris {
+  animation: level-badge-pulse 3s ease-in-out infinite;
+}
+
+.level-badge--streaker .level-badge__flame {
+  transform-origin: 40px 44px;
+  animation: level-badge-flicker 1.5s ease-in-out infinite;
+}
+
+.level-badge--streaker .level-badge__wave {
+  animation: level-badge-wave 2.4s ease-in-out infinite;
+}
+
+.level-badge--captain .level-badge__wheel {
+  transform-origin: 40px 38px;
+  animation: level-badge-spin 8s linear infinite;
+}
+
+.level-badge--champion .level-badge__trophy-cup {
+  animation: level-badge-bounce 2.2s ease-in-out infinite;
+}
+
+.level-badge--master .level-badge__star {
+  transform-origin: 40px 34px;
+  animation: level-badge-twinkle 2s ease-in-out infinite;
+}
+
+.level-badge--legend .level-badge__crown {
+  animation: level-badge-bob 2.6s ease-in-out infinite;
+}
+
+.level-badge--legend .level-badge__spark {
+  animation: level-badge-spark 2.2s ease-in-out infinite;
+}
+
+.level-badge--legend .level-badge__spark--c {
+  animation-delay: 0.7s;
+}
+
+@keyframes level-badge-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes level-badge-glow {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes level-badge-wobble {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes level-badge-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes level-badge-scan {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes level-badge-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes level-badge-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes level-badge-tilt {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes level-badge-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes level-badge-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes level-badge-flicker {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.06) rotate(-2deg);
+  }
+  70% {
+    transform: scale(0.98) rotate(2deg);
+  }
+}
+
+@keyframes level-badge-wave {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes level-badge-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes level-badge-twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(10deg);
+  }
+}
+
+@keyframes level-badge-spark {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  45%,
+  55% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-badge,
+  .level-badge__svg,
+  .level-badge__glow,
+  .level-badge [class*="level-badge__"] {
+    animation: none !important;
+  }
+}

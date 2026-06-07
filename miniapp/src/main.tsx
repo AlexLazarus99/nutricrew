@@ -11,6 +11,7 @@ import "./styles/animations.css";
 import "./styles/splash.css";
 import "./styles/nutribird-mark.css";
 import "./styles/quest-icons.css";
+import "./styles/level-badges.css";
 
 bootstrapTelegramWebApp();
 wakeApi();

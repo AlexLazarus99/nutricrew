@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { MeResponse } from "../api/client";
 import { CREW_LEVELS } from "../lib/progressLevels";
+import { LevelBadgeIcon } from "./LevelBadgeIcon";
 
 type Props = {
   progress: MeResponse["progress"];
@@ -17,9 +18,7 @@ export function ProgressLevelCard({ progress, compact = false }: Props) {
   return (
     <div className="card progress-level-card" data-tutorial="progress-card">
       <div className="progress-level-header">
-        <span className="progress-level-emoji progress-level-emoji--live" aria-hidden>
-          {progress.emoji}
-        </span>
+        <LevelBadgeIcon titleKey={progress.titleKey} size={56} active />
         <div className="progress-level-meta">
           <span className="progress-level-badge">
             {t("progress.levelShort", { level: progress.level })}
@@ -62,7 +61,12 @@ export function ProgressLevelCard({ progress, compact = false }: Props) {
                 key={row.level}
                 className={`progress-roadmap-item ${reached ? "reached" : ""} ${current ? "current" : ""}`}
               >
-                <span className="progress-roadmap-emoji">{row.emoji}</span>
+                <LevelBadgeIcon
+                  titleKey={row.titleKey}
+                  size={36}
+                  active={current}
+                  dimmed={!reached}
+                />
                 <span className="progress-roadmap-level">Lv.{row.level}</span>
                 <span className="progress-roadmap-name">{t(`progress.titles.${row.titleKey}`)}</span>
                 <span className="progress-roadmap-xp muted small">{row.xp} XP</span>

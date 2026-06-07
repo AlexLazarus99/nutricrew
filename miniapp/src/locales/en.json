@@ -133,20 +133,20 @@
     "toNext": "{{current}} / {{need}} XP to Lv. {{next}}",
     "maxLevel": "Max level — you're a crew legend!",
     "titles": {
-      "hatchling": "Hatchling",
+      "hatchling": "Fresh Start",
       "sprout": "Sprout",
-      "snacker": "Snacker",
-      "logger": "Food Logger",
-      "regular": "Regular",
-      "balanced": "Balanced",
-      "protein": "Protein Pro",
-      "crewmate": "Crewmate",
-      "chef": "Chef",
-      "hawk": "Hawk",
-      "streaker": "Streaker",
+      "snacker": "Curious Pal",
+      "logger": "Mindful Diary",
+      "regular": "Steady Rhythm",
+      "balanced": "In Balance",
+      "protein": "Nourished",
+      "crewmate": "Crew Partner",
+      "chef": "Home Cook",
+      "hawk": "Mindful Eye",
+      "streaker": "On a Roll",
       "captain": "Captain",
-      "champion": "Champion",
-      "master": "Master",
+      "champion": "Team Star",
+      "master": "Wise Guide",
       "legend": "Legend"
     }
   },
@@ -197,7 +197,7 @@
     },
     "levels": {
       "title": "Level ladder",
-      "body": "15 ranks from Hatchling to Legend — see them all on the progress card."
+      "body": "15 ranks from Fresh Start to Legend — see them all on the progress card."
     },
     "quests": {
       "title": "Quests",

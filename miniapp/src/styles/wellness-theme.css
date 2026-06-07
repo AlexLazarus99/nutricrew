@@ -578,7 +578,45 @@ body {
   color: var(--danger);
 }
 
-/* ——— Quiz (wellness greens) ——— */
+/* ——— Quiz filters & options ——— */
+.calorie-quiz-filters .chip {
+  -webkit-text-fill-color: var(--heading);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+
+.calorie-quiz-filters .chip-active {
+  -webkit-text-fill-color: #2e2218;
+  color: #2e2218;
+  text-shadow: none;
+}
+
+.app-shell[data-section="quiz"] .calorie-quiz-filters {
+  background: color-mix(in srgb, var(--section-surface-2) 82%, transparent);
+  border-color: color-mix(in srgb, var(--section-accent) 18%, transparent);
+}
+
+.app-shell[data-section="quiz"] .calorie-quiz-filters .chip {
+  background: color-mix(in srgb, #f0b0a0 14%, var(--section-surface-2));
+  border-color: color-mix(in srgb, #f0b0a0 28%, transparent);
+  color: #fff5f0;
+}
+
+.app-shell[data-section="quiz"] .calorie-quiz-filters .chip-active {
+  background: color-mix(in srgb, #f0b0a0 72%, #5c4030);
+  border-color: color-mix(in srgb, #f0b0a0 55%, transparent);
+  color: #fffaf7;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="quiz"] .calorie-quiz-filters .chip {
+  background: color-mix(in srgb, #f0a890 16%, var(--section-surface-2));
+  color: #fff0ea;
+}
+
+.app-shell[data-color-scheme="dark"][data-section="quiz"] .calorie-quiz-filters .chip-active {
+  background: color-mix(in srgb, #f0a890 75%, #4a3428);
+  color: #fffaf7;
+}
+
 .calorie-quiz-option {
   background: var(--surface);
   border-color: color-mix(in srgb, var(--muted) 20%, transparent);
@@ -918,10 +956,8 @@ body {
   gap: 12px;
 }
 
-.progress-level-emoji {
-  font-size: 2.4rem;
-  line-height: 1;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.08));
+.progress-level-header .level-badge {
+  filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--section-accent) 22%, transparent));
 }
 
 .progress-level-meta {
@@ -1012,8 +1048,8 @@ body {
   font-weight: 800;
 }
 
-.progress-roadmap-emoji {
-  font-size: 1.1rem;
+.progress-roadmap-item .level-badge {
+  justify-self: center;
 }
 
 /* ——— Tutorial coach ——— */
