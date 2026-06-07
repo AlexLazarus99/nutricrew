@@ -395,6 +395,18 @@ export type MealType =
 
 export type VisionFallbackReason = "no_key" | "api_error" | "parse_error";
 
+export interface BarcodeLookupResponse {
+  barcode: string;
+  name: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  servingGrams: number;
+  brand?: string;
+  source: "ru_catalog" | "off_ru" | "off_world";
+}
+
 export interface MealAnalysisResponse {
   description: string;
   calories: number;
@@ -534,6 +546,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ imageBase64 }),
     }),
+  lookupBarcode: (barcode: string) => {
+    const code = barcode.replace(/\D/g, "");
+    return request<BarcodeLookupResponse>(`/meals/barcode/${encodeURIComponent(code)}`);
+  },
   logMeal: (body: {
     description: string;
     calories: number;

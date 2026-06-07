@@ -121,7 +121,14 @@ export function LogMealPage() {
     } else if (analysis.source === "catalog") {
       setAiNote(t("log.sourceCatalog"));
     } else if (analysis.source === "barcode") {
-      setAiNote(t("log.sourceBarcode"));
+      const barcodeSrc = (analysis as { barcodeDataSource?: string }).barcodeDataSource;
+      const noteKey =
+        barcodeSrc === "ru_catalog"
+          ? "log.sourceBarcodeRu"
+          : barcodeSrc === "off_ru"
+            ? "log.sourceBarcodeOffRu"
+            : "log.sourceBarcodeOff";
+      setAiNote(t(noteKey));
     } else if (analysis.source === "photo_only") {
       setAiNote(t("log.sourcePhotoOnly"));
     } else {

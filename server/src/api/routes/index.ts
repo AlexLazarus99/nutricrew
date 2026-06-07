@@ -7,6 +7,7 @@ import * as usersRepo from "../../repositories/users.js";
 import * as birdGameRepo from "../../repositories/birdGame.js";
 import { logMealForUser } from "../../services/meals.js";
 import { analyzeFoodImage, getLastVisionHints, probeVisionProviders } from "../../services/vision.js";
+import { getRuCatalogSize, lookupBarcodeProduct } from "../../services/barcodeLookup.js";
 import { createTeamForUser, joinTeam } from "../../services/teams.js";
 import { notifyMealLogged } from "../../services/notifications.js";
 import { streakMultiplier } from "../../services/streak.js";
@@ -64,6 +65,7 @@ apiRouter.get("/ping", async (req, res) => {
         ? config.geminiVisionModel
         : null,
     geminiConfigured: Boolean(config.geminiApiKey),
+    ruBarcodeCatalogSize: getRuCatalogSize(),
     visionLastHints: getLastVisionHints(),
     visionProbe,
     socialLinks: getPublicSocialLinks(),
@@ -286,6 +288,25 @@ apiRouter.get("/leaderboard", ...authedProfile, async (_req, res) => {
       points: t.points,
     })),
   });
+});
+
+apiRouter.get("/meals/barcode/:code", ...authedProfile, async (req, res) => {
+  const code = String(req.params.code ?? "").replace(/\D/g, "");
+  if (code.length < 8) {
+    res.status(400).json({ error: "INVALID_BARCODE" });
+    return;
+  }
+
+  const product = await lookupBarcodeProduct(code, req.dbUser!.locale);
+  if (!product) {
+    res.status(404).json({
+      error: "BARCODE_NOT_FOUND",
+      ruCatalogSize: getRuCatalogSize(),
+    });
+    return;
+  }
+
+  res.json(product);
 });
 
 apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {

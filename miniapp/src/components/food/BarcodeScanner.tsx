@@ -2,13 +2,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import type { IScannerControls } from "@zxing/browser";
-import { lookupBarcode } from "../../lib/openFoodFacts";
+import { lookupBarcode } from "../../lib/barcodeLookup";
 import { macrosFromPer100g } from "../../lib/foodPortion";
 import type { MealAnalysisResponse } from "../../api/client";
 
 export type BarcodeMealResult = MealAnalysisResponse & {
   barcode: string;
   servingGrams: number;
+  barcodeDataSource?: "ru_catalog" | "off_ru" | "off_world";
 };
 
 type Props = {
@@ -17,7 +18,7 @@ type Props = {
 };
 
 export function BarcodeScanner({ onApply, onClose }: Props) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const readerRef = useRef<BrowserMultiFormatReader | null>(null);
@@ -61,6 +62,7 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
         source: "barcode",
         barcode: per100.barcode,
         servingGrams: portionGrams,
+        barcodeDataSource: per100.source,
       };
     },
     [],
@@ -71,7 +73,7 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
       setScanning(true);
       setError(null);
       try {
-        const per100 = await lookupBarcode(code, i18n.language);
+        const per100 = await lookupBarcode(code);
         if (!per100) {
           setError(t("log.barcodeNotFound"));
           setProduct(null);
@@ -88,7 +90,7 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
         setScanning(false);
       }
     },
-    [buildResult, i18n.language, t],
+    [buildResult, t],
   );
 
   const handleDetected = useCallback(
