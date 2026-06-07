@@ -12,6 +12,7 @@ type Props = {
   aiNote: string | null;
   onAnalyzingChange: (value: boolean) => void;
   onAnalysis: (result: MealPhotoAnalysis) => void;
+  onPhotoOnly: (preview: string) => void;
   onError: (message: string) => void;
 };
 
@@ -21,11 +22,13 @@ export function MealPhotoCapture({
   aiNote,
   onAnalyzingChange,
   onAnalysis,
+  onPhotoOnly,
   onError,
 }: Props) {
   const { t } = useTranslation();
   const galleryRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const photoOnlyRef = useRef<HTMLInputElement>(null);
   const [liveOpen, setLiveOpen] = useState(false);
 
   async function analyzeFile(file: File) {
@@ -48,6 +51,19 @@ export function MealPhotoCapture({
     e.target.value = "";
     if (!file) return;
     void analyzeFile(file);
+  }
+
+  async function onPhotoOnlyChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    onError("");
+    try {
+      const dataUrl = await fileToDataUrl(file);
+      onPhotoOnly(dataUrl);
+    } catch (err) {
+      onError((err as Error).message);
+    }
   }
 
   function handleLiveApply(result: MealPhotoAnalysis) {
@@ -81,6 +97,13 @@ export function MealPhotoCapture({
         hidden
         onChange={onFileChange}
       />
+      <input
+        ref={photoOnlyRef}
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={onPhotoOnlyChange}
+      />
 
       <div className="meal-photo-actions">
         <button
@@ -109,6 +132,14 @@ export function MealPhotoCapture({
             {analyzing ? t("log.analyzing") : t("log.fromGallery")}
           </button>
         </div>
+        <button
+          type="button"
+          className="btn btn-secondary btn-block"
+          onClick={() => photoOnlyRef.current?.click()}
+          disabled={analyzing}
+        >
+          {t("log.photoOnly")}
+        </button>
       </div>
 
       {preview && (

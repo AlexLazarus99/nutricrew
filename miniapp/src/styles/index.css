@@ -424,6 +424,98 @@ html[data-nav-collapsed="1"] .app-shell {
   gap: 8px;
 }
 
+.meal-quick-entry__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.meal-barcode-scanner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.meal-barcode-frame {
+  position: absolute;
+  inset: 18% 12%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.28);
+  pointer-events: none;
+}
+
+.meal-barcode-manual {
+  display: grid;
+  gap: 8px;
+}
+
+.food-catalog-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.food-catalog-picker__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.food-catalog-picker__head h3 {
+  margin: 0;
+}
+
+.food-catalog-categories {
+  flex-wrap: wrap;
+}
+
+.food-catalog-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.food-catalog-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border, rgba(0, 0, 0, 0.08));
+  border-radius: var(--radius);
+  background: var(--surface, #fff);
+  text-align: left;
+}
+
+.food-catalog-result.active {
+  border-color: var(--accent, #c9a227);
+  background: color-mix(in srgb, var(--accent, #c9a227) 8%, white);
+}
+
+.food-catalog-result__emoji {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.food-catalog-result__body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.card--inset {
+  padding: 12px;
+  background: var(--surface-muted, rgba(0, 0, 0, 0.03));
+}
+
 .meal-live-scanner {
   display: flex;
   flex-direction: column;

@@ -9,6 +9,8 @@ import { useTutorialTour } from "../hooks/useTutorialTour";
 import { useMe } from "../hooks/useMe";
 import { FoodSectionNav } from "../components/food/FoodSectionNav";
 import { MealPhotoCapture, type MealPhotoAnalysis } from "../components/food/MealPhotoCapture";
+import { BarcodeScanner } from "../components/food/BarcodeScanner";
+import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
 
 export function LogMealPage() {
@@ -32,6 +34,8 @@ export function LogMealPage() {
   const [favoriteId, setFavoriteId] = useState<string | undefined>();
   const [draftNote, setDraftNote] = useState<string | null>(null);
   const [lastAnalysis, setLastAnalysis] = useState<MealAnalysisResponse | null>(null);
+  const [barcodeOpen, setBarcodeOpen] = useState(false);
+  const [catalogOpen, setCatalogOpen] = useState(false);
 
   const [favorites, setFavorites] = useState<
     Array<{
@@ -80,10 +84,17 @@ export function LogMealPage() {
 
   const MEAL_SLOTS = ["breakfast", "lunch", "dinner", "snack"] as const;
 
-  function applyAnalysis(analysis: MealPhotoAnalysis) {
+  function applyMealEstimate(
+    analysis: MealAnalysisResponse,
+    options?: { preview?: string | null; clearPreview?: boolean },
+  ) {
     setCaptureError(null);
     setLastAnalysis(analysis);
-    setPreview(analysis.preview);
+    if (options?.clearPreview) {
+      setPreview(null);
+    } else if (options?.preview !== undefined) {
+      setPreview(options.preview);
+    }
     setDescription(analysis.description);
     setCalories(String(analysis.calories));
     setProtein(String(analysis.protein));
@@ -97,6 +108,7 @@ export function LogMealPage() {
     } else if (analysis.mealType === "drink") {
       setMealSlot("snack");
     }
+
     if (analysis.source === "fallback") {
       const reasonKey =
         analysis.visionReason === "no_key"
@@ -106,6 +118,12 @@ export function LogMealPage() {
             : "log.aiFallbackParseError";
       const hint = analysis.visionHint?.trim();
       setAiNote(hint ? `${t(reasonKey)} ${hint}` : t(reasonKey));
+    } else if (analysis.source === "catalog") {
+      setAiNote(t("log.sourceCatalog"));
+    } else if (analysis.source === "barcode") {
+      setAiNote(t("log.sourceBarcode"));
+    } else if (analysis.source === "photo_only") {
+      setAiNote(t("log.sourcePhotoOnly"));
     } else {
       setAiNote(
         t("log.aiNote", {
@@ -116,6 +134,25 @@ export function LogMealPage() {
     }
     setMealResult(null);
     setResultError(null);
+  }
+
+  function applyAnalysis(analysis: MealPhotoAnalysis) {
+    applyMealEstimate(analysis, { preview: analysis.preview });
+  }
+
+  function applyPhotoOnly(previewUrl: string) {
+    applyMealEstimate(
+      {
+        description: description || t("log.photoOnlyDefault"),
+        calories: Number(calories) || 0,
+        protein: Number(protein) || 0,
+        carbs: Number(carbs) || 0,
+        fat: Number(fat) || 0,
+        confidence: 1,
+        source: "photo_only",
+      },
+      { preview: previewUrl },
+    );
   }
 
   async function onSubmit(e: FormEvent) {
@@ -164,6 +201,7 @@ export function LogMealPage() {
           aiNote={aiNote}
           onAnalyzingChange={setAnalyzing}
           onAnalysis={applyAnalysis}
+          onPhotoOnly={applyPhotoOnly}
           onError={setCaptureError}
         />
         {captureError && <p className="error-text">{captureError}</p>}
@@ -200,8 +238,31 @@ export function LogMealPage() {
         </div>
       )}
 
-      <div className="card">
-        <p className="muted small">{t("log.barcodeSoon")}</p>
+      <div className="card meal-quick-entry">
+        <h3>{t("log.quickEntryTitle")}</h3>
+        <p className="muted small">{t("log.quickEntryHint")}</p>
+        <div className="meal-quick-entry__actions">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              setCatalogOpen(false);
+              setBarcodeOpen(true);
+            }}
+          >
+            {t("log.barcodeScan")}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              setBarcodeOpen(false);
+              setCatalogOpen(true);
+            }}
+          >
+            {t("log.catalogOpen")}
+          </button>
+        </div>
         <button
           type="button"
           className="btn btn-secondary btn-block"
@@ -213,6 +274,30 @@ export function LogMealPage() {
           {t("log.voiceLog")}
         </button>
       </div>
+
+      {barcodeOpen && (
+        <div className="card">
+          <BarcodeScanner
+            onApply={(result) => {
+              setBarcodeOpen(false);
+              applyMealEstimate(result, { clearPreview: true });
+            }}
+            onClose={() => setBarcodeOpen(false)}
+          />
+        </div>
+      )}
+
+      {catalogOpen && (
+        <div className="card">
+          <FoodCatalogPicker
+            onApply={(result) => {
+              setCatalogOpen(false);
+              applyMealEstimate(result, { clearPreview: true });
+            }}
+            onClose={() => setCatalogOpen(false)}
+          />
+        </div>
+      )}
 
       <form className="card form" onSubmit={onSubmit}>
         <p className="form-macros-label">{t("log.qualityTitle")}</p>
