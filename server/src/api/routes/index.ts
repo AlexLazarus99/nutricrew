@@ -49,8 +49,18 @@ apiRouter.get("/ping", (_req, res) => {
     ready: apiReady,
     webappUrl: config.webappUrl,
     botUsername: config.botUsername || null,
-    visionConfigured: Boolean(config.openaiApiKey),
-    visionModel: config.openaiApiKey ? config.visionModel : null,
+    visionConfigured: Boolean(config.openaiApiKey || config.geminiApiKey),
+    visionProvider: config.openaiApiKey
+      ? "openai"
+      : config.geminiApiKey
+        ? "gemini"
+        : null,
+    visionModel: config.openaiApiKey
+      ? config.visionModel
+      : config.geminiApiKey
+        ? config.geminiVisionModel
+        : null,
+    geminiConfigured: Boolean(config.geminiApiKey),
     socialLinks: getPublicSocialLinks(),
   });
 });

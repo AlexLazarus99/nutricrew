@@ -28,6 +28,8 @@ export const config = {
     "postgresql://nutricrew:nutricrew@localhost:5432/nutricrew",
   openaiApiKey: (process.env.OPENAI_API_KEY ?? "").trim(),
   visionModel: process.env.VISION_MODEL ?? "gpt-4o-mini",
+  geminiApiKey: (process.env.GEMINI_API_KEY ?? "").trim(),
+  geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-2.0-flash",
   cronEnabled: process.env.CRON_ENABLED !== "false",
   reminderHourUtc: Number(process.env.REMINDER_HOUR_UTC ?? 8),
 
@@ -90,10 +92,12 @@ export function assertConfig(): void {
         "Set BOT_TOKEN in Render Environment (Dashboard → your service → Environment).",
     );
   }
-  if (!config.openaiApiKey) {
+  if (!config.openaiApiKey && !config.geminiApiKey) {
     console.warn(
-      "OPENAI_API_KEY is not set — meal photo analysis will use fallback estimates (450 kcal). " +
-        "Add OPENAI_API_KEY in Render Environment.",
+      "No vision API key — meal photo analysis will use fallback estimates (450 kcal). " +
+        "Set OPENAI_API_KEY and/or GEMINI_API_KEY (free tier: aistudio.google.com/apikey).",
     );
+  } else if (!config.openaiApiKey && config.geminiApiKey) {
+    console.warn("OPENAI_API_KEY not set — vision will use Gemini fallback.");
   }
 }

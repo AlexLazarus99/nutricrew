@@ -48,8 +48,12 @@ async function main(): Promise<void> {
       if (config.devBypassAuth) {
         console.log("Dev auth bypass ON — browser works without Telegram");
       }
-      if (!config.openaiApiKey) {
-        console.log("Vision: fallback mode (set OPENAI_API_KEY for AI photos)");
+      if (!config.openaiApiKey && !config.geminiApiKey) {
+        console.log("Vision: fallback mode (set OPENAI_API_KEY or GEMINI_API_KEY)");
+      } else if (config.openaiApiKey && config.geminiApiKey) {
+        console.log(`Vision: OpenAI ${config.visionModel} + Gemini ${config.geminiVisionModel} fallback`);
+      } else if (config.geminiApiKey) {
+        console.log(`Vision: Gemini ${config.geminiVisionModel}`);
       }
       if (config.s3.enabled) {
         console.log(`S3: ${config.s3.endpoint} / ${config.s3.bucket}`);

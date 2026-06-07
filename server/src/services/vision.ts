@@ -12,6 +12,18 @@ const MEAL_TYPES = new Set<MealType>([
   "unknown",
 ]);
 
+type VisionProvider = "openai" | "gemini";
+
+type RawVisionJson = {
+  description?: string;
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+  confidence?: number;
+  mealType?: string;
+};
+
 function buildFoodPrompt(locale: AppLocale): string {
   const lang = locale === "ru" ? "Russian" : "English";
   const notFood = locale === "ru" ? "Не еда" : "Not food";
@@ -58,6 +70,175 @@ function extractJsonObject(raw: string): string {
   return trimmed;
 }
 
+function splitImageData(dataUrl: string): { mimeType: string; base64: string } {
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  if (match) {
+    return { mimeType: match[1]!, base64: match[2]! };
+  }
+  return {
+    mimeType: "image/jpeg",
+    base64: dataUrl.replace(/^data:image\/\w+;base64,/, ""),
+  };
+}
+
+function buildMealAnalysis(
+  json: RawVisionJson,
+  locale: AppLocale,
+  source: VisionProvider,
+  imageHash: string,
+): MealAnalysis {
+  const calories = Math.round(Number(json.calories) || 400);
+  const protein = Math.round(Number(json.protein) || 20);
+  const estimated = estimateCarbsFat(calories, protein);
+  let confidence = Math.min(1, Math.max(0, Number(json.confidence) || 0.7));
+  const mealType = parseMealType(json.mealType);
+
+  const notFood =
+    locale === "ru"
+      ? json.description?.toLowerCase().includes("не еда")
+      : json.description?.toLowerCase().includes("not food");
+  if (notFood || (mealType === "unknown" && confidence < 0.3)) {
+    confidence = Math.min(confidence, 0.29);
+  }
+
+  return {
+    description: json.description ?? (locale === "ru" ? "Блюдо" : "Meal"),
+    calories,
+    protein,
+    carbs: Math.round(Number(json.carbs) || estimated.carbs),
+    fat: Math.round(Number(json.fat) || estimated.fat),
+    confidence,
+    mealType,
+    source,
+    imageHash,
+    cacheHit: false,
+  };
+}
+
+function parseVisionResponse(raw: string, locale: AppLocale, source: VisionProvider, imageHash: string) {
+  const json = JSON.parse(extractJsonObject(raw)) as RawVisionJson;
+  return buildMealAnalysis(json, locale, source, imageHash);
+}
+
+async function callOpenAIVision(
+  dataUrl: string,
+  locale: AppLocale,
+  imageHash: string,
+): Promise<MealAnalysis | null> {
+  if (!config.openaiApiKey) return null;
+
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${config.openaiApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: config.visionModel,
+      max_tokens: 350,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: buildFoodPrompt(locale) },
+            {
+              type: "image_url",
+              image_url: { url: dataUrl, detail: "low" },
+            },
+          ],
+        },
+      ],
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("OpenAI vision error", res.status, errText.slice(0, 500));
+    return null;
+  }
+
+  const data = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
+  if (!raw) {
+    console.error("OpenAI vision empty response");
+    return null;
+  }
+
+  try {
+    return parseVisionResponse(raw, locale, "openai", imageHash);
+  } catch (err) {
+    console.error("OpenAI vision parse failed", err);
+    return null;
+  }
+}
+
+async function callGeminiVision(
+  dataUrl: string,
+  locale: AppLocale,
+  imageHash: string,
+): Promise<MealAnalysis | null> {
+  if (!config.geminiApiKey) return null;
+
+  const { mimeType, base64 } = splitImageData(dataUrl);
+  const model = config.geminiVisionModel;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(config.geminiApiKey)}`;
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            { text: buildFoodPrompt(locale) },
+            { inline_data: { mime_type: mimeType, data: base64 } },
+          ],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 400,
+        responseMimeType: "application/json",
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.error("Gemini vision error", res.status, errText.slice(0, 500));
+    return null;
+  }
+
+  const data = (await res.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  };
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
+  if (!raw) {
+    console.error("Gemini vision empty response");
+    return null;
+  }
+
+  try {
+    return parseVisionResponse(raw, locale, "gemini", imageHash);
+  } catch (err) {
+    console.error("Gemini vision parse failed", err);
+    return null;
+  }
+}
+
+async function cacheAndReturn(
+  result: MealAnalysis,
+  locale: AppLocale,
+): Promise<MealAnalysis> {
+  if (result.source === "openai" || result.source === "gemini") {
+    await visionCacheRepo.setCachedAnalysis(result.imageHash!, locale, result);
+  }
+  return result;
+}
+
 export async function analyzeFoodImage(
   base64Image: string,
   locale: AppLocale = "en",
@@ -72,97 +253,27 @@ export async function analyzeFoodImage(
     ? base64Image
     : `data:image/jpeg;base64,${base64Image}`;
 
-  if (!config.openaiApiKey) {
+  if (!config.openaiApiKey && !config.geminiApiKey) {
     return { ...fallbackAnalysis("no_key"), imageHash, cacheHit: false };
   }
 
-  try {
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${config.openaiApiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: config.visionModel,
-        max_tokens: 350,
-        response_format: { type: "json_object" },
-        messages: [
-          {
-            role: "user",
-            content: [
-              { type: "text", text: buildFoodPrompt(locale) },
-              {
-                type: "image_url",
-                image_url: { url: dataUrl, detail: "low" },
-              },
-            ],
-          },
-        ],
-      }),
-    });
-
-    if (!res.ok) {
-      const errText = await res.text();
-      console.error("OpenAI vision error", res.status, errText.slice(0, 500));
-      return { ...fallbackAnalysis("api_error"), imageHash, cacheHit: false };
+  if (config.openaiApiKey) {
+    const openai = await callOpenAIVision(dataUrl, locale, imageHash);
+    if (openai) {
+      return cacheAndReturn(openai, locale);
     }
-
-    const data = (await res.json()) as {
-      choices?: Array<{ message?: { content?: string } }>;
-    };
-    const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
-    if (!raw) {
-      console.error("OpenAI vision empty response");
-      return { ...fallbackAnalysis("parse_error"), imageHash, cacheHit: false };
-    }
-
-    const json = JSON.parse(extractJsonObject(raw)) as {
-      description?: string;
-      calories?: number;
-      protein?: number;
-      carbs?: number;
-      fat?: number;
-      confidence?: number;
-      mealType?: string;
-    };
-
-    const calories = Math.round(Number(json.calories) || 400);
-    const protein = Math.round(Number(json.protein) || 20);
-    const estimated = estimateCarbsFat(calories, protein);
-    let confidence = Math.min(1, Math.max(0, Number(json.confidence) || 0.7));
-    const mealType = parseMealType(json.mealType);
-
-    const notFood =
-      locale === "ru"
-        ? json.description?.toLowerCase().includes("не еда")
-        : json.description?.toLowerCase().includes("not food");
-    if (notFood || (mealType === "unknown" && confidence < 0.3)) {
-      confidence = Math.min(confidence, 0.29);
-    }
-
-    const result: MealAnalysis = {
-      description: json.description ?? (locale === "ru" ? "Блюдо" : "Meal"),
-      calories,
-      protein,
-      carbs: Math.round(Number(json.carbs) || estimated.carbs),
-      fat: Math.round(Number(json.fat) || estimated.fat),
-      confidence,
-      mealType,
-      source: "openai",
-      imageHash,
-      cacheHit: false,
-    };
-
-    if (result.source === "openai") {
-      await visionCacheRepo.setCachedAnalysis(imageHash, locale, result);
-    }
-
-    return result;
-  } catch (err) {
-    console.error("Vision parse failed", err);
-    return { ...fallbackAnalysis("parse_error"), imageHash, cacheHit: false };
+    console.warn("OpenAI vision failed — trying Gemini fallback");
   }
+
+  if (config.geminiApiKey) {
+    const gemini = await callGeminiVision(dataUrl, locale, imageHash);
+    if (gemini) {
+      return cacheAndReturn(gemini, locale);
+    }
+  }
+
+  const reason: VisionFallbackReason = config.openaiApiKey || config.geminiApiKey ? "api_error" : "no_key";
+  return { ...fallbackAnalysis(reason), imageHash, cacheHit: false };
 }
 
 function fallbackAnalysis(reason: VisionFallbackReason): MealAnalysis {
