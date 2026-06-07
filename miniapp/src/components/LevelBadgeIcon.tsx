@@ -153,7 +153,7 @@ function LevelArt({ titleKey }: { titleKey: string }) {
 /** Animated crew level badge (replaces emoji in progress card). */
 export function LevelBadgeIcon({
   titleKey,
-  size = 56,
+  size = 168,
   active = false,
   dimmed = false,
 }: Props) {
@@ -173,6 +173,9 @@ export function LevelBadgeIcon({
       aria-hidden
     >
       <span className="level-badge__glow" />
+      <span className="level-badge__ring" />
+      <span className="level-badge__shine" />
+      <span className="level-badge__sparkles" />
       <svg
         className="level-badge__svg"
         viewBox="0 0 80 64"

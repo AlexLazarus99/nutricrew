@@ -18,7 +18,9 @@ export function ProgressLevelCard({ progress, compact = false }: Props) {
   return (
     <div className="card progress-level-card" data-tutorial="progress-card">
       <div className="progress-level-header">
-        <LevelBadgeIcon titleKey={progress.titleKey} size={56} active />
+        <div className="progress-level-badge-wrap">
+          <LevelBadgeIcon titleKey={progress.titleKey} size={168} active />
+        </div>
         <div className="progress-level-meta">
           <span className="progress-level-badge">
             {t("progress.levelShort", { level: progress.level })}
@@ -63,7 +65,7 @@ export function ProgressLevelCard({ progress, compact = false }: Props) {
               >
                 <LevelBadgeIcon
                   titleKey={row.titleKey}
-                  size={36}
+                  size={108}
                   active={current}
                   dimmed={!reached}
                 />
