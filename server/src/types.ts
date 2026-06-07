@@ -58,6 +58,7 @@ export interface MealAnalysis {
   mealType?: MealType;
   source: "openai" | "gemini" | "fallback";
   visionReason?: VisionFallbackReason;
+  visionHint?: string;
   imageHash?: string;
   cacheHit?: boolean;
 }

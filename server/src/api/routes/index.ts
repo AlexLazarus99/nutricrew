@@ -6,7 +6,7 @@ import * as teamsRepo from "../../repositories/teams.js";
 import * as usersRepo from "../../repositories/users.js";
 import * as birdGameRepo from "../../repositories/birdGame.js";
 import { logMealForUser } from "../../services/meals.js";
-import { analyzeFoodImage } from "../../services/vision.js";
+import { analyzeFoodImage, getLastVisionHints, probeVisionProviders } from "../../services/vision.js";
 import { createTeamForUser, joinTeam } from "../../services/teams.js";
 import { notifyMealLogged } from "../../services/notifications.js";
 import { streakMultiplier } from "../../services/streak.js";
@@ -42,7 +42,10 @@ const DB_HEALTH_CACHE_MS = 8000;
 let dbHealthCache: { ok: boolean; checkedAt: number } | null = null;
 
 /** Instant wake-up for Render cold start (no DB). */
-apiRouter.get("/ping", (_req, res) => {
+apiRouter.get("/ping", async (req, res) => {
+  const runVisionProbe = req.query.vision === "1" || req.query.vision === "true";
+  const visionProbe = runVisionProbe ? await probeVisionProviders() : undefined;
+
   res.json({
     ok: true,
     service: "nutricrew-api",
@@ -61,6 +64,8 @@ apiRouter.get("/ping", (_req, res) => {
         ? config.geminiVisionModel
         : null,
     geminiConfigured: Boolean(config.geminiApiKey),
+    visionLastHints: getLastVisionHints(),
+    visionProbe,
     socialLinks: getPublicSocialLinks(),
   });
 });

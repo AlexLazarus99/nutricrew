@@ -1,6 +1,7 @@
 import { createApiApp } from "./api/index.js";
 import { setApiReady } from "./api/ready.js";
 import { assertConfig, config } from "./config.js";
+import { probeVisionProviders } from "./services/vision.js";
 import { createBot, configureBotMenuButton } from "./bot/index.js";
 import { runMigrations, disconnectDb } from "./db/migrate.js";
 import { startCronJobs } from "./jobs/cron.js";
@@ -67,6 +68,12 @@ async function main(): Promise<void> {
     await seedIfEmpty();
     setApiReady(true);
     console.log("API ready (database connected)");
+
+    if (config.openaiApiKey || config.geminiApiKey) {
+      void probeVisionProviders().then((probe) => {
+        console.log("Vision probe:", JSON.stringify(probe));
+      });
+    }
   } catch (err) {
     console.error("Database startup failed (API keeps running, /api/health will report db:false):", err);
   }

@@ -340,7 +340,7 @@
     "analyzing": "Анализ…",
     "aiNote": "Оценка ИИ {{confidence}}% ({{source}}) — поправь при необходимости",
     "aiFallbackNoKey": "ИИ недоступен: не задан OPENAI_API_KEY и GEMINI_API_KEY (сейчас шаблон 450 ккал).",
-    "aiFallbackApiError": "ИИ недоступен: ошибка OpenAI и Gemini — проверь ключи и лимиты API.",
+    "aiFallbackApiError": "ИИ недоступен — проверь ключи на Render (OPENAI_API_KEY / GEMINI_API_KEY).",
     "aiFallbackParseError": "ИИ не смог разобрать фото — попробуй другое фото или введи вручную.",
     "error_NOT_FOOD": "На фото не похоже на еду. Попробуй другое фото.",
     "error_DUPLICATE_PHOTO": "Это фото уже логировали недавно.",

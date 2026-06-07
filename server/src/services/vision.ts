@@ -12,6 +12,13 @@ const MEAL_TYPES = new Set<MealType>([
   "unknown",
 ]);
 
+const GEMINI_MODEL_FALLBACKS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+  "gemini-1.5-flash-8b",
+] as const;
+
 type VisionProvider = "openai" | "gemini";
 
 type RawVisionJson = {
@@ -23,6 +30,19 @@ type RawVisionJson = {
   confidence?: number;
   mealType?: string;
 };
+
+type ProviderProbe = { ok: boolean; status?: number; hint?: string };
+
+let lastVisionHints: { openai?: string; gemini?: string } = {};
+
+export function getLastVisionHints() {
+  return lastVisionHints;
+}
+
+function geminiModelsToTry(): string[] {
+  const preferred = config.geminiVisionModel.trim();
+  return [...new Set([preferred, ...GEMINI_MODEL_FALLBACKS].filter(Boolean))];
+}
 
 function buildFoodPrompt(locale: AppLocale): string {
   const lang = locale === "ru" ? "Russian" : "English";
@@ -70,15 +90,31 @@ function extractJsonObject(raw: string): string {
   return trimmed;
 }
 
+function sanitizeBase64(data: string): string {
+  return data.replace(/\s+/g, "");
+}
+
 function splitImageData(dataUrl: string): { mimeType: string; base64: string } {
-  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/);
+  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/s);
   if (match) {
-    return { mimeType: match[1]!, base64: match[2]! };
+    return { mimeType: match[1]!, base64: sanitizeBase64(match[2]!) };
   }
   return {
     mimeType: "image/jpeg",
-    base64: dataUrl.replace(/^data:image\/\w+;base64,/, ""),
+    base64: sanitizeBase64(dataUrl.replace(/^data:image\/\w+;base64,/, "")),
   };
+}
+
+function parseApiError(body: string, fallback: string): string {
+  try {
+    const json = JSON.parse(body) as {
+      error?: { message?: string; status?: string };
+      message?: string;
+    };
+    return json.error?.message ?? json.message ?? fallback;
+  } catch {
+    return body.slice(0, 180) || fallback;
+  }
 }
 
 function buildMealAnalysis(
@@ -127,52 +163,122 @@ async function callOpenAIVision(
 ): Promise<MealAnalysis | null> {
   if (!config.openaiApiKey) return null;
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${config.openaiApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: config.visionModel,
-      max_tokens: 350,
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: buildFoodPrompt(locale) },
-            {
-              type: "image_url",
-              image_url: { url: dataUrl, detail: "low" },
-            },
-          ],
-        },
-      ],
-    }),
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    console.error("OpenAI vision error", res.status, errText.slice(0, 500));
-    return null;
-  }
-
-  const data = (await res.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-  const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
-  if (!raw) {
-    console.error("OpenAI vision empty response");
-    return null;
-  }
-
   try {
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${config.openaiApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: config.visionModel,
+        max_tokens: 350,
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "user",
+            content: [
+              { type: "text", text: buildFoodPrompt(locale) },
+              {
+                type: "image_url",
+                image_url: { url: dataUrl, detail: "low" },
+              },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      lastVisionHints.openai = parseApiError(errText, `HTTP ${res.status}`);
+      console.error("OpenAI vision error", res.status, errText.slice(0, 500));
+      return null;
+    }
+
+    const data = (await res.json()) as {
+      choices?: Array<{ message?: { content?: string } }>;
+    };
+    const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
+    if (!raw) {
+      lastVisionHints.openai = "empty response";
+      console.error("OpenAI vision empty response");
+      return null;
+    }
+
+    lastVisionHints.openai = undefined;
     return parseVisionResponse(raw, locale, "openai", imageHash);
   } catch (err) {
+    lastVisionHints.openai = (err as Error).message;
     console.error("OpenAI vision parse failed", err);
     return null;
   }
+}
+
+type GeminiResponse = {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  promptFeedback?: { blockReason?: string };
+  error?: { message?: string };
+};
+
+async function requestGeminiVision(
+  model: string,
+  mimeType: string,
+  base64: string,
+  locale: AppLocale,
+  jsonMode: boolean,
+): Promise<{ ok: true; raw: string } | { ok: false; status: number; hint: string }> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+
+  const generationConfig: Record<string, unknown> = {
+    temperature: 0.2,
+    maxOutputTokens: 512,
+  };
+  if (jsonMode) {
+    generationConfig.responseMimeType = "application/json";
+  }
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": config.geminiApiKey,
+    },
+    body: JSON.stringify({
+      contents: [
+        {
+          parts: [
+            { inline_data: { mime_type: mimeType, data: base64 } },
+            { text: buildFoodPrompt(locale) },
+          ],
+        },
+      ],
+      generationConfig,
+    }),
+  });
+
+  const data = (await res.json()) as GeminiResponse;
+
+  if (!res.ok) {
+    const hint = parseApiError(JSON.stringify(data), `HTTP ${res.status}`);
+    return { ok: false, status: res.status, hint };
+  }
+
+  if (data.error?.message) {
+    return { ok: false, status: res.status, hint: data.error.message };
+  }
+
+  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
+  if (!raw) {
+    const block = data.promptFeedback?.blockReason;
+    return {
+      ok: false,
+      status: res.status,
+      hint: block ? `blocked: ${block}` : "empty response",
+    };
+  }
+
+  return { ok: true, raw };
 }
 
 async function callGeminiVision(
@@ -183,50 +289,33 @@ async function callGeminiVision(
   if (!config.geminiApiKey) return null;
 
   const { mimeType, base64 } = splitImageData(dataUrl);
-  const model = config.geminiVisionModel;
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(config.geminiApiKey)}`;
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [
-        {
-          parts: [
-            { text: buildFoodPrompt(locale) },
-            { inline_data: { mime_type: mimeType, data: base64 } },
-          ],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 400,
-        responseMimeType: "application/json",
-      },
-    }),
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    console.error("Gemini vision error", res.status, errText.slice(0, 500));
+  if (!base64 || base64.length < 32) {
+    lastVisionHints.gemini = "invalid image data";
     return null;
   }
 
-  const data = (await res.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  };
-  const raw = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() ?? "";
-  if (!raw) {
-    console.error("Gemini vision empty response");
-    return null;
+  const errors: string[] = [];
+
+  for (const model of geminiModelsToTry()) {
+    for (const jsonMode of [true, false] as const) {
+      const result = await requestGeminiVision(model, mimeType, base64, locale, jsonMode);
+      if (!result.ok) {
+        errors.push(`${model}${jsonMode ? "+json" : ""}: ${result.hint}`);
+        continue;
+      }
+
+      try {
+        lastVisionHints.gemini = undefined;
+        return parseVisionResponse(result.raw, locale, "gemini", imageHash);
+      } catch (err) {
+        errors.push(`${model}: parse ${(err as Error).message}`);
+      }
+    }
   }
 
-  try {
-    return parseVisionResponse(raw, locale, "gemini", imageHash);
-  } catch (err) {
-    console.error("Gemini vision parse failed", err);
-    return null;
-  }
+  lastVisionHints.gemini = errors[0] ?? "all models failed";
+  console.error("Gemini vision failed", errors.join(" | "));
+  return null;
 }
 
 async function cacheAndReturn(
@@ -237,6 +326,70 @@ async function cacheAndReturn(
     await visionCacheRepo.setCachedAnalysis(result.imageHash!, locale, result);
   }
   return result;
+}
+
+function buildVisionHint(): string | undefined {
+  const parts: string[] = [];
+  if (lastVisionHints.openai) parts.push(`OpenAI: ${lastVisionHints.openai}`);
+  if (lastVisionHints.gemini) parts.push(`Gemini: ${lastVisionHints.gemini}`);
+  return parts.length ? parts.join("; ") : undefined;
+}
+
+export async function probeVisionProviders(): Promise<{
+  openai: ProviderProbe;
+  gemini: ProviderProbe;
+}> {
+  const openai: ProviderProbe = { ok: false };
+  const gemini: ProviderProbe = { ok: false };
+
+  if (config.openaiApiKey) {
+    try {
+      const res = await fetch("https://api.openai.com/v1/models", {
+        headers: { Authorization: `Bearer ${config.openaiApiKey}` },
+      });
+      openai.status = res.status;
+      openai.ok = res.ok;
+      if (!res.ok) {
+        openai.hint = parseApiError(await res.text(), `HTTP ${res.status}`);
+      }
+    } catch (err) {
+      openai.hint = (err as Error).message;
+    }
+  } else {
+    openai.hint = "not configured";
+  }
+
+  if (config.geminiApiKey) {
+    const model = geminiModelsToTry()[0] ?? "gemini-1.5-flash";
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": config.geminiApiKey,
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: "Reply with ok" }] }],
+            generationConfig: { maxOutputTokens: 8 },
+          }),
+        },
+      );
+      gemini.status = res.status;
+      const data = (await res.json()) as GeminiResponse;
+      gemini.ok = res.ok && Boolean(data.candidates?.[0]?.content?.parts?.[0]?.text);
+      if (!gemini.ok) {
+        gemini.hint = parseApiError(JSON.stringify(data), `HTTP ${res.status}`);
+      }
+    } catch (err) {
+      gemini.hint = (err as Error).message;
+    }
+  } else {
+    gemini.hint = "not configured";
+  }
+
+  return { openai, gemini };
 }
 
 export async function analyzeFoodImage(
@@ -251,32 +404,38 @@ export async function analyzeFoodImage(
 
   const dataUrl = base64Image.startsWith("data:")
     ? base64Image
-    : `data:image/jpeg;base64,${base64Image}`;
+    : `data:image/jpeg;base64,${sanitizeBase64(base64Image)}`;
 
   if (!config.openaiApiKey && !config.geminiApiKey) {
     return { ...fallbackAnalysis("no_key"), imageHash, cacheHit: false };
   }
 
+  let geminiTried = false;
+
+  if (config.geminiApiKey && !config.openaiApiKey) {
+    geminiTried = true;
+    const gemini = await callGeminiVision(dataUrl, locale, imageHash);
+    if (gemini) return cacheAndReturn(gemini, locale);
+  }
+
   if (config.openaiApiKey) {
     const openai = await callOpenAIVision(dataUrl, locale, imageHash);
-    if (openai) {
-      return cacheAndReturn(openai, locale);
-    }
+    if (openai) return cacheAndReturn(openai, locale);
     console.warn("OpenAI vision failed — trying Gemini fallback");
   }
 
-  if (config.geminiApiKey) {
+  if (config.geminiApiKey && !geminiTried) {
     const gemini = await callGeminiVision(dataUrl, locale, imageHash);
-    if (gemini) {
-      return cacheAndReturn(gemini, locale);
-    }
+    if (gemini) return cacheAndReturn(gemini, locale);
   }
 
-  const reason: VisionFallbackReason = config.openaiApiKey || config.geminiApiKey ? "api_error" : "no_key";
-  return { ...fallbackAnalysis(reason), imageHash, cacheHit: false };
+  const reason: VisionFallbackReason =
+    config.openaiApiKey || config.geminiApiKey ? "api_error" : "no_key";
+  const hint = buildVisionHint();
+  return { ...fallbackAnalysis(reason, hint), imageHash, cacheHit: false };
 }
 
-function fallbackAnalysis(reason: VisionFallbackReason): MealAnalysis {
+function fallbackAnalysis(reason: VisionFallbackReason, visionHint?: string): MealAnalysis {
   const calories = 450;
   const protein = 25;
   const { carbs, fat } = estimateCarbsFat(calories, protein);
@@ -290,5 +449,6 @@ function fallbackAnalysis(reason: VisionFallbackReason): MealAnalysis {
     mealType: "unknown",
     source: "fallback",
     visionReason: reason,
+    visionHint,
   };
 }

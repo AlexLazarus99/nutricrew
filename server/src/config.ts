@@ -29,7 +29,7 @@ export const config = {
   openaiApiKey: (process.env.OPENAI_API_KEY ?? "").trim(),
   visionModel: process.env.VISION_MODEL ?? "gpt-4o-mini",
   geminiApiKey: (process.env.GEMINI_API_KEY ?? "").trim(),
-  geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-2.0-flash",
+  geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash",
   cronEnabled: process.env.CRON_ENABLED !== "false",
   reminderHourUtc: Number(process.env.REMINDER_HOUR_UTC ?? 8),
 

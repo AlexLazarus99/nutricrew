@@ -104,7 +104,8 @@ export function LogMealPage() {
           : analysis.visionReason === "api_error"
             ? "log.aiFallbackApiError"
             : "log.aiFallbackParseError";
-      setAiNote(t(reasonKey));
+      const hint = analysis.visionHint?.trim();
+      setAiNote(hint ? `${t(reasonKey)} ${hint}` : t(reasonKey));
     } else {
       setAiNote(
         t("log.aiNote", {
