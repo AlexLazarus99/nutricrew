@@ -765,6 +765,15 @@
   animation-delay: 0.1s;
 }
 
+/* Features page cards */
+.challenge-card {
+  animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.feature-card--league .league-tier-badge {
+  animation: nc-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+}
+
 /* Footer links */
 .footer-legal a {
   transition:

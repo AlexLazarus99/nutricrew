@@ -10,6 +10,7 @@ import {
   resolveDailyGoal,
   resolveDailyTargetKcal,
 } from "../lib/diaryTarget";
+import { FoodLogHero } from "../components/food/FoodLogHero";
 
 function formatDayLabel(date: Date, locale: string): string {
   return date.toLocaleDateString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
@@ -77,13 +78,15 @@ export function FoodDiaryPage() {
     localDayBounds(day).dayStart.getTime() === localDayBounds(new Date()).dayStart.getTime();
 
   return (
-    <section className="stack">
+    <section className="stack diary-page">
       <FoodSectionNav />
+      <FoodLogHero
+        progress={me.progress}
+        titleKey="diary.title"
+        subtitleKey="diary.hint"
+      />
 
-      <div className="card">
-        <h2>{t("diary.title")}</h2>
-        <p className="muted">{t("diary.hint")}</p>
-
+      <div className="card diary-section diary-section--picker">
         <div className="diary-day-picker">
           <button
             type="button"
@@ -110,7 +113,7 @@ export function FoodDiaryPage() {
       </div>
 
       {targetKcal == null ? (
-        <div className="card diary-target-card diary-target-missing">
+        <div className="card diary-target-card diary-target-missing diary-section">
           <h3>{t("diary.noTargetTitle")}</h3>
           <p className="muted">{t("diary.noTargetHint")}</p>
           <Link to="/guide?tab=calc" className="btn btn-primary btn-block">
@@ -118,7 +121,7 @@ export function FoodDiaryPage() {
           </Link>
         </div>
       ) : balance ? (
-        <div className="card diary-target-card">
+        <div className="card diary-target-card diary-section">
           <div className="diary-summary-grid">
             <div>
               <span className="diary-stat-label">{t("diary.target")}</span>
@@ -170,7 +173,7 @@ export function FoodDiaryPage() {
       ) : null}
 
       {data && data.totals.count > 0 && (
-        <div className="card diary-macros-card">
+        <div className="card diary-macros-card diary-section">
           <h3>{t("diary.macrosDay")}</h3>
           <div className="diary-macros-row">
             <span>{t("log.protein")}: <strong>{data.totals.protein} g</strong></span>
@@ -180,7 +183,7 @@ export function FoodDiaryPage() {
         </div>
       )}
 
-      <div className="card">
+      <div className="card diary-section diary-section--meals">
         <div className="diary-list-head">
           <h3>{t("diary.mealsTitle")}</h3>
           <Link to="/log" className="btn btn-secondary btn-sm">
@@ -197,8 +200,12 @@ export function FoodDiaryPage() {
 
         {!loading && data && data.meals.length > 0 && (
           <ul className="diary-meal-list">
-            {data.meals.map((meal) => (
-              <li key={meal.id} className="diary-meal-item">
+            {data.meals.map((meal, index) => (
+              <li
+                key={meal.id}
+                className="diary-meal-item"
+                style={{ animationDelay: `${Math.min(index * 0.05, 0.35)}s` }}
+              >
                 {meal.photoUrl ? (
                   <img src={meal.photoUrl} alt="" className="diary-meal-thumb" />
                 ) : (
@@ -208,10 +215,13 @@ export function FoodDiaryPage() {
                 )}
                 <div className="diary-meal-body">
                   <div className="diary-meal-top">
-                    <strong>{meal.description}</strong>
-                    <span className="diary-meal-kcal">
-                      {meal.calories} {t("diary.kcal")}
-                    </span>
+                    <strong className="diary-meal-title">{meal.description}</strong>
+                    <div className="diary-meal-badges">
+                      <span className="diary-meal-points">+{meal.points}</span>
+                      <span className="diary-meal-kcal">
+                        {meal.calories} {t("diary.kcal")}
+                      </span>
+                    </div>
                   </div>
                   <p className="muted small diary-meal-meta">
                     {formatTime(meal.createdAt, i18n.language)}

@@ -73,6 +73,13 @@
     "leagueTitle": "Лига недели",
     "leagueNext": "До следующего уровня: {{xp}} XP",
     "leagueMax": "Максимальный уровень!",
+    "leagueTiers": {
+      "bronze": "Бронза",
+      "silver": "Серебро",
+      "gold": "Золото",
+      "platinum": "Платина",
+      "diamond": "Алмаз"
+    },
     "freezeTitle": "Заморозка серии",
     "freezeCount": "Доступно: {{count}}",
     "freezeUse": "Использовать",

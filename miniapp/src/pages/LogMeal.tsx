@@ -12,10 +12,11 @@ import { MealPhotoCapture, type MealPhotoAnalysis } from "../components/food/Mea
 import { BarcodeScanner } from "../components/food/BarcodeScanner";
 import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
+import { FoodLogHero } from "../components/food/FoodLogHero";
 
 export function LogMealPage() {
   const { t } = useTranslation();
-  const { refresh } = useMe();
+  const { me, refresh } = useMe();
   const logTour = useTutorialTour("log", true);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
@@ -196,12 +197,15 @@ export function LogMealPage() {
   }
 
   return (
-    <section className="stack">
+    <section className="stack log-page">
       <TutorialCoach {...logTour} />
       <FoodSectionNav />
-      <div className="card">
-        <h2>{t("log.title")}</h2>
-        <p className="muted">{t("log.hint")}</p>
+      <FoodLogHero
+        progress={me.progress}
+        titleKey="log.title"
+        subtitleKey="log.hint"
+      />
+      <div className="card log-section log-section--capture">
         <MealPhotoCapture
           analyzing={analyzing}
           preview={preview}
@@ -217,7 +221,7 @@ export function LogMealPage() {
       {draftNote && <p className="muted small">{draftNote}</p>}
 
       {favorites.length > 0 && (
-        <div className="card">
+        <div className="card log-section log-section--favorites">
           <h3>{t("log.favoritesTitle")}</h3>
           <ul className="favorites-list">
             {favorites.slice(0, 5).map((f) => (
@@ -245,7 +249,7 @@ export function LogMealPage() {
         </div>
       )}
 
-      <div className="card meal-quick-entry">
+      <div className="card meal-quick-entry log-section log-section--quick">
         <h3>{t("log.quickEntryTitle")}</h3>
         <p className="muted small">{t("log.quickEntryHint")}</p>
         <div className="meal-quick-entry__actions">
@@ -306,7 +310,7 @@ export function LogMealPage() {
         </div>
       )}
 
-      <form className="card form" onSubmit={onSubmit}>
+      <form className="card form log-section log-section--form" onSubmit={onSubmit}>
         <p className="form-macros-label">{t("log.qualityTitle")}</p>
         <div className="feature-row">
           {(["balanced", "light", "treat", "water"] as const).map((q) => (
@@ -403,6 +407,7 @@ export function LogMealPage() {
             teamPoints={mealResult.teamPoints}
             streak={mealResult.streak}
             inviteUrl={mealResult.inviteUrl}
+            progress={me.progress}
           />
           <Link to="/diary" className="btn btn-secondary btn-block">
             {t("diary.viewAfterLog")}

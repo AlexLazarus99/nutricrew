@@ -73,6 +73,13 @@
     "leagueTitle": "Weekly league",
     "leagueNext": "{{xp}} XP to next tier",
     "leagueMax": "Top tier this week!",
+    "leagueTiers": {
+      "bronze": "Bronze",
+      "silver": "Silver",
+      "gold": "Gold",
+      "platinum": "Platinum",
+      "diamond": "Diamond"
+    },
     "freezeTitle": "Streak freeze",
     "freezeCount": "{{count}} available",
     "freezeUse": "Use freeze",

@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { shareMealResult } from "../lib/telegramShare";
+import { LevelBadgeIcon } from "./LevelBadgeIcon";
+import type { MeResponse } from "../api/client";
 
 type Props = {
   points: number;
   teamPoints: number;
   streak: number;
   inviteUrl?: string | null;
+  progress?: MeResponse["progress"];
 };
 
-export function MealShareCard({ points, teamPoints, streak, inviteUrl }: Props) {
+export function MealShareCard({ points, teamPoints, streak, inviteUrl, progress }: Props) {
   const { t } = useTranslation();
   const [feedback, setFeedback] = useState<string | null>(null);
 
@@ -28,6 +31,11 @@ export function MealShareCard({ points, teamPoints, streak, inviteUrl }: Props) 
 
   return (
     <div className="card meal-share-card meal-celebrate">
+      {progress && (
+        <div className="meal-celebrate-badge">
+          <LevelBadgeIcon titleKey={progress.titleKey} size={72} active />
+        </div>
+      )}
       <p className="success meal-success-text">
         {t("log.success", { points, team: teamPoints, streak })}
       </p>

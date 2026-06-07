@@ -5,6 +5,8 @@ import { api, type GrowthPayload } from "../api/client";
 import { useMe } from "../hooks/useMe";
 import "../styles/features.css";
 import { ChallengeIcon } from "../components/QuestIcon";
+import { ProgressLevelCard } from "../components/ProgressLevelCard";
+import { LeagueTierBadge } from "../components/LeagueTierBadge";
 
 export function FeaturesPage() {
   const { t } = useTranslation();
@@ -50,8 +52,9 @@ export function FeaturesPage() {
 
   if (loadingGrowth || !growth) {
     return (
-      <section className="stack">
-        <div className="card">
+      <section className="stack features-page">
+        <ProgressLevelCard progress={me.progress} compact />
+        <div className="card features-loading">
           <p className="muted">{t("features.loading")}</p>
         </div>
       </section>
@@ -59,8 +62,9 @@ export function FeaturesPage() {
   }
 
   return (
-    <section className="stack features-grid">
-      <div className="card hero">
+    <section className="stack features-page features-grid">
+      <ProgressLevelCard progress={me.progress} compact />
+      <div className="card hero features-hero">
         <h2>{t("features.title")}</h2>
         <p className="muted small">{t("features.subtitle")}</p>
       </div>
@@ -143,16 +147,16 @@ function DailyGoalCard({
 function LeagueCard({ growth }: { growth: GrowthPayload }) {
   const { t } = useTranslation();
   return (
-    <div className="card feature-card">
+    <div className="card feature-card feature-card--league">
       <h3>{t("features.leagueTitle")}</h3>
-      <p className="league-badge">
-        {growth.league.tier} · {growth.league.weeklyXp} XP
-      </p>
-      <p className="muted small">
-        {growth.league.xpToNext > 0
-          ? t("features.leagueNext", { xp: growth.league.xpToNext })
-          : t("features.leagueMax")}
-      </p>
+      <LeagueTierBadge
+        tier={growth.league.tier}
+        weeklyXp={growth.league.weeklyXp}
+        xpToNext={growth.league.xpToNext}
+      />
+      {growth.league.xpToNext <= 0 && (
+        <p className="muted small features-league-max">{t("features.leagueMax")}</p>
+      )}
     </div>
   );
 }
@@ -331,9 +335,13 @@ function AchievementsCard({ growth }: { growth: GrowthPayload }) {
       <h3>{t("features.achievementsTitle")}</h3>
       <div className="achievement-grid">
         {growth.achievements.map((a) => (
-          <div key={a.id} className={`achievement-tile ${a.unlocked ? "unlocked" : ""}`}>
-            <span>{a.emoji}</span>
+          <div
+            key={a.id}
+            className={`achievement-tile ${a.unlocked ? "unlocked achievement-tile--unlocked" : ""}`}
+          >
+            <span className="achievement-tile__emoji">{a.emoji}</span>
             <p className="small">{t(`features.achievements.${a.titleKey}`)}</p>
+            {a.unlocked && <span className="achievement-tile__badge">✓</span>}
           </div>
         ))}
       </div>

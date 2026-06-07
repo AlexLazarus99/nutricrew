@@ -1,112 +1,253 @@
-.features-grid {
-  display: grid;
-  gap: 12px;
-}
-
-.feature-card h3 {
-  margin: 0 0 8px;
-  font-size: 1rem;
-}
-
-.feature-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-
-.feature-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: var(--radius-pill);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 24%, transparent);
-  background: var(--section-surface);
-  color: var(--text);
-  font-size: 0.8rem;
-  cursor: pointer;
-}
-
-.feature-chip.active {
-  background: linear-gradient(135deg, var(--accent-dim), var(--section-accent));
-  color: #1a2420;
-  border-color: transparent;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--section-accent) 35%, transparent);
-}
-
-.league-badge {
-  font-weight: 700;
-  text-transform: capitalize;
-  color: var(--section-accent);
-}
-
-.battle-pass-bar {
-  height: 10px;
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--section-accent) 12%, var(--section-surface-2));
-  overflow: hidden;
-}
-
-.battle-pass-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--warn), #f0e0a8);
-  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.achievement-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-.achievement-tile {
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  background: var(--section-surface);
-  border: 1px solid color-mix(in srgb, var(--muted) 18%, transparent);
-  opacity: 0.55;
-  color: var(--text);
-}
-
-.achievement-tile.unlocked {
-  opacity: 1;
-  border-color: color-mix(in srgb, var(--section-accent) 40%, transparent);
-  background: color-mix(in srgb, var(--section-accent-soft) 45%, var(--section-surface));
-}
-
-.team-activity-kudos {
-  display: flex;
-  gap: 4px;
-  margin-top: 4px;
-}
-
-.kudos-btn {
-  padding: 2px 8px;
-  font-size: 0.85rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
-  background: var(--section-surface);
-  color: var(--text);
-  cursor: pointer;
-}
-
-.favorites-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.favorite-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  background: var(--section-surface-2);
-  color: var(--text);
-}
+.features-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.features-page .progress-level-card {
+  animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.features-hero {
+  animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.04s both;
+}
+
+.features-loading {
+  animation: nc-loading-pulse 1.2s ease-in-out infinite;
+}
+
+.feature-card {
+  animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.features-grid > .feature-card:nth-of-type(1) { animation-delay: 0.06s; }
+.features-grid > .feature-card:nth-of-type(2) { animation-delay: 0.1s; }
+.features-grid > .feature-card:nth-of-type(3) { animation-delay: 0.14s; }
+.features-grid > .feature-card:nth-of-type(4) { animation-delay: 0.18s; }
+.features-grid > .feature-card:nth-of-type(5) { animation-delay: 0.22s; }
+.features-grid > .feature-card:nth-of-type(6) { animation-delay: 0.26s; }
+.features-grid > .feature-card:nth-of-type(7) { animation-delay: 0.3s; }
+.features-grid > .feature-card:nth-of-type(8) { animation-delay: 0.34s; }
+.features-grid > .feature-card:nth-of-type(9) { animation-delay: 0.38s; }
+.features-grid > .feature-card:nth-of-type(10) { animation-delay: 0.42s; }
+.features-grid > .feature-card:nth-of-type(n + 11) { animation-delay: 0.46s; }
+
+.feature-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-family: var(--font-display);
+}
+
+.feature-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.feature-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 24%, transparent);
+  background: var(--section-surface);
+  color: var(--text);
+  font-size: 0.8rem;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.feature-chip:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.feature-chip.active {
+  background: linear-gradient(135deg, var(--accent-dim), var(--section-accent));
+  color: #1a2420;
+  border-color: transparent;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--section-accent) 35%, transparent);
+}
+
+.league-tier-badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--section-surface-2);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, transparent);
+  overflow: hidden;
+}
+
+.league-tier-badge__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.league-tier-badge--bronze .league-tier-badge__ring {
+  background: radial-gradient(circle at 20% 30%, rgba(205, 127, 50, 0.35), transparent 55%);
+}
+
+.league-tier-badge--silver .league-tier-badge__ring {
+  background: radial-gradient(circle at 20% 30%, rgba(192, 192, 192, 0.4), transparent 55%);
+}
+
+.league-tier-badge--gold .league-tier-badge__ring {
+  background: radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.42), transparent 55%);
+}
+
+.league-tier-badge--platinum .league-tier-badge__ring {
+  background: radial-gradient(circle at 20% 30%, rgba(147, 197, 253, 0.38), transparent 55%);
+}
+
+.league-tier-badge--diamond .league-tier-badge__ring {
+  background: radial-gradient(circle at 20% 30%, rgba(167, 139, 250, 0.45), transparent 55%);
+  animation: nc-glow-ring 2.4s ease-in-out infinite;
+}
+
+.league-tier-badge__emoji {
+  position: relative;
+  z-index: 1;
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+.league-tier-badge--sm .league-tier-badge__emoji {
+  font-size: 1.5rem;
+}
+
+.league-tier-badge__meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.league-tier-badge__name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--heading);
+}
+
+.league-tier-badge__xp {
+  font-family: var(--font-sans);
+}
+
+.features-league-max {
+  margin: 8px 0 0;
+}
+
+.battle-pass-bar {
+  height: 10px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--section-accent) 12%, var(--section-surface-2));
+  overflow: hidden;
+}
+
+.battle-pass-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--warn), #f0e0a8);
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.achievement-tile {
+  position: relative;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: var(--section-surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 18%, transparent);
+  opacity: 0.55;
+  color: var(--text);
+  font-family: var(--font-sans);
+  transition:
+    transform 0.2s ease,
+    opacity 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.achievement-tile__emoji {
+  display: block;
+  font-size: 1.35rem;
+  margin-bottom: 4px;
+}
+
+.achievement-tile.unlocked {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--section-accent) 40%, transparent);
+  background: color-mix(in srgb, var(--section-accent-soft) 45%, var(--section-surface));
+}
+
+.achievement-tile--unlocked {
+  animation: nc-success-pop 0.5s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.achievement-tile__badge {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: var(--section-accent);
+  color: #1a2420;
+}
+
+.team-activity-kudos {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.kudos-btn {
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: var(--section-surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.favorites-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.favorite-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--section-surface-2);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
