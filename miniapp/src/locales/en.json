@@ -783,7 +783,9 @@
   },
   "game": {
     "title": "NutriBird",
-    "subtitle": "Fly between bottom trees and junk food above. Collect fruit — your bird gets slimmer!",
+    "subtitle": "NutriBird mini-game — coming back soon.",
+    "comingSoonTitle": "NutriBird is being updated",
+    "comingSoonBody": "The mini-game is temporarily unavailable. Team quests and bonuses will return when it's back.",
     "best": "Best",
     "score": "Score",
     "nutrition": "Nutrition",

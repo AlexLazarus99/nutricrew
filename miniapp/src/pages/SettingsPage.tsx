@@ -25,7 +25,6 @@ export function SettingsPage() {
     cancelFontSizePreview,
     setHaptics,
     setReduceMotion,
-    setGameMusic,
   } = useAppPreferences();
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -151,9 +150,6 @@ export function SettingsPage() {
             onChange={setReduceMotion}
             label={t("settings.reduceMotion")}
           />
-        </SettingsRow>
-        <SettingsRow label={t("settings.gameMusic")} hint={t("settings.gameMusicHint")}>
-          <SettingsToggle checked={prefs.gameMusic} onChange={setGameMusic} label={t("settings.gameMusic")} />
         </SettingsRow>
       </div>
 

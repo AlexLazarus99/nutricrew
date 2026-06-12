@@ -78,12 +78,11 @@ export const TUTORIAL_TOURS: Record<TutorialTourId, TutorialStep[]> = {
     },
   ],
   game: [
-    { emoji: "🐦", titleKey: "tutorial.bird.title", bodyKey: "tutorial.bird.body" },
     {
-      emoji: "🎁",
-      titleKey: "tutorial.birdBonus.title",
-      bodyKey: "tutorial.birdBonus.body",
-      target: "[data-tutorial='game-canvas']",
+      emoji: "🐦",
+      titleKey: "tutorial.game.title",
+      bodyKey: "tutorial.game.body",
+      target: ".bird-game-hero",
     },
   ],
   team: [

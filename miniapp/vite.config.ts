@@ -40,9 +40,6 @@ export default defineConfig(({ mode }) => {
                 return "vendor-i18n";
               }
             }
-            if (id.includes("/lib/birdGame/")) {
-              return "bird-game";
-            }
             if (
               id.includes("/locales/exercises") ||
               id.includes("/locales/dishRecipes") ||

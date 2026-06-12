@@ -2982,6 +2982,21 @@ button {
   gap: 12px;
 }
 
+.bird-game-placeholder {
+  text-align: center;
+  padding: 2rem 1.25rem;
+}
+
+.bird-game-placeholder h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.bird-game-placeholder p {
+  margin: 0;
+  line-height: 1.5;
+}
+
 /* bird-game-hero layout — see nutribird-mark.css */
 
 .bird-game {

@@ -24,7 +24,6 @@ type AppPreferencesContextValue = {
   setFontSize: (fontSize: FontSize) => void;
   setHaptics: (haptics: boolean) => void;
   setReduceMotion: (reduceMotion: boolean) => void;
-  setGameMusic: (gameMusic: boolean) => void;
 };
 
 const AppPreferencesContext = createContext<AppPreferencesContextValue | null>(null);
@@ -70,7 +69,6 @@ export function AppPreferencesProvider({ children }: { children: ReactNode }) {
       },
       setHaptics: (haptics) => update({ haptics }),
       setReduceMotion: (reduceMotion) => update({ reduceMotion }),
-      setGameMusic: (gameMusic) => update({ gameMusic }),
     }),
     [
       prefs,
