@@ -1,6 +1,7 @@
 import * as mealsRepo from "../repositories/meals.js";
 import * as teamsRepo from "../repositories/teams.js";
 import { getCurrentWeekKey } from "../lib/week.js";
+import { buildTrends, insightText } from "./trends.js";
 import type { DbUser } from "../types.js";
 
 function weekStartFromKey(weekKey: string): Date {
@@ -47,6 +48,9 @@ export async function buildWeeklyReport(user: DbUser, weekKey = getCurrentWeekKe
     meals.map((m) => m.created_at.toISOString().slice(0, 10)),
   ).size;
 
+  const trends = await buildTrends(user, "7d");
+  const locale = user.locale ?? "en";
+
   return {
     weekKey,
     mealsLogged: totals.count,
@@ -60,5 +64,8 @@ export async function buildWeeklyReport(user: DbUser, weekKey = getCurrentWeekKe
     teamRank,
     teamPoints,
     avgCaloriesPerMeal: totals.count ? Math.round(totals.calories / totals.count) : 0,
+    insights: trends.insights.map((i) => insightText(i, locale)),
+    avgCalories: trends.avgCalories,
+    avgProtein: trends.avgProtein,
   };
 }

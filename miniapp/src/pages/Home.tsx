@@ -11,6 +11,7 @@ import { TutorialCoach } from "../components/TutorialCoach";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
+import { WaterWidget } from "../components/wellness/WaterWidget";
 import type { GrowthSummary } from "../api/client";
 
 const LEAGUE_TIER_EMOJI: Record<string, string> = {
@@ -216,6 +217,16 @@ export function HomePage() {
         mealsToday={me.mealsToday}
         target={me.growth?.dailyGoal?.type === "meals" ? me.growth.dailyGoal.target : me.mealsTodayTarget}
       />
+
+      <WaterWidget />
+      <Link to="/trends" className="btn btn-secondary btn-block">
+        📈 {t("trends.title")}
+      </Link>
+      {me.pro?.isPro && (
+        <Link to="/pro" className="btn btn-secondary btn-block">
+          ✨ {t("pro.title")}
+        </Link>
+      )}
 
       {me.growth && (
         <GrowthFeaturesLink growth={me.growth} />

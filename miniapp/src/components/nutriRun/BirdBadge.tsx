@@ -32,6 +32,73 @@ function wingBeatWave(cycle: number) {
   return smoothstep(0, 1, (cycle - 0.27) / 0.73);
 }
 
+function shade(hex: string, amt: number) {
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n >> 16) & 255;
+  let g = (n >> 8) & 255;
+  let b = n & 255;
+  r = Math.max(0, Math.min(255, Math.round(r + amt)));
+  g = Math.max(0, Math.min(255, Math.round(g + amt)));
+  b = Math.max(0, Math.min(255, Math.round(b + amt)));
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+function drawWingFeather(
+  c: CanvasRenderingContext2D,
+  ox: number,
+  oy: number,
+  angle: number,
+  length: number,
+  width: number,
+  color: string,
+  alpha: number,
+) {
+  c.save();
+  c.translate(ox, oy);
+  c.rotate(angle);
+  c.globalAlpha *= alpha;
+  const tipW = width * 0.22;
+  const rootW = width * 0.42;
+  c.fillStyle = color;
+  c.beginPath();
+  c.moveTo(0, -rootW * 0.45);
+  c.quadraticCurveTo(length * 0.42, -width * 0.62, length, -tipW);
+  c.quadraticCurveTo(length * 0.88, width * 0.12, length, tipW * 1.1);
+  c.quadraticCurveTo(length * 0.38, width * 0.58, 0, rootW * 0.5);
+  c.closePath();
+  c.fill();
+  c.strokeStyle = shade(color, -28);
+  c.lineWidth = Math.max(0.6, width * 0.07);
+  c.lineCap = "round";
+  c.beginPath();
+  c.moveTo(0, 0);
+  c.lineTo(length * 0.9, tipW * 0.15);
+  c.stroke();
+  c.restore();
+}
+
+function drawBirdTail(
+  c: CanvasRenderingContext2D,
+  bodyW: number,
+  bodyH: number,
+  color: string,
+  flapAmt: number,
+) {
+  const count = 7;
+  const mid = (count - 1) / 2;
+  const rootX = -bodyW * 0.54;
+  const rootY = bodyH * 0.03;
+  const fan = 0.52 + (1 - flapAmt) * 0.1;
+  for (let i = 0; i < count; i++) {
+    const off = i - mid;
+    const norm = off / mid;
+    const len = bodyW * (0.76 - Math.abs(norm) * 0.13);
+    const ang = Math.PI + norm * fan;
+    const fw = bodyH * (0.15 + (1 - Math.abs(norm) * 0.45) * 0.12);
+    drawWingFeather(c, rootX + norm * bodyW * 0.04, rootY + Math.abs(norm) * bodyH * 0.025, ang, len, fw, shade(color, -14 + Math.abs(off) * 5), 0.96);
+  }
+}
+
 function drawWing(
   c: CanvasRenderingContext2D,
   x: number,
@@ -42,17 +109,40 @@ function drawWing(
   flapAmt: number,
   color: string,
   wingAmp = 1.12,
+  isBack = false,
 ) {
   const smoothFlap = smoothstep(0, 1, flapAmt);
   const beat = 1 - smoothFlap;
   c.save();
   c.translate(x, y);
-  const a = (0.68 * wingAmp + smoothFlap * (-1.25 * wingAmp - 0.68 * wingAmp)) * dir;
+  const a = (0.48 * wingAmp + smoothFlap * (-0.88 * wingAmp - 0.48 * wingAmp)) * dir;
   c.rotate(a);
-  c.scale(1 + beat * 0.12 * wingAmp, 1 - beat * 0.17 * wingAmp);
-  c.fillStyle = color;
+  const spread = 0.68 + beat * 0.32;
+  const span = w * spread;
+  const depth = h * (0.5 + beat * 0.14);
+  c.globalAlpha = isBack ? 0.84 : 1;
+  const secCount = isBack ? 4 : 5;
+  const primCount = isBack ? 5 : 7;
+  for (let i = 0; i < secCount; i++) {
+    const t = secCount > 1 ? i / (secCount - 1) : 0;
+    const ang = dir * (0.28 + t * 0.67) * (0.82 + beat * 0.14);
+    const len = span * (0.38 + t * 0.24);
+    const fw = depth * (0.58 - t * 0.18);
+    drawWingFeather(c, dir * w * 0.02, h * 0.1 + t * h * 0.05, ang, len, fw, shade(color, -10), 0.88);
+  }
+  for (let i = 0; i < primCount; i++) {
+    const t = primCount > 1 ? i / (primCount - 1) : 0;
+    const ang = dir * (0.5 + t * 0.78) * (0.86 + beat * 0.18);
+    const len = span * (0.58 + t * 0.44);
+    const fw = depth * (0.5 - t * 0.24);
+    drawWingFeather(c, dir * w * 0.04, h * 0.04 + t * h * 0.08, ang, len, fw, i % 2 ? color : shade(color, -14), 1);
+  }
+  c.fillStyle = shade(color, 16);
   c.beginPath();
-  c.ellipse(dir * w * 0.1, h * 0.15, w * (0.44 + beat * 0.05), h * (0.3 + beat * 0.07), dir * 0.3, 0, TAU);
+  c.moveTo(0, 0);
+  c.quadraticCurveTo(dir * w * 0.16, -h * 0.14, dir * w * 0.26, h * 0.06);
+  c.quadraticCurveTo(dir * w * 0.08, h * 0.2, 0, h * 0.14);
+  c.closePath();
   c.fill();
   c.restore();
 }
@@ -65,7 +155,7 @@ function drawBirdBody(
   cy: number,
   scale: number,
 ) {
-  const flapAmt = wingBeatWave((t * 7.2) % 1);
+  const flapAmt = wingBeatWave((t * 4.0) % 1);
   const wingAmp = spec.perk === "classic" ? 1.55 : 1.12;
   const r = 28 * scale;
   const bodyW = r * 1.15;
@@ -96,13 +186,7 @@ function drawBirdBody(
     c.globalAlpha = 1;
   }
 
-  c.fillStyle = spec.tail;
-  c.beginPath();
-  c.moveTo(-bodyW * 0.65, 0);
-  c.lineTo(-bodyW * 1.2, -bodyH * 0.35);
-  c.lineTo(-bodyW * 1.15, bodyH * 0.15);
-  c.closePath();
-  c.fill();
+  drawBirdTail(c, bodyW, bodyH, spec.tail, flapAmt);
 
   if (spec.perk === "classic") {
     c.globalAlpha = 0.2 + 0.12 * Math.sin(t * 8);
@@ -125,7 +209,7 @@ function drawBirdBody(
     c.globalAlpha = 1;
   }
 
-  drawWing(c, -bodyW * 0.12, -2, bodyW * 0.8, bodyH * 0.85, -1, flapAmt * 0.94 + 0.03, spec.wing, wingAmp);
+  drawWing(c, -bodyW * 0.12, -2, bodyW * 0.8, bodyH * 0.85, -1, flapAmt * 0.94 + 0.03, spec.wing, wingAmp, true);
 
   const grad = c.createLinearGradient(0, -bodyH, 0, bodyH);
   grad.addColorStop(0, spec.top);

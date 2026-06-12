@@ -51,6 +51,15 @@ const WeeklyReportPage = lazy(() =>
 const TeamAdminPage = lazy(() =>
   import("./pages/TeamAdminPage").then((m) => ({ default: m.TeamAdminPage })),
 );
+const TrendsPage = lazy(() =>
+  import("./pages/TrendsPage").then((m) => ({ default: m.TrendsPage })),
+);
+const ProHubPage = lazy(() =>
+  import("./pages/ProHubPage").then((m) => ({ default: m.ProHubPage })),
+);
+const OrgAdminPage = lazy(() =>
+  import("./pages/OrgAdminPage").then((m) => ({ default: m.OrgAdminPage })),
+);
 
 export default function App() {
   return (
@@ -72,7 +81,10 @@ export default function App() {
         <Route path="privacy" element={<PrivacyPolicyPage />} />
         <Route path="terms" element={<TermsPage />} />
         <Route path="report" element={<WeeklyReportPage />} />
+        <Route path="trends" element={<TrendsPage />} />
+        <Route path="pro" element={<ProHubPage />} />
         <Route path="team/admin" element={<TeamAdminPage />} />
+        <Route path="org/admin" element={<OrgAdminPage />} />
       </Route>
     </Routes>
   );

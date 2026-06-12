@@ -13,6 +13,8 @@ import { BarcodeScanner } from "../components/food/BarcodeScanner";
 import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
 import { FoodLogHero } from "../components/food/FoodLogHero";
+import { FoodSearchPanel } from "../components/food/FoodSearchPanel";
+import type { FoodSearchResult } from "../api/client";
 import { VoiceMealLog } from "../components/food/VoiceMealLog";
 
 type AnalysisPortionBase = {
@@ -357,6 +359,18 @@ export function LogMealPage() {
           </ul>
         </div>
       )}
+
+      <FoodSearchPanel
+        onSelect={(item: FoodSearchResult) => {
+          setDescription(item.name);
+          setCalories(String(item.calories));
+          setProtein(String(item.protein));
+          setCarbs(String(item.carbs));
+          setFat(String(item.fat));
+          setPortionGrams(String(item.servingGrams));
+          setAiNote(`${item.source} · ${item.servingGrams}g`);
+        }}
+      />
 
       <div className="card meal-quick-entry log-section log-section--quick">
         <h3>{t("log.quickEntryTitle")}</h3>

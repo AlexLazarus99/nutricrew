@@ -400,6 +400,8 @@
     "quickEntryTitle": "Без нейросети",
     "quickEntryHint": "Штрих-код (русская база 200+ + Open Food Facts) или поиск в каталоге USDA.",
     "barcodeScan": "Сканер штрих-кода",
+    "foodSearch": "Поиск продуктов",
+    "foodSearchPlaceholder": "Минимум 3 символа…",
     "barcodeManual": "Ввести код вручную",
     "barcodeManualHint": "Наведи камеру на штрих-код или введи цифры с упаковки.",
     "barcodeLookup": "Найти продукт",
@@ -451,7 +453,10 @@
     "viewAfterLog": "Открыть дневник",
     "recDeficit": "До цели ({{goal}}) ещё ~{{kcal}} ккал — можно добавить полезный перекус или основной приём.",
     "recOnTrack": "Сегодня близко к цели «{{goal}}» — так держать.",
-    "recSurplus": "Перебор ~{{kcal}} ккал относительно цели «{{goal}}». На ужин выбери что-то полегче или увеличь активность."
+    "recSurplus": "Перебор ~{{kcal}} ккал относительно цели «{{goal}}». На ужин выбери что-то полегче или увеличь активность.",
+    "editMeal": "Редактировать",
+    "deleteMeal": "Удалить",
+    "deleteConfirm": "Удалить этот приём из дневника?"
   },
   "team": {
     "title": "Твоя команда",
@@ -577,7 +582,10 @@
     "telegramAuthFailed": "Telegram не передал данные входа. Закройте приложение и откройте снова из бота.",
     "telegramMenuButtonHint": "Menu Button работает через API бота. Кнопка «Open App» в профиле — отдельно: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Затем /start в боте.",
     "invalidTelegramAuth": "Ошибка авторизации. На Render в BOT_TOKEN должен быть токен того же бота, из которого вы открыли приложение.",
-    "botNotConfigured": "На Render не задан BOT_TOKEN. Добавьте токен от @BotFather и перезапустите сервис."
+    "botNotConfigured": "На Render не задан BOT_TOKEN. Добавьте токен от @BotFather и перезапустите сервис.",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "backHome": "На главную"
   },
   "registration": {
     "title": "Добро пожаловать, {{name}}!",
@@ -1420,5 +1428,41 @@
         "delta": "+500 ккал"
       }
     }
+  },
+  "trends": {
+    "title": "Тренды",
+    "subtitle": "Калории, белок и вес за период",
+    "range": { "7d": "7 дней", "30d": "30 дней", "90d": "90 дней" },
+    "calories": "Калории",
+    "protein": "Белок",
+    "weight": "Вес",
+    "insights": "Инсайты",
+    "avg": "Среднее",
+    "target": "Цель"
+  },
+  "wellness": {
+    "waterTitle": "Вода сегодня",
+    "waterMl": "мл"
+  },
+  "pro": {
+    "title": "NutriCrew Pro",
+    "subtitle": "Коуч, план питания и список покупок",
+    "paywall": "Pro — персональный коуч и отчёты",
+    "upgrade": "Оформить Pro",
+    "coach": "AI-коуч",
+    "ask": "Спросить",
+    "shopping": "Список покупок",
+    "generateList": "Из плана питания",
+    "weeklyDigest": "Недельный отчёт"
+  },
+  "org": {
+    "title": "Корпоративный dashboard",
+    "subtitle": "HR-аналитика для wellness",
+    "name": "Название компании",
+    "create": "Создать организацию",
+    "week": "Неделя",
+    "members": "Участников",
+    "participation": "средняя активность",
+    "loggedToday": "залогировали сегодня"
   }
 }

@@ -173,3 +173,110 @@ export async function lookupBarcodeProduct(
 
   return null;
 }
+
+export type SearchProduct = {
+  id: string;
+  name: string;
+  brand?: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  servingGrams: number;
+  source: string;
+};
+
+type OffSearchHit = {
+  code?: string;
+  product_name?: string;
+  product_name_ru?: string;
+  brands?: string;
+  nutriments?: OffNutriments;
+  serving_size?: string;
+};
+
+type OffSearchResponse = {
+  products?: OffSearchHit[];
+};
+
+function searchLocalCatalog(query: string, limit: number): SearchProduct[] {
+  const q = query.toLowerCase().trim();
+  if (q.length < 2) return [];
+  const out: SearchProduct[] = [];
+  for (const p of loadRuCatalog().values()) {
+    if (p.name.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q)) {
+      out.push({
+        id: p.barcode,
+        name: p.name,
+        brand: p.brand,
+        calories: p.calories,
+        protein: p.protein,
+        carbs: p.carbs,
+        fat: p.fat,
+        servingGrams: p.servingGrams,
+        source: p.source,
+      });
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
+}
+
+function hitToSearchProduct(hit: OffSearchHit, locale: string): SearchProduct | null {
+  if (!hit.code) return null;
+  const fake: OffProduct = {
+    product_name: hit.product_name,
+    product_name_ru: hit.product_name_ru,
+    brands: hit.brands,
+    nutriments: hit.nutriments,
+    serving_size: hit.serving_size,
+  };
+  const parsed = parseOffProduct(hit.code, fake, locale, "off_world");
+  if (!parsed) return null;
+  return {
+    id: parsed.barcode,
+    name: parsed.name,
+    brand: parsed.brand,
+    calories: parsed.calories,
+    protein: parsed.protein,
+    carbs: parsed.carbs,
+    fat: parsed.fat,
+    servingGrams: parsed.servingGrams,
+    source: parsed.source,
+  };
+}
+
+export async function searchProducts(
+  query: string,
+  locale = "ru",
+  limit = 12,
+): Promise<SearchProduct[]> {
+  const q = query.trim();
+  if (q.length < 3) return searchLocalCatalog(q, limit);
+
+  const local = searchLocalCatalog(q, limit);
+  const host = locale.startsWith("ru") ? "ru.openfoodfacts.org" : "world.openfoodfacts.org";
+  try {
+    const url = `https://${host}/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=${limit}`;
+    const res = await fetch(url, {
+      headers: { Accept: "application/json", "User-Agent": UA },
+    });
+    if (!res.ok) return local;
+    const data = (await res.json()) as OffSearchResponse;
+    const remote = (data.products ?? [])
+      .map((h) => hitToSearchProduct(h, locale))
+      .filter((p): p is SearchProduct => p != null);
+    const seen = new Set<string>();
+    const merged: SearchProduct[] = [];
+    for (const p of [...local, ...remote]) {
+      const key = p.id || p.name;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      merged.push(p);
+      if (merged.length >= limit) break;
+    }
+    return merged;
+  } catch {
+    return local;
+  }
+}

@@ -54,6 +54,13 @@ export function mapMeal(m: Meal) {
     photo_key: m.photoKey,
     ai_source: m.aiSource,
     ai_confidence: m.aiConfidence,
+    meal_slot: m.mealSlot,
+    quality_tag: m.qualityTag,
+    fiber_g: m.fiberG,
+    sugar_g: m.sugarG,
+    sodium_mg: m.sodiumMg,
     created_at: m.createdAt,
+    updated_at: m.updatedAt,
+    deleted_at: m.deletedAt,
   };
 }

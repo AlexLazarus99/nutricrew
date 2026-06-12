@@ -71,6 +71,9 @@ export function TeamAdminPage() {
       <Link to="/team" className="btn btn-secondary btn-block">
         {t("teamAdmin.back")}
       </Link>
+      <Link to="/org/admin" className="btn btn-secondary btn-block">
+        {t("org.title")}
+      </Link>
     </section>
   );
 }

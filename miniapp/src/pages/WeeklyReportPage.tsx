@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type WeeklyReportResponse } from "../api/client";
@@ -76,6 +77,21 @@ export function WeeklyReportPage() {
           </p>
         </div>
       )}
+
+      {report.insights && report.insights.length > 0 && (
+        <div className="card">
+          <h3>{t("trends.insights")}</h3>
+          <ul className="trends-insights">
+            {report.insights.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <Link to="/trends" className="btn btn-secondary btn-block">
+        {t("trends.title")}
+      </Link>
     </section>
   );
 }

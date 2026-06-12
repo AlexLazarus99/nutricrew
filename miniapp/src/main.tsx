@@ -13,6 +13,7 @@ import "./styles/nutribird-mark.css";
 import "./styles/quest-icons.css";
 import "./styles/level-badges.css";
 import "./styles/achievement-badges.css";
+import "./styles/valuation.css";
 
 bootstrapTelegramWebApp();
 wakeApi();

@@ -281,6 +281,68 @@ export interface WeeklyReportResponse {
   teamRank: number | null;
   teamPoints: number | null;
   avgCaloriesPerMeal: number;
+  insights?: string[];
+  avgCalories?: number;
+  avgProtein?: number;
+}
+
+export interface TrendsResponse {
+  range: string;
+  daily: Array<{
+    date: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    meals: number;
+  }>;
+  avgCalories: number;
+  avgProtein: number;
+  kcalTarget: number | null;
+  proteinTarget: number | null;
+  weightLogs: Array<{ id: string; kg: number; loggedAt: string }>;
+  waterHistory: Array<{ date: string; ml: number }>;
+  insightTexts: string[];
+  daysLogged: number;
+}
+
+export interface WaterResponse {
+  ml: number;
+  goalMl: number;
+  history: Array<{ date: string; ml: number }>;
+}
+
+export interface FoodSearchResult {
+  id: string;
+  name: string;
+  brand?: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  servingGrams: number;
+  source: string;
+}
+
+export interface OrgDashboardResponse {
+  organization: { id: string; name: string; seatLimit: number };
+  weekKey: string;
+  teams: Array<{
+    id: string;
+    name: string;
+    members: number;
+    loggedToday: number;
+    participationRate: number;
+    weekPoints: number;
+  }>;
+  totals: { teams: number; members: number; avgParticipation: number };
+}
+
+export interface ReferralV2Response {
+  totalReferrals: number;
+  activeReferrals: number;
+  tiers: Array<{ count: number; stars: number }>;
+  nextTier: { count: number; stars: number } | null;
 }
 
 export interface TeamAdminResponse {
@@ -757,5 +819,91 @@ export const api = {
     }>("/me/profile", {
       method: "PATCH",
       body: JSON.stringify({ weightKg, heightCm, age }),
+    }),
+  updateMeal: (
+    mealId: string,
+    body: Partial<{
+      description: string;
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+      mealSlot: string | null;
+      qualityTag: string | null;
+    }>,
+  ) =>
+    request<{ meal: DiaryMealEntry }>(`/meals/${encodeURIComponent(mealId)}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+  deleteMeal: (mealId: string) =>
+    request<{ ok: boolean }>(`/meals/${encodeURIComponent(mealId)}`, { method: "DELETE" }),
+  getTrends: (range: "7d" | "30d" | "90d" = "30d") =>
+    request<TrendsResponse>(`/me/trends?range=${encodeURIComponent(range)}`),
+  getWater: (date?: string) =>
+    request<WaterResponse>(
+      date ? `/me/water?date=${encodeURIComponent(date)}` : "/me/water",
+    ),
+  addWater: (ml: number) =>
+    request<{ ml: number; goalMl: number }>("/me/water", {
+      method: "POST",
+      body: JSON.stringify({ ml }),
+    }),
+  getWeightLogs: () => request<{ logs: TrendsResponse["weightLogs"] }>("/me/weight"),
+  addWeightLog: (kg: number) =>
+    request<{ log: { id: string; kg: number; loggedAt: string } }>("/me/weight", {
+      method: "POST",
+      body: JSON.stringify({ kg }),
+    }),
+  searchFoods: (q: string) =>
+    request<{ results: FoodSearchResult[] }>(`/meals/search?q=${encodeURIComponent(q)}`),
+  proCoach: (question: string) =>
+    request<{ answer: string }>("/pro/coach", {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    }),
+  getProDigest: () => request<WeeklyReportResponse>("/pro/weekly-digest"),
+  getProMealPlan: () =>
+    request<{
+      plan: Array<{
+        day: string;
+        meals: Array<{ slot: string; description: string; calories: number; protein: number }>;
+      }>;
+    }>("/pro/meal-plan"),
+  getProShoppingList: () => request<{ items: string[] }>("/pro/shopping-list"),
+  createOrganization: (name: string, billingEmail?: string) =>
+    request<{ organization: { id: string; name: string } }>("/org", {
+      method: "POST",
+      body: JSON.stringify({ name, billingEmail }),
+    }),
+  getOrgDashboard: (orgId: string) =>
+    request<OrgDashboardResponse>(`/org/${encodeURIComponent(orgId)}/dashboard`),
+  getReferralsV2: () => request<ReferralV2Response>("/referrals/v2"),
+  claimReferralTier: (tier: number) =>
+    request<{ stars: number }>("/referrals/v2/claim", {
+      method: "POST",
+      body: JSON.stringify({ tier }),
+    }),
+  importWearable: (source: string, payload: Record<string, unknown>) =>
+    request<{ imported: boolean; summary: Record<string, unknown> }>("/wearables/import", {
+      method: "POST",
+      body: JSON.stringify({ source, payload }),
+    }),
+  getTeamRecipes: (teamId: string) =>
+    request<{ recipes: Array<{ id: string; title: string; description: string; voteCount: number }> }>(
+      `/teams/${encodeURIComponent(teamId)}/recipes`,
+    ),
+  createTeamRecipe: (
+    teamId: string,
+    body: { title: string; description: string; calories?: number; protein?: number },
+  ) =>
+    request<{ recipe: { id: string; title: string } }>(
+      `/teams/${encodeURIComponent(teamId)}/recipes`,
+      { method: "POST", body: JSON.stringify(body) },
+    ),
+  voteTeamRecipe: (recipeId: string) =>
+    request<{ ok: boolean }>(`/recipes/${encodeURIComponent(recipeId)}/vote`, {
+      method: "POST",
+      body: "{}",
     }),
 };

@@ -804,17 +804,17 @@ function wingBeatWave(cycle){
 }
 function wingFlapAmount(b, time){
   let cycle = b.wingCycle ?? 0;
-  if(state !== STATE.PLAY || game.intro > 0) cycle = (time * 7.2) % 1;
+  if(state !== STATE.PLAY || game.intro > 0) cycle = (time * 4.0) % 1;
   let amt = wingBeatWave(cycle);
   const boost = Math.max(b.wing || 0, b.flapBoost || 0);
   if(boost > 0.08) amt = lerp(amt, Math.min(amt + 0.18, 1), smoothstep(0, 1, boost));
   return amt;
 }
 function updateBirdWingCycle(b, dt){
-  let rate = pointer.down ? 6.2 : 8.4;
-  if((b.flapBoost || 0) > 0.15) rate = 11.5;
-  else if((b.wing || 0) > 0.2) rate = 9.8;
-  if(getBirdSpec().perk === 'classic') rate *= 1.08;
+  let rate = pointer.down ? 3.4 : 4.6;
+  if((b.flapBoost || 0) > 0.15) rate = 6.8;
+  else if((b.wing || 0) > 0.2) rate = 5.8;
+  if(getBirdSpec().perk === 'classic') rate *= 1.04;
   b.wingCycle = ((b.wingCycle || 0) + dt * rate) % 1;
 }
 function drawBird(c, b, fat, time){
@@ -839,13 +839,7 @@ function drawBird(c, b, fat, time){
   c.beginPath(); c.ellipse(6, bodyH*0.95, bodyW*0.9, bodyH*0.32,0,0,TAU); c.fill();
   c.restore();
 
-  const tailCol = shade(spec.tail, -20);
-  c.fillStyle = tailCol;
-  c.beginPath();
-  c.moveTo(-bodyW*0.7, 0);
-  c.lineTo(-bodyW*1.35, -bodyH*0.45*(0.7+0.4*fat));
-  c.lineTo(-bodyW*1.3, bodyH*0.2);
-  c.closePath(); c.fill();
+  drawBirdTail(c, bodyW, bodyH, spec.tail, fat, flapAmt);
 
   const backFlap = clamp(flapAmt * 0.94 + 0.03, 0, 1);
   drawWing(c, -bodyW*0.15, -2, bodyW*0.85, bodyH*0.9, -1, backFlap, shade(spec.wing,-10), wingAmp, true);
@@ -941,44 +935,107 @@ function drawBird(c, b, fat, time){
   drawShieldBubble(c, b);
   c.restore();
 }
+function drawWingFeather(c, ox, oy, angle, length, width, color, alpha){
+  c.save();
+  c.translate(ox, oy);
+  c.rotate(angle);
+  c.globalAlpha *= alpha;
+  const tipW = width * 0.22;
+  const rootW = width * 0.42;
+  c.fillStyle = color;
+  c.beginPath();
+  c.moveTo(0, -rootW * 0.45);
+  c.quadraticCurveTo(length * 0.42, -width * 0.62, length, -tipW);
+  c.quadraticCurveTo(length * 0.88, width * 0.12, length, tipW * 1.1);
+  c.quadraticCurveTo(length * 0.38, width * 0.58, 0, rootW * 0.5);
+  c.closePath();
+  c.fill();
+  c.strokeStyle = shade(color, -28);
+  c.lineWidth = Math.max(0.6, width * 0.07);
+  c.lineCap = 'round';
+  c.beginPath();
+  c.moveTo(0, 0);
+  c.lineTo(length * 0.9, tipW * 0.15);
+  c.stroke();
+  c.fillStyle = 'rgba(255,255,255,0.22)';
+  c.beginPath();
+  c.moveTo(length * 0.18, -width * 0.08);
+  c.quadraticCurveTo(length * 0.55, -width * 0.18, length * 0.82, -tipW * 0.4);
+  c.lineTo(length * 0.78, -tipW * 0.15);
+  c.quadraticCurveTo(length * 0.5, -width * 0.05, length * 0.15, width * 0.02);
+  c.closePath();
+  c.fill();
+  c.restore();
+}
+function drawBirdTail(c, bodyW, bodyH, color, fat, flapAmt){
+  const count = 7;
+  const mid = (count - 1) / 2;
+  const rootX = -bodyW * 0.54;
+  const rootY = bodyH * 0.03;
+  const fan = 0.52 + (1 - flapAmt) * 0.1;
+  for(let i = 0; i < count; i++){
+    const off = i - mid;
+    const norm = off / mid;
+    const len = bodyW * (0.76 - Math.abs(norm) * 0.13 + fat * 0.05);
+    const ang = Math.PI + norm * fan;
+    const fw = bodyH * (0.15 + (1 - Math.abs(norm) * 0.45) * 0.12);
+    const col = shade(color, -14 + Math.abs(off) * 5);
+    drawWingFeather(c, rootX + norm * bodyW * 0.04, rootY + Math.abs(norm) * bodyH * 0.025, ang, len, fw, col, 0.96);
+  }
+  c.fillStyle = shade(color, 8);
+  c.beginPath();
+  c.moveTo(rootX - bodyW * 0.04, rootY);
+  c.quadraticCurveTo(rootX - bodyW * 0.42, rootY - bodyH * 0.1, rootX - bodyW * 0.82, rootY - bodyH * 0.04);
+  c.quadraticCurveTo(rootX - bodyW * 0.44, rootY + bodyH * 0.08, rootX - bodyW * 0.02, rootY + bodyH * 0.1);
+  c.closePath();
+  c.fill();
+}
 function drawWing(c, x, y, w, h, dir, flapAmt, color, wingAmp, isBack){
   wingAmp = wingAmp ?? 1;
   const smoothFlap = smoothstep(0, 1, flapAmt);
   const beat = 1 - smoothFlap;
   c.save();
   c.translate(x, y);
-  const downA = 0.68 * wingAmp;
-  const upA = -1.25 * wingAmp;
+  const downA = 0.48 * wingAmp;
+  const upA = -0.88 * wingAmp;
   const a = lerp(downA, upA, smoothFlap) * dir;
   c.rotate(a);
-  c.scale(1 + beat * 0.12 * wingAmp, 1 - beat * 0.17 * wingAmp);
-  const ew = w * (0.44 + beat * 0.06 + (wingAmp > 1 ? 0.05 : 0));
-  const eh = h * (0.3 + beat * 0.08 + (wingAmp > 1 ? 0.1 : 0));
-  c.globalAlpha = isBack ? 0.88 : 1;
-  c.fillStyle = color;
-  c.beginPath();
-  c.ellipse(dir * w * 0.1, h * 0.15, ew, eh, dir * 0.3, 0, TAU);
-  c.fill();
-  c.fillStyle = 'rgba(255,255,255,0.3)';
-  c.beginPath();
-  c.ellipse(dir * w * 0.05, h * 0.05, ew * 0.6, eh * 0.48, dir * 0.3, 0, TAU);
-  c.fill();
-  if(beat > 0.35){
-    c.globalAlpha = (isBack ? 0.12 : 0.2) * beat;
-    c.strokeStyle = color;
-    c.lineWidth = 2;
-    c.beginPath();
-    c.ellipse(dir * w * 0.12, h * 0.2, ew * 1.12, eh * 0.85, dir * 0.3, 0, TAU);
-    c.stroke();
+  const spread = 0.68 + beat * 0.32;
+  const span = w * spread;
+  const depth = h * (0.5 + beat * 0.14);
+  c.globalAlpha = isBack ? 0.84 : 1;
+  const secCount = isBack ? 4 : 5;
+  const primCount = isBack ? 5 : 7;
+  for(let i = 0; i < secCount; i++){
+    const t = secCount > 1 ? i / (secCount - 1) : 0;
+    const ang = dir * lerp(0.28, 0.95, t) * (0.82 + beat * 0.14);
+    const len = span * lerp(0.38, 0.62, t);
+    const fw = depth * lerp(0.58, 0.4, t);
+    drawWingFeather(c, dir * w * 0.02, h * 0.1 + t * h * 0.05, ang, len, fw, shade(color, -10), 0.88);
   }
-  if(!isBack && beat > 0.5){
-    c.globalAlpha = beat * 0.25;
-    c.fillStyle = 'rgba(255,255,255,0.55)';
-    for(let i = 0; i < 3; i++){
-      c.beginPath();
-      c.ellipse(dir * w * (0.2 + i * 0.12), h * (0.28 + i * 0.06), ew * 0.35, eh * 0.2, dir * 0.2, 0, TAU);
-      c.fill();
-    }
+  for(let i = 0; i < primCount; i++){
+    const t = primCount > 1 ? i / (primCount - 1) : 0;
+    const ang = dir * lerp(0.5, 1.28, t) * (0.86 + beat * 0.18);
+    const len = span * lerp(0.58, 1.02, t);
+    const fw = depth * lerp(0.5, 0.26, t);
+    const col = i % 2 ? color : shade(color, -14);
+    drawWingFeather(c, dir * w * 0.04, h * 0.04 + t * h * 0.08, ang, len, fw, col, 1);
+  }
+  c.fillStyle = shade(color, 16);
+  c.beginPath();
+  c.moveTo(0, 0);
+  c.quadraticCurveTo(dir * w * 0.16, -h * 0.14, dir * w * 0.26, h * 0.06);
+  c.quadraticCurveTo(dir * w * 0.08, h * 0.2, 0, h * 0.14);
+  c.closePath();
+  c.fill();
+  if(!isBack && beat > 0.35){
+    c.globalAlpha = beat * 0.16;
+    c.strokeStyle = 'rgba(255,255,255,0.5)';
+    c.lineWidth = 1.4;
+    c.beginPath();
+    c.moveTo(dir * w * 0.12, h * 0.08);
+    c.quadraticCurveTo(dir * span * 0.48, -depth * 0.18, dir * span * 0.82, h * 0.12);
+    c.stroke();
   }
   c.restore();
 }

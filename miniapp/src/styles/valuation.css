@@ -1,0 +1,122 @@
+.trends-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 120px;
+  margin-top: 12px;
+}
+
+.trends-chart__col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.trends-chart__bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+}
+
+.trends-range-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.trends-insights {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.water-widget__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.water-widget__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.water-widget__bar {
+  margin-top: 4px;
+}
+
+.meal-edit-modal {
+  max-width: 420px;
+  margin: auto;
+  position: relative;
+  z-index: 2;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.meal-edit-macros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.meal-edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.diary-meal-item--editable {
+  cursor: pointer;
+}
+
+.food-search-results {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.food-search-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  color: inherit;
+}
+
+.food-search-item .block {
+  display: block;
+}
+
+.pro-coach-answer {
+  background: rgba(126, 196, 160, 0.12);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.weight-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.weight-log-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}

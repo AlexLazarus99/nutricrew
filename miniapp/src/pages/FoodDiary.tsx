@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api, type DiaryResponse } from "../api/client";
+import { api, type DiaryResponse, type DiaryMealEntry } from "../api/client";
 import { FoodSectionNav } from "../components/food/FoodSectionNav";
+import { MealEditModal } from "../components/food/MealEditModal";
 import { useMe } from "../hooks/useMe";
 import {
   calcDayBalance,
@@ -38,6 +39,7 @@ export function FoodDiaryPage() {
   const [data, setData] = useState<DiaryResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [editMeal, setEditMeal] = useState<DiaryMealEntry | null>(null);
 
   const targetKcal = useMemo(
     () =>
@@ -203,8 +205,9 @@ export function FoodDiaryPage() {
             {data.meals.map((meal, index) => (
               <li
                 key={meal.id}
-                className="diary-meal-item"
+                className="diary-meal-item diary-meal-item--editable"
                 style={{ animationDelay: `${Math.min(index * 0.05, 0.35)}s` }}
+                onClick={() => setEditMeal(meal)}
               >
                 {meal.photoUrl ? (
                   <img src={meal.photoUrl} alt="" className="diary-meal-thumb" />
@@ -238,6 +241,21 @@ export function FoodDiaryPage() {
           </ul>
         )}
       </div>
+
+      {editMeal && (
+        <MealEditModal
+          meal={editMeal}
+          onClose={() => setEditMeal(null)}
+          onSave={async (patch) => {
+            await api.updateMeal(editMeal.id, patch);
+            await loadDiary();
+          }}
+          onDelete={async () => {
+            await api.deleteMeal(editMeal.id);
+            await loadDiary();
+          }}
+        />
+      )}
     </section>
   );
 }

@@ -35,6 +35,7 @@ import { chatRouter } from "./chat.js";
 import { growthRouter } from "./growth.js";
 import { analyticsRouter } from "./analytics.js";
 import { privacyRouter } from "./privacy.js";
+import { valuationRouter } from "./valuation.js";
 import * as growthRepo from "../../repositories/growth.js";
 import { buildGrowthSummary } from "../../services/growthHub.js";
 import { KUDOS_EMOJIS } from "../../lib/challengeDefinitions.js";
@@ -44,6 +45,7 @@ apiRouter.use("/chat", chatRouter);
 apiRouter.use("/growth", growthRouter);
 apiRouter.use("/analytics", analyticsRouter);
 apiRouter.use("/privacy", privacyRouter);
+apiRouter.use("/", valuationRouter);
 
 const authed = [authInitData, ensureUser] as const;
 const authedProfile = [...authed, requireProfile] as const;
@@ -576,6 +578,8 @@ apiRouter.get("/meals/diary", ...authedProfile, async (req, res) => {
       fat: m.fat,
       points: m.points,
       photoUrl: m.photo_url,
+      mealSlot: m.meal_slot,
+      qualityTag: m.quality_tag,
       createdAt: m.created_at,
     })),
     totals,
@@ -815,6 +819,19 @@ apiRouter.post("/game/score", ...authed, async (req, res) => {
   const validationError = birdGameMeta.validateScore(parsedScore, parsedLevel, parsedFruits);
   if (validationError) {
     res.status(400).json({ error: validationError });
+    return;
+  }
+
+  const antiCheat = await import("../../services/birdGameAntiCheat.js");
+  const flights = Math.max(1, Math.round(parsedScore / 3));
+  const cheat = await antiCheat.validateBirdScoreSubmit(
+    req.dbUser!.id,
+    parsedScore,
+    flights,
+    parsedFruits,
+  );
+  if (!cheat.ok) {
+    res.status(400).json({ error: cheat.error, flags: cheat.flags });
     return;
   }
 

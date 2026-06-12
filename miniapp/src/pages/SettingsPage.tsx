@@ -53,6 +53,39 @@ export function SettingsPage() {
     window.setTimeout(() => setFontSaved(false), 2200);
   }
 
+  async function importWearableSample() {
+    setBusy("wearable");
+    setError(null);
+    try {
+      await api.importWearable("apple_health_json", {
+        steps: 8432,
+        activeCalories: 420,
+        weightKg: me.weightKg ?? undefined,
+      });
+      setMessage(t("settings.wearableImported", { defaultValue: "Wearable data imported" }));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function logWeight() {
+    const raw = window.prompt(t("settings.weightPrompt", { defaultValue: "Weight (kg)" }));
+    if (!raw) return;
+    const kg = Number(raw);
+    if (!Number.isFinite(kg)) return;
+    setBusy("weight");
+    try {
+      await api.addWeightLog(kg);
+      setMessage(t("settings.weightSaved", { defaultValue: "Weight saved" }));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function exportData() {
     setBusy("export");
     setError(null);
@@ -151,6 +184,16 @@ export function SettingsPage() {
             label={t("settings.reduceMotion")}
           />
         </SettingsRow>
+      </div>
+
+      <div className="card">
+        <h3>{t("settings.wellnessTitle", { defaultValue: "Wellness" })}</h3>
+        <button type="button" className="btn btn-secondary btn-block" disabled={busy !== null} onClick={() => void logWeight()}>
+          {t("settings.logWeight", { defaultValue: "Log weight" })}
+        </button>
+        <button type="button" className="btn btn-secondary btn-block" disabled={busy !== null} onClick={() => void importWearableSample()}>
+          {t("settings.importWearable", { defaultValue: "Import Apple Health (demo)" })}
+        </button>
       </div>
 
       <div className="card">

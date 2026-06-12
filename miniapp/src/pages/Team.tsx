@@ -15,12 +15,19 @@ export function TeamPage() {
   const [team, setTeam] = useState<TeamResponse | null>(null);
   const [isCaptain, setIsCaptain] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recipes, setRecipes] = useState<Array<{ id: string; title: string; voteCount: number }>>([]);
 
   useEffect(() => {
     Promise.all([api.getTeam(), api.getGrowth()])
-      .then(([teamData, growth]) => {
+      .then(async ([teamData, growth]) => {
         setTeam(teamData);
         setIsCaptain(growth.teamRole === "captain");
+        try {
+          const r = await api.getTeamRecipes(teamData.id);
+          setRecipes(r.recipes);
+        } catch {
+          /* optional */
+        }
       })
       .catch((e: Error) => setError(e.message));
   }, []);
@@ -95,6 +102,30 @@ export function TeamPage() {
         {t("nav.features")}
       </Link>
       <TeamActivityFeed />
+
+      {recipes.length > 0 && (
+        <div className="card">
+          <h3>{t("team.recipesTitle", { defaultValue: "Team recipes" })}</h3>
+          <ul className="member-list">
+            {recipes.map((r) => (
+              <li key={r.id} className="member">
+                <span>{r.title}</span>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => void api.voteTeamRecipe(r.id).then(() => {
+                    setRecipes((prev) =>
+                      prev.map((x) => (x.id === r.id ? { ...x, voteCount: x.voteCount + 1 } : x)),
+                    );
+                  })}
+                >
+                  👍 {r.voteCount}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <ul className="member-list">
         {team.members.map((m) => (

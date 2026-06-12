@@ -400,6 +400,8 @@
     "quickEntryTitle": "Without neural network",
     "quickEntryHint": "Barcode (200+ RU catalog + Open Food Facts) or USDA food search.",
     "barcodeScan": "Barcode scanner",
+    "foodSearch": "Search products",
+    "foodSearchPlaceholder": "Type at least 3 letters…",
     "barcodeManual": "Enter code manually",
     "barcodeManualHint": "Point the camera at a barcode or type digits from the package.",
     "barcodeLookup": "Look up product",
@@ -451,7 +453,10 @@
     "viewAfterLog": "View diary",
     "recDeficit": "About {{kcal}} kcal left toward your {{goal}} goal — room for a snack or main meal.",
     "recOnTrack": "You're close to your {{goal}} target today — nice work.",
-    "recSurplus": "About {{kcal}} kcal over your {{goal}} target. Consider a lighter dinner or extra activity."
+    "recSurplus": "About {{kcal}} kcal over your {{goal}} target. Consider a lighter dinner or extra activity.",
+    "editMeal": "Edit meal",
+    "deleteMeal": "Delete",
+    "deleteConfirm": "Remove this meal from the diary?"
   },
   "team": {
     "title": "Your crew",
@@ -577,7 +582,10 @@
     "telegramAuthFailed": "Telegram did not pass sign-in data. Close the app and reopen from the bot.",
     "telegramMenuButtonHint": "Menu Button is set by the bot API. Profile «Open App» is separate: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Then send /start to the bot.",
     "invalidTelegramAuth": "Auth failed. On Render, BOT_TOKEN must be the token of the same bot you opened the app from.",
-    "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service."
+    "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service.",
+    "cancel": "Cancel",
+    "save": "Save",
+    "backHome": "Back to home"
   },
   "registration": {
     "title": "Welcome, {{name}}!",
@@ -1365,5 +1373,41 @@
         "delta": "+500 kcal"
       }
     }
+  },
+  "trends": {
+    "title": "Trends",
+    "subtitle": "Calories, protein, and weight over time",
+    "range": { "7d": "7 days", "30d": "30 days", "90d": "90 days" },
+    "calories": "Calories",
+    "protein": "Protein",
+    "weight": "Weight",
+    "insights": "Insights",
+    "avg": "Average",
+    "target": "Target"
+  },
+  "wellness": {
+    "waterTitle": "Water today",
+    "waterMl": "ml"
+  },
+  "pro": {
+    "title": "NutriCrew Pro",
+    "subtitle": "Coach, meal plan, and shopping list",
+    "paywall": "Upgrade to Pro for personalized coaching",
+    "upgrade": "Get Pro",
+    "coach": "AI Coach",
+    "ask": "Ask",
+    "shopping": "Shopping list",
+    "generateList": "Generate from meal plan",
+    "weeklyDigest": "Weekly digest"
+  },
+  "org": {
+    "title": "Organization dashboard",
+    "subtitle": "HR view for corporate wellness",
+    "name": "Company name",
+    "create": "Create organization",
+    "week": "Week",
+    "members": "Members",
+    "participation": "avg participation",
+    "loggedToday": "logged today"
   }
 }

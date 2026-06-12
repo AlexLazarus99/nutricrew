@@ -1,0 +1,262 @@
+import { Router } from "express";
+import { authInitData } from "../middleware/authInitData.js";
+import { ensureUser } from "../middleware/ensureUser.js";
+import { requireProfile } from "../middleware/requireProfile.js";
+import { patchMealForUser, deleteMealForUser } from "../../services/mealEdit.js";
+import { buildTrends, insightText } from "../../services/trends.js";
+import * as wellnessRepo from "../../repositories/wellness.js";
+import { cachedFoodSearch } from "../../services/foodSearch.js";
+import {
+  coachReply,
+  weeklyDigest,
+  buildMealPlan,
+  shoppingListFromPlan,
+} from "../../services/proFeatures.js";
+import {
+  createOrganization,
+  getOrgDashboard,
+  linkTeamToOrg,
+} from "../../services/organization.js";
+import { createProCheckout, handleStripeWebhook } from "../../services/payments/stripeAdapter.js";
+import { getReferralProgress, claimReferralTierReward } from "../../services/referralsV2.js";
+import { cohortRetention } from "../../services/cohortAnalytics.js";
+import {
+  createTeamRecipe,
+  listTeamRecipes,
+  voteTeamRecipe,
+  requestWebAuthMagicLink,
+} from "../../services/recipes.js";
+import { importWearablePayload, listWearableImports } from "../../services/wearables.js";
+import { buildWeeklyReport } from "../../services/weeklyReport.js";
+
+const authed = [authInitData, ensureUser] as const;
+const authedProfile = [...authed, requireProfile] as const;
+
+export const valuationRouter = Router();
+
+valuationRouter.patch("/meals/:mealId", ...authedProfile, async (req, res) => {
+  try {
+    const meal = await patchMealForUser(req.dbUser!.id, req.params.mealId!, req.body);
+    res.json({ meal });
+  } catch (e) {
+    const msg = (e as Error).message;
+    res.status(msg === "MEAL_NOT_FOUND" ? 404 : 400).json({ error: msg });
+  }
+});
+
+valuationRouter.delete("/meals/:mealId", ...authedProfile, async (req, res) => {
+  try {
+    await deleteMealForUser(req.dbUser!.id, req.params.mealId!);
+    res.json({ ok: true });
+  } catch (e) {
+    const msg = (e as Error).message;
+    res.status(msg === "MEAL_NOT_FOUND" ? 404 : 400).json({ error: msg });
+  }
+});
+
+valuationRouter.get("/me/trends", ...authedProfile, async (req, res) => {
+  const range = (req.query.range as string) || "30d";
+  const r = range === "7d" || range === "90d" ? range : "30d";
+  const trends = await buildTrends(req.dbUser!, r);
+  const locale = req.dbUser!.locale ?? "en";
+  res.json({
+    ...trends,
+    insightTexts: trends.insights.map((i) => insightText(i, locale)),
+  });
+});
+
+valuationRouter.get("/me/weight", ...authedProfile, async (req, res) => {
+  const logs = await wellnessRepo.getWeightLogs(req.dbUser!.id, 90);
+  res.json({ logs });
+});
+
+valuationRouter.post("/me/weight", ...authedProfile, async (req, res) => {
+  const kg = Number((req.body as { kg?: number }).kg);
+  if (!Number.isFinite(kg) || kg < 30 || kg > 300) {
+    res.status(400).json({ error: "INVALID_WEIGHT" });
+    return;
+  }
+  const log = await wellnessRepo.addWeightLog(req.dbUser!.id, kg);
+  res.json({ log });
+});
+
+valuationRouter.get("/me/water", ...authedProfile, async (req, res) => {
+  const day = req.query.date ? new Date(String(req.query.date)) : new Date();
+  const ml = await wellnessRepo.getWaterTotalForDay(req.dbUser!.id, day);
+  const history = await wellnessRepo.getWaterHistory(req.dbUser!.id, 14);
+  res.json({ ml, goalMl: 2000, history });
+});
+
+valuationRouter.post("/me/water", ...authedProfile, async (req, res) => {
+  const ml = Number((req.body as { ml?: number }).ml);
+  if (!Number.isFinite(ml) || ml < 1 || ml > 2000) {
+    res.status(400).json({ error: "INVALID_WATER" });
+    return;
+  }
+  await wellnessRepo.addWaterMl(req.dbUser!.id, ml, new Date());
+  const total = await wellnessRepo.getWaterTotalForDay(req.dbUser!.id, new Date());
+  res.json({ ml: total, goalMl: 2000 });
+});
+
+valuationRouter.get("/meals/search", ...authedProfile, async (req, res) => {
+  const q = String(req.query.q ?? "").trim();
+  if (q.length < 2) {
+    res.status(400).json({ error: "QUERY_TOO_SHORT" });
+    return;
+  }
+  const results = await cachedFoodSearch(q, req.dbUser!.locale ?? "ru", 12);
+  res.json({ results });
+});
+
+valuationRouter.post("/pro/coach", ...authedProfile, async (req, res) => {
+  try {
+    const { question } = req.body as { question?: string };
+    const answer = await coachReply(req.dbUser!, String(question ?? ""));
+    res.json(answer);
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/pro/weekly-digest", ...authedProfile, async (req, res) => {
+  try {
+    const digest = await weeklyDigest(req.dbUser!);
+    res.json(digest);
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/pro/meal-plan", ...authedProfile, async (req, res) => {
+  try {
+    res.json(await buildMealPlan(req.dbUser!));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/pro/shopping-list", ...authedProfile, async (req, res) => {
+  try {
+    res.json(await shoppingListFromPlan(req.dbUser!));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.post("/org", ...authedProfile, async (req, res) => {
+  const { name, billingEmail } = req.body as { name?: string; billingEmail?: string };
+  if (!name?.trim()) {
+    res.status(400).json({ error: "NAME_REQUIRED" });
+    return;
+  }
+  const org = await createOrganization(req.dbUser!.id, name, billingEmail);
+  res.json({ organization: org });
+});
+
+valuationRouter.get("/org/:orgId/dashboard", ...authedProfile, async (req, res) => {
+  try {
+    res.json(await getOrgDashboard(req.params.orgId!, req.dbUser!.id));
+  } catch (e) {
+    res.status(403).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.post("/org/:orgId/teams/:teamId/link", ...authedProfile, async (req, res) => {
+  try {
+    res.json(await linkTeamToOrg(req.params.teamId!, req.params.orgId!, req.dbUser!.id));
+  } catch (e) {
+    res.status(403).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.post("/payments/stripe/checkout", ...authedProfile, async (req, res) => {
+  const session = await createProCheckout(req.dbUser!.id, req.dbUser!.locale ?? "en");
+  res.json(session);
+});
+
+valuationRouter.post("/payments/stripe/webhook", async (req, res) => {
+  const sig = req.headers["stripe-signature"] as string | undefined;
+  const result = await handleStripeWebhook(req.body, sig);
+  res.json(result);
+});
+
+valuationRouter.get("/referrals/v2", ...authedProfile, async (req, res) => {
+  res.json(await getReferralProgress(req.dbUser!.id));
+});
+
+valuationRouter.post("/referrals/v2/claim", ...authedProfile, async (req, res) => {
+  try {
+    const tier = Number((req.body as { tier?: number }).tier);
+    res.json(await claimReferralTierReward(req.dbUser!.id, tier));
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/analytics/cohorts", ...authed, async (req, res) => {
+  res.json(await cohortRetention(Number(req.query.days) || 7));
+});
+
+valuationRouter.post("/wearables/import", ...authedProfile, async (req, res) => {
+  const { source, payload } = req.body as { source?: string; payload?: unknown };
+  if (!source?.trim()) {
+    res.status(400).json({ error: "SOURCE_REQUIRED" });
+    return;
+  }
+  res.json(await importWearablePayload(req.dbUser!.id, source, payload ?? {}));
+});
+
+valuationRouter.get("/wearables/imports", ...authedProfile, async (req, res) => {
+  res.json({ imports: await listWearableImports(req.dbUser!.id) });
+});
+
+valuationRouter.get("/teams/:teamId/recipes", ...authedProfile, async (req, res) => {
+  res.json({ recipes: await listTeamRecipes(req.params.teamId!) });
+});
+
+valuationRouter.post("/teams/:teamId/recipes", ...authedProfile, async (req, res) => {
+  try {
+    const body = req.body as {
+      title?: string;
+      description?: string;
+      calories?: number;
+      protein?: number;
+    };
+    const recipe = await createTeamRecipe(req.dbUser!.id, req.params.teamId!, {
+      title: String(body.title ?? ""),
+      description: String(body.description ?? ""),
+      calories: Number(body.calories) || 0,
+      protein: Number(body.protein) || 0,
+    });
+    res.json({ recipe });
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.post("/recipes/:recipeId/vote", ...authedProfile, async (req, res) => {
+  try {
+    res.json(await voteTeamRecipe(req.dbUser!.id, req.params.recipeId!));
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.post("/auth/web/magic-link", async (req, res) => {
+  const email = String((req.body as { email?: string }).email ?? "");
+  if (!email.includes("@")) {
+    res.status(400).json({ error: "INVALID_EMAIL" });
+    return;
+  }
+  res.json(await requestWebAuthMagicLink(email));
+});
+
+valuationRouter.get("/me/weekly-report/enriched", ...authedProfile, async (req, res) => {
+  const report = await buildWeeklyReport(req.dbUser!);
+  const trends = await buildTrends(req.dbUser!, "7d");
+  const locale = req.dbUser!.locale ?? "en";
+  res.json({
+    ...report,
+    insights: trends.insights.map((i) => insightText(i, locale)),
+  });
+});
