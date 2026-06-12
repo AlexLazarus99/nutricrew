@@ -2978,6 +2978,214 @@ button {
   margin-bottom: 6px;
 }
 
+.piprun-page {
+  gap: 12px;
+}
+
+.piprun-hero {
+  text-align: center;
+  padding: 1.25rem 1rem;
+}
+
+.piprun-logo {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #26c6da, #7e57c2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.piprun-game {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.piprun-hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  font-size: 0.82rem;
+}
+
+.piprun-mute {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.piprun-tokens {
+  color: #f59e0b;
+}
+
+.piprun-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  max-height: min(72vh, 520px);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #87ceeb;
+}
+
+.piprun-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.piprun-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.45);
+  pointer-events: auto;
+}
+
+.piprun-overlay-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 16px;
+  padding: 20px;
+  max-width: 280px;
+  text-align: center;
+}
+
+.piprun-overlay-card h3 {
+  margin: 0 0 8px;
+}
+
+.piprun-overlay-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.piprun-overlay-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.piprun-overlay-btns .btn {
+  width: 100%;
+}
+
+.piprun-stars {
+  font-size: 1.4rem;
+  color: #f59e0b;
+  letter-spacing: 2px;
+  margin: 8px 0 !important;
+}
+
+.piprun-controls {
+  text-align: center;
+  margin: 0;
+}
+
+.piprun-map {
+  margin-top: 4px;
+}
+
+.piprun-map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.piprun-map-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.piprun-map-close {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.piprun-world-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin: 10px 0;
+  padding-bottom: 4px;
+}
+
+.piprun-world-tab {
+  flex: 0 0 auto;
+  min-width: 76px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.65rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.piprun-world-tab.is-active {
+  border-color: var(--w-accent, var(--accent));
+}
+
+.piprun-world-tab.is-locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.piprun-world-num {
+  font-weight: 700;
+  color: var(--w-accent, var(--accent));
+}
+
+.piprun-stage-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.piprun-stage-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--w-accent, var(--accent));
+}
+
+.piprun-stage-btn.is-locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.piprun-stage-stars {
+  font-size: 0.7rem;
+  color: #f59e0b;
+}
+
 .bird-game-page {
   gap: 12px;
 }

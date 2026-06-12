@@ -1,19 +1,16 @@
 import { useTranslation } from "react-i18next";
-import { NutriBirdMark } from "../components/game/NutriBirdMark";
+import { PipRunGame } from "../components/pipRun/PipRunGame";
 
 export function BirdGamePage() {
   const { t } = useTranslation();
 
   return (
-    <section className="stack bird-game-page">
-      <div className="card hero bird-game-hero">
-        <NutriBirdMark size={84} showWordmark animated />
-        <p className="muted small bird-game-hero-tagline">{t("game.subtitle")}</p>
+    <section className="stack piprun-page">
+      <div className="card hero piprun-hero">
+        <h1 className="piprun-logo">{t("nutriRun.title")}</h1>
+        <p className="muted small">{t("nutriRun.tagline")}</p>
       </div>
-      <div className="card bird-game-placeholder">
-        <h2>{t("game.comingSoonTitle")}</h2>
-        <p className="muted">{t("game.comingSoonBody")}</p>
-      </div>
+      <PipRunGame />
     </section>
   );
 }

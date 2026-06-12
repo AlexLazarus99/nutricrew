@@ -10,7 +10,7 @@
     "rank": "Rank",
     "prizes": "Prizes",
     "guide": "Guide",
-    "game": "NutriBird",
+    "game": "NutriRun",
     "quiz": "Quiz",
     "chat": "Chat",
     "features": "Features",
@@ -779,6 +779,36 @@
         "foods": ["Half plate: vegetables & fruits", "Quarter plate: lean protein", "Quarter plate: whole grains", "Dairy or fortified alternatives"],
         "evidence": "Foundation of US public health nutrition policy; aligns with WHO limits on free sugars (<10% energy) and salt (<5 g/day)."
       }
+    }
+  },
+  "nutriRun": {
+    "title": "NutriRun",
+    "tagline": "A tiny spirit sprints through a macro world — jump, glide, wall-run, and punch!",
+    "menuHint": "Auto-run platformer with 6 worlds. Collect glow motes for stars.",
+    "endless": "Endless run",
+    "adventure": "Adventure map",
+    "mapTitle": "Adventure map",
+    "mapClose": "Close",
+    "mapHint": "Stages in {{world}} — reach the score goal, collect motes for up to 3 stars.",
+    "bonusLocked": "Beat 5 bosses to unlock Star Glade ({{count}}/{{need}}).",
+    "controls": "Tap: jump · air tap: glide · wall tap: wall-jump · tap near enemies: punch",
+    "best": "Best",
+    "score": "Score",
+    "tokens": "👑 {{count}}",
+    "soundOn": "♪ on",
+    "soundOff": "♪ off",
+    "gameOver": "Run over",
+    "gameOverHint": "Score {{score}}. Tap to try endless mode.",
+    "retry": "Retry",
+    "victory": "Stage clear!",
+    "toMap": "Back to map",
+    "worlds": {
+      "brook": "Crystal Brook",
+      "tunnel": "Root Tunnel",
+      "marsh": "Fog Marsh",
+      "heartwood": "Old Heartwood",
+      "canopy": "Canopy Garden",
+      "glade": "Star Glade"
     }
   },
   "game": {

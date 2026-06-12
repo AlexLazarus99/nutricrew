@@ -40,6 +40,9 @@ export default defineConfig(({ mode }) => {
                 return "vendor-i18n";
               }
             }
+            if (id.includes("/lib/pipRun/")) {
+              return "pip-run";
+            }
             if (
               id.includes("/locales/exercises") ||
               id.includes("/locales/dishRecipes") ||
