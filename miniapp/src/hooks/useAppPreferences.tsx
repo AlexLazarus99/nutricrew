@@ -15,6 +15,12 @@ import {
 
 type AppPreferencesContextValue = {
   prefs: AppPreferences;
+  fontSizePreview: FontSize | null;
+  effectiveFontSize: FontSize;
+  fontSizeDirty: boolean;
+  setFontSizePreview: (fontSize: FontSize) => void;
+  confirmFontSize: () => void;
+  cancelFontSizePreview: () => void;
   setFontSize: (fontSize: FontSize) => void;
   setHaptics: (haptics: boolean) => void;
   setReduceMotion: (reduceMotion: boolean) => void;
@@ -25,20 +31,57 @@ const AppPreferencesContext = createContext<AppPreferencesContextValue | null>(n
 
 export function AppPreferencesProvider({ children }: { children: ReactNode }) {
   const [prefs, setPrefs] = useState<AppPreferences>(() => loadAppPreferences());
+  const [fontSizePreview, setFontSizePreviewState] = useState<FontSize | null>(null);
 
   const update = useCallback((patch: Partial<AppPreferences>) => {
     setPrefs(patchAppPreferences(patch));
   }, []);
 
+  const setFontSizePreview = useCallback((fontSize: FontSize) => {
+    setFontSizePreviewState(fontSize);
+  }, []);
+
+  const cancelFontSizePreview = useCallback(() => {
+    setFontSizePreviewState(null);
+  }, []);
+
+  const confirmFontSize = useCallback(() => {
+    if (fontSizePreview !== null && fontSizePreview !== prefs.fontSize) {
+      update({ fontSize: fontSizePreview });
+    }
+    setFontSizePreviewState(null);
+  }, [fontSizePreview, prefs.fontSize, update]);
+
+  const effectiveFontSize = fontSizePreview ?? prefs.fontSize;
+  const fontSizeDirty = fontSizePreview !== null && fontSizePreview !== prefs.fontSize;
+
   const value = useMemo<AppPreferencesContextValue>(
     () => ({
       prefs,
-      setFontSize: (fontSize) => update({ fontSize }),
+      fontSizePreview,
+      effectiveFontSize,
+      fontSizeDirty,
+      setFontSizePreview,
+      confirmFontSize,
+      cancelFontSizePreview,
+      setFontSize: (fontSize) => {
+        setFontSizePreviewState(null);
+        update({ fontSize });
+      },
       setHaptics: (haptics) => update({ haptics }),
       setReduceMotion: (reduceMotion) => update({ reduceMotion }),
       setGameMusic: (gameMusic) => update({ gameMusic }),
     }),
-    [prefs, update],
+    [
+      prefs,
+      fontSizePreview,
+      effectiveFontSize,
+      fontSizeDirty,
+      setFontSizePreview,
+      confirmFontSize,
+      cancelFontSizePreview,
+      update,
+    ],
   );
 
   return <AppPreferencesContext.Provider value={value}>{children}</AppPreferencesContext.Provider>;

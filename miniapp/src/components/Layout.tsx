@@ -30,7 +30,7 @@ function LayoutShell() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const { me, refresh } = useMe();
-  const { prefs } = useAppPreferences();
+  const { prefs, effectiveFontSize } = useAppPreferences();
   const { user, colorScheme } = useTelegram();
   const registered = me.profileComplete;
   const [offerDismissed, setOfferDismissed] = useState(false);
@@ -45,7 +45,7 @@ function LayoutShell() {
       className="app-shell"
       data-section={section}
       data-color-scheme={colorScheme}
-      data-font-scale={prefs.fontSize}
+      data-font-scale={effectiveFontSize}
       data-reduce-motion={prefs.reduceMotion ? "true" : undefined}
     >
       <WellnessBackground />

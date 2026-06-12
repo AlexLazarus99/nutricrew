@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
@@ -16,15 +16,43 @@ export function SettingsPage() {
   const { t } = useTranslation();
   const { user } = useTelegram();
   const { me } = useMe();
-  const { prefs, setFontSize, setHaptics, setReduceMotion, setGameMusic } = useAppPreferences();
+  const {
+    prefs,
+    effectiveFontSize,
+    fontSizeDirty,
+    setFontSizePreview,
+    confirmFontSize,
+    cancelFontSizePreview,
+    setHaptics,
+    setReduceMotion,
+    setGameMusic,
+  } = useAppPreferences();
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [fontSaved, setFontSaved] = useState(false);
 
   const displayName = [user?.first_name, user?.last_name].filter(Boolean).join(" ") || me.user.firstName || "";
   const username = user?.username;
   const photoUrl = user?.photo_url;
   const nickname = username ? `@${username}` : displayName || t("settings.guest");
+
+  useEffect(() => {
+    return () => {
+      cancelFontSizePreview();
+    };
+  }, [cancelFontSizePreview]);
+
+  function handleFontSizeChange(size: typeof effectiveFontSize) {
+    setFontSaved(false);
+    setFontSizePreview(size);
+  }
+
+  function handleFontSizeConfirm() {
+    confirmFontSize();
+    setFontSaved(true);
+    window.setTimeout(() => setFontSaved(false), 2200);
+  }
 
   async function exportData() {
     setBusy("export");
@@ -85,16 +113,31 @@ export function SettingsPage() {
         </SettingsRow>
         <SettingsRow label={t("settings.fontSize")} hint={t("settings.fontSizeHint")}>
           <SettingsSegment
-            value={prefs.fontSize}
+            value={effectiveFontSize}
             ariaLabel={t("settings.fontSize")}
             options={[
               { value: "sm", label: t("settings.fontSizeSm") },
               { value: "md", label: t("settings.fontSizeMd") },
               { value: "lg", label: t("settings.fontSizeLg") },
             ]}
-            onChange={setFontSize}
+            onChange={handleFontSizeChange}
           />
         </SettingsRow>
+
+        <div className="settings-font-preview" data-font-scale={effectiveFontSize}>
+          <p className="settings-font-preview__label muted small">{t("settings.fontSizePreview")}</p>
+          <p className="settings-font-preview__title">{t("settings.fontSizePreviewTitle")}</p>
+          <p className="settings-font-preview__body">{t("settings.fontSizePreviewBody")}</p>
+        </div>
+
+        {fontSizeDirty && (
+          <div className="settings-font-confirm">
+            <button type="button" className="btn btn-primary btn-block" onClick={handleFontSizeConfirm}>
+              {t("settings.fontSizeOk")}
+            </button>
+          </div>
+        )}
+        {fontSaved && <p className="success settings-font-saved">{t("settings.fontSizeSaved")}</p>}
       </div>
 
       <div className="card">

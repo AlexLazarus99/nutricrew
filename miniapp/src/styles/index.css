@@ -290,27 +290,94 @@ body {
 }
 
 .app-header__settings-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   display: grid;
   place-items: center;
-  color: var(--text);
-  background: color-mix(in srgb, var(--surface-2) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
   text-decoration: none;
   flex-shrink: 0;
-  transition: border-color 0.15s, color 0.15s, transform 0.15s;
+  padding: 0;
+  background:
+    radial-gradient(circle at 30% 22%, color-mix(in srgb, var(--section-accent) 22%, #fff) 0%, transparent 48%),
+    linear-gradient(165deg, #2a3d34 0%, #1a2822 55%, #121a17 100%);
+  border: 2px solid color-mix(in srgb, #c8d2e0 70%, #94a3b8 30%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 4px 0 #0d1411,
+    0 6px 14px rgba(0, 0, 0, 0.35),
+    0 0 12px color-mix(in srgb, var(--section-accent) 18%, transparent);
+  transition: transform 0.12s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .app-header__settings-btn:hover,
 .app-header__settings-btn:focus-visible {
-  color: var(--accent);
-  border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
+  border-color: color-mix(in srgb, #e8eef6 80%, #b8c4d4 20%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 4px 0 #0d1411,
+    0 8px 18px rgba(0, 0, 0, 0.4),
+    0 0 16px color-mix(in srgb, #d8e2ee 45%, transparent);
 }
 
 .app-header__settings-btn:active {
-  transform: scale(0.96);
+  transform: translateY(2px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.35) inset,
+    0 2px 0 #0d1411,
+    0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.game-settings-gear {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+}
+
+.game-settings-gear__badge {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.game-settings-gear__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.45));
+  animation: game-gear-idle 12s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+.app-header__settings-btn:hover .game-settings-gear__svg,
+.app-header__settings-btn:focus-visible .game-settings-gear__svg {
+  animation-duration: 4s;
+}
+
+.app-header__settings-btn:active .game-settings-gear__svg {
+  animation-duration: 1.2s;
+}
+
+@keyframes game-gear-idle {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.app-shell[data-reduce-motion="true"] .game-settings-gear__svg {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-settings-gear__svg {
+    animation: none;
+  }
 }
 
 .app-title {
@@ -1423,6 +1490,68 @@ button {
 .settings-toggle.is-on .settings-toggle__thumb {
   transform: translateX(20px);
   background: var(--section-accent);
+}
+
+.settings-font-preview {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+  border: 1px dashed color-mix(in srgb, var(--section-accent) 28%, transparent);
+}
+
+.settings-font-preview__label {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+}
+
+.settings-font-preview__title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.settings-font-preview__body {
+  margin: 0;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.settings-font-preview[data-font-scale="sm"] .settings-font-preview__title {
+  font-size: 1rem;
+}
+
+.settings-font-preview[data-font-scale="sm"] .settings-font-preview__body {
+  font-size: 0.82rem;
+}
+
+.settings-font-preview[data-font-scale="md"] .settings-font-preview__title {
+  font-size: 1.15rem;
+}
+
+.settings-font-preview[data-font-scale="md"] .settings-font-preview__body {
+  font-size: 0.92rem;
+}
+
+.settings-font-preview[data-font-scale="lg"] .settings-font-preview__title {
+  font-size: 1.32rem;
+}
+
+.settings-font-preview[data-font-scale="lg"] .settings-font-preview__body {
+  font-size: 1.02rem;
+}
+
+.settings-font-confirm {
+  margin-top: 12px;
+}
+
+.settings-font-saved {
+  margin: 10px 0 0;
+  text-align: center;
+  font-size: 0.85rem;
 }
 
 .member-list {
