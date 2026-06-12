@@ -49,9 +49,24 @@ function hash(n: number): number {
   return x - Math.floor(x);
 }
 
-/** @deprecated Фоновые частицы отключены */
-export function drawAmbientFx(_ctx: CanvasRenderingContext2D, _fx: FxDrawCtx): void {
-  /* отключено */
+/** Soft vignette bloom during gameplay. */
+export function drawAmbientFx(ctx: CanvasRenderingContext2D, fx: FxDrawCtx): void {
+  if (fx.cityMode || fx.night > 0.55) return;
+  ctx.save();
+  ctx.globalCompositeOperation = "screen";
+  const g = ctx.createRadialGradient(
+    fx.birdX,
+    fx.birdY,
+    0,
+    fx.width * 0.5,
+    fx.height * 0.35,
+    fx.width * 0.65,
+  );
+  g.addColorStop(0, `rgba(200,230,180,${0.04 * (1 - fx.night)})`);
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, fx.width, fx.height);
+  ctx.restore();
 }
 
 /** Линии скорости по краям экрана при нитро / бусте */

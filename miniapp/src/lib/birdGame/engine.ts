@@ -91,6 +91,7 @@ import {
   pruneJuice,
 } from "./gameJuice";
 import {
+  drawAmbientFx,
   drawBirdWake,
   drawBoostVignette,
   drawScreenFlash,
@@ -98,6 +99,17 @@ import {
   spawnGoldSparkBurst,
   type FxDrawCtx,
 } from "./effects";
+import {
+  drawAmbientParticles,
+  drawAtmosphericBloom,
+  drawGodRays,
+  drawMossPatch,
+  drawPainterlyCanopy,
+  drawPainterlyCloud,
+  drawPainterlyGround,
+  drawPurpleFlowers,
+  phash,
+} from "./painterly";
 
 const GRAVITY = 0.175;
 const FLAP_VELOCITY = -6.35;
@@ -2024,6 +2036,7 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   const fxCtx = buildFxCtx(state, biome, visualCity, groundLine, floorLine, tod.night);
   drawSpeedStreaks(ctx, fxCtx);
   drawBoostVignette(ctx, fxCtx);
+  drawAmbientFx(ctx, fxCtx);
   drawBirdWake(ctx, fxCtx);
   if (state.phase === "playing") {
     drawBirdTrail(ctx, birdX(state), state.bird.y, state.birdSpeciesId, state.elapsed);
@@ -2044,6 +2057,9 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   }
   drawJuicePopups(ctx, state);
   if (state.activeTutorialTip) drawTutorialBanner(ctx, state);
+  if (!visualCity && zv.natureWeight > 0.2) {
+    drawAtmosphericBloom(ctx, state.width, state.height, tod.night);
+  }
   drawHud(ctx, state, zv);
   drawComboHud(ctx, state);
   drawScreenFlash(ctx, state);
@@ -2072,12 +2088,13 @@ function drawNatureBackdrop(
 
   drawSky(ctx, state, pal);
   if (!dungeonZone) {
+    drawGodRays(ctx, state.width, state.height, state.elapsed, tod.night, biomeCtx.groundY);
     drawSun(ctx, state);
     if (tod.night > 0.2) drawStars(ctx, state);
     if (tod.night > 0.55) drawMoon(ctx, state);
     drawClouds(ctx, state);
     drawSkyDelicacies(ctx, state);
-    // Each biome has its own parallax backdrop in biomeBackdrops.ts
+    drawAmbientParticles(ctx, state.width, biomeCtx.groundY, state.elapsed, tod.night);
   }
 
   if (zv.prevBiome && zv.biomeDecorBlend > 0.03 && zv.biomeDecorBlend < 0.97) {
@@ -2204,6 +2221,15 @@ function drawSky(ctx: CanvasRenderingContext2D, state: GameState, palette?: Biom
   g.addColorStop(1, blendSkyColor(botDay, botSunset, botNight, warm * 0.85, tod.night));
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, w, h);
+
+  if (tod.night < 0.4) {
+    const atmo = ctx.createLinearGradient(0, h * 0.3, 0, h * 0.75);
+    atmo.addColorStop(0, "rgba(100,180,170,0)");
+    atmo.addColorStop(0.5, `rgba(120,190,175,${0.12 * (1 - tod.night)})`);
+    atmo.addColorStop(1, "rgba(100,180,170,0)");
+    ctx.fillStyle = atmo;
+    ctx.fillRect(0, 0, w, h);
+  }
 
   if (tod.sunset > 0.15) {
     const hz = horizonY(state);
@@ -2531,15 +2557,11 @@ function drawClouds(ctx: CanvasRenderingContext2D, state: GameState): void {
   const warm = Math.max(tod.sunset, tod.sunrise * 0.5);
   const alpha = Math.max(0, 0.85 - tod.night * 0.75);
   if (alpha < 0.05) return;
-  ctx.fillStyle = warm > 0.2 ? `rgba(255,220,190,${alpha})` : `rgba(255,255,255,${alpha})`;
   const offset = (state.elapsed * 0.025) % state.width;
   for (let i = 0; i < 5; i++) {
     const x = ((i * 130 - offset + state.width) % (state.width + 80)) - 40;
     const y = 24 + i * 20;
-    ctx.beginPath();
-    ctx.ellipse(x, y, 34, 16, 0, 0, Math.PI * 2);
-    ctx.ellipse(x + 26, y + 3, 26, 14, 0, 0, Math.PI * 2);
-    ctx.fill();
+    drawPainterlyCloud(ctx, x, y, 1 + (i % 2) * 0.15, alpha, warm > 0.2);
   }
 }
 
@@ -2585,43 +2607,11 @@ function drawMeteor(ctx: CanvasRenderingContext2D, meteor: Meteor, elapsed: numb
   ctx.fill();
 }
 
-function drawFarMountains(ctx: CanvasRenderingContext2D, state: GameState, palette?: BiomePalette): void {
-  const baseY = treeGroundY(state);
-  const warm = timeOfDay(state.elapsed).sunset;
-  const pal = palette ?? biomePalette(biomeForLevel(state.level));
-  ctx.fillStyle = warm > 0.1 ? `rgba(62,39,35,${0.42 + warm * 0.28})` : pal.farMountains;
-  for (let i = 0; i < 6; i++) {
-    const x = ((i * 120 - (state.elapsed * 0.015) % 120) % (state.width + 80)) - 40;
-    ctx.beginPath();
-    ctx.moveTo(x, baseY);
-    ctx.lineTo(x + 60, baseY - 50 - (i % 3) * 15);
-    ctx.lineTo(x + 120, baseY);
-    ctx.closePath();
-    ctx.fill();
-  }
-}
-
 function drawLand(ctx: CanvasRenderingContext2D, state: GameState, palette?: BiomePalette): void {
   const { width: w, height: h } = state;
   const pal = palette ?? biomePalette(biomeForLevel(state.level));
   const landTop = treeGroundY(state);
-
-  const landG = ctx.createLinearGradient(0, landTop, 0, h);
-  landG.addColorStop(0, pal.landTop);
-  landG.addColorStop(0.25, pal.landMid);
-  landG.addColorStop(0.55, pal.landBot);
-  landG.addColorStop(0.8, "#8D6E63");
-  landG.addColorStop(1, pal.landSoil);
-  ctx.fillStyle = landG;
-  ctx.fillRect(0, landTop, w, h - landTop);
-
-  ctx.fillStyle = pal.grass;
-  for (let i = 0; i < 10; i++) {
-    const gx = (i * 67 + 12) % w;
-    ctx.beginPath();
-    ctx.ellipse(gx + 5, landTop + 2, 6, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
+  drawPainterlyGround(ctx, w, landTop, h, pal, state.worldScroll);
 }
 
 function drawBoarExplosionPart(
@@ -3184,6 +3174,11 @@ function drawTreeTrunk(
     ctx.stroke();
   }
 
+  drawMossPatch(ctx, cx + lean * 0.3, groundY - trunkH * 0.55, trunkW * 1.2, trunkH * 0.15);
+  if (phash(seed + 9) > 0.6) {
+    drawPurpleFlowers(ctx, cx + w * 0.15, groundY - 6, 0.55, 2);
+  }
+
   if (type === "oak") {
     drawOakCanopy(ctx, cx + lean * 0.5, canopyTop, canopyBottom, canopyH, w, seed);
   } else if (type === "pine") {
@@ -3202,30 +3197,7 @@ function drawOakCanopy(
   w: number,
   seed: number,
 ): void {
-  const lumps: Array<{ ox: number; oy: number; rx: number; ry: number; color: string }> = [
-    { ox: 0, oy: 0.5, rx: 0.5, ry: 0.4, color: "#3E5C40" },
-    { ox: -0.18, oy: 0.44, rx: 0.36, ry: 0.3, color: "#4A7349" },
-    { ox: 0.16, oy: 0.4, rx: 0.34, ry: 0.28, color: "#567B52" },
-    { ox: 0, oy: 0.3, rx: 0.32, ry: 0.24, color: "#62885C" },
-  ];
-
-  for (let i = 0; i < lumps.length; i += 1) {
-    const l = lumps[i];
-    const jx = Math.round((treeHash(seed + i * 1.7) - 0.5) * w * 0.04);
-    const jy = Math.round((treeHash(seed + i * 2.3) - 0.5) * ch * 0.03);
-    ctx.fillStyle = l.color;
-    ctx.beginPath();
-    ctx.ellipse(
-      Math.round(cx + w * l.ox + jx),
-      Math.round(top + ch * l.oy + jy),
-      Math.round(w * l.rx),
-      Math.round(ch * l.ry),
-      0,
-      0,
-      Math.PI * 2,
-    );
-    ctx.fill();
-  }
+  drawPainterlyCanopy(ctx, cx, top, ch, w, seed);
 }
 
 function drawConiferCanopy(

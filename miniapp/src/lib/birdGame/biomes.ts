@@ -1,4 +1,5 @@
 import { drawBiomeParallaxBackdrop } from "./biomeBackdrops";
+import { drawFramingTrunk, drawMossyLog, drawPurpleFlowers, phash } from "./painterly";
 import type { BiomeId } from "./progression";
 
 type BiomeDrawCtx = {
@@ -25,35 +26,43 @@ export function drawBiomeBackdrop(ctx: CanvasRenderingContext2D, biome: BiomeId,
 
 export function drawBiomeForeground(ctx: CanvasRenderingContext2D, biome: BiomeId, c: BiomeDrawCtx): void {
   const night = 1 - c.night * 0.35;
+  const isGreen = biome === "meadow" || biome === "forest" || biome === "jungle" || biome === "oasis";
+
+  if (isGreen) {
+    ctx.save();
+    ctx.globalAlpha = 0.85 * night;
+    drawFramingTrunk(ctx, 8, c.groundY, 55, c.height * 0.55, "left");
+    drawFramingTrunk(ctx, c.width - 8, c.groundY, 48, c.height * 0.5, "right");
+    ctx.restore();
+  }
+
+  if (biome === "meadow" || biome === "forest" || biome === "jungle") {
+    ctx.save();
+    ctx.globalAlpha = 0.38 * night;
+    for (let i = 0; i < 4; i++) {
+      const lx = ((i * 90 + c.worldScroll * 0.25) % (c.width * 0.5)) + 60;
+      if (phash(i) > 0.4) drawMossyLog(ctx, lx, c.groundY - 4, 55 + i * 8, 9);
+    }
+    ctx.restore();
+  }
 
   if (biome === "meadow" || biome === "forest") {
     ctx.save();
-    ctx.globalAlpha = (biome === "forest" ? 0.42 : 0.32) * night;
-    ctx.fillStyle = biome === "forest" ? "rgba(27,94,32,0.55)" : "rgba(58,110,95,0.4)";
-    for (let side = 0; side < 2; side++) {
-      for (let i = 0; i < 5; i++) {
-        const x = side === 0 ? i * 22 : c.width - i * 22 - 36;
-        ctx.beginPath();
-        ctx.moveTo(x, c.groundY);
-        ctx.quadraticCurveTo(
-          x + (side === 0 ? 50 : -50),
-          c.groundY - 100 - i * 8,
-          x + (side === 0 ? 95 : -95),
-          c.groundY,
-        );
-        ctx.fill();
-      }
+    ctx.globalAlpha = 0.7 * night;
+    for (let i = 0; i < 4; i++) {
+      const fx = c.width * (0.3 + i * 0.18) + Math.sin(c.elapsed * 0.001 + i) * 10;
+      drawPurpleFlowers(ctx, fx, c.groundY - 6, 1, 3 + (i % 2));
     }
     ctx.restore();
   }
 
   if (biome === "jungle" || biome === "forest") {
     ctx.save();
-    ctx.globalAlpha = 0.45 * night;
-    ctx.strokeStyle = "rgba(56,142,60,0.55)";
+    ctx.globalAlpha = 0.4 * night;
+    ctx.strokeStyle = "rgba(76,175,80,0.5)";
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       ctx.beginPath();
       ctx.moveTo(c.width * 0.15 + i * 55, 0);
       ctx.quadraticCurveTo(
@@ -63,35 +72,6 @@ export function drawBiomeForeground(ctx: CanvasRenderingContext2D, biome: BiomeI
         c.groundY - 18,
       );
       ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  if (biome === "desert" || biome === "oasis") {
-    ctx.save();
-    ctx.globalAlpha = 0.28 * night;
-    ctx.fillStyle = "rgba(255,224,130,0.35)";
-    for (let i = 0; i < 4; i++) {
-      const hx = ((i * 90 + c.worldScroll * 0.15) % (c.width + 50)) - 10;
-      ctx.beginPath();
-      ctx.ellipse(hx, c.groundY - 20 - i * 6, 45, 12, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
-  if (biome === "mountains") {
-    ctx.save();
-    ctx.globalAlpha = 0.35 * night;
-    ctx.fillStyle = "rgba(176,190,197,0.4)";
-    for (let i = 0; i < 4; i++) {
-      const px = ((i * 110 - c.worldScroll * 0.2) % (c.width + 60)) + 10;
-      ctx.beginPath();
-      ctx.moveTo(px, c.groundY);
-      ctx.lineTo(px + 30, c.groundY - 45 - i * 10);
-      ctx.lineTo(px + 60, c.groundY);
-      ctx.closePath();
-      ctx.fill();
     }
     ctx.restore();
   }

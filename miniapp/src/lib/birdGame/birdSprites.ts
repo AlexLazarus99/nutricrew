@@ -46,17 +46,13 @@ function drawWing(
   r: number,
   flapAnim: number,
   fill: string,
-  stroke?: string,
+  _stroke?: string,
 ): void {
+  const wy = wingY(flapAnim, r, -1);
   ctx.fillStyle = fill;
-  if (stroke) {
-    ctx.strokeStyle = stroke;
-    ctx.lineWidth = 1.5;
-  }
   ctx.beginPath();
-  ctx.ellipse(-r * 0.2, wingY(flapAnim, r, -1), r * 0.48, r * 0.3, -0.55, 0, Math.PI * 2);
+  ctx.ellipse(-r * 0.2, wy, r * 0.48, r * 0.3, -0.55, 0, Math.PI * 2);
   ctx.fill();
-  if (stroke) ctx.stroke();
 }
 
 function drawClassic(
@@ -65,17 +61,37 @@ function drawClassic(
   flapAnim: number,
   opts: BirdDrawOpts,
 ): void {
-  const body = opts.bossBoost ? "#FFF59D" : opts.nitro ? "#FFE082" : "#FFD54F";
-  ctx.fillStyle = body;
+  const glow = ctx.createRadialGradient(0, 0, r * 0.2, 0, 0, r * 1.6);
+  glow.addColorStop(0, opts.nitro ? "rgba(255,224,130,0.45)" : "rgba(255,241,118,0.3)");
+  glow.addColorStop(1, "rgba(255,193,7,0)");
+  ctx.fillStyle = glow;
   ctx.beginPath();
-  ctx.ellipse(0, 0, r * 1.05, r, 0, 0, Math.PI * 2);
+  ctx.arc(0, 0, r * 1.5, 0, Math.PI * 2);
   ctx.fill();
-  ctx.strokeStyle = "#F9A825";
-  ctx.lineWidth = 2;
-  ctx.stroke();
+
+  const bodyG = ctx.createRadialGradient(-r * 0.2, -r * 0.25, 0, 0, 0, r * 1.1);
+  const hi = opts.bossBoost ? "#FFF9C4" : opts.nitro ? "#FFE082" : "#FFEE58";
+  const mid = opts.bossBoost ? "#FFF59D" : opts.nitro ? "#FFD54F" : "#FFCA28";
+  const lo = "#F9A825";
+  bodyG.addColorStop(0, hi);
+  bodyG.addColorStop(0.55, mid);
+  bodyG.addColorStop(1, lo);
+  ctx.fillStyle = bodyG;
+  ctx.beginPath();
+  ctx.ellipse(0, r * 0.05, r * 1.12, r * 1.05, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  const belly = ctx.createRadialGradient(0, r * 0.15, 0, 0, r * 0.1, r * 0.7);
+  belly.addColorStop(0, "rgba(255,253,231,0.7)");
+  belly.addColorStop(1, "rgba(255,253,231,0)");
+  ctx.fillStyle = belly;
+  ctx.beginPath();
+  ctx.ellipse(0, r * 0.12, r * 0.65, r * 0.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+
   drawEye(ctx, r);
-  drawBeak(ctx, r, "#FF8F00", "#E65100");
-  drawWing(ctx, r, flapAnim, "#FBC02D", "#F9A825");
+  drawBeak(ctx, r, "#FFB300", "#E65100");
+  drawWing(ctx, r, flapAnim, "#FFD54F");
 }
 
 function drawEmber(
