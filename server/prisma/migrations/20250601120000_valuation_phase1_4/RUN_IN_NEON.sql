@@ -1,4 +1,8 @@
--- Phase 1-4 valuation features (each statement is one line — safe for Neon / Prisma)
+-- =============================================================================
+-- Valuation phase 1-4 — вставьте ВЕСЬ файл в Neon SQL Editor и нажмите Run.
+-- Не запускайте отдельные строки! Не вставляйте путь к файлу!
+-- Каждый FOREIGN KEY — полная строка ALTER TABLE ... ADD CONSTRAINT ...
+-- =============================================================================
 
 ALTER TABLE "meals" ADD COLUMN IF NOT EXISTS "fiber_g" DOUBLE PRECISION;
 ALTER TABLE "meals" ADD COLUMN IF NOT EXISTS "sugar_g" DOUBLE PRECISION;

@@ -646,6 +646,8 @@
     "recommendedBadge": "Recommended",
     "viewAllDiets": "All diets",
     "viewAllExercises": "All workouts",
+    "waterTitle": "Water today",
+    "waterMl": "ml",
     "disclaimer": "General educational information only — not medical advice. Consult a physician or registered dietitian before changing diet or exercise, especially if you have chronic conditions.",
     "sources": "Based on: WHO Healthy Diet (2024), USDA Dietary Guidelines, NIH DASH, EAT-Lancet Commission, ACSM Physical Activity Guidelines.",
     "sections": {
@@ -1384,10 +1386,6 @@
     "insights": "Insights",
     "avg": "Average",
     "target": "Target"
-  },
-  "wellness": {
-    "waterTitle": "Water today",
-    "waterMl": "ml"
   },
   "pro": {
     "title": "NutriCrew Pro",
