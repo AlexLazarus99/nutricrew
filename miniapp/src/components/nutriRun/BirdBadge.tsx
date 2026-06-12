@@ -22,6 +22,11 @@ const SPECS: Record<
   storm: { top: "#fff59d", bot: "#5e35b1", wing: "#ffee58", tail: "#4527a0", beak: "#ffca28", perk: "storm" },
 };
 
+function wingBeatWave(cycle: number) {
+  if (cycle < 0.3) return 1 - cycle / 0.3;
+  return (cycle - 0.3) / 0.7;
+}
+
 function drawWing(
   c: CanvasRenderingContext2D,
   x: number,
@@ -29,15 +34,19 @@ function drawWing(
   w: number,
   h: number,
   dir: number,
-  angle: number,
+  flapAmt: number,
   color: string,
+  wingAmp = 1.12,
 ) {
+  const beat = 1 - flapAmt;
   c.save();
   c.translate(x, y);
-  c.rotate(angle * dir);
+  const a = (0.68 * wingAmp + flapAmt * (-1.25 * wingAmp - 0.68 * wingAmp)) * dir;
+  c.rotate(a);
+  c.scale(1 + beat * 0.14 * wingAmp, 1 - beat * 0.2 * wingAmp);
   c.fillStyle = color;
   c.beginPath();
-  c.ellipse(dir * w * 0.1, h * 0.15, w * 0.45, h * 0.32, dir * 0.3, 0, TAU);
+  c.ellipse(dir * w * 0.1, h * 0.15, w * (0.44 + beat * 0.05), h * (0.3 + beat * 0.07), dir * 0.3, 0, TAU);
   c.fill();
   c.restore();
 }
@@ -50,11 +59,8 @@ function drawBirdBody(
   cy: number,
   scale: number,
 ) {
-  const flap =
-    spec.perk === "classic"
-      ? (Math.sin(t * 14) * 0.5 + 0.5) * 0.82 + (Math.sin(t * 22 + 1.1) * 0.5 + 0.5) * 0.38
-      : Math.sin(t * 8) * 0.5 + 0.5;
-  const wingA = spec.perk === "classic" ? -0.78 + flap * 1.38 : -0.5 + flap * 0.9;
+  const flapAmt = wingBeatWave((t * 8.5) % 1);
+  const wingAmp = spec.perk === "classic" ? 1.55 : 1.12;
   const r = 28 * scale;
   const bodyW = r * 1.15;
   const bodyH = r;
@@ -113,7 +119,7 @@ function drawBirdBody(
     c.globalAlpha = 1;
   }
 
-  drawWing(c, -bodyW * 0.12, -2, bodyW * 0.8, bodyH * 0.85, -1, wingA, spec.wing);
+  drawWing(c, -bodyW * 0.12, -2, bodyW * 0.8, bodyH * 0.85, -1, flapAmt * 0.94 + 0.03, spec.wing, wingAmp);
 
   const grad = c.createLinearGradient(0, -bodyH, 0, bodyH);
   grad.addColorStop(0, spec.top);
@@ -128,7 +134,7 @@ function drawBirdBody(
   c.ellipse(bodyW * 0.1, bodyH * 0.22, bodyW * 0.55, bodyH * 0.45, 0, 0, TAU);
   c.fill();
 
-  drawWing(c, bodyW * 0.04, -bodyH * 0.08, bodyW * 0.9, bodyH * 0.95, 1, wingA, spec.wing);
+  drawWing(c, bodyW * 0.04, -bodyH * 0.08, bodyW * 0.9, bodyH * 0.95, 1, flapAmt, spec.wing, wingAmp);
 
   if (spec.perk === "royal") {
     c.fillStyle = "#ffd54f";
@@ -157,7 +163,7 @@ function drawBirdBody(
     }
   }
 
-  if (spec.perk === "storm" && flap > 0.55) {
+  if (spec.perk === "storm" && flapAmt < 0.45) {
     c.strokeStyle = "#ffee58";
     c.lineWidth = 2.5;
     c.beginPath();
