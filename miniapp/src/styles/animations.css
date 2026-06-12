@@ -330,12 +330,12 @@
   animation: nc-fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
 }
 
-/* Background blobs extra motion */
-.wellness-blob {
+/* Background blobs — overridden by wellness-drift-fig in index.css */
+.wellness-blob:not([class*="wellness-drift-fig"]) {
   animation: nc-float-soft 18s ease-in-out infinite;
 }
 
-.fitness-bg-fig {
+.fitness-bg-fig:not([class*="wellness-drift-fig"]) {
   animation: nc-float-soft 22s ease-in-out infinite;
 }
 
@@ -937,12 +937,14 @@
   transform: none;
 }
 
-.app-shell[data-reduce-motion="true"] .wellness-wave {
+.app-shell[data-reduce-motion="true"] .wellness-drift__piece,
+.app-shell[data-reduce-motion="true"] .wellness-drift-fig {
   animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wellness-wave {
+  .wellness-drift__piece,
+  .wellness-drift-fig {
     animation: none;
   }
 }

@@ -187,54 +187,184 @@ body {
   color: var(--section-accent);
 }
 
-.wellness-waves {
+.wellness-drift {
   position: absolute;
   inset: 0;
   overflow: hidden;
   z-index: 0;
-}
-
-.wellness-wave {
-  position: absolute;
-  left: 0;
-  width: 200%;
-  height: auto;
-  min-height: 28%;
   color: var(--section-accent);
+}
+
+.wellness-drift__piece {
+  position: absolute;
+  display: block;
+  pointer-events: none;
   will-change: transform;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
 }
 
-.wellness-wave--sky {
-  top: 18%;
-  opacity: 0.06;
-  animation: wellness-wave-scroll 36s linear infinite;
+.wellness-drift__piece svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
 }
 
-.wellness-wave--mid {
-  top: 42%;
-  opacity: 0.09;
-  animation: wellness-wave-scroll 24s linear infinite reverse;
-  animation-delay: -8s;
+.wellness-drift__piece--orb svg {
+  filter: blur(1px);
 }
 
-.wellness-wave--front {
-  bottom: -2%;
-  top: auto;
-  min-height: 32%;
-  opacity: 0.12;
-  animation: wellness-wave-scroll 18s linear infinite;
-  animation-delay: -4s;
+.wellness-drift__piece--a {
+  animation-name: wellness-drift-a;
 }
 
-@keyframes wellness-wave-scroll {
-  0% {
-    transform: translateX(0) translateY(0);
-  }
-  50% {
-    transform: translateX(-25%) translateY(-6px);
-  }
+.wellness-drift__piece--b {
+  animation-name: wellness-drift-b;
+}
+
+.wellness-drift__piece--c {
+  animation-name: wellness-drift-c;
+}
+
+.wellness-drift__piece--d {
+  animation-name: wellness-drift-d;
+}
+
+.wellness-drift__piece--e {
+  animation-name: wellness-drift-e;
+}
+
+.wellness-drift__piece--f {
+  animation-name: wellness-drift-f;
+}
+
+.wellness-drift-fig--a {
+  animation: wellness-drift-a 32s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wellness-drift-fig--b {
+  animation: wellness-drift-b 28s ease-in-out infinite -6s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wellness-drift-fig--c {
+  animation: wellness-drift-c 24s ease-in-out infinite -3s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wellness-drift-fig--d {
+  animation: wellness-drift-d 30s ease-in-out infinite -9s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wellness-drift-fig--e {
+  animation: wellness-drift-e 26s ease-in-out infinite -5s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.wellness-drift-fig--f {
+  animation: wellness-drift-f 34s ease-in-out infinite -11s;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@keyframes wellness-drift-a {
+  0%,
   100% {
-    transform: translateX(-50%) translateY(0);
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  20% {
+    transform: translate(14px, -22px) rotate(6deg) scale(1.04);
+  }
+  45% {
+    transform: translate(-10px, -38px) rotate(-4deg) scale(0.96);
+  }
+  70% {
+    transform: translate(18px, -14px) rotate(9deg) scale(1.02);
+  }
+}
+
+@keyframes wellness-drift-b {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  18% {
+    transform: translate(-16px, 12px) rotate(-7deg) scale(1.03);
+  }
+  42% {
+    transform: translate(12px, 28px) rotate(5deg) scale(0.97);
+  }
+  68% {
+    transform: translate(-8px, 8px) rotate(-3deg) scale(1.01);
+  }
+}
+
+@keyframes wellness-drift-c {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(20px, 16px) rotate(11deg);
+  }
+  55% {
+    transform: translate(-14px, 32px) rotate(-8deg);
+  }
+  80% {
+    transform: translate(8px, 10px) rotate(4deg);
+  }
+}
+
+@keyframes wellness-drift-d {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  30% {
+    transform: translate(-18px, -24px) rotate(-10deg) scale(1.05);
+  }
+  60% {
+    transform: translate(10px, -40px) rotate(7deg) scale(0.94);
+  }
+}
+
+@keyframes wellness-drift-e {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  22% {
+    transform: translate(16px, -10px) rotate(14deg);
+  }
+  48% {
+    transform: translate(-12px, 22px) rotate(-12deg);
+  }
+  75% {
+    transform: translate(6px, -28px) rotate(6deg);
+  }
+}
+
+@keyframes wellness-drift-f {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  28% {
+    transform: translate(-20px, 18px) rotate(-6deg) scale(1.06);
+  }
+  52% {
+    transform: translate(14px, -16px) rotate(9deg) scale(0.95);
+  }
+  78% {
+    transform: translate(-6px, 26px) rotate(-4deg) scale(1.02);
   }
 }
 
@@ -251,11 +381,11 @@ body {
   opacity: 0.55;
 }
 
-.fitness-bg-fig-1 { animation: fitness-pulse 18s ease-in-out infinite; }
-.fitness-bg-fig-2 { animation: fitness-pulse 22s ease-in-out infinite 2s; }
-.fitness-bg-fig-3 { animation: fitness-pulse 20s ease-in-out infinite 4s; }
-.fitness-bg-fig-5 { animation: fitness-pulse 24s ease-in-out infinite 1s; }
-.fitness-bg-fig-8 { animation: fitness-pulse 16s ease-in-out infinite 3s; }
+.fitness-bg-fig-1:not(.wellness-drift-fig) { animation: fitness-pulse 18s ease-in-out infinite; }
+.fitness-bg-fig-2:not(.wellness-drift-fig) { animation: fitness-pulse 22s ease-in-out infinite 2s; }
+.fitness-bg-fig-3:not(.wellness-drift-fig) { animation: fitness-pulse 20s ease-in-out infinite 4s; }
+.fitness-bg-fig-5:not(.wellness-drift-fig) { animation: fitness-pulse 24s ease-in-out infinite 1s; }
+.fitness-bg-fig-8:not(.wellness-drift-fig) { animation: fitness-pulse 16s ease-in-out infinite 3s; }
 
 @keyframes fitness-pulse {
   0%, 100% { opacity: 0.4; }
