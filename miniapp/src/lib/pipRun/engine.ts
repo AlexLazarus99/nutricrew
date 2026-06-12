@@ -5,16 +5,7 @@ import {
   PIP_WORLDS,
   stageDifficulty,
 } from "./worlds";
-import {
-  drawBackdrop,
-  drawEnemy,
-  drawHud,
-  drawMote,
-  drawObstacle,
-  drawPip,
-  drawPlatforms,
-  worldTheme,
-} from "./render";
+import { drawScene, worldTheme } from "./render";
 import type { Enemy, GameState, Mote, Obstacle, PlatformSegment } from "./types";
 import { STORAGE_BEST } from "./types";
 
@@ -467,23 +458,19 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
       ? worldTheme(state.world)
       : worldTheme(Math.min(PIP_WORLDS.length - 1, Math.floor(state.score / 1500)));
 
-  drawBackdrop(ctx, state, theme);
-  drawPlatforms(ctx, state, theme);
-  for (const o of state.obstacles) drawObstacle(ctx, o, state.scrollX, groundY(state));
-  for (const e of state.enemies) drawEnemy(ctx, e, state.scrollX);
-  for (const m of state.motes) drawMote(ctx, m, state.scrollX, state.elapsed);
-
-  drawPip(ctx, pipX(state), state.pip.y, PIP_R, {
-    gliding: state.gliding,
-    attacking: state.attacking,
-    wallRunning: state.wallRunning,
-    flapAnim: state.flapAnim,
-  });
-
-  drawHud(ctx, state, theme);
+  try {
+    drawScene(ctx, state, theme);
+  } catch (err) {
+    console.error("[NutriRun] drawScene failed", err);
+    const g = ctx.createLinearGradient(0, 0, 0, state.height);
+    g.addColorStop(0, theme.skyTop);
+    g.addColorStop(1, theme.skyBottom);
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, state.width, state.height);
+  }
 
   if (state.phase === "menu" || state.phase === "victory") {
-    ctx.fillStyle = "rgba(15,23,42,0.2)";
+    ctx.fillStyle = "rgba(15,23,42,0.18)";
     ctx.fillRect(0, 0, state.width, state.height);
   }
 }
