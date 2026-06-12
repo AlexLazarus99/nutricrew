@@ -1,4 +1,5 @@
 import type { BiomeId } from "./progression";
+import { safeComposite } from "./painterly";
 import type { DebrisParticle, GameState } from "./types";
 
 export type FxDrawCtx = {
@@ -52,20 +53,18 @@ function hash(n: number): number {
 /** Soft vignette bloom during gameplay. */
 export function drawAmbientFx(ctx: CanvasRenderingContext2D, fx: FxDrawCtx): void {
   if (fx.cityMode || fx.night > 0.55) return;
+  const bw = fx.width;
+  const bh = fx.height;
+  if (bw < 8 || bh < 8) return;
+  const bx = Number.isFinite(fx.birdX) ? fx.birdX : bw * 0.26;
+  const by = Number.isFinite(fx.birdY) ? fx.birdY : bh * 0.45;
   ctx.save();
-  ctx.globalCompositeOperation = "screen";
-  const g = ctx.createRadialGradient(
-    fx.birdX,
-    fx.birdY,
-    0,
-    fx.width * 0.5,
-    fx.height * 0.35,
-    fx.width * 0.65,
-  );
+  safeComposite(ctx, "screen");
+  const g = ctx.createRadialGradient(bx, by, 0, bw * 0.5, bh * 0.35, bw * 0.65);
   g.addColorStop(0, `rgba(200,230,180,${0.04 * (1 - fx.night)})`);
   g.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = g;
-  ctx.fillRect(0, 0, fx.width, fx.height);
+  ctx.fillRect(0, 0, bw, bh);
   ctx.restore();
 }
 

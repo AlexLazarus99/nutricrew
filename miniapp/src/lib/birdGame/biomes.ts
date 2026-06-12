@@ -28,11 +28,15 @@ export function drawBiomeForeground(ctx: CanvasRenderingContext2D, biome: BiomeI
   const night = 1 - c.night * 0.35;
   const isGreen = biome === "meadow" || biome === "forest" || biome === "jungle" || biome === "oasis";
 
-  if (isGreen) {
+  if (isGreen && c.width > 40 && c.height > 80 && c.groundY > 20) {
     ctx.save();
     ctx.globalAlpha = 0.85 * night;
-    drawFramingTrunk(ctx, 8, c.groundY, 55, c.height * 0.55, "left");
-    drawFramingTrunk(ctx, c.width - 8, c.groundY, 48, c.height * 0.5, "right");
+    try {
+      drawFramingTrunk(ctx, 8, c.groundY, 55, c.height * 0.55, "left");
+      drawFramingTrunk(ctx, c.width - 8, c.groundY, 48, c.height * 0.5, "right");
+    } catch {
+      /* framing trunks are decorative */
+    }
     ctx.restore();
   }
 

@@ -346,19 +346,17 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
           void audioRef.current.startMusic();
         }
 
-        const shouldDraw = dirtyRef.current || shouldSimulate;
+        const staticScene = state.phase === "idle" || state.phase === "gameover";
+        const shouldDraw = dirtyRef.current || shouldSimulate || staticScene;
         if (shouldDraw) {
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           try {
             drawGame(ctx, state);
+            dirtyRef.current = false;
           } catch (err) {
             console.error("[NutriBird] draw failed at level", state.level, err);
-            const { w, h } = sizeRef.current;
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = "#5eb3e8";
-            ctx.fillRect(0, 0, w || 320, h || 480);
+            dirtyRef.current = staticScene;
           }
-          if (!shouldSimulate) dirtyRef.current = false;
         }
       } else if (canvas && dirtyRef.current) {
         const ctx2 = canvas.getContext("2d");

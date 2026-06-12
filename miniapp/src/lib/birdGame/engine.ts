@@ -2058,7 +2058,11 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   drawJuicePopups(ctx, state);
   if (state.activeTutorialTip) drawTutorialBanner(ctx, state);
   if (!visualCity && zv.natureWeight > 0.2) {
-    drawAtmosphericBloom(ctx, state.width, state.height, tod.night);
+    try {
+      drawAtmosphericBloom(ctx, state.width, state.height, tod.night);
+    } catch {
+      resetCanvasState(ctx);
+    }
   }
   drawHud(ctx, state, zv);
   drawComboHud(ctx, state);
@@ -2088,13 +2092,21 @@ function drawNatureBackdrop(
 
   drawSky(ctx, state, pal);
   if (!dungeonZone) {
-    drawGodRays(ctx, state.width, state.height, state.elapsed, tod.night, biomeCtx.groundY);
+    try {
+      drawGodRays(ctx, state.width, state.height, state.elapsed, tod.night, biomeCtx.groundY);
+    } catch {
+      /* optional atmosphere */
+    }
     drawSun(ctx, state);
     if (tod.night > 0.2) drawStars(ctx, state);
     if (tod.night > 0.55) drawMoon(ctx, state);
     drawClouds(ctx, state);
     drawSkyDelicacies(ctx, state);
-    drawAmbientParticles(ctx, state.width, biomeCtx.groundY, state.elapsed, tod.night);
+    try {
+      drawAmbientParticles(ctx, state.width, biomeCtx.groundY, state.elapsed, tod.night);
+    } catch {
+      /* optional particles */
+    }
   }
 
   if (zv.prevBiome && zv.biomeDecorBlend > 0.03 && zv.biomeDecorBlend < 0.97) {

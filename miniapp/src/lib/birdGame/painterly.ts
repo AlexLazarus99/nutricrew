@@ -1,5 +1,32 @@
 /** Painterly Rayman-like canvas helpers — soft blobs, moss, glow, no hard outlines. */
 
+function fadeColor(color: string, alpha = 0): string {
+  const rgba = color.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (rgba) {
+    return `rgba(${rgba[1]},${rgba[2]},${rgba[3]},${alpha})`;
+  }
+  if (color.startsWith("#")) {
+    const h = color.length === 4
+      ? `#${color[1]}${color[1]}${color[2]}${color[2]}${color[3]}${color[3]}`
+      : color;
+    const r = parseInt(h.slice(1, 3), 16);
+    const g = parseInt(h.slice(3, 5), 16);
+    const b = parseInt(h.slice(5, 7), 16);
+    if (!Number.isNaN(r) && !Number.isNaN(g) && !Number.isNaN(b)) {
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+  }
+  return `rgba(0,0,0,${alpha})`;
+}
+
+export function safeComposite(ctx: CanvasRenderingContext2D, mode: GlobalCompositeOperation): void {
+  try {
+    ctx.globalCompositeOperation = mode;
+  } catch {
+    ctx.globalCompositeOperation = "source-over";
+  }
+}
+
 export function phash(n: number): number {
   const x = Math.sin(n * 12.9898) * 43758.5453;
   return x - Math.floor(x);
@@ -18,7 +45,7 @@ export function softBlob(
   const g = ctx.createRadialGradient(x - rx * 0.25, y - ry * 0.3, 0, x, y, Math.max(rx, ry));
   g.addColorStop(0, highlight ?? color);
   g.addColorStop(0.55, color);
-  g.addColorStop(1, color.replace(/[\d.]+\)$/, "0)").replace("rgb", "rgba") || `${color}88`);
+  g.addColorStop(1, fadeColor(color, 0));
   ctx.fillStyle = g;
   ctx.beginPath();
   ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
@@ -355,10 +382,12 @@ export function drawAmbientParticles(
   elapsed: number,
   night: number,
 ): void {
+  if (w < 8 || groundY < 24) return;
+  const pySpan = Math.max(24, groundY - 20);
   ctx.save();
   for (let i = 0; i < 16; i++) {
     const px = (i * 67 + elapsed * (0.02 + (i % 3) * 0.008)) % w;
-    const py = (groundY * 0.25 + i * 19 + Math.sin(elapsed * 0.001 + i) * 30) % (groundY - 20);
+    const py = (groundY * 0.25 + i * 19 + Math.sin(elapsed * 0.001 + i) * 30) % pySpan;
     const glow = night > 0.5 ? 0.6 + Math.sin(elapsed * 0.004 + i) * 0.4 : 0.25;
     const color =
       night > 0.5
@@ -384,7 +413,7 @@ export function drawAtmosphericBloom(
 ): void {
   if (night > 0.45) return;
   ctx.save();
-  ctx.globalCompositeOperation = "screen";
+  safeComposite(ctx, "screen");
   const g = ctx.createRadialGradient(w * 0.5, h * 0.15, 0, w * 0.5, h * 0.3, w * 0.7);
   g.addColorStop(0, `rgba(255,249,196,${0.08 * (1 - night)})`);
   g.addColorStop(0.5, `rgba(200,230,180,${0.04 * (1 - night)})`);
