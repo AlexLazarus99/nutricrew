@@ -286,6 +286,8 @@ export function LevelBadgeIcon({
       style={{ "--level-badge-size": `${size}px` } as CSSProperties}
       aria-hidden
     >
+      <span className="level-badge__ring" />
+      <span className="level-badge__shine" />
       <span className="level-badge__aura" />
       <svg
         className="level-badge__svg"

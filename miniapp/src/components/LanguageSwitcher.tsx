@@ -1,42 +1,47 @@
 import { useTranslation } from "react-i18next";
-import { setStoredLocale, type AppLocale } from "../lib/locale";
-import i18n, { ensureLocale } from "../i18n";
-import { api } from "../api/client";
+import type { AppLocale } from "../lib/locale";
+import i18n from "../i18n";
+import { setAppLocale } from "../lib/setAppLocale";
+import { SettingsSegment } from "./settings/SettingsSegment";
 
-export function LanguageSwitcher() {
+type Props = {
+  compact?: boolean;
+};
+
+export function LanguageSwitcher({ compact = false }: Props) {
   const { t } = useTranslation();
-  const current = i18n.language.startsWith("ru") ? "ru" : "en";
+  const current: AppLocale = i18n.language.startsWith("ru") ? "ru" : "en";
 
   function setLocale(locale: AppLocale) {
-    setStoredLocale(locale);
-    void (async () => {
-      await ensureLocale(locale);
-      await i18n.changeLanguage(locale);
-      await api.setLocale(locale).catch(() => {
-        /* offline / outside Telegram */
-      });
-    })();
+    void setAppLocale(locale);
+  }
+
+  if (compact) {
+    return (
+      <SettingsSegment
+        value={current}
+        ariaLabel={t("settings.language")}
+        options={[
+          { value: "en", label: "EN" },
+          { value: "ru", label: "RU" },
+        ]}
+        onChange={setLocale}
+      />
+    );
   }
 
   return (
     <div className="lang-switcher">
       <span className="lang-label">{t("settings.language")}</span>
-      <div className="lang-buttons">
-        <button
-          type="button"
-          className={current === "en" ? "active" : ""}
-          onClick={() => setLocale("en")}
-        >
-          EN
-        </button>
-        <button
-          type="button"
-          className={current === "ru" ? "active" : ""}
-          onClick={() => setLocale("ru")}
-        >
-          RU
-        </button>
-      </div>
+      <SettingsSegment
+        value={current}
+        ariaLabel={t("settings.language")}
+        options={[
+          { value: "en", label: "EN" },
+          { value: "ru", label: "RU" },
+        ]}
+        onChange={setLocale}
+      />
     </div>
   );
 }

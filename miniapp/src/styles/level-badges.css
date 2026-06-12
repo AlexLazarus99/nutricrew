@@ -1,4 +1,4 @@
-/* Crew level badges — detailed illustration, restrained motion */
+/* Crew level badges — illustrated SVG + motion */
 
 .level-badge {
   --level-badge-size: 168px;
@@ -30,30 +30,93 @@
   overflow: visible;
 }
 
+.level-badge__ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 28%;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--section-accent) 75%, #fff) 55deg,
+    transparent 110deg,
+    color-mix(in srgb, var(--section-accent) 45%, transparent) 200deg,
+    transparent 360deg
+  );
+  opacity: 0;
+  pointer-events: none;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.level-badge__shine {
+  position: absolute;
+  inset: 8%;
+  border-radius: 22%;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.level-badge__shine::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 45%;
+  height: 180%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 48%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+}
+
 .level-badge__aura {
   position: absolute;
   inset: 4%;
   border-radius: 24%;
   background: radial-gradient(
     circle at 50% 42%,
-    color-mix(in srgb, var(--section-accent) 16%, transparent) 0%,
+    color-mix(in srgb, var(--section-accent) 22%, transparent) 0%,
     transparent 68%
   );
   opacity: 0;
   pointer-events: none;
 }
 
+.level-badge--active .level-badge__ring {
+  opacity: 1;
+  animation: level-badge-ring-spin 7s linear infinite;
+}
+
+.level-badge--active .level-badge__shine {
+  opacity: 1;
+}
+
+.level-badge--active .level-badge__shine::after {
+  animation: level-badge-shine-sweep 4.2s ease-in-out infinite;
+}
+
 .level-badge--active .level-badge__aura {
   opacity: 1;
-  animation: level-badge-aura 4.5s ease-in-out infinite;
+  animation: level-badge-aura 3.8s ease-in-out infinite;
 }
 
 .level-badge--active {
-  animation: level-badge-settle 5s ease-in-out infinite;
+  animation:
+    level-badge-enter 0.65s cubic-bezier(0.34, 1.4, 0.64, 1) both,
+    level-badge-settle 4.2s ease-in-out 0.65s infinite,
+    level-badge-glow 3.5s ease-in-out infinite;
 }
 
 .level-badge--active .level-badge__svg {
-  animation: level-badge-drift 4.8s ease-in-out infinite;
+  animation: level-badge-drift 4s ease-in-out infinite;
 }
 
 .level-badge--dimmed {
@@ -62,8 +125,15 @@
 }
 
 .level-badge--dimmed .level-badge__aura,
+.level-badge--dimmed .level-badge__ring,
+.level-badge--dimmed .level-badge__shine,
 .level-badge--dimmed .level-badge__svg {
   animation: none !important;
+}
+
+.level-badge--dimmed .level-badge__ring,
+.level-badge--dimmed .level-badge__shine {
+  opacity: 0;
 }
 
 /* Strokes & line art */
@@ -326,13 +396,32 @@
 }
 
 .level-badge--snacker .level-badge__lens {
-  animation: level-badge-focus 6s ease-in-out infinite;
+  animation: level-badge-focus 5s ease-in-out infinite;
   transform-origin: 56px 22px;
+}
+
+.level-badge--snacker .level-badge__berry:nth-of-type(1) {
+  animation: level-badge-bob 3.2s ease-in-out infinite;
+  transform-origin: 32px 42px;
+}
+
+.level-badge--snacker .level-badge__berry:nth-of-type(2) {
+  animation: level-badge-bob 3.2s ease-in-out 0.35s infinite;
+  transform-origin: 40px 40px;
+}
+
+.level-badge--snacker .level-badge__berry:nth-of-type(3) {
+  animation: level-badge-bob 3.2s ease-in-out 0.7s infinite;
+  transform-origin: 48px 42px;
 }
 
 .level-badge--logger .level-badge__lens {
   animation: level-badge-breathe 5s ease-in-out infinite;
   transform-origin: 56px 24px;
+}
+
+.level-badge--logger .level-badge__camera-flash {
+  animation: level-badge-soft-blink 2.8s ease-in-out infinite;
 }
 
 .level-badge--regular .level-badge__cal-dot--on {
@@ -360,8 +449,18 @@
 }
 
 .level-badge--hawk .level-badge__eye-iris {
-  animation: level-badge-breathe 6s ease-in-out infinite;
+  animation: level-badge-breathe 5s ease-in-out infinite;
   transform-origin: 40px 36px;
+}
+
+.level-badge--hawk .level-badge__brow {
+  animation: level-badge-tilt 4.5s ease-in-out infinite;
+  transform-origin: 40px 28px;
+}
+
+.level-badge--hawk .level-badge__leaf {
+  animation: level-badge-sway 5s ease-in-out infinite;
+  transform-origin: 58px 20px;
 }
 
 .level-badge--streaker .level-badge__flame-core {
@@ -392,38 +491,121 @@
   animation-delay: 1.2s;
 }
 
+.level-badge--legend .level-badge__crown {
+  animation: level-badge-tilt 5.5s ease-in-out infinite;
+  transform-origin: 40px 32px;
+}
+
+.level-badge--hatchling .level-badge__sun-core {
+  animation: level-badge-soft-blink 4s ease-in-out infinite;
+  transform-origin: 58px 18px;
+}
+
 .level-badge--dimmed [class*="level-badge__"] {
   animation: none !important;
 }
 
-/* Motion — calm */
+.progress-level-badge-wrap .level-badge--active {
+  animation:
+    level-badge-enter 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) both,
+    level-badge-settle 4s ease-in-out 0.7s infinite,
+    level-badge-glow 3.2s ease-in-out infinite;
+}
+
+/* Motion */
+@keyframes level-badge-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes level-badge-settle {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(-5px) scale(1.02);
+  }
+}
+
+@keyframes level-badge-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1.5px color-mix(in srgb, var(--section-accent) 28%, transparent),
+      0 8px 22px color-mix(in srgb, var(--section-accent) 18%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -6px 14px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--section-accent) 42%, transparent),
+      0 12px 28px color-mix(in srgb, var(--section-accent) 32%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.16),
+      inset 0 -6px 14px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@keyframes level-badge-ring-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes level-badge-shine-sweep {
+  0%,
+  72%,
+  100% {
+    left: -60%;
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  36% {
+    left: 120%;
+    opacity: 0;
   }
 }
 
 @keyframes level-badge-drift {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(0deg);
   }
   50% {
-    transform: translateY(-2px);
+    transform: translateY(-3px) rotate(0.6deg);
   }
 }
 
 @keyframes level-badge-aura {
   0%,
   100% {
-    opacity: 0.55;
+    opacity: 0.5;
+    transform: scale(0.96);
   }
   50% {
-    opacity: 0.85;
+    opacity: 0.95;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes level-badge-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
   }
 }
 
@@ -514,7 +696,15 @@
   .level-badge,
   .level-badge__svg,
   .level-badge__aura,
+  .level-badge__ring,
+  .level-badge__shine,
+  .level-badge__shine::after,
   .level-badge [class*="level-badge__"] {
     animation: none !important;
+  }
+
+  .level-badge--active .level-badge__ring,
+  .level-badge--active .level-badge__shine {
+    opacity: 0.6;
   }
 }

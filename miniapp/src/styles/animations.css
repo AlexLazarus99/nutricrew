@@ -643,13 +643,20 @@
 }
 
 .progress-roadmap-item {
-  animation: nc-fade-up 0.4s ease both;
+  animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .progress-roadmap-item.current {
   animation:
-    nc-fade-up 0.4s ease both,
-    nc-glow-ring 2.2s ease-in-out infinite;
+    nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both,
+    nc-glow-ring 2.4s ease-in-out infinite;
+}
+
+.progress-roadmap-item.current .level-badge {
+  animation:
+    level-badge-enter 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both,
+    level-badge-settle 4s ease-in-out 0.55s infinite,
+    level-badge-glow 3.2s ease-in-out infinite;
 }
 
 .progress-roadmap-item:nth-child(1) {
@@ -914,4 +921,18 @@
   .hero:hover {
     transform: none;
   }
+}
+
+.app-shell[data-reduce-motion="true"] *,
+.app-shell[data-reduce-motion="true"] *::before,
+.app-shell[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+.app-shell[data-reduce-motion="true"] .card:hover,
+.app-shell[data-reduce-motion="true"] .hero:hover {
+  transform: none;
 }

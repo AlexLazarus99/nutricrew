@@ -69,4 +69,31 @@ export function exerciseIdsForBody(body: BodyTypeId): ExerciseId[] {
   return EXERCISES_BY_BODY[body];
 }
 
+/** Primary diet pick per somatotype (nutrition focus in body-type copy). */
+export const PRIMARY_DIET_BY_BODY: Record<BodyTypeId, DietId> = {
+  ectomorph: "highProtein",
+  mesomorph: "balancedPlate",
+  endomorph: "dash",
+};
+
+export function primaryDietForBody(body: BodyTypeId): DietId {
+  return PRIMARY_DIET_BY_BODY[body];
+}
+
+/** Diets sorted: primary → other suitable → rest. */
+export function dietsForBody(body: BodyTypeId): DietId[] {
+  const primary = primaryDietForBody(body);
+  const suitable = DIETS.filter((d) => d !== primary && DIET_RECOMMENDED_FOR[d].includes(body));
+  const rest = DIETS.filter((d) => d !== primary && !DIET_RECOMMENDED_FOR[d].includes(body));
+  return [primary, ...suitable, ...rest];
+}
+
+export function isDietRecommendedForBody(diet: DietId, body: BodyTypeId): boolean {
+  return DIET_RECOMMENDED_FOR[diet].includes(body);
+}
+
+export function primaryExerciseForBody(body: BodyTypeId): ExerciseId {
+  return EXERCISES_BY_BODY[body].find((id) => id !== "mobilityAll") ?? EXERCISES_BY_BODY[body][0];
+}
+
 export const BODY_TYPE_STORAGE_KEY = "nutricrew_body_type";

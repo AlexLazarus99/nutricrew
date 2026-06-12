@@ -2,7 +2,7 @@ import type { BodyTypeId, DietId } from "../../data/wellness/catalog";
 
 import { DIETS } from "../../data/wellness/catalog";
 
-import { BodyTypePhoto } from "./BodyTypePhoto";
+import { BodyTypeDiagram } from "./BodyTypeDiagram";
 
 import { DietPhoto } from "./DietPhoto";
 
@@ -28,7 +28,7 @@ export function WellnessIllustration({ id, className = "" }: IllustrationProps) 
 
   if (BODY_TYPES.has(id)) {
 
-    return <BodyTypePhoto id={id as BodyTypeId} className={className} />;
+    return <BodyTypeDiagram id={id as BodyTypeId} className={className} />;
 
   }
 

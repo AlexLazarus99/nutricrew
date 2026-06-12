@@ -209,6 +209,18 @@ body {
   50% { opacity: 0.7; }
 }
 
+.app-shell[data-font-scale="sm"] {
+  font-size: 14px;
+}
+
+.app-shell[data-font-scale="md"] {
+  font-size: 16px;
+}
+
+.app-shell[data-font-scale="lg"] {
+  font-size: 18px;
+}
+
 .app-header {
   position: relative;
   z-index: 1;
@@ -218,6 +230,87 @@ body {
   gap: 12px;
   padding: 16px 16px 10px;
   border-bottom: 1px solid color-mix(in srgb, var(--section-accent) 18%, transparent);
+}
+
+.app-header__brand {
+  min-width: 0;
+  flex: 1;
+}
+
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.app-header__profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 148px;
+}
+
+.app-header__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(145deg, var(--accent-dim), var(--section-accent));
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--section-accent) 35%, transparent),
+    0 4px 12px color-mix(in srgb, var(--section-accent) 18%, transparent);
+}
+
+.app-header__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.app-header__avatar-fallback {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a2420;
+}
+
+.app-header__nickname {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-header__settings-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface-2) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, transform 0.15s;
+}
+
+.app-header__settings-btn:hover,
+.app-header__settings-btn:focus-visible {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
+}
+
+.app-header__settings-btn:active {
+  transform: scale(0.96);
 }
 
 .app-title {
@@ -1203,24 +1296,133 @@ button {
   margin-bottom: 4px;
 }
 
-.lang-buttons {
-  display: flex;
-  gap: 4px;
+.settings-page .card > h3 {
+  margin: 0 0 12px;
+  font-size: 1rem;
 }
 
-.lang-buttons button {
-  border: 1px solid var(--surface-2);
+.settings-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.settings-profile-card h2 {
+  margin: 0 0 4px;
+  font-size: 1.25rem;
+}
+
+.settings-profile-card__avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a2420;
+  background: linear-gradient(145deg, var(--accent-dim), var(--section-accent));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--section-accent) 30%, transparent);
+}
+
+.settings-profile-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid color-mix(in srgb, var(--surface-2) 80%, transparent);
+}
+
+.settings-row:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+.settings-row__text {
+  min-width: 0;
+  flex: 1;
+}
+
+.settings-row__label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.settings-row__hint {
+  display: block;
+  margin-top: 2px;
+}
+
+.settings-row__control {
+  flex-shrink: 0;
+}
+
+.settings-segment {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 12%, transparent);
+}
+
+.settings-segment button {
+  border: none;
   background: transparent;
   color: var(--muted);
-  border-radius: 6px;
-  padding: 4px 10px;
+  border-radius: 999px;
+  padding: 6px 12px;
   cursor: pointer;
   font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
 }
 
-.lang-buttons button.active {
-  border-color: var(--accent);
-  color: var(--accent);
+.settings-segment button.active {
+  background: linear-gradient(135deg, var(--accent-dim), var(--section-accent));
+  color: #1a2420;
+}
+
+.settings-toggle {
+  width: 48px;
+  height: 28px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--section-accent) 18%, transparent);
+  background: var(--surface-2);
+  padding: 2px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.settings-toggle__thumb {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: transform 0.15s, background 0.15s;
+}
+
+.settings-toggle.is-on {
+  background: color-mix(in srgb, var(--section-accent) 28%, var(--surface-2));
+  border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
+}
+
+.settings-toggle.is-on .settings-toggle__thumb {
+  transform: translateX(20px);
+  background: var(--section-accent);
 }
 
 .member-list {
@@ -1405,10 +1607,71 @@ button {
   margin: 0 auto;
 }
 
-.body-type-photo {
+.body-type-diagram {
+  --body-diagram-bg-a: color-mix(in srgb, var(--section-surface) 92%, #fff);
+  --body-diagram-bg-b: color-mix(in srgb, var(--section-surface-2) 88%, var(--section-accent) 8%);
+  --body-diagram-fill-a: color-mix(in srgb, var(--section-accent) 18%, #fff);
+  --body-diagram-fill-b: color-mix(in srgb, var(--section-accent) 38%, #c8e6d8);
+  --body-diagram-stroke-a: color-mix(in srgb, var(--section-accent) 72%, #1a3d2e);
+  --body-diagram-stroke-b: color-mix(in srgb, var(--section-accent) 55%, #0f2920);
+  --body-diagram-guide: var(--section-accent);
+  --body-diagram-grid: color-mix(in srgb, var(--section-accent) 12%, transparent);
+  --body-diagram-axis: color-mix(in srgb, var(--text) 35%, transparent);
   max-width: 168px;
-  aspect-ratio: 4 / 5;
-  object-position: center top;
+  margin: 0 auto;
+  padding: 0;
+  border: none;
+}
+
+.body-type-diagram svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--section-accent) 14%, var(--surface-2)),
+    0 8px 22px color-mix(in srgb, var(--section-accent) 12%, rgba(2, 6, 23, 0.2));
+}
+
+.body-type-diagram__figure {
+  transform-origin: 60px 80px;
+  animation: body-diagram-float 4.5s ease-in-out infinite;
+}
+
+.body-type-diagram--ectomorph .body-type-diagram__figure {
+  animation-duration: 5.2s;
+}
+
+.body-type-diagram--mesomorph .body-type-diagram__figure {
+  animation-duration: 4s;
+}
+
+.body-type-diagram--endomorph .body-type-diagram__figure {
+  animation-duration: 4.8s;
+}
+
+.wellness-hero-art.body-type-diagram {
+  max-width: 220px;
+}
+
+.post-registration-art.body-type-diagram {
+  max-width: 120px;
+}
+
+@keyframes body-diagram-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .body-type-diagram__figure {
+    animation: none;
+  }
 }
 
 .diet-photo {
@@ -1501,6 +1764,141 @@ button {
 .wellness-note {
   font-size: 0.85rem;
   margin: 0 0 8px;
+}
+
+.wellness-recommend-panel {
+  border: 1px solid color-mix(in srgb, var(--section-accent) 28%, transparent);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--section-accent) 8%, var(--surface)) 0%,
+    var(--surface) 55%
+  );
+  animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wellness-recommend-kicker {
+  margin: 0 0 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.wellness-recommend-title {
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.wellness-recommend-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.wellness-recommend-item {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface-2) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--section-accent) 12%, transparent);
+  text-decoration: none;
+  color: inherit;
+}
+
+.wellness-recommend-item--diet {
+  grid-template-columns: minmax(88px, 120px) 1fr;
+  align-items: start;
+}
+
+.wellness-recommend-item--diet .wellness-illustration {
+  max-width: 100%;
+  margin: 0;
+}
+
+.wellness-recommend-item h4 {
+  margin: 6px 0 4px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+.wellness-recommend-name {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.wellness-recommend-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: #1a2420;
+  background: linear-gradient(135deg, var(--accent-dim, #d4f5e4), var(--section-accent));
+  margin-bottom: 4px;
+}
+
+.wellness-recommend-exercise-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.wellness-recommend-exercise {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: calc(var(--radius) - 2px);
+  background: var(--surface);
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s;
+}
+
+.wellness-recommend-exercise.primary {
+  border-color: color-mix(in srgb, var(--section-accent) 40%, transparent);
+}
+
+.wellness-recommend-exercise-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.wellness-recommend-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.wellness-card.recommended-primary {
+  border-color: color-mix(in srgb, var(--section-accent) 50%, transparent);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--section-accent) 10%, var(--surface)) 0%,
+    var(--surface) 70%
+  );
+}
+
+.wellness-card.recommended {
+  border-color: color-mix(in srgb, var(--section-accent) 22%, transparent);
+}
+
+.wellness-card.recommended-primary .wellness-recommend-badge,
+.wellness-card-link.recommended-primary .wellness-recommend-badge {
+  margin-bottom: 8px;
 }
 
 .wellness-back {
