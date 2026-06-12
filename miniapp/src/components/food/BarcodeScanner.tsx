@@ -8,6 +8,8 @@ import { macrosFromPer100g } from "../../lib/foodPortion";
 import type { MealAnalysisResponse } from "../../api/client";
 import { NutritionNotesPanel } from "./NutritionNotesPanel";
 
+import { estimateMealPoints } from "../../lib/mealPoints";
+
 export type BarcodeMealResult = MealAnalysisResponse & {
   barcode: string;
   servingGrams: number;
@@ -17,9 +19,10 @@ export type BarcodeMealResult = MealAnalysisResponse & {
 type Props = {
   onApply: (result: BarcodeMealResult) => void;
   onClose: () => void;
+  hasTeam?: boolean;
 };
 
-export function BarcodeScanner({ onApply, onClose }: Props) {
+export function BarcodeScanner({ onApply, onClose, hasTeam = false }: Props) {
   const { t } = useTranslation();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -233,6 +236,9 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
         {product && !scanning && (
           <div className="meal-live-overlay meal-live-overlay--result">
             <p className="meal-live-title">{product.description}</p>
+            <p className="meal-live-points">
+              {t("log.estPoints", { points: estimateMealPoints(product.calories, product.protein) })}
+            </p>
             <p className="meal-live-kcal">{t("log.liveCalories", { kcal: product.calories })}</p>
             <p className="meal-live-macros">
               {t("log.liveMacros", {
@@ -241,6 +247,9 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
                 fat: product.fat,
               })}
             </p>
+            {!hasTeam && (
+              <p className="meal-live-team-hint">{t("guest.teamBoostHint")}</p>
+            )}
             <NutritionNotesPanel
               className="nutrition-notes--overlay"
               remarks={product.nutritionRemarks}

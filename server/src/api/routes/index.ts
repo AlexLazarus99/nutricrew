@@ -310,7 +310,7 @@ apiRouter.get("/leaderboard", ...authedProfile, async (_req, res) => {
   });
 });
 
-apiRouter.get("/meals/barcode/:code", ...authedProfile, async (req, res) => {
+apiRouter.get("/meals/barcode/:code", ...authed, async (req, res) => {
   const code = String(req.params.code ?? "").replace(/\D/g, "");
   if (code.length < 8) {
     res.status(400).json({ error: "INVALID_BARCODE" });
@@ -329,7 +329,7 @@ apiRouter.get("/meals/barcode/:code", ...authedProfile, async (req, res) => {
   res.json(product);
 });
 
-apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
+apiRouter.post("/meals/analyze", ...authed, async (req, res) => {
   const { imageBase64 } = req.body as { imageBase64?: string };
   if (!imageBase64) {
     res.status(400).json({ error: "imageBase64 required" });
@@ -347,7 +347,7 @@ apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
   res.json(attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"));
 });
 
-apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
+apiRouter.post("/meals/analyze-text", ...authed, async (req, res) => {
   const { text } = req.body as { text?: string };
   if (!text?.trim()) {
     res.status(400).json({ error: "TEXT_REQUIRED" });
@@ -375,7 +375,7 @@ apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
   res.json(attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"));
 });
 
-apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
+apiRouter.post("/meals/analyze-audio", ...authed, async (req, res) => {
   const { audioBase64, mimeType } = req.body as { audioBase64?: string; mimeType?: string };
   if (!audioBase64?.trim()) {
     res.status(400).json({ error: "AUDIO_REQUIRED" });
@@ -425,7 +425,7 @@ apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
   }
 });
 
-apiRouter.post("/meals/barcode-estimate", ...authedProfile, async (req, res) => {
+apiRouter.post("/meals/barcode-estimate", ...authed, async (req, res) => {
   const { barcode, hint } = req.body as { barcode?: string; hint?: string };
   const code = String(barcode ?? "").replace(/\D/g, "");
   if (code.length < 8) {
@@ -454,7 +454,7 @@ apiRouter.post("/meals/barcode-estimate", ...authedProfile, async (req, res) => 
   });
 });
 
-apiRouter.post("/meals", ...authedProfile, async (req, res) => {
+apiRouter.post("/meals", ...authed, async (req, res) => {
   const user = req.dbUser!;
   const {
     description,
@@ -546,7 +546,7 @@ apiRouter.post("/meals", ...authedProfile, async (req, res) => {
   });
 });
 
-apiRouter.get("/meals/diary", ...authedProfile, async (req, res) => {
+apiRouter.get("/meals/diary", ...authed, async (req, res) => {
   const user = req.dbUser!;
   const dayStart = req.query.dayStart as string | undefined;
   const dayEnd = req.query.dayEnd as string | undefined;

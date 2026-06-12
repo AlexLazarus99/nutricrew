@@ -13,11 +13,14 @@ import { BarcodeScanner } from "../components/food/BarcodeScanner";
 import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
 import { FoodLogHero } from "../components/food/FoodLogHero";
-import { WaterWidget } from "../components/wellness/WaterWidget";
+import { FoodDayActions } from "../components/food/FoodDayActions";
+import { GuestModeBanner } from "../components/food/GuestModeBanner";
 import { FoodSearchPanel } from "../components/food/FoodSearchPanel";
 import { NutritionNotesPanel } from "../components/food/NutritionNotesPanel";
 import type { FoodSearchResult } from "../api/client";
 import { VoiceMealLog } from "../components/food/VoiceMealLog";
+import { incrementMealLogCount } from "../lib/guestSession";
+import { maybeScheduleGuideOffer } from "../lib/postRegistration";
 
 type AnalysisPortionBase = {
   servingGrams: number;
@@ -62,8 +65,11 @@ export function LogMealPage() {
   const [barcodeOpen, setBarcodeOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [showMoreWays, setShowMoreWays] = useState(false);
+  const [showPhotoCapture, setShowPhotoCapture] = useState(false);
   const [portionGrams, setPortionGrams] = useState("");
   const analysisBaseRef = useRef<AnalysisPortionBase | null>(null);
+  const photoSectionRef = useRef<HTMLDivElement | null>(null);
 
   const [favorites, setFavorites] = useState<
     Array<{
@@ -78,11 +84,12 @@ export function LogMealPage() {
   >([]);
 
   useEffect(() => {
+    if (!me.profileComplete) return;
     void api
       .getGrowth()
       .then((g) => setFavorites(g.favorites))
       .catch(() => {});
-  }, []);
+  }, [me.profileComplete]);
 
   useEffect(() => {
     const draft = loadMealDraft();
@@ -299,6 +306,8 @@ export function LogMealPage() {
         analysis: lastAnalysis ?? undefined,
       });
       trackEvent("meal_logged", { calories: Number(calories) || 0 });
+      const count = incrementMealLogCount();
+      maybeScheduleGuideOffer(count, me.profileComplete);
       setMealResult(res);
       setLastAnalysis(null);
       setNutritionRemarks([]);
@@ -315,6 +324,15 @@ export function LogMealPage() {
     }
   }
 
+  function openPhotoCapture() {
+    setBarcodeOpen(false);
+    setCatalogOpen(false);
+    setShowPhotoCapture(true);
+    requestAnimationFrame(() => {
+      photoSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+
   return (
     <section className="stack log-page">
       <TutorialCoach {...logTour} />
@@ -323,75 +341,107 @@ export function LogMealPage() {
         progress={me.progress}
         titleKey="log.title"
         subtitleKey="log.hint"
+        compactBadge
       />
-      <WaterWidget />
-      <div className="card log-section log-section--capture">
-        <MealPhotoCapture
-          analyzing={analyzing}
-          preview={preview}
-          aiNote={aiNote}
-          onAnalyzingChange={setAnalyzing}
-          onAnalysis={applyAnalysis}
-          onPhotoOnly={applyPhotoOnly}
-          onError={setCaptureError}
-        />
-        {captureError && <p className="error-text">{captureError}</p>}
-      </div>
 
-      {draftNote && <p className="muted small">{draftNote}</p>}
+      {!me.profileComplete && <GuestModeBanner hasTeam={!!me.teamId} />}
 
-      {favorites.length > 0 && (
-        <div className="card log-section log-section--favorites">
-          <h3>{t("log.favoritesTitle")}</h3>
-          <ul className="favorites-list">
-            {favorites.slice(0, 5).map((f) => (
-              <li key={f.id} className="favorite-item">
-                <span>
-                  {f.description} · {f.calories} kcal
-                </span>
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  onClick={() => {
-                    setDescription(f.description);
-                    setCalories(String(f.calories));
-                    setProtein(String(f.protein));
-                    setCarbs(String(f.carbs));
-                    setFat(String(f.fat));
-                    setFavoriteId(f.id);
-                  }}
-                >
-                  →
-                </button>
-              </li>
-            ))}
-          </ul>
+      <FoodDayActions
+        scanning={barcodeOpen || analyzing}
+        onScan={() => {
+          setCatalogOpen(false);
+          setBarcodeOpen(true);
+        }}
+        onPhoto={openPhotoCapture}
+      />
+
+      {barcodeOpen && (
+        <div className="card log-section">
+          <BarcodeScanner
+            hasTeam={!!me.teamId}
+            onApply={(result) => {
+              setBarcodeOpen(false);
+              applyMealEstimate(result, { clearPreview: true });
+            }}
+            onClose={() => setBarcodeOpen(false)}
+          />
         </div>
       )}
 
-      <FoodSearchPanel
-        onSelect={(item: FoodSearchResult) => {
-          applyMealEstimate(
-            {
-              description: item.name,
-              calories: item.calories,
-              protein: item.protein,
-              carbs: item.carbs,
-              fat: item.fat,
-              servingGrams: item.servingGrams,
-              confidence: 0.9,
-              source: "catalog",
-              nutritionRemarks: item.nutritionRemarks,
-              encyclopediaNote: item.encyclopediaNote,
-            },
-            { clearPreview: true },
-          );
-        }}
-      />
+      {(showPhotoCapture || preview || analyzing) && (
+        <div ref={photoSectionRef} className="card log-section log-section--capture">
+          <MealPhotoCapture
+            analyzing={analyzing}
+            preview={preview}
+            aiNote={aiNote}
+            onAnalyzingChange={setAnalyzing}
+            onAnalysis={applyAnalysis}
+            onPhotoOnly={applyPhotoOnly}
+            onError={setCaptureError}
+          />
+          {captureError && <p className="error-text">{captureError}</p>}
+        </div>
+      )}
 
-      <div className="card meal-quick-entry log-section log-section--quick">
-        <h3>{t("log.quickEntryTitle")}</h3>
+      {draftNote && <p className="muted small">{draftNote}</p>}
+
+      <details
+        className="card log-more-ways"
+        open={showMoreWays}
+        onToggle={(e) => setShowMoreWays((e.target as HTMLDetailsElement).open)}
+      >
+        <summary>{t("log.moreWaysTitle")}</summary>
         <p className="muted small">{t("log.quickEntryHint")}</p>
+
+        {favorites.length > 0 && (
+          <div className="log-section log-section--favorites">
+            <h3>{t("log.favoritesTitle")}</h3>
+            <ul className="favorites-list">
+              {favorites.slice(0, 5).map((f) => (
+                <li key={f.id} className="favorite-item">
+                  <span>
+                    {f.description} · {f.calories} kcal
+                  </span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setDescription(f.description);
+                      setCalories(String(f.calories));
+                      setProtein(String(f.protein));
+                      setCarbs(String(f.carbs));
+                      setFat(String(f.fat));
+                      setFavoriteId(f.id);
+                    }}
+                  >
+                    →
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <FoodSearchPanel
+          onSelect={(item: FoodSearchResult) => {
+            applyMealEstimate(
+              {
+                description: item.name,
+                calories: item.calories,
+                protein: item.protein,
+                carbs: item.carbs,
+                fat: item.fat,
+                servingGrams: item.servingGrams,
+                confidence: 0.9,
+                source: "catalog",
+                nutritionRemarks: item.nutritionRemarks,
+                encyclopediaNote: item.encyclopediaNote,
+              },
+              { clearPreview: true },
+            );
+          }}
+        />
+
         <div className="meal-quick-entry__actions">
           <button
             type="button"
@@ -425,33 +475,17 @@ export function LogMealPage() {
         >
           {t("log.voiceLog")}
         </button>
-      </div>
 
-      {voiceOpen && (
-        <div className="card log-section">
+        {voiceOpen && (
           <VoiceMealLog
             onApply={(result) => {
               setVoiceOpen(false);
               applyMealEstimate(result, { clearPreview: true });
             }}
           />
-        </div>
-      )}
+        )}
 
-      {barcodeOpen && (
-        <div className="card">
-          <BarcodeScanner
-            onApply={(result) => {
-              setBarcodeOpen(false);
-              applyMealEstimate(result, { clearPreview: true });
-            }}
-            onClose={() => setBarcodeOpen(false)}
-          />
-        </div>
-      )}
-
-      {catalogOpen && (
-        <div className="card">
+        {catalogOpen && (
           <FoodCatalogPicker
             onApply={(result) => {
               setCatalogOpen(false);
@@ -459,8 +493,8 @@ export function LogMealPage() {
             }}
             onClose={() => setCatalogOpen(false)}
           />
-        </div>
-      )}
+        )}
+      </details>
 
       <form className="card form log-section log-section--form" onSubmit={onSubmit}>
         <p className="form-macros-label">{t("log.qualityTitle")}</p>

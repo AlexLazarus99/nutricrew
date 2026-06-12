@@ -80,14 +80,14 @@ valuationRouter.post("/me/weight", ...authedProfile, async (req, res) => {
   res.json({ log });
 });
 
-valuationRouter.get("/me/water", ...authedProfile, async (req, res) => {
+valuationRouter.get("/me/water", ...authed, async (req, res) => {
   const day = req.query.date ? new Date(String(req.query.date)) : new Date();
   const ml = await wellnessRepo.getWaterTotalForDay(req.dbUser!.id, day);
   const history = await wellnessRepo.getWaterHistory(req.dbUser!.id, 14);
   res.json({ ml, goalMl: 2000, history });
 });
 
-valuationRouter.post("/me/water", ...authedProfile, async (req, res) => {
+valuationRouter.post("/me/water", ...authed, async (req, res) => {
   const ml = Number((req.body as { ml?: number }).ml);
   if (!Number.isFinite(ml) || ml < 1 || ml > 2000) {
     res.status(400).json({ error: "INVALID_WATER" });
@@ -98,7 +98,7 @@ valuationRouter.post("/me/water", ...authedProfile, async (req, res) => {
   res.json({ ml: total, goalMl: 2000 });
 });
 
-valuationRouter.get("/meals/search", ...authedProfile, async (req, res) => {
+valuationRouter.get("/meals/search", ...authed, async (req, res) => {
   const q = String(req.query.q ?? "").trim();
   if (q.length < 2) {
     res.status(400).json({ error: "QUERY_TOO_SHORT" });

@@ -399,6 +399,9 @@
     "sourceBarcodeOff": "From Open Food Facts — adjust grams if needed.",
     "quickEntryTitle": "Without neural network",
     "quickEntryHint": "Barcode (200+ RU catalog + Open Food Facts) or USDA food search.",
+    "dayHubTitle": "Today",
+    "moreWaysTitle": "More ways",
+    "estPoints": "~{{points}} pts",
     "barcodeScan": "Barcode scanner",
     "foodSearch": "Search products",
     "foodSearchPlaceholder": "Type at least 3 letters…",
@@ -590,7 +593,9 @@
   "registration": {
     "title": "Welcome, {{name}}!",
     "friend": "friend",
-    "subtitle": "Enter your weight, height and age to finish registration and unlock the app.",
+    "subtitle": "Start logging meals right away. Profile is needed after a few logs — for personalized tips and team points.",
+    "gateTitle": "Almost there, {{name}}!",
+    "gateSubtitle": "You've logged meals — add weight, height and age to continue and unlock your team.",
     "weight": "Weight (kg)",
     "height": "Height (cm)",
     "age": "Age (years)",
@@ -599,6 +604,12 @@
     "invalidWeight": "Enter a valid weight between 30 and 300 kg.",
     "invalidHeight": "Enter a valid height between 120 and 230 cm.",
     "invalidAge": "Enter a valid age between 14 and 100 years."
+  },
+  "guest": {
+    "modeTitle": "Guest mode",
+    "modeHint": "Log meals without a profile. {{left}} logs left before registration.",
+    "teamBoostHint": "Team members earn boosted points — join a team to keep the bonus.",
+    "joinTeamCta": "Join a team"
   },
   "postRegistration": {
     "badge": "Registration complete",

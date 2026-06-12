@@ -1,5 +1,5 @@
-import { Suspense, useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Suspense, useEffect, useState } from "react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { WellnessBackground } from "./WellnessBackground";
 import { PageLoader } from "./PageLoader";
@@ -9,6 +9,7 @@ import { RegistrationPage } from "../pages/Registration";
 import { PostRegistrationOffer } from "../pages/PostRegistrationOffer";
 import { useTelegram } from "../hooks/useTelegram";
 import { shouldShowPostRegistrationOffer } from "../lib/postRegistration";
+import { getMealLogCount, shouldRequireProfile } from "../lib/guestSession";
 import { sectionFromPath, type AppSection } from "../lib/appSection";
 import { APP_BUILD } from "../lib/apiBase";
 import { SocialLinks } from "./SocialLinks";
@@ -17,11 +18,11 @@ import { BottomNav } from "./BottomNav";
 import { AppHeaderActions } from "./AppHeaderActions";
 
 function resolveSection(
-  registered: boolean,
+  mustCompleteProfile: boolean,
   showWellnessOffer: boolean,
   pathname: string,
 ): AppSection {
-  if (!registered) return "auth";
+  if (mustCompleteProfile) return "auth";
   if (showWellnessOffer) return "guide";
   return sectionFromPath(pathname);
 }
@@ -29,16 +30,27 @@ function resolveSection(
 function LayoutShell() {
   const { t } = useTranslation();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { me, refresh } = useMe();
   const { prefs, effectiveFontSize } = useAppPreferences();
   const { user, colorScheme } = useTelegram();
-  const registered = me.profileComplete;
+  const profileComplete = me.profileComplete;
+  const mustCompleteProfile = shouldRequireProfile(profileComplete);
   const [offerDismissed, setOfferDismissed] = useState(false);
+  const mealLogCount = getMealLogCount();
   const showWellnessOffer =
-    !offerDismissed && shouldShowPostRegistrationOffer(registered);
+    !offerDismissed &&
+    shouldShowPostRegistrationOffer(profileComplete, mealLogCount) &&
+    !pathname.startsWith("/log");
   const displayName = me.user.firstName ?? user?.first_name;
-  const section = resolveSection(registered, showWellnessOffer, pathname);
-  const compactNav = registered && !me.teamId;
+  const section = resolveSection(mustCompleteProfile, showWellnessOffer, pathname);
+  const compactNav = !mustCompleteProfile && !me.teamId;
+
+  useEffect(() => {
+    if (!mustCompleteProfile && pathname === "/" && !profileComplete) {
+      navigate("/log", { replace: true });
+    }
+  }, [mustCompleteProfile, pathname, profileComplete, navigate]);
 
   return (
     <div
@@ -65,8 +77,8 @@ function LayoutShell() {
       </header>
 
       <main className="app-main">
-        {!registered ? (
-          <RegistrationPage onComplete={refresh} displayName={displayName} />
+        {mustCompleteProfile ? (
+          <RegistrationPage onComplete={refresh} displayName={displayName} gateMode />
         ) : showWellnessOffer && !pathname.startsWith("/game") && !pathname.startsWith("/quiz") ? (
           <PostRegistrationOffer
             displayName={displayName}
@@ -79,7 +91,7 @@ function LayoutShell() {
         )}
       </main>
 
-      {registered && !showWellnessOffer && (
+      {!mustCompleteProfile && !showWellnessOffer && (
         <footer className="app-footer">
           <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
           <nav className="footer-legal">
@@ -91,7 +103,7 @@ function LayoutShell() {
         </footer>
       )}
 
-      {registered &&
+      {!mustCompleteProfile &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
         <BottomNav compactNav={compactNav} hasTeam={!!me.teamId} />
       )}

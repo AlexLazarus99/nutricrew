@@ -1085,6 +1085,94 @@ html[data-nav-collapsed="1"] .app-shell {
   grid-column: 1 / -1;
 }
 
+.meal-live-points {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--success, #2a9d5c);
+}
+
+.meal-live-team-hint {
+  margin: 4px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.food-day-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.food-day-actions__title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.food-day-actions__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.food-day-actions__btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 88px;
+  padding: 14px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.food-day-actions__btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.food-day-actions__btn--scan {
+  border-color: color-mix(in srgb, var(--accent, #c9a227) 40%, transparent);
+  background: color-mix(in srgb, var(--accent, #c9a227) 10%, var(--surface));
+}
+
+.food-day-actions__btn--photo {
+  border-color: color-mix(in srgb, var(--primary, #4a7c59) 35%, transparent);
+  background: color-mix(in srgb, var(--primary, #4a7c59) 8%, var(--surface));
+}
+
+.food-day-actions__icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.guest-mode-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-left: 3px solid var(--accent, #c9a227);
+}
+
+.guest-mode-banner__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.log-more-ways summary {
+  cursor: pointer;
+  font-weight: 600;
+  padding: 4px 0;
+}
+
+.log-more-ways[open] summary {
+  margin-bottom: 10px;
+}
+
 .error-text {
   color: var(--danger, #c44);
   font-size: 0.9rem;
