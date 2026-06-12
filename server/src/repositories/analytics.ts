@@ -29,3 +29,27 @@ export async function countEventsToday(userId: number, eventName: string): Promi
     },
   });
 }
+
+/** Voice logs via audio or typed text (legacy events included). */
+export async function countVoiceAnalyzeToday(userId: number): Promise<number> {
+  const start = new Date();
+  start.setUTCHours(0, 0, 0, 0);
+  const user = BigInt(userId);
+  const [voiceEvents, legacyTextVoice] = await Promise.all([
+    prisma.analyticsEvent.count({
+      where: { userId: user, eventName: "meal_analyze_voice", createdAt: { gte: start } },
+    }),
+    prisma.analyticsEvent.count({
+      where: {
+        userId: user,
+        eventName: "meal_analyze_text",
+        createdAt: { gte: start },
+        OR: [
+          { props: { path: ["kind"], equals: "voice_audio" } },
+          { props: { path: ["source"], equals: "voice" } },
+        ],
+      },
+    }),
+  ]);
+  return voiceEvents + legacyTextVoice;
+}

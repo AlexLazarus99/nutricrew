@@ -58,6 +58,8 @@ export function VoiceMealLog({ onApply }: Props) {
       switch (code) {
         case "ANALYZE_LIMIT":
           return t("log.error_ANALYZE_LIMIT");
+        case "VOICE_ANALYZE_LIMIT":
+          return t("log.error_VOICE_ANALYZE_LIMIT");
         case "TRANSCRIBE_NO_KEY":
           return t("log.voiceTranscribeNoKey");
         case "TRANSCRIBE_FAILED":

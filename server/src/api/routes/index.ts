@@ -10,8 +10,10 @@ import { transcribeMealAudio } from "../../services/mealAudioTranscription.js";
 import {
   analyzeMealText,
   assertTextAnalyzeLimit,
+  assertVoiceAnalyzeLimit,
   estimateBarcodeWithAi,
   getLastTextHints,
+  getVoiceAnalyzeDailyLimit,
 } from "../../services/mealTextAnalysis.js";
 import { analyzeFoodImage, getLastVisionHints, probeVisionProviders } from "../../services/vision.js";
 import { getRuCatalogSize, lookupBarcodeProduct } from "../../services/barcodeLookup.js";
@@ -350,9 +352,12 @@ apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
   }
 
   try {
-    await assertTextAnalyzeLimit(req.dbUser!.id);
+    await assertVoiceAnalyzeLimit(req.dbUser!.id);
   } catch {
-    res.status(429).json({ error: "ANALYZE_LIMIT" });
+    res.status(429).json({
+      error: "VOICE_ANALYZE_LIMIT",
+      limit: getVoiceAnalyzeDailyLimit(),
+    });
     return;
   }
 
@@ -360,8 +365,8 @@ apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
   const { trackEvents } = await import("../../services/analytics.js");
   await trackEvents(req.dbUser!.id, [
     {
-      name: "meal_analyze_text",
-      props: { source: analysis.source, confidence: analysis.confidence },
+      name: "meal_analyze_voice",
+      props: { kind: "text", source: analysis.source, confidence: analysis.confidence },
     },
   ]);
   res.json(analysis);
@@ -375,9 +380,12 @@ apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
   }
 
   try {
-    await assertTextAnalyzeLimit(req.dbUser!.id);
+    await assertVoiceAnalyzeLimit(req.dbUser!.id);
   } catch {
-    res.status(429).json({ error: "ANALYZE_LIMIT" });
+    res.status(429).json({
+      error: "VOICE_ANALYZE_LIMIT",
+      limit: getVoiceAnalyzeDailyLimit(),
+    });
     return;
   }
 
@@ -391,8 +399,8 @@ apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
     const { trackEvents } = await import("../../services/analytics.js");
     await trackEvents(req.dbUser!.id, [
       {
-        name: "meal_analyze_text",
-        props: { kind: "voice_audio", source: analysis.source },
+        name: "meal_analyze_voice",
+        props: { kind: "audio", source: analysis.source },
       },
     ]);
     res.json({ ...analysis, transcript });

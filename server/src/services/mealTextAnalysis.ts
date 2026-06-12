@@ -13,6 +13,7 @@ import type { AppLocale, MealAnalysis, VisionFallbackReason } from "../types.js"
 
 const FREE_ANALYZE_LIMIT = 20;
 const PRO_ANALYZE_LIMIT = 80;
+const VOICE_ANALYZE_DAILY_LIMIT = 5;
 
 type TextProvider = "claude" | "openai" | "gemini";
 
@@ -32,6 +33,20 @@ export async function assertTextAnalyzeLimit(userId: number): Promise<void> {
   if (imageCount + textCount >= limit) {
     throw new Error("ANALYZE_LIMIT");
   }
+}
+
+export async function assertVoiceAnalyzeLimit(userId: number): Promise<void> {
+  const pro = await isUserPro(userId);
+  if (pro) return;
+
+  const used = await analyticsRepo.countVoiceAnalyzeToday(userId);
+  if (used >= VOICE_ANALYZE_DAILY_LIMIT) {
+    throw new Error("VOICE_ANALYZE_LIMIT");
+  }
+}
+
+export function getVoiceAnalyzeDailyLimit(): number {
+  return VOICE_ANALYZE_DAILY_LIMIT;
 }
 
 function hasAnyLlmKey(): boolean {
