@@ -3218,6 +3218,145 @@ button {
   line-height: 1.45;
 }
 
+.bird-game-overlay--actions {
+  pointer-events: auto;
+}
+
+.bird-game-overlay-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.bird-game-overlay-btns .btn {
+  width: 100%;
+}
+
+.runner-victory-stars {
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: #f59e0b;
+  margin: 8px 0 !important;
+}
+
+.runner-world-map {
+  margin-top: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.runner-world-map-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.runner-world-map-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.runner-world-map-close {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.runner-world-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 10px;
+}
+
+.runner-world-tab {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 72px;
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.68rem;
+}
+
+.runner-world-tab--active {
+  border-color: var(--world-accent, var(--accent));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--world-accent, var(--accent)) 40%, transparent);
+}
+
+.runner-world-tab--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.runner-world-tab-num {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--world-accent, var(--accent));
+}
+
+.runner-world-tab-name {
+  text-align: center;
+  line-height: 1.2;
+}
+
+.runner-stage-grid {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.runner-stage-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.runner-stage-btn:not(:disabled):hover {
+  border-color: var(--world-accent, var(--accent));
+}
+
+.runner-stage-btn--locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.runner-stage-num {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--world-accent, var(--accent));
+}
+
+.runner-stage-stars {
+  font-size: 0.72rem;
+  color: #f59e0b;
+  letter-spacing: 1px;
+}
+
 .bird-game-hint {
   text-align: center;
   margin: 0;

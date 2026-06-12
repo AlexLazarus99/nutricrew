@@ -715,6 +715,19 @@ function seedInitialSegments(width: number, height: number): {
     screenFlashColor: "#FFFFFF",
     ...emptyJuiceFields(),
     ...defaultSessionFields(),
+    platforms: [],
+    runnerObstacles: [],
+    runnerEnemies: [],
+    gliding: false,
+    onGround: false,
+    wallRunning: false,
+    wallX: 0,
+    attacking: false,
+    attackUntil: 0,
+    runnerWorld: 0,
+    runnerStage: 1,
+    runMode: "endless",
+    levelTarget: 0,
   };
   const trees: TreeObstacle[] = [];
   const junks: JunkObstacle[] = [];
@@ -796,6 +809,19 @@ export function createGame(
     screenFlashColor: "#FFFFFF",
     ...emptyJuiceFields(),
     ...defaultSessionFields(boot),
+    platforms: [],
+    runnerObstacles: [],
+    runnerEnemies: [],
+    gliding: false,
+    onGround: false,
+    wallRunning: false,
+    wallX: 0,
+    attacking: false,
+    attackUntil: 0,
+    runnerWorld: 0,
+    runnerStage: 1,
+    runMode: "endless",
+    levelTarget: 0,
   };
 }
 

@@ -6,7 +6,7 @@ export type FruitType = "apple" | "peach" | "grape";
 
 export type PickupType = FruitType | "speed";
 
-export type GamePhase = "idle" | "playing" | "gameover";
+export type GamePhase = "idle" | "playing" | "gameover" | "victory";
 
 export type HazardKind = "mountain" | "shark";
 
@@ -190,6 +190,34 @@ export type BirdState = {
   nutrition: number;
 };
 
+/** Horizontal runner — ground chunk (Rayman-style auto-run). */
+export type PlatformSegment = {
+  x: number;
+  w: number;
+  surfaceY: number;
+  /** Left cliff for wall-run */
+  wallH?: number;
+};
+
+export type RunnerObstacle = {
+  x: number;
+  w: number;
+  h: number;
+  kind: "stump" | "vine" | "rock";
+  passed: boolean;
+};
+
+export type RunnerEnemy = {
+  x: number;
+  w: number;
+  h: number;
+  surfaceY: number;
+  kind: "beetle" | "junk";
+  defeated: boolean;
+};
+
+export type RunnerRunMode = "endless" | "stage";
+
 export type GameState = {
   width: number;
   height: number;
@@ -267,6 +295,20 @@ export type GameState = {
   tutorialShown: TutorialTipId[];
   activeTutorialTip: TutorialTipId | null;
   tutorialTipUntil: number;
+  /** Auto-run platforms (NutriBird runner mode) */
+  platforms: PlatformSegment[];
+  runnerObstacles: RunnerObstacle[];
+  gliding: boolean;
+  onGround: boolean;
+  runnerEnemies: RunnerEnemy[];
+  wallRunning: boolean;
+  wallX: number;
+  attacking: boolean;
+  attackUntil: number;
+  runnerWorld: number;
+  runnerStage: number;
+  runMode: RunnerRunMode;
+  levelTarget: number;
 };
 
 export const TREE_WIDTH: Record<TreeType, number> = {

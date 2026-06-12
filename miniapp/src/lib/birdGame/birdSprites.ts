@@ -6,6 +6,9 @@ export type BirdDrawOpts = {
   ghost: boolean;
   bossBoost: boolean;
   absorbing: boolean;
+  gliding?: boolean;
+  attacking?: boolean;
+  wallRunning?: boolean;
 };
 
 function wingY(flapAnim: number, r: number, side: -1 | 1): number {
@@ -89,9 +92,37 @@ function drawClassic(
   ctx.ellipse(0, r * 0.12, r * 0.65, r * 0.5, 0, 0, Math.PI * 2);
   ctx.fill();
 
+  if (opts.attacking) {
+    ctx.fillStyle = "#FF8F00";
+    ctx.beginPath();
+    ctx.arc(r * 1.05, r * 0.05, r * 0.35, 0, Math.PI * 2);
+    ctx.fill();
+  } else if (opts.wallRunning) {
+    ctx.strokeStyle = "#F9A825";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(r * 0.3, -r * 0.2);
+    ctx.lineTo(r * 0.9, -r * 0.5);
+    ctx.moveTo(-r * 0.1, r * 0.1);
+    ctx.lineTo(-r * 0.5, r * 0.55);
+    ctx.stroke();
+    drawWing(ctx, r, flapAnim, "#FFD54F");
+  } else if (opts.gliding) {
+    ctx.strokeStyle = "#F9A825";
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    for (const side of [-1, 1] as const) {
+      ctx.beginPath();
+      ctx.moveTo(side * r * 0.2, -r * 0.1);
+      ctx.quadraticCurveTo(side * r * 1.1, -r * 0.45, side * r * 1.35, r * 0.15);
+      ctx.stroke();
+    }
+  } else {
+    drawWing(ctx, r, flapAnim, "#FFD54F");
+  }
+
   drawEye(ctx, r);
   drawBeak(ctx, r, "#FFB300", "#E65100");
-  drawWing(ctx, r, flapAnim, "#FFD54F");
 }
 
 function drawEmber(

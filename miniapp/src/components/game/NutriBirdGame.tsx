@@ -1,13 +1,23 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  applyVictoryProgress,
   createGame,
   drawGame,
   flap,
   loadBestScore,
+  returnToIdle,
   saveBestScore,
+  startEndless,
+  startStage,
   tick,
-} from "../../lib/birdGame/engine";
+  victoryStars,
+} from "../../lib/birdGame/runnerEngine";
+import {
+  loadRunnerProgress,
+  saveRunnerProgress,
+  type RunnerProgress,
+} from "../../lib/birdGame/runnerWorlds";
 import type { GameBootOptions } from "../../lib/birdGame/types";
 import type { BirdGameMetaResponse } from "../../api/client";
 import { samplesForSubmit } from "../../lib/birdGame/gameSession";
@@ -36,6 +46,7 @@ import {
 
 import { NutriBirdMark } from "./NutriBirdMark";
 import { BirdGameMetaPanel } from "./BirdGameMetaPanel";
+import { RunnerWorldMap } from "./RunnerWorldMap";
 import { CollapsibleSection } from "../CollapsibleSection";
 
 const BirdRosterPanel = lazy(() =>
@@ -88,6 +99,12 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const [zoneLabel, setZoneLabel] = useState("");
   const [paused, setPaused] = useState(false);
   const [bossNear, setBossNear] = useState(false);
+  const [showWorldMap, setShowWorldMap] = useState(false);
+  const [runnerProgress, setRunnerProgress] = useState<RunnerProgress>(loadRunnerProgress);
+  const [lastVictoryStars, setLastVictoryStars] = useState<1 | 2 | 3>(1);
+  const victorySavedRef = useRef(false);
+  const runnerProgressRef = useRef(runnerProgress);
+  runnerProgressRef.current = runnerProgress;
   const gameBootRef = useRef<GameBootOptions>({});
   const audioRef = useRef(createBirdGameAudio());
   const prevPhaseRef = useRef<GamePhase>("idle");
@@ -306,6 +323,21 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
           audioRef.current.onGameOver();
           gameHaptic("warning");
         }
+        if (state.phase === "victory" && prevPhaseRef.current === "playing") {
+          gameHaptic("success");
+          audioRef.current.stopMusic();
+          if (!victorySavedRef.current) {
+            victorySavedRef.current = true;
+            const stars = victoryStars(state);
+            setLastVictoryStars(stars);
+            const next = applyVictoryProgress(state, runnerProgressRef.current);
+            saveRunnerProgress(next);
+            setRunnerProgress(next);
+          }
+        }
+        if (state.phase !== "victory") {
+          victorySavedRef.current = false;
+        }
         prevPhaseRef.current = state.phase;
 
         if (!shouldSimulate) {
@@ -346,7 +378,8 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
           void audioRef.current.startMusic();
         }
 
-        const staticScene = state.phase === "idle" || state.phase === "gameover";
+        const staticScene =
+          state.phase === "idle" || state.phase === "gameover" || state.phase === "victory";
         const shouldDraw = dirtyRef.current || shouldSimulate || staticScene;
         if (shouldDraw) {
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -378,28 +411,66 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     return () => cancelAnimationFrame(rafRef.current);
   }, [bestScore, syncHud, refreshLeaderboard, processJuiceEvents, onActivity, t]);
 
+  const beginRun = useCallback(
+    async (nextState: GameState) => {
+      const audio = audioRef.current;
+      await audio.unlock();
+      audio.onFlap();
+      gameHaptic("light");
+      stateRef.current = nextState;
+      dirtyRef.current = true;
+      if (nextState.phase === "playing") {
+        setShowWorldMap(false);
+        await audio.startMusic();
+        prevFruitsRef.current = nextState.fruitsCollected;
+        prevPhaseRef.current = "playing";
+        lastTsRef.current = 0;
+      }
+      syncHud(hudSnapshot(nextState));
+    },
+    [syncHud],
+  );
+
   const handleTap = useCallback(async () => {
+    if (showWorldMap) return;
     const playing = stateRef.current?.phase === "playing";
     if (!applySize(!playing)) return;
     const state = stateRef.current;
     if (!state) return;
+    if (state.phase === "victory") return;
 
-    const audio = audioRef.current;
-    await audio.unlock();
-    audio.onFlap();
-    gameHaptic("light");
+    await beginRun(flap(state));
+  }, [applySize, beginRun, showWorldMap]);
 
-    stateRef.current = flap(state);
-    const next = stateRef.current;
+  const handleQuickRun = useCallback(async () => {
+    if (!applySize(false)) return;
+    const state = stateRef.current;
+    if (!state || state.phase === "playing") return;
+    await beginRun(startEndless(state));
+  }, [applySize, beginRun]);
+
+  const handleSelectStage = useCallback(
+    async (world: number, stage: number) => {
+      if (!applySize(false)) return;
+      const state = stateRef.current;
+      if (!state || state.phase === "playing") return;
+      await beginRun(startStage(state, world, stage));
+    },
+    [applySize, beginRun],
+  );
+
+  const handleVictoryContinue = useCallback(() => {
+    const state = stateRef.current;
+    if (!state) return;
+    stateRef.current = returnToIdle(state);
     dirtyRef.current = true;
-    if (next.phase === "playing") {
-      await audio.startMusic();
-      prevFruitsRef.current = next.fruitsCollected;
-      prevPhaseRef.current = "playing";
-      lastTsRef.current = 0;
-    }
-    syncHud(hudSnapshot(next));
-  }, [applySize, syncHud]);
+    setShowWorldMap(true);
+    syncHud(hudSnapshot(stateRef.current));
+  }, [syncHud]);
+
+  const handleVictoryQuickRun = useCallback(() => {
+    void handleQuickRun();
+  }, [handleQuickRun]);
 
   const toggleMusic = useCallback(() => {
     const muted = audioRef.current.toggleMute();
@@ -529,8 +600,8 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
             </div>
           </div>
         )}
-        {canvasReady && (phase === "idle" || phase === "gameover") && (
-          <div className="bird-game-overlay">
+        {canvasReady && (phase === "idle" || phase === "gameover") && !showWorldMap && (
+          <div className="bird-game-overlay bird-game-overlay--actions">
             <div className="bird-game-overlay-card bird-game-overlay-card--splash">
               <NutriBirdMark size={64} showWordmark={phase === "idle"} animated={phase === "idle"} />
               <h3>{phase === "idle" ? t("game.startTitle") : t("game.overTitle")}</h3>
@@ -541,6 +612,38 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
               </p>
               {bonusToast && <p className="success small">{bonusToast}</p>}
               {trialToast && <p className="success small">{trialToast}</p>}
+              <div className="bird-game-overlay-btns">
+                <button type="button" className="btn primary" onClick={() => void handleQuickRun()}>
+                  {t("game.quickRun")}
+                </button>
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={() => setShowWorldMap(true)}
+                >
+                  {t("game.worldMapBtn")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        {canvasReady && phase === "victory" && (
+          <div className="bird-game-overlay bird-game-overlay--actions">
+            <div className="bird-game-overlay-card bird-game-overlay-card--splash">
+              <h3>{t("game.victoryTitle")}</h3>
+              <p className="runner-victory-stars" aria-label={t("game.stageStars", { count: lastVictoryStars })}>
+                {"★".repeat(lastVictoryStars)}
+                {"☆".repeat(3 - lastVictoryStars)}
+              </p>
+              <p>{t("game.victoryHint", { score: hudScore, fruit: fruits })}</p>
+              <div className="bird-game-overlay-btns">
+                <button type="button" className="btn primary" onClick={handleVictoryContinue}>
+                  {t("game.victoryMap")}
+                </button>
+                <button type="button" className="btn secondary" onClick={() => void handleVictoryQuickRun()}>
+                  {t("game.quickRun")}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -548,6 +651,14 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
       <p className="muted small bird-game-hint">
         {t("game.tapHint")} {t("game.musicHint")}
       </p>
+
+      {showWorldMap && phase !== "playing" && (
+        <RunnerWorldMap
+          progress={runnerProgress}
+          onSelectStage={(w, s) => void handleSelectStage(w, s)}
+          onClose={() => setShowWorldMap(false)}
+        />
+      )}
 
       <div className="card bird-game-leaderboard">
         <h3>{t("game.leaderboardTitle")}</h3>
@@ -584,22 +695,15 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         storageKey="nutricrew_bird_guide_open"
       >
         <ul className="bird-game-legend small muted">
-          <li>{t("game.legendTrees")}</li>
-          <li>{t("game.legendJunk")}</li>
-          <li>{t("game.legendSkyFood")}</li>
-          <li>{t("game.legendMountain")}</li>
-          <li>{t("game.legendElevations")}</li>
-          <li>{t("game.legendNight")}</li>
-          <li>{t("game.legendWolves")}</li>
-          <li>{t("game.legendMeteor")}</li>
-          <li>{t("game.legendPtero")}</li>
-          <li>{t("game.legendBoss")}</li>
+          <li>{t("game.legendRunner")}</li>
+          <li>{t("game.legendGlide")}</li>
+          <li>{t("game.legendWallRun")}</li>
+          <li>{t("game.legendAttack")}</li>
+          <li>{t("game.legendWorldMap")}</li>
           <li>{t("game.legendFruit")}</li>
           <li>{t("game.legendFruitTypes")}</li>
           <li>{t("game.legendShield")}</li>
           <li>{t("game.legendDuel")}</li>
-          <li>{t("game.legendSpeed")}</li>
-          <li>{t("game.legendCombo")}</li>
         </ul>
       </CollapsibleSection>
 
