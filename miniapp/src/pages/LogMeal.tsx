@@ -13,6 +13,7 @@ import { BarcodeScanner } from "../components/food/BarcodeScanner";
 import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
 import { FoodLogHero } from "../components/food/FoodLogHero";
+import { VoiceMealLog } from "../components/food/VoiceMealLog";
 
 export function LogMealPage() {
   const { t } = useTranslation();
@@ -37,6 +38,7 @@ export function LogMealPage() {
   const [lastAnalysis, setLastAnalysis] = useState<MealAnalysisResponse | null>(null);
   const [barcodeOpen, setBarcodeOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
 
   const [favorites, setFavorites] = useState<
     Array<{
@@ -132,6 +134,25 @@ export function LogMealPage() {
       setAiNote(t(noteKey));
     } else if (analysis.source === "photo_only") {
       setAiNote(t("log.sourcePhotoOnly"));
+    } else if (analysis.source === "voice") {
+      setAiNote(
+        analysis.visionReason === "no_key" || analysis.visionReason === "api_error"
+          ? t(
+              analysis.visionReason === "no_key"
+                ? "log.aiFallbackNoKey"
+                : "log.aiFallbackApiError",
+            )
+          : t("log.sourceVoice", { confidence: Math.round(analysis.confidence * 100) }),
+      );
+    } else if (analysis.source === "barcode_ai") {
+      setAiNote(t("log.sourceBarcodeAi", { confidence: Math.round(analysis.confidence * 100) }));
+    } else if (analysis.source === "claude") {
+      setAiNote(
+        t("log.aiNote", {
+          confidence: Math.round(analysis.confidence * 100),
+          source: "claude",
+        }),
+      );
     } else {
       setAiNote(
         t("log.aiNote", {
@@ -276,15 +297,28 @@ export function LogMealPage() {
         </div>
         <button
           type="button"
-          className="btn btn-secondary btn-block"
+          className={`btn btn-secondary btn-block ${voiceOpen ? "active" : ""}`}
           onClick={() => {
-            const text = window.prompt(t("log.voicePrompt"));
-            if (text) setDescription(text);
+            setBarcodeOpen(false);
+            setCatalogOpen(false);
+            setVoiceOpen((v) => !v);
           }}
         >
           {t("log.voiceLog")}
         </button>
       </div>
+
+      {voiceOpen && (
+        <div className="card log-section">
+          <VoiceMealLog
+            onApply={(result) => {
+              setVoiceOpen(false);
+              applyMealEstimate(result, { clearPreview: true });
+            }}
+            onError={setCaptureError}
+          />
+        </div>
+      )}
 
       {barcodeOpen && (
         <div className="card">

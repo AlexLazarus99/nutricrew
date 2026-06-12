@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserMultiFormatReader } from "@zxing/browser";
 import type { IScannerControls } from "@zxing/browser";
+import { api } from "../../api/client";
 import { lookupBarcode } from "../../lib/barcodeLookup";
 import { macrosFromPer100g } from "../../lib/foodPortion";
 import type { MealAnalysisResponse } from "../../api/client";
@@ -31,6 +32,9 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
   const [grams, setGrams] = useState("100");
   const [product, setProduct] = useState<BarcodeMealResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notFoundCode, setNotFoundCode] = useState<string | null>(null);
+  const [aiHint, setAiHint] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
 
   const stopCamera = useCallback(() => {
     scannerControlsRef.current?.stop();
@@ -75,10 +79,12 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
       try {
         const per100 = await lookupBarcode(code);
         if (!per100) {
+          setNotFoundCode(code);
           setError(t("log.barcodeNotFound"));
           setProduct(null);
           return;
         }
+        setNotFoundCode(null);
         const portionGrams = portion ?? per100.servingGrams;
         setGrams(String(portionGrams));
         setManualCode(per100.barcode);
@@ -184,6 +190,32 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
     onClose();
   }
 
+  async function handleAiEstimate() {
+    const code = (notFoundCode ?? manualCode).replace(/\D/g, "");
+    if (code.length < 8) return;
+
+    setAiBusy(true);
+    setError(null);
+    try {
+      const analysis = await api.estimateBarcodeAi(code, aiHint.trim() || undefined);
+      const portionGrams = Number(grams) || 100;
+      const result: BarcodeMealResult = {
+        ...analysis,
+        source: "barcode_ai",
+        barcode: code,
+        servingGrams: portionGrams,
+      };
+      setProduct(result);
+      setManualCode(code);
+      setNotFoundCode(null);
+    } catch (err) {
+      const msg = (err as Error).message;
+      setError(msg === "ANALYZE_LIMIT" ? t("log.error_ANALYZE_LIMIT") : t("log.barcodeAiError"));
+    } finally {
+      setAiBusy(false);
+    }
+  }
+
   return (
     <div className="meal-barcode-scanner">
       <div className="meal-live-viewport">
@@ -210,6 +242,29 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
       </div>
 
       {error && <p className="error-text small">{error}</p>}
+
+      {notFoundCode && (
+        <div className="meal-barcode-ai">
+          <p className="muted small">{t("log.barcodeAiHint")}</p>
+          <label>
+            {t("log.barcodeAiProductHint")}
+            <input
+              value={aiHint}
+              onChange={(e) => setAiHint(e.target.value)}
+              placeholder={t("log.barcodeAiProductPlaceholder")}
+            />
+          </label>
+          <button
+            type="button"
+            className="btn btn-secondary btn-block"
+            onClick={() => void handleAiEstimate()}
+            disabled={aiBusy}
+          >
+            {aiBusy ? t("log.analyzing") : t("log.barcodeAiEstimate")}
+          </button>
+        </div>
+      )}
+
       {!cameraReady && !error && (
         <p className="muted small">{t("log.barcodeManualHint")}</p>
       )}

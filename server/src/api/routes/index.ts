@@ -6,6 +6,12 @@ import * as teamsRepo from "../../repositories/teams.js";
 import * as usersRepo from "../../repositories/users.js";
 import * as birdGameRepo from "../../repositories/birdGame.js";
 import { logMealForUser } from "../../services/meals.js";
+import {
+  analyzeMealText,
+  assertTextAnalyzeLimit,
+  estimateBarcodeWithAi,
+  getLastTextHints,
+} from "../../services/mealTextAnalysis.js";
 import { analyzeFoodImage, getLastVisionHints, probeVisionProviders } from "../../services/vision.js";
 import { getRuCatalogSize, lookupBarcodeProduct } from "../../services/barcodeLookup.js";
 import { createTeamForUser, joinTeam } from "../../services/teams.js";
@@ -53,20 +59,28 @@ apiRouter.get("/ping", async (req, res) => {
     ready: apiReady,
     webappUrl: config.webappUrl,
     botUsername: config.botUsername || null,
-    visionConfigured: Boolean(config.openaiApiKey || config.geminiApiKey),
-    visionProvider: config.openaiApiKey
-      ? "openai"
-      : config.geminiApiKey
-        ? "gemini"
-        : null,
-    visionModel: config.openaiApiKey
-      ? config.visionModel
-      : config.geminiApiKey
-        ? config.geminiVisionModel
-        : null,
+    visionConfigured: Boolean(
+      config.anthropicApiKey || config.openaiApiKey || config.geminiApiKey,
+    ),
+    claudeConfigured: Boolean(config.anthropicApiKey),
+    visionProvider: config.anthropicApiKey
+      ? "claude"
+      : config.openaiApiKey
+        ? "openai"
+        : config.geminiApiKey
+          ? "gemini"
+          : null,
+    visionModel: config.anthropicApiKey
+      ? config.claudeVisionModel
+      : config.openaiApiKey
+        ? config.visionModel
+        : config.geminiApiKey
+          ? config.geminiVisionModel
+          : null,
     geminiConfigured: Boolean(config.geminiApiKey),
     ruBarcodeCatalogSize: getRuCatalogSize(),
     visionLastHints: getLastVisionHints(),
+    textLastHints: getLastTextHints(),
     visionProbe,
     socialLinks: getPublicSocialLinks(),
   });
@@ -321,10 +335,61 @@ apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
   await trackEvents(req.dbUser!.id, [
     {
       name: "meal_analyze",
-      props: { source: analysis.source, cacheHit: !!analysis.cacheHit },
+      props: { kind: "image", source: analysis.source, cacheHit: !!analysis.cacheHit },
     },
   ]);
   res.json(analysis);
+});
+
+apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
+  const { text } = req.body as { text?: string };
+  if (!text?.trim()) {
+    res.status(400).json({ error: "TEXT_REQUIRED" });
+    return;
+  }
+
+  try {
+    await assertTextAnalyzeLimit(req.dbUser!.id);
+  } catch {
+    res.status(429).json({ error: "ANALYZE_LIMIT" });
+    return;
+  }
+
+  const analysis = await analyzeMealText(text, req.dbUser!.locale, { source: "voice" });
+  const { trackEvents } = await import("../../services/analytics.js");
+  await trackEvents(req.dbUser!.id, [
+    {
+      name: "meal_analyze_text",
+      props: { source: analysis.source, confidence: analysis.confidence },
+    },
+  ]);
+  res.json(analysis);
+});
+
+apiRouter.post("/meals/barcode-estimate", ...authedProfile, async (req, res) => {
+  const { barcode, hint } = req.body as { barcode?: string; hint?: string };
+  const code = String(barcode ?? "").replace(/\D/g, "");
+  if (code.length < 8) {
+    res.status(400).json({ error: "INVALID_BARCODE" });
+    return;
+  }
+
+  try {
+    await assertTextAnalyzeLimit(req.dbUser!.id);
+  } catch {
+    res.status(429).json({ error: "ANALYZE_LIMIT" });
+    return;
+  }
+
+  const analysis = await estimateBarcodeWithAi(code, req.dbUser!.locale, hint);
+  const { trackEvents } = await import("../../services/analytics.js");
+  await trackEvents(req.dbUser!.id, [
+    {
+      name: "meal_analyze_text",
+      props: { kind: "barcode_ai", barcode: code, source: analysis.source },
+    },
+  ]);
+  res.json({ ...analysis, barcode: code });
 });
 
 apiRouter.post("/meals", ...authedProfile, async (req, res) => {

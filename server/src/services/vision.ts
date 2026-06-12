@@ -1,16 +1,14 @@
 import { config } from "../config.js";
 import { hashImageBase64 } from "../lib/imageHash.js";
+import {
+  buildFoodImagePrompt,
+  parseApiError,
+  parseMealJsonResponse,
+  sanitizeBase64,
+  splitImageData,
+} from "../lib/mealLlmShared.js";
 import * as visionCacheRepo from "../repositories/visionCache.js";
-import type { AppLocale, MealAnalysis, MealType, VisionFallbackReason } from "../types.js";
-
-const MEAL_TYPES = new Set<MealType>([
-  "breakfast",
-  "lunch",
-  "dinner",
-  "snack",
-  "drink",
-  "unknown",
-]);
+import type { AppLocale, MealAnalysis, VisionFallbackReason } from "../types.js";
 
 const GEMINI_MODEL_FALLBACKS = [
   "gemini-2.5-flash",
@@ -19,21 +17,11 @@ const GEMINI_MODEL_FALLBACKS = [
   "gemini-1.5-flash-8b",
 ] as const;
 
-type VisionProvider = "openai" | "gemini";
-
-type RawVisionJson = {
-  description?: string;
-  calories?: number;
-  protein?: number;
-  carbs?: number;
-  fat?: number;
-  confidence?: number;
-  mealType?: string;
-};
+type VisionProvider = "claude" | "openai" | "gemini";
 
 type ProviderProbe = { ok: boolean; status?: number; hint?: string };
 
-let lastVisionHints: { openai?: string; gemini?: string } = {};
+let lastVisionHints: { claude?: string; openai?: string; gemini?: string } = {};
 
 export function getLastVisionHints() {
   return lastVisionHints;
@@ -44,23 +32,8 @@ function geminiModelsToTry(): string[] {
   return [...new Set([preferred, ...GEMINI_MODEL_FALLBACKS].filter(Boolean))];
 }
 
-function buildFoodPrompt(locale: AppLocale): string {
-  const lang = locale === "ru" ? "Russian" : "English";
-  const notFood = locale === "ru" ? "Не еда" : "Not food";
-
-  return `You are a nutrition vision assistant for NutriCrew (Telegram miniapp).
-
-Estimate the portion realistically (typical home or café serving, not an ideal nutrition label).
-
-Respond with ONLY valid JSON (no markdown, no extra text):
-{"description":"short meal name in ${lang}","calories":number,"protein":number,"carbs":number,"fat":number,"confidence":0.0-1.0,"mealType":"breakfast|lunch|dinner|snack|drink|unknown"}
-
-Rules:
-- protein, carbs, fat in grams; calories in kcal.
-- If the image is not food or unclear: confidence < 0.3, description "${notFood}", mealType "unknown".
-- Multiple dishes: one combined name and total macros.
-- Do not set confidence above 0.9 without clear portion cues.
-- Include sauces, oil, and drinks in calories.`;
+function hasVisionKey(): boolean {
+  return Boolean(config.anthropicApiKey || config.openaiApiKey || config.geminiApiKey);
 }
 
 function estimateCarbsFat(calories: number, protein: number): { carbs: number; fat: number } {
@@ -72,88 +45,76 @@ function estimateCarbsFat(calories: number, protein: number): { carbs: number; f
   };
 }
 
-function parseMealType(value: unknown): MealType | undefined {
-  if (typeof value !== "string") return undefined;
-  const normalized = value.toLowerCase().trim() as MealType;
-  return MEAL_TYPES.has(normalized) ? normalized : undefined;
-}
+type GeminiResponse = {
+  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+  promptFeedback?: { blockReason?: string };
+  error?: { message?: string };
+};
 
-function extractJsonObject(raw: string): string {
-  const trimmed = raw.trim().replace(/^```json?\s*|\s*```$/g, "");
-  if (trimmed.startsWith("{")) return trimmed;
-
-  const start = trimmed.indexOf("{");
-  const end = trimmed.lastIndexOf("}");
-  if (start >= 0 && end > start) {
-    return trimmed.slice(start, end + 1);
-  }
-  return trimmed;
-}
-
-function sanitizeBase64(data: string): string {
-  return data.replace(/\s+/g, "");
-}
-
-function splitImageData(dataUrl: string): { mimeType: string; base64: string } {
-  const match = dataUrl.match(/^data:([^;]+);base64,(.+)$/s);
-  if (match) {
-    return { mimeType: match[1]!, base64: sanitizeBase64(match[2]!) };
-  }
-  return {
-    mimeType: "image/jpeg",
-    base64: sanitizeBase64(dataUrl.replace(/^data:image\/\w+;base64,/, "")),
-  };
-}
-
-function parseApiError(body: string, fallback: string): string {
-  try {
-    const json = JSON.parse(body) as {
-      error?: { message?: string; status?: string };
-      message?: string;
-    };
-    return json.error?.message ?? json.message ?? fallback;
-  } catch {
-    return body.slice(0, 180) || fallback;
-  }
-}
-
-function buildMealAnalysis(
-  json: RawVisionJson,
+async function callClaudeVision(
+  dataUrl: string,
   locale: AppLocale,
-  source: VisionProvider,
   imageHash: string,
-): MealAnalysis {
-  const calories = Math.round(Number(json.calories) || 400);
-  const protein = Math.round(Number(json.protein) || 20);
-  const estimated = estimateCarbsFat(calories, protein);
-  let confidence = Math.min(1, Math.max(0, Number(json.confidence) || 0.7));
-  const mealType = parseMealType(json.mealType);
+): Promise<MealAnalysis | null> {
+  if (!config.anthropicApiKey) return null;
 
-  const notFood =
-    locale === "ru"
-      ? json.description?.toLowerCase().includes("не еда")
-      : json.description?.toLowerCase().includes("not food");
-  if (notFood || (mealType === "unknown" && confidence < 0.3)) {
-    confidence = Math.min(confidence, 0.29);
+  const { mimeType, base64 } = splitImageData(dataUrl);
+  if (!base64 || base64.length < 32) {
+    lastVisionHints.claude = "invalid image data";
+    return null;
   }
 
-  return {
-    description: json.description ?? (locale === "ru" ? "Блюдо" : "Meal"),
-    calories,
-    protein,
-    carbs: Math.round(Number(json.carbs) || estimated.carbs),
-    fat: Math.round(Number(json.fat) || estimated.fat),
-    confidence,
-    mealType,
-    source,
-    imageHash,
-    cacheHit: false,
-  };
-}
+  const mediaType = mimeType.startsWith("image/") ? mimeType : "image/jpeg";
 
-function parseVisionResponse(raw: string, locale: AppLocale, source: VisionProvider, imageHash: string) {
-  const json = JSON.parse(extractJsonObject(raw)) as RawVisionJson;
-  return buildMealAnalysis(json, locale, source, imageHash);
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": config.anthropicApiKey,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: config.claudeVisionModel,
+        max_tokens: 400,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "image",
+                source: { type: "base64", media_type: mediaType, data: base64 },
+              },
+              { type: "text", text: buildFoodImagePrompt(locale) },
+            ],
+          },
+        ],
+      }),
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      lastVisionHints.claude = parseApiError(errText, `HTTP ${res.status}`);
+      console.error("Claude vision error", res.status, errText.slice(0, 500));
+      return null;
+    }
+
+    const data = (await res.json()) as {
+      content?: Array<{ type?: string; text?: string }>;
+    };
+    const raw = data.content?.find((c) => c.type === "text")?.text?.trim() ?? "";
+    if (!raw) {
+      lastVisionHints.claude = "empty response";
+      return null;
+    }
+
+    lastVisionHints.claude = undefined;
+    return parseMealJsonResponse(raw, locale, "claude", imageHash);
+  } catch (err) {
+    lastVisionHints.claude = (err as Error).message;
+    console.error("Claude vision parse failed", err);
+    return null;
+  }
 }
 
 async function callOpenAIVision(
@@ -178,7 +139,7 @@ async function callOpenAIVision(
           {
             role: "user",
             content: [
-              { type: "text", text: buildFoodPrompt(locale) },
+              { type: "text", text: buildFoodImagePrompt(locale) },
               {
                 type: "image_url",
                 image_url: { url: dataUrl, detail: "low" },
@@ -202,24 +163,17 @@ async function callOpenAIVision(
     const raw = data.choices?.[0]?.message?.content?.trim() ?? "";
     if (!raw) {
       lastVisionHints.openai = "empty response";
-      console.error("OpenAI vision empty response");
       return null;
     }
 
     lastVisionHints.openai = undefined;
-    return parseVisionResponse(raw, locale, "openai", imageHash);
+    return parseMealJsonResponse(raw, locale, "openai", imageHash);
   } catch (err) {
     lastVisionHints.openai = (err as Error).message;
     console.error("OpenAI vision parse failed", err);
     return null;
   }
 }
-
-type GeminiResponse = {
-  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  promptFeedback?: { blockReason?: string };
-  error?: { message?: string };
-};
 
 async function requestGeminiVision(
   model: string,
@@ -249,7 +203,7 @@ async function requestGeminiVision(
         {
           parts: [
             { inline_data: { mime_type: mimeType, data: base64 } },
-            { text: buildFoodPrompt(locale) },
+            { text: buildFoodImagePrompt(locale) },
           ],
         },
       ],
@@ -306,7 +260,7 @@ async function callGeminiVision(
 
       try {
         lastVisionHints.gemini = undefined;
-        return parseVisionResponse(result.raw, locale, "gemini", imageHash);
+        return parseMealJsonResponse(result.raw, locale, "gemini", imageHash);
       } catch (err) {
         errors.push(`${model}: parse ${(err as Error).message}`);
       }
@@ -322,7 +276,7 @@ async function cacheAndReturn(
   result: MealAnalysis,
   locale: AppLocale,
 ): Promise<MealAnalysis> {
-  if (result.source === "openai" || result.source === "gemini") {
+  if (result.source === "openai" || result.source === "gemini" || result.source === "claude") {
     await visionCacheRepo.setCachedAnalysis(result.imageHash!, locale, result);
   }
   return result;
@@ -330,17 +284,72 @@ async function cacheAndReturn(
 
 function buildVisionHint(): string | undefined {
   const parts: string[] = [];
+  if (lastVisionHints.claude) parts.push(`Claude: ${lastVisionHints.claude}`);
   if (lastVisionHints.openai) parts.push(`OpenAI: ${lastVisionHints.openai}`);
   if (lastVisionHints.gemini) parts.push(`Gemini: ${lastVisionHints.gemini}`);
   return parts.length ? parts.join("; ") : undefined;
 }
 
+async function tryVisionProviders(
+  dataUrl: string,
+  locale: AppLocale,
+  imageHash: string,
+): Promise<MealAnalysis | null> {
+  const chain: Array<() => Promise<MealAnalysis | null>> = [];
+
+  if (config.anthropicApiKey) {
+    chain.push(() => callClaudeVision(dataUrl, locale, imageHash));
+  }
+  if (config.openaiApiKey) {
+    chain.push(() => callOpenAIVision(dataUrl, locale, imageHash));
+  }
+  if (config.geminiApiKey) {
+    chain.push(() => callGeminiVision(dataUrl, locale, imageHash));
+  }
+
+  for (const attempt of chain) {
+    const result = await attempt();
+    if (result) return result;
+  }
+
+  return null;
+}
+
 export async function probeVisionProviders(): Promise<{
+  claude: ProviderProbe;
   openai: ProviderProbe;
   gemini: ProviderProbe;
 }> {
+  const claude: ProviderProbe = { ok: false };
   const openai: ProviderProbe = { ok: false };
   const gemini: ProviderProbe = { ok: false };
+
+  if (config.anthropicApiKey) {
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": config.anthropicApiKey,
+          "anthropic-version": "2023-06-01",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: config.claudeTextModel,
+          max_tokens: 8,
+          messages: [{ role: "user", content: "Reply with ok" }],
+        }),
+      });
+      claude.status = res.status;
+      claude.ok = res.ok;
+      if (!res.ok) {
+        claude.hint = parseApiError(await res.text(), `HTTP ${res.status}`);
+      }
+    } catch (err) {
+      claude.hint = (err as Error).message;
+    }
+  } else {
+    claude.hint = "not configured";
+  }
 
   if (config.openaiApiKey) {
     try {
@@ -389,7 +398,7 @@ export async function probeVisionProviders(): Promise<{
     gemini.hint = "not configured";
   }
 
-  return { openai, gemini };
+  return { claude, openai, gemini };
 }
 
 export async function analyzeFoodImage(
@@ -406,31 +415,14 @@ export async function analyzeFoodImage(
     ? base64Image
     : `data:image/jpeg;base64,${sanitizeBase64(base64Image)}`;
 
-  if (!config.openaiApiKey && !config.geminiApiKey) {
+  if (!hasVisionKey()) {
     return { ...fallbackAnalysis("no_key"), imageHash, cacheHit: false };
   }
 
-  let geminiTried = false;
+  const result = await tryVisionProviders(dataUrl, locale, imageHash);
+  if (result) return cacheAndReturn(result, locale);
 
-  if (config.geminiApiKey && !config.openaiApiKey) {
-    geminiTried = true;
-    const gemini = await callGeminiVision(dataUrl, locale, imageHash);
-    if (gemini) return cacheAndReturn(gemini, locale);
-  }
-
-  if (config.openaiApiKey) {
-    const openai = await callOpenAIVision(dataUrl, locale, imageHash);
-    if (openai) return cacheAndReturn(openai, locale);
-    console.warn("OpenAI vision failed — trying Gemini fallback");
-  }
-
-  if (config.geminiApiKey && !geminiTried) {
-    const gemini = await callGeminiVision(dataUrl, locale, imageHash);
-    if (gemini) return cacheAndReturn(gemini, locale);
-  }
-
-  const reason: VisionFallbackReason =
-    config.openaiApiKey || config.geminiApiKey ? "api_error" : "no_key";
+  const reason: VisionFallbackReason = hasVisionKey() ? "api_error" : "no_key";
   const hint = buildVisionHint();
   return { ...fallbackAnalysis(reason, hint), imageHash, cacheHit: false };
 }

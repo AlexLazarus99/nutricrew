@@ -49,12 +49,14 @@ async function main(): Promise<void> {
       if (config.devBypassAuth) {
         console.log("Dev auth bypass ON — browser works without Telegram");
       }
-      if (!config.openaiApiKey && !config.geminiApiKey) {
-        console.log("Vision: fallback mode (set OPENAI_API_KEY or GEMINI_API_KEY)");
+      if (!config.anthropicApiKey && !config.openaiApiKey && !config.geminiApiKey) {
+        console.log("AI: fallback mode (set ANTHROPIC_API_KEY, OPENAI_API_KEY or GEMINI_API_KEY)");
+      } else if (config.anthropicApiKey) {
+        console.log(`AI: Claude ${config.claudeVisionModel} (vision + text)`);
       } else if (config.openaiApiKey && config.geminiApiKey) {
-        console.log(`Vision: OpenAI ${config.visionModel} + Gemini ${config.geminiVisionModel} fallback`);
+        console.log(`AI: OpenAI ${config.visionModel} + Gemini ${config.geminiVisionModel}`);
       } else if (config.geminiApiKey) {
-        console.log(`Vision: Gemini ${config.geminiVisionModel}`);
+        console.log(`AI: Gemini ${config.geminiVisionModel}`);
       }
       if (config.s3.enabled) {
         console.log(`S3: ${config.s3.endpoint} / ${config.s3.bucket}`);
@@ -69,9 +71,9 @@ async function main(): Promise<void> {
     setApiReady(true);
     console.log("API ready (database connected)");
 
-    if (config.openaiApiKey || config.geminiApiKey) {
+    if (config.anthropicApiKey || config.openaiApiKey || config.geminiApiKey) {
       void probeVisionProviders().then((probe) => {
-        console.log("Vision probe:", JSON.stringify(probe));
+        console.log("AI probe:", JSON.stringify(probe));
       });
     }
   } catch (err) {

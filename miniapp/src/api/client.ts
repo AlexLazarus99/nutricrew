@@ -415,7 +415,16 @@ export interface MealAnalysisResponse {
   fat: number;
   confidence: number;
   mealType?: MealType;
-  source: "openai" | "gemini" | "fallback" | "catalog" | "barcode" | "photo_only";
+  source:
+    | "claude"
+    | "openai"
+    | "gemini"
+    | "fallback"
+    | "catalog"
+    | "barcode"
+    | "barcode_ai"
+    | "voice"
+    | "photo_only";
   visionReason?: VisionFallbackReason;
   visionHint?: string;
   imageHash?: string;
@@ -545,6 +554,16 @@ export const api = {
     request<MealAnalysisResponse>("/meals/analyze", {
       method: "POST",
       body: JSON.stringify({ imageBase64 }),
+    }),
+  analyzeMealText: (text: string) =>
+    request<MealAnalysisResponse>("/meals/analyze-text", {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    }),
+  estimateBarcodeAi: (barcode: string, hint?: string) =>
+    request<MealAnalysisResponse & { barcode: string }>("/meals/barcode-estimate", {
+      method: "POST",
+      body: JSON.stringify({ barcode, hint }),
     }),
   lookupBarcode: (barcode: string) => {
     const code = barcode.replace(/\D/g, "");

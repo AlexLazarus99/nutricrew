@@ -18,7 +18,12 @@ export type MealValidationResult =
 const FREE_ANALYZE_LIMIT = 20;
 const PRO_ANALYZE_LIMIT = 80;
 
-const AI_VISION_SOURCES = new Set<MealAnalysis["source"]>(["openai", "gemini", "fallback"]);
+const AI_VISION_SOURCES = new Set<MealAnalysis["source"]>([
+  "claude",
+  "openai",
+  "gemini",
+  "fallback",
+]);
 
 function isAiVisionAnalysis(analysis?: MealAnalysis): boolean {
   return Boolean(analysis && AI_VISION_SOURCES.has(analysis.source));
@@ -61,7 +66,9 @@ export async function validateMealInput(
       }
 
       const lowConfidence =
-        (input.analysis?.source === "openai" || input.analysis?.source === "gemini") &&
+        (input.analysis?.source === "openai" ||
+          input.analysis?.source === "gemini" ||
+          input.analysis?.source === "claude") &&
         (input.analysis.confidence ?? 0) < 0.3;
       if (lowConfidence) {
         return { ok: false, error: "NOT_FOOD" };
@@ -77,7 +84,10 @@ export async function validateMealInput(
   let verificationStatus = "ok";
   let pointsPenalty = 0;
 
-  if (input.analysis?.source === "openai" && input.analysis.calories > 0) {
+  if (
+    (input.analysis?.source === "openai" || input.analysis?.source === "claude") &&
+    input.analysis.calories > 0
+  ) {
     const diff = Math.abs(input.calories - input.analysis.calories) / input.analysis.calories;
     if (diff > 0.45) {
       verificationStatus = "macro_adjusted";
@@ -89,6 +99,10 @@ export async function validateMealInput(
     verificationStatus = "catalog";
   } else if (input.analysis?.source === "barcode") {
     verificationStatus = "barcode";
+  } else if (input.analysis?.source === "barcode_ai") {
+    verificationStatus = "barcode_ai";
+  } else if (input.analysis?.source === "voice") {
+    verificationStatus = "voice";
   } else if (input.analysis?.source === "photo_only") {
     verificationStatus = "photo_manual";
   } else if (!input.photoBase64 && !input.analysis) {

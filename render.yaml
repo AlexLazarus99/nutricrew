@@ -55,7 +55,13 @@ services:
         value: "false"
       - key: DEV_BYPASS_AUTH
         value: "false"
-      # Meal photo AI — set in Render Dashboard (Environment), never commit the key.
+      # Meal AI — set in Render Dashboard (Environment), never commit keys.
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: CLAUDE_VISION_MODEL
+        value: claude-sonnet-4-20250514
+      - key: CLAUDE_TEXT_MODEL
+        value: claude-sonnet-4-20250514
       - key: OPENAI_API_KEY
         sync: false
       - key: VISION_MODEL

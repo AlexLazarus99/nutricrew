@@ -895,6 +895,52 @@ html[data-nav-collapsed="1"] .app-shell {
   gap: 8px;
 }
 
+.meal-barcode-ai {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--section-accent-soft) 40%, var(--section-surface));
+  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+}
+
+.voice-meal-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.voice-meal-log__mic--active {
+  animation: nc-pulse-soft 1.6s ease-in-out infinite;
+  border-color: var(--section-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--section-accent) 35%, transparent);
+}
+
+.voice-meal-log__transcript {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--section-surface-2);
+}
+
+.voice-meal-log__manual {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+}
+
+.voice-meal-log__manual textarea {
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--muted) 25%, transparent);
+  background: var(--section-surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  resize: vertical;
+}
+
 .food-catalog-picker {
   display: flex;
   flex-direction: column;

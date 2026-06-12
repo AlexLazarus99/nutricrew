@@ -26,6 +26,9 @@ export const config = {
   databaseUrl:
     process.env.DATABASE_URL ??
     "postgresql://nutricrew:nutricrew@localhost:5432/nutricrew",
+  anthropicApiKey: (process.env.ANTHROPIC_API_KEY ?? "").trim(),
+  claudeVisionModel: process.env.CLAUDE_VISION_MODEL ?? "claude-sonnet-4-20250514",
+  claudeTextModel: process.env.CLAUDE_TEXT_MODEL ?? "claude-sonnet-4-20250514",
   openaiApiKey: (process.env.OPENAI_API_KEY ?? "").trim(),
   visionModel: process.env.VISION_MODEL ?? "gpt-4o-mini",
   geminiApiKey: (process.env.GEMINI_API_KEY ?? "").trim(),
@@ -92,12 +95,12 @@ export function assertConfig(): void {
         "Set BOT_TOKEN in Render Environment (Dashboard → your service → Environment).",
     );
   }
-  if (!config.openaiApiKey && !config.geminiApiKey) {
+  if (!config.anthropicApiKey && !config.openaiApiKey && !config.geminiApiKey) {
     console.warn(
-      "No vision API key — meal photo analysis will use fallback estimates (450 kcal). " +
-        "Set OPENAI_API_KEY and/or GEMINI_API_KEY (free tier: aistudio.google.com/apikey).",
+      "No AI API key — meal analysis will use fallback estimates (450 kcal). " +
+        "Set ANTHROPIC_API_KEY, OPENAI_API_KEY and/or GEMINI_API_KEY.",
     );
-  } else if (!config.openaiApiKey && config.geminiApiKey) {
-    console.warn("OPENAI_API_KEY not set — vision will use Gemini fallback.");
+  } else if (!config.anthropicApiKey && !config.openaiApiKey && config.geminiApiKey) {
+    console.warn("Only GEMINI_API_KEY set — AI will use Gemini where available.");
   }
 }

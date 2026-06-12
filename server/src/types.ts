@@ -56,7 +56,16 @@ export interface MealAnalysis {
   fat: number;
   confidence: number;
   mealType?: MealType;
-  source: "openai" | "gemini" | "fallback" | "catalog" | "barcode" | "photo_only";
+  source:
+    | "claude"
+    | "openai"
+    | "gemini"
+    | "fallback"
+    | "catalog"
+    | "barcode"
+    | "barcode_ai"
+    | "voice"
+    | "photo_only";
   visionReason?: VisionFallbackReason;
   visionHint?: string;
   imageHash?: string;
