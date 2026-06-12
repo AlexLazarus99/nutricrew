@@ -164,6 +164,26 @@ export type JuiceEvent = {
   value?: number;
 };
 
+export type GhostSample = { t: number; y: number };
+
+export type GhostDuelOpponent = {
+  name: string;
+  score: number;
+  samples: GhostSample[];
+};
+
+export type TutorialTipId = "trees" | "junk" | "fruit" | "ghost" | "nitro" | "boss";
+
+export type GameBootOptions = {
+  birdBoostActive?: boolean;
+  reduceMotion?: boolean;
+  metaGhostBonusMs?: number;
+  metaGapBonus?: number;
+  metaNearMissMult?: number;
+  seasonalNutritionMult?: number;
+  ghostDuel?: GhostDuelOpponent | null;
+};
+
 export type BirdState = {
   y: number;
   vy: number;
@@ -231,6 +251,22 @@ export type GameState = {
   nearMisses: number;
   juicePopups: JuicePopup[];
   juiceEvents: JuiceEvent[];
+  /** Meal-log shield hits remaining this run */
+  birdBoostHits: number;
+  reduceMotion: boolean;
+  metaGhostBonusMs: number;
+  metaGapBonus: number;
+  metaNearMissMult: number;
+  seasonalNutritionMult: number;
+  ghostDuel: GhostDuelOpponent | null;
+  ghostSamples: GhostSample[];
+  junkSpawnsEnabled: boolean;
+  deathPendingUntil: number;
+  paused: boolean;
+  nutritionDecayMs: number;
+  tutorialShown: TutorialTipId[];
+  activeTutorialTip: TutorialTipId | null;
+  tutorialTipUntil: number;
 };
 
 export const TREE_WIDTH: Record<TreeType, number> = {

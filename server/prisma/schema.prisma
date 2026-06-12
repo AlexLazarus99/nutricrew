@@ -77,6 +77,9 @@ model User {
   starTransactions  StarTransaction[]
   prizeAwards       PrizeAward[]
   birdGameBest      BirdGameBest?
+  birdGameDaily     BirdGameDaily[]
+  birdGameUpgrades  BirdGameUpgrade?
+  birdGameGhostRuns BirdGameGhostRun[]
   ownedBirds        UserBird[]
   birdTrials        UserBirdTrial[]
   xpSpends          UserXpSpend[]
@@ -160,6 +163,44 @@ model BirdGameBest {
 
   @@index([score(sort: Desc)])
   @@map("bird_game_bests")
+}
+
+model BirdGameDaily {
+  userId    BigInt   @map("user_id")
+  dayKey    String   @map("day_key") @db.VarChar(10)
+  bestScore Int      @default(0) @map("best_score")
+  claimed   Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, dayKey])
+  @@map("bird_game_daily")
+}
+
+model BirdGameUpgrade {
+  userId        BigInt @id @map("user_id")
+  ghostLevel    Int    @default(0) @map("ghost_level")
+  gapLevel      Int    @default(0) @map("gap_level")
+  nearMissLevel Int    @default(0) @map("near_miss_level")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("bird_game_upgrades")
+}
+
+model BirdGameGhostRun {
+  id          BigInt   @id @default(autoincrement())
+  userId      BigInt   @map("user_id")
+  displayName String   @map("display_name")
+  birdId      String   @map("bird_id") @db.VarChar(32)
+  score       Int
+  samples     Json
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([score(sort: Desc)])
+  @@map("bird_game_ghost_runs")
 }
 
 model UserBird {

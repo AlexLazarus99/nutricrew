@@ -385,6 +385,29 @@ export interface BirdScoreResponse {
   };
 }
 
+export interface BirdGameMetaResponse {
+  daily: {
+    best: number;
+    target: number;
+    done: boolean;
+    claimed: boolean;
+    rewardStars: number;
+  };
+  upgrades: { ghostLevel: number; gapLevel: number; nearMissLevel: number };
+  upgradeCosts: { ghost: number | null; gap: number | null; nearMiss: number | null };
+  birdBoost: { active: boolean };
+  season: { id: string; rewardStars: number };
+}
+
+export type BirdGhostSample = { t: number; y: number };
+
+export interface BirdDuelOpponent {
+  name: string;
+  score: number;
+  birdId: string;
+  samples: BirdGhostSample[];
+}
+
 export type MealType =
   | "breakfast"
   | "lunch"
@@ -413,6 +436,7 @@ export interface MealAnalysisResponse {
   protein: number;
   carbs: number;
   fat: number;
+  servingGrams?: number;
   confidence: number;
   mealType?: MealType;
   source:
@@ -524,11 +548,30 @@ export const api = {
   getTeam: () => request<TeamResponse>("/team"),
   getLeaderboard: () => request<LeaderboardResponse>("/leaderboard"),
   getBirdLeaderboard: () => request<BirdGameLeaderboardResponse>("/game/leaderboard"),
-  submitBirdScore: (body: { score: number; level: number; fruits: number; birdId?: string }) =>
+  submitBirdScore: (body: {
+    score: number;
+    level: number;
+    fruits: number;
+    birdId?: string;
+    ghostSamples?: BirdGhostSample[];
+  }) =>
     request<BirdScoreResponse>("/game/score", {
       method: "POST",
       body: JSON.stringify(body),
     }),
+  getGameMeta: () => request<BirdGameMetaResponse>("/game/meta"),
+  claimBirdDaily: () =>
+    request<{ ok: boolean; rewardStars: number; starBalance: number }>("/game/daily/claim", {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+  purchaseBirdUpgrade: (kind: "ghost" | "gap" | "nearMiss") =>
+    request<{ ok: boolean; upgrades: BirdGameMetaResponse["upgrades"]; availableXp: number }>(
+      "/game/upgrades",
+      { method: "POST", body: JSON.stringify({ kind }) },
+    ),
+  getBirdDuel: (score: number) =>
+    request<{ opponent: BirdDuelOpponent | null }>(`/game/duel?score=${encodeURIComponent(score)}`),
   getGameBirds: () => request<BirdRosterResponse>("/game/birds"),
   selectGameBird: (birdId: string) =>
     request<{ ok: boolean; selectedBirdId: string }>("/game/birds/select", {

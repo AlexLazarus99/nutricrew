@@ -44,6 +44,7 @@ export function FoodCatalogPicker({ onApply, onClose }: Props) {
       source: "catalog",
       foodId: item.id,
       portionAmount: portion,
+      servingGrams: Math.round(portion),
     };
   }
 

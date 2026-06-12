@@ -127,6 +127,9 @@ export function MealLiveScanner({ onApply, onClose }: Props) {
         {estimate && (
           <div className="meal-live-overlay meal-live-overlay--result">
             <p className="meal-live-title">{estimate.description}</p>
+            {estimate.servingGrams ? (
+              <p className="muted small">{t("log.aiPortionNote", { grams: estimate.servingGrams })}</p>
+            ) : null}
             <p className="meal-live-kcal">
               {t("log.liveCalories", { kcal: estimate.calories })}
             </p>

@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type MealAnalysisResponse, type MealResponse } from "../api/client";
@@ -14,6 +14,23 @@ import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
 import { FoodLogHero } from "../components/food/FoodLogHero";
 import { VoiceMealLog } from "../components/food/VoiceMealLog";
+
+type AnalysisPortionBase = {
+  servingGrams: number;
+  description: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+};
+
+function resolveServingGrams(analysis: MealAnalysisResponse): number | undefined {
+  if (analysis.servingGrams && analysis.servingGrams > 0) return analysis.servingGrams;
+  const portionAmount = (analysis as { portionAmount?: number }).portionAmount;
+  if (portionAmount && portionAmount > 0) return portionAmount;
+  const barcodeGrams = (analysis as { servingGrams?: number }).servingGrams;
+  return barcodeGrams && barcodeGrams > 0 ? barcodeGrams : undefined;
+}
 
 export function LogMealPage() {
   const { t } = useTranslation();
@@ -39,6 +56,8 @@ export function LogMealPage() {
   const [barcodeOpen, setBarcodeOpen] = useState(false);
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+  const [portionGrams, setPortionGrams] = useState("");
+  const analysisBaseRef = useRef<AnalysisPortionBase | null>(null);
 
   const [favorites, setFavorites] = useState<
     Array<{
@@ -87,22 +106,66 @@ export function LogMealPage() {
 
   const MEAL_SLOTS = ["breakfast", "lunch", "dinner", "snack"] as const;
 
+  function withPortionNote(note: string, grams?: number) {
+    if (!grams) return note;
+    return `${note} · ${t("log.aiPortionNote", { grams })}`;
+  }
+
+  function handlePortionGramsChange(value: string) {
+    setPortionGrams(value);
+    const base = analysisBaseRef.current;
+    const grams = Number(value);
+    if (!base || !grams || grams <= 0) return;
+
+    const ratio = grams / base.servingGrams;
+    setCalories(String(Math.round(base.calories * ratio)));
+    setProtein(String(Math.round(base.protein * ratio)));
+    setCarbs(String(Math.round(base.carbs * ratio)));
+    setFat(String(Math.round(base.fat * ratio)));
+
+    const descBase = base.description
+      .replace(new RegExp(String.raw`\s*\(\d+(?:[.,]\d+)?\s*g\)\s*$`, "i"), "")
+      .trim();
+    setDescription(`${descBase} (${Math.round(grams)} g)`);
+    setLastAnalysis((prev) => (prev ? { ...prev, servingGrams: Math.round(grams) } : prev));
+  }
+
   function applyMealEstimate(
     analysis: MealAnalysisResponse,
     options?: { preview?: string | null; clearPreview?: boolean },
   ) {
     setCaptureError(null);
-    setLastAnalysis(analysis);
     if (options?.clearPreview) {
       setPreview(null);
     } else if (options?.preview !== undefined) {
       setPreview(options.preview);
     }
-    setDescription(analysis.description);
-    setCalories(String(analysis.calories));
-    setProtein(String(analysis.protein));
-    setCarbs(String(analysis.carbs));
-    setFat(String(analysis.fat));
+    const servingGrams = resolveServingGrams(analysis);
+    const normalizedAnalysis = servingGrams
+      ? { ...analysis, servingGrams }
+      : analysis;
+
+    setDescription(normalizedAnalysis.description);
+    setCalories(String(normalizedAnalysis.calories));
+    setProtein(String(normalizedAnalysis.protein));
+    setCarbs(String(normalizedAnalysis.carbs));
+    setFat(String(normalizedAnalysis.fat));
+
+    if (servingGrams) {
+      analysisBaseRef.current = {
+        servingGrams,
+        description: normalizedAnalysis.description,
+        calories: normalizedAnalysis.calories,
+        protein: normalizedAnalysis.protein,
+        carbs: normalizedAnalysis.carbs,
+        fat: normalizedAnalysis.fat,
+      };
+      setPortionGrams(String(servingGrams));
+    } else {
+      analysisBaseRef.current = null;
+      setPortionGrams("");
+    }
+
     if (
       analysis.mealType &&
       (MEAL_SLOTS as readonly string[]).includes(analysis.mealType)
@@ -112,55 +175,80 @@ export function LogMealPage() {
       setMealSlot("snack");
     }
 
-    if (analysis.source === "fallback") {
+    if (normalizedAnalysis.source === "fallback") {
       const reasonKey =
-        analysis.visionReason === "no_key"
+        normalizedAnalysis.visionReason === "no_key"
           ? "log.aiFallbackNoKey"
-          : analysis.visionReason === "api_error"
+          : normalizedAnalysis.visionReason === "api_error"
             ? "log.aiFallbackApiError"
             : "log.aiFallbackParseError";
-      const hint = analysis.visionHint?.trim();
-      setAiNote(hint ? `${t(reasonKey)} ${hint}` : t(reasonKey));
-    } else if (analysis.source === "catalog") {
-      setAiNote(t("log.sourceCatalog"));
-    } else if (analysis.source === "barcode") {
-      const barcodeSrc = (analysis as { barcodeDataSource?: string }).barcodeDataSource;
+      const hint = normalizedAnalysis.visionHint?.trim();
+      setAiNote(
+        withPortionNote(
+          hint ? `${t(reasonKey)} ${hint}` : t(reasonKey),
+          servingGrams,
+        ),
+      );
+    } else if (normalizedAnalysis.source === "catalog") {
+      setAiNote(withPortionNote(t("log.sourceCatalog"), servingGrams));
+    } else if (normalizedAnalysis.source === "barcode") {
+      const barcodeSrc = (normalizedAnalysis as { barcodeDataSource?: string }).barcodeDataSource;
       const noteKey =
         barcodeSrc === "ru_catalog"
           ? "log.sourceBarcodeRu"
           : barcodeSrc === "off_ru"
             ? "log.sourceBarcodeOffRu"
             : "log.sourceBarcodeOff";
-      setAiNote(t(noteKey));
-    } else if (analysis.source === "photo_only") {
+      setAiNote(withPortionNote(t(noteKey), servingGrams));
+    } else if (normalizedAnalysis.source === "photo_only") {
       setAiNote(t("log.sourcePhotoOnly"));
-    } else if (analysis.source === "voice") {
+    } else if (normalizedAnalysis.source === "voice") {
       setAiNote(
-        analysis.visionReason === "no_key" || analysis.visionReason === "api_error"
-          ? t(
-              analysis.visionReason === "no_key"
-                ? "log.aiFallbackNoKey"
-                : "log.aiFallbackApiError",
-            )
-          : t("log.sourceVoice", { confidence: Math.round(analysis.confidence * 100) }),
+        withPortionNote(
+          normalizedAnalysis.visionReason === "no_key" ||
+            normalizedAnalysis.visionReason === "api_error"
+            ? t(
+                normalizedAnalysis.visionReason === "no_key"
+                  ? "log.aiFallbackNoKey"
+                  : "log.aiFallbackApiError",
+              )
+            : t("log.sourceVoice", {
+                confidence: Math.round(normalizedAnalysis.confidence * 100),
+              }),
+          servingGrams,
+        ),
       );
-    } else if (analysis.source === "barcode_ai") {
-      setAiNote(t("log.sourceBarcodeAi", { confidence: Math.round(analysis.confidence * 100) }));
-    } else if (analysis.source === "claude") {
+    } else if (normalizedAnalysis.source === "barcode_ai") {
       setAiNote(
-        t("log.aiNote", {
-          confidence: Math.round(analysis.confidence * 100),
-          source: "claude",
-        }),
+        withPortionNote(
+          t("log.sourceBarcodeAi", {
+            confidence: Math.round(normalizedAnalysis.confidence * 100),
+          }),
+          servingGrams,
+        ),
+      );
+    } else if (normalizedAnalysis.source === "claude") {
+      setAiNote(
+        withPortionNote(
+          t("log.aiNote", {
+            confidence: Math.round(normalizedAnalysis.confidence * 100),
+            source: "claude",
+          }),
+          servingGrams,
+        ),
       );
     } else {
       setAiNote(
-        t("log.aiNote", {
-          confidence: Math.round(analysis.confidence * 100),
-          source: analysis.source,
-        }),
+        withPortionNote(
+          t("log.aiNote", {
+            confidence: Math.round(normalizedAnalysis.confidence * 100),
+            source: normalizedAnalysis.source,
+          }),
+          servingGrams,
+        ),
       );
     }
+    setLastAnalysis(normalizedAnalysis);
     setMealResult(null);
     setResultError(null);
   }
@@ -379,6 +467,19 @@ export function LogMealPage() {
             required
           />
         </label>
+        {portionGrams && (
+          <label>
+            {t("log.portionGrams")}
+            <input
+              type="number"
+              min={1}
+              max={3000}
+              value={portionGrams}
+              onChange={(e) => handlePortionGramsChange(e.target.value)}
+            />
+            <span className="muted small">{t("log.portionAdjustHint")}</span>
+          </label>
+        )}
         <label>
           {t("log.calories")}
           <input

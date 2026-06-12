@@ -168,7 +168,7 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
       fat: Math.round((product.fat / product.servingGrams) * 100),
     };
     const macros = macrosFromPer100g(
-      product.description.replace(/\s*\(\d+\s*g\)$/, ""),
+      product.description.replace(new RegExp(String.raw`\s*\(\d+\s*g\)$`), ""),
       per100,
       g,
     );
@@ -198,7 +198,8 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
     setError(null);
     try {
       const analysis = await api.estimateBarcodeAi(code, aiHint.trim() || undefined);
-      const portionGrams = Number(grams) || 100;
+      const portionGrams = analysis.servingGrams ?? (Number(grams) || 100);
+      setGrams(String(portionGrams));
       const result: BarcodeMealResult = {
         ...analysis,
         source: "barcode_ai",

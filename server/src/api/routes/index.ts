@@ -800,15 +800,21 @@ apiRouter.get("/game/leaderboard", ...authed, async (req, res) => {
 });
 
 apiRouter.post("/game/score", ...authed, async (req, res) => {
-  const { score, level, fruits, birdId } = req.body as {
+  const { score, level, fruits, birdId, ghostSamples } = req.body as {
     score?: number;
     level?: number;
     fruits?: number;
     birdId?: string;
+    ghostSamples?: Array<{ t: number; y: number }>;
   };
   const parsedScore = Math.round(Number(score) || 0);
-  if (parsedScore < 0) {
-    res.status(400).json({ error: "Invalid score" });
+  const parsedLevel = Math.max(1, Math.round(Number(level) || 1));
+  const parsedFruits = Math.max(0, Math.round(Number(fruits) || 0));
+
+  const birdGameMeta = await import("../../services/birdGameMeta.js");
+  const validationError = birdGameMeta.validateScore(parsedScore, parsedLevel, parsedFruits);
+  if (validationError) {
+    res.status(400).json({ error: validationError });
     return;
   }
 
@@ -817,13 +823,12 @@ apiRouter.post("/game/score", ...authed, async (req, res) => {
     [user.first_name, user.last_name].filter(Boolean).join(" ").trim() ||
     user.username ||
     "Player";
-  const parsedLevel = Math.max(1, Math.round(Number(level) || 1));
   const improved = await birdGameRepo.upsertBestScore(
     user.id,
     displayName,
     parsedScore,
     parsedLevel,
-    Math.max(0, Math.round(Number(fruits) || 0)),
+    parsedFruits,
   );
 
   const speciesId =
@@ -832,7 +837,57 @@ apiRouter.post("/game/score", ...authed, async (req, res) => {
     m.processTrialsOnScore(user.id, speciesId, parsedLevel),
   );
 
+  await birdGameMeta.recordScoreMeta(
+    user.id,
+    displayName,
+    parsedScore,
+    speciesId,
+    Array.isArray(ghostSamples) ? ghostSamples : undefined,
+  );
+
   res.json({ ok: true, improved, trials });
+});
+
+apiRouter.get("/game/meta", ...authed, async (req, res) => {
+  const meta = await import("../../services/birdGameMeta.js").then((m) =>
+    m.getGameMeta(req.dbUser!.id),
+  );
+  res.json(meta);
+});
+
+apiRouter.post("/game/daily/claim", ...authed, async (req, res) => {
+  const result = await import("../../services/birdGameMeta.js").then((m) =>
+    m.claimDailyReward(req.dbUser!.id),
+  );
+  if (!result.ok) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
+  res.json(result);
+});
+
+apiRouter.post("/game/upgrades", ...authed, async (req, res) => {
+  const { kind } = req.body as { kind?: string };
+  if (!kind || !["ghost", "gap", "nearMiss"].includes(kind)) {
+    res.status(400).json({ error: "Invalid kind" });
+    return;
+  }
+  const result = await import("../../services/birdGameMeta.js").then((m) =>
+    m.purchaseUpgrade(req.dbUser!.id, kind as "ghost" | "gap" | "nearMiss"),
+  );
+  if (!result.ok) {
+    res.status(400).json({ error: result.error });
+    return;
+  }
+  res.json(result);
+});
+
+apiRouter.get("/game/duel", ...authed, async (req, res) => {
+  const near = Math.round(Number(req.query.score) || 0);
+  const opponent = await import("../../services/birdGameMeta.js").then((m) =>
+    m.getDuelOpponent(req.dbUser!.id, near),
+  );
+  res.json({ opponent });
 });
 
 apiRouter.get("/game/birds", ...authed, async (req, res) => {

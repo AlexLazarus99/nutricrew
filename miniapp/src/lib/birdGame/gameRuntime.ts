@@ -1,3 +1,6 @@
+import { computeElevation, elevationDisplayName, elevationHudKey } from "./elevationZones";
+import { zoneHudForLevel } from "./gameHud";
+import { isCityLevel } from "./progression";
 import { TREE_WIDTH, type GameState, type Hazard, type JunkObstacle, type Pickup, type TreeObstacle } from "./types";
 import type { DebrisParticle } from "./types";
 import type { OctopusTentacle } from "./types";
@@ -105,9 +108,40 @@ export type HudSnapshot = {
   phase: GameState["phase"];
   fruitsCollected: number;
   comboStreak: number;
+  ghostSeconds: number;
+  nitroStacks: number;
+  birdBoostHits: number;
+  paused: boolean;
+  zoneKey: string;
+  zoneFallback: string;
+  elevationKey: string | null;
+  elevationFallback: string | null;
+  bossNear: boolean;
 };
 
 export function hudSnapshot(state: GameState): HudSnapshot {
+  const ghostSeconds =
+    state.elapsed < state.ghostUntil
+      ? Math.ceil((state.ghostUntil - state.elapsed) / 1000)
+      : 0;
+  const nitroStacks = state.elapsed < state.speedBoostUntil ? Math.max(1, state.nitroStacks) : 0;
+  const milestone = Math.ceil(state.level / 100) * 100;
+  const bossNear = !state.animalBoss && milestone > state.level && milestone - state.level <= 3;
+
+  const zone = zoneHudForLevel(state.level);
+  const zoneKey = zone.zoneKey;
+  const zoneFallback = zone.zoneFallback;
+  const elev = computeElevation({
+    score: state.score,
+    canvasH: state.height,
+    isCity: isCityLevel(state.level),
+    worldScroll: state.worldScroll,
+    elapsed: state.elapsed,
+  });
+  const showElev = !zone.isCity && (elev.activeKind !== "ground" || elev.blend > 0.08);
+  const elevationKey = showElev ? elevationHudKey(elev.activeKind) : null;
+  const elevationFallback = showElev ? elevationDisplayName(elev.activeKind) : null;
+
   return {
     score: state.score,
     level: state.level,
@@ -115,5 +149,14 @@ export function hudSnapshot(state: GameState): HudSnapshot {
     phase: state.phase,
     fruitsCollected: state.fruitsCollected,
     comboStreak: state.comboStreak,
+    ghostSeconds,
+    nitroStacks,
+    birdBoostHits: state.birdBoostHits,
+    paused: state.paused,
+    zoneKey,
+    zoneFallback,
+    elevationKey,
+    elevationFallback,
+    bossNear,
   };
 }

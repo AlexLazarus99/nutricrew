@@ -8,6 +8,13 @@ import {
   saveBestScore,
   tick,
 } from "../../lib/birdGame/engine";
+import type { GameBootOptions } from "../../lib/birdGame/types";
+import type { BirdGameMetaResponse } from "../../api/client";
+import { samplesForSubmit } from "../../lib/birdGame/gameSession";
+import { fetchDuelOpponent } from "../../lib/birdGame/gameMetaClient";
+import { metaGapBonus, metaGhostBonusMs, metaNearMissMult } from "../../lib/birdGame/gameModifiers";
+import { getCurrentSeason } from "../../lib/birdGame/seasonal";
+import { useAppPreferences } from "../../hooks/useAppPreferences";
 import {
   fetchBirdLeaderboard,
   submitBirdScore,
@@ -19,7 +26,6 @@ import { DEFAULT_BIRD_ID } from "../../lib/birdGame/birdCatalog";
 import { resolveBirdId } from "../../lib/birdGame/birdModifiers";
 import { tryClaimDailyBonus } from "../../lib/claimDailyBonus";
 import { clearJuiceEvents } from "../../lib/birdGame/gameJuice";
-import { getDailyProgress, recordDailyRun } from "../../lib/birdGame/dailyChallenge";
 import { gameHaptic } from "../../lib/birdGame/gameHaptics";
 import {
   hudSnapshot,
@@ -29,6 +35,8 @@ import {
 } from "../../lib/birdGame/gameRuntime";
 
 import { NutriBirdMark } from "./NutriBirdMark";
+import { BirdGameMetaPanel } from "./BirdGameMetaPanel";
+import { CollapsibleSection } from "../CollapsibleSection";
 
 const BirdRosterPanel = lazy(() =>
   import("./BirdRosterPanel").then((m) => ({ default: m.BirdRosterPanel })),
@@ -52,6 +60,7 @@ type NutriBirdGameProps = {
 
 export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const { t } = useTranslation();
+  const { prefs } = useAppPreferences();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
   const stateRef = useRef<GameState | null>(null);
@@ -73,8 +82,13 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const [selectedBirdId, setSelectedBirdId] = useState<string>(DEFAULT_BIRD_ID);
   const [trialToast, setTrialToast] = useState<string | null>(null);
   const [comboStreak, setComboStreak] = useState(0);
-  const [dailyHint, setDailyHint] = useState(() => getDailyProgress());
-  const [dailyDoneToast, setDailyDoneToast] = useState(false);
+  const [ghostSeconds, setGhostSeconds] = useState(0);
+  const [nitroStacks, setNitroStacks] = useState(0);
+  const [birdBoostHits, setBirdBoostHits] = useState(0);
+  const [zoneLabel, setZoneLabel] = useState("");
+  const [paused, setPaused] = useState(false);
+  const [bossNear, setBossNear] = useState(false);
+  const gameBootRef = useRef<GameBootOptions>({});
   const audioRef = useRef(createBirdGameAudio());
   const prevPhaseRef = useRef<GamePhase>("idle");
   const prevFruitsRef = useRef(0);
@@ -83,14 +97,47 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
   const lastHudSyncRef = useRef(0);
   const simAccumRef = useRef(0);
 
-  const syncHud = useCallback((snap: ReturnType<typeof hudSnapshot>) => {
-    setHudScore(snap.score);
-    setNutrition(snap.nutrition);
-    setLevel(snap.level);
-    setPhase(snap.phase);
-    setFruits(snap.fruitsCollected);
-    setComboStreak(snap.comboStreak);
-  }, []);
+  const syncHud = useCallback(
+    (snap: ReturnType<typeof hudSnapshot>) => {
+      setHudScore(snap.score);
+      setNutrition(snap.nutrition);
+      setLevel(snap.level);
+      setPhase(snap.phase);
+      setFruits(snap.fruitsCollected);
+      setComboStreak(snap.comboStreak);
+      setGhostSeconds(snap.ghostSeconds);
+      setNitroStacks(snap.nitroStacks);
+      setBirdBoostHits(snap.birdBoostHits);
+      setPaused(snap.paused);
+      setBossNear(snap.bossNear);
+      const baseZone = t(snap.zoneKey, { defaultValue: snap.zoneFallback });
+      const elev =
+        snap.elevationKey && snap.elevationFallback
+          ? t(snap.elevationKey, { defaultValue: snap.elevationFallback })
+          : null;
+      setZoneLabel(elev ? `${baseZone} · ${elev}` : baseZone);
+    },
+    [t],
+  );
+
+  const applyBootFromMeta = useCallback(
+    async (meta: BirdGameMetaResponse) => {
+      const season = getCurrentSeason();
+      const opponent = await fetchDuelOpponent(meta.daily.best || bestScore);
+      gameBootRef.current = {
+        birdBoostActive: meta.birdBoost.active,
+        reduceMotion: prefs.reduceMotion,
+        metaGhostBonusMs: metaGhostBonusMs(meta.upgrades),
+        metaGapBonus: metaGapBonus(meta.upgrades),
+        metaNearMissMult: metaNearMissMult(meta.upgrades),
+        seasonalNutritionMult: season.nutritionMult,
+        ghostDuel: opponent
+          ? { name: opponent.name, score: opponent.score, samples: opponent.samples }
+          : null,
+      };
+    },
+    [bestScore, prefs.reduceMotion],
+  );
 
   const processJuiceEvents = useCallback((state: GameState) => {
     if (state.juiceEvents.length === 0) return;
@@ -129,11 +176,11 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     const prev = stateRef.current;
     const species = resolveBirdId(selectedBirdId);
     if (resetWorld || !prev) {
-      stateRef.current = createGame(w, h, species);
+      stateRef.current = createGame(w, h, species, gameBootRef.current);
     } else if (prev.phase === "playing") {
       stateRef.current = { ...prev, width: w, height: h };
     } else if (sizeChanged) {
-      stateRef.current = createGame(w, h, species);
+      stateRef.current = createGame(w, h, species, gameBootRef.current);
     }
 
     return true;
@@ -258,12 +305,6 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         if (state.phase === "gameover" && prevPhaseRef.current === "playing") {
           audioRef.current.onGameOver();
           gameHaptic("warning");
-          const daily = recordDailyRun(state.score);
-          setDailyHint(getDailyProgress());
-          if (daily.justBeat) {
-            setDailyDoneToast(true);
-            window.setTimeout(() => setDailyDoneToast(false), 5000);
-          }
         }
         prevPhaseRef.current = state.phase;
 
@@ -284,6 +325,7 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
             state.level,
             state.fruitsCollected,
             state.birdSpeciesId,
+            samplesForSubmit(state.ghostSamples),
           ).then((res) => {
             refreshLeaderboard();
             const done = res?.trials?.newlyCompleted ?? [];
@@ -390,7 +432,7 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
       const { w, h } = measureWrap(wrap);
       const prev = stateRef.current;
       if (!prev || prev.phase !== "playing") {
-        stateRef.current = createGame(w, h, resolveBirdId(birdId));
+        stateRef.current = createGame(w, h, resolveBirdId(birdId), gameBootRef.current);
         syncHud(hudSnapshot(stateRef.current));
         dirtyRef.current = true;
       } else {
@@ -401,14 +443,25 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
     [syncHud],
   );
 
+  const togglePause = useCallback(() => {
+    const state = stateRef.current;
+    if (!state || state.phase !== "playing") return;
+    stateRef.current = { ...state, paused: !state.paused };
+    dirtyRef.current = true;
+    syncHud(hudSnapshot(stateRef.current));
+  }, [syncHud]);
+
   return (
     <div className="bird-game">
-      <p className="bird-game-daily small muted">
-        {dailyHint.done
-          ? t("game.dailyDone", { target: dailyHint.target })
-          : t("game.dailyProgress", { best: dailyHint.best, target: dailyHint.target })}
-      </p>
-      <div className="bird-game-meta">
+      <BirdGameMetaPanel
+        onMetaLoaded={(m) => {
+          void applyBootFromMeta(m).then(() => {
+            if (stateRef.current?.phase === "idle") applySize(true);
+          });
+        }}
+        disabled={phase === "playing"}
+      />
+      <div className="bird-game-meta bird-game-meta--rich">
         <button
           type="button"
           className="bird-game-music-btn"
@@ -430,6 +483,28 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         <span>
           {t("game.nutrition")}: <strong>{nutrition}%</strong>
         </span>
+        {zoneLabel && (
+          <span className="bird-game-zone">
+            {t("game.zone")}: <strong>{zoneLabel}</strong>
+          </span>
+        )}
+        {ghostSeconds > 0 && phase === "playing" && (
+          <span className="bird-game-ghost">{t("game.ghostHud", { sec: ghostSeconds })}</span>
+        )}
+        {nitroStacks > 0 && phase === "playing" && (
+          <span className="bird-game-nitro">{t("game.nitroHud", { stacks: nitroStacks })}</span>
+        )}
+        {birdBoostHits > 0 && phase === "playing" && (
+          <span className="bird-game-shield">{t("game.shieldHud", { hits: birdBoostHits })}</span>
+        )}
+        {bossNear && phase === "playing" && (
+          <span className="bird-game-boss-warn">{t("game.bossNear")}</span>
+        )}
+        {phase === "playing" && (
+          <button type="button" className="bird-game-pause-btn" onClick={togglePause}>
+            {paused ? t("game.resume") : t("game.pause")}
+          </button>
+        )}
         {comboStreak >= 3 && phase === "playing" && (
           <span className="bird-game-combo">
             {t("game.combo", { count: comboStreak })}
@@ -468,7 +543,6 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
               </p>
               {bonusToast && <p className="success small">{bonusToast}</p>}
               {trialToast && <p className="success small">{trialToast}</p>}
-              {dailyDoneToast && <p className="success small">{t("game.dailyDoneToast")}</p>}
             </div>
           </div>
         )}
@@ -505,22 +579,32 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
         )}
       </div>
 
-      <ul className="bird-game-legend small muted">
-        <li>{t("game.legendTrees")}</li>
-        <li>{t("game.legendJunk")}</li>
-        <li>{t("game.legendSkyFood")}</li>
-        <li>{t("game.legendMountain")}</li>
-        <li>{t("game.legendWhale")}</li>
-        <li>{t("game.legendOctopus")}</li>
-        <li>{t("game.legendNight")}</li>
-        <li>{t("game.legendWolves")}</li>
-        <li>{t("game.legendMeteor")}</li>
-        <li>{t("game.legendPtero")}</li>
-        <li>{t("game.legendBoss")}</li>
-        <li>{t("game.legendFruit")}</li>
-        <li>{t("game.legendSpeed")}</li>
-        <li>{t("game.legendCombo")}</li>
-      </ul>
+      <CollapsibleSection
+        title={t("game.guideTitle")}
+        summary={t("game.guideSummary")}
+        className="card bird-game-guide"
+        storageKey="nutricrew_bird_guide_open"
+      >
+        <ul className="bird-game-legend small muted">
+          <li>{t("game.legendTrees")}</li>
+          <li>{t("game.legendJunk")}</li>
+          <li>{t("game.legendSkyFood")}</li>
+          <li>{t("game.legendMountain")}</li>
+          <li>{t("game.legendWhale")}</li>
+          <li>{t("game.legendOctopus")}</li>
+          <li>{t("game.legendNight")}</li>
+          <li>{t("game.legendWolves")}</li>
+          <li>{t("game.legendMeteor")}</li>
+          <li>{t("game.legendPtero")}</li>
+          <li>{t("game.legendBoss")}</li>
+          <li>{t("game.legendFruit")}</li>
+          <li>{t("game.legendFruitTypes")}</li>
+          <li>{t("game.legendShield")}</li>
+          <li>{t("game.legendDuel")}</li>
+          <li>{t("game.legendSpeed")}</li>
+          <li>{t("game.legendCombo")}</li>
+        </ul>
+      </CollapsibleSection>
 
       <section className="bird-nursery" aria-label={t("birds.title")}>
         <Suspense

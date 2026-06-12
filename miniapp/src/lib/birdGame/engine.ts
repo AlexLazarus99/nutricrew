@@ -23,7 +23,34 @@
   type Meteor,
   type Pterodactyl,
   type Crater,
+  type GameBootOptions,
+  type TutorialTipId,
 } from "./types";
+import { defaultSessionFields } from "./gameModifiers";
+import {
+  applyBirdBoostSave,
+  applyNutritionDecay,
+  beginDeathSlowMo,
+  fruitPickupEffects,
+  recordGhostSamples,
+} from "./gameSession";
+import { drawGhostOpponent, ghostSecondsLeft } from "./gameHud";
+import { junkEnabledForLevel, pickTutorialTip } from "./gameTutorial";
+import {
+  drawOceanAmbience,
+  drawPainterlyBackdrop,
+  drawSoftOceanSurface,
+  type OceanDrawCtx,
+} from "./oceanLife";
+import { drawDungeonBackdrop, drawDungeonGameplayProps } from "./dungeonDecor";
+import {
+  computeElevation,
+  drawElevationDecor,
+  elevationDisplayName,
+  inDungeonElevation,
+  type ElevationDrawCtx,
+  type ElevationState,
+} from "./elevationZones";
 import {
   BOSS_INTERVAL,
   bossKindForMilestone,
@@ -64,6 +91,7 @@ import {
   drawComboHud,
   drawJuicePopups,
   emptyJuiceFields,
+  onGatePassed,
   onLevelUp,
   onTreePassed,
   pruneJuice,
@@ -77,10 +105,10 @@ import {
   type FxDrawCtx,
 } from "./effects";
 
-const GRAVITY = 0.19;
-const FLAP_VELOCITY = -6.5;
-const MAX_FALL_SPEED = 5.2;
-const BASE_SPEED = 2.35;
+const GRAVITY = 0.175;
+const FLAP_VELOCITY = -6.35;
+const MAX_FALL_SPEED = 4.9;
+const BASE_SPEED = 2.28;
 const SPEED_BOOST_MULT = 2.85;
 const SPEED_BOOST_MS = 4000;
 /** HUD shows x1–x5 stacks; x3+ is short burst only */
@@ -91,9 +119,9 @@ const MAX_GHOST_MS = 10000;
 const FRUIT_EAT_FX_MS = 520;
 const NITRO_RAMP_MS = 2600;
 const BOSS_BOOST_RAMP_MS = 5200;
-const SEA_HEIGHT = 96;
+const SEA_HEIGHT = 118;
 const SEA_LEVEL = 5;
-const SHARK_JUMP_HEIGHT = 108;
+const SHARK_JUMP_HEIGHT = 128;
 const TENTACLE_MAX_REACH = 98;
 const TENTACLE_COUNT = 4;
 const MIN_SIZE_NUTRITION = 98;
@@ -115,8 +143,8 @@ const JUNK_SMALL_SIZE = 44;
 const BOSS_APPROACH_SLOW_MO_MS = 7000;
 const BOSS_APPROACH_SLOW_MO_FACTOR = 0.022;
 const BOSS_EXPLOSION_SLOW_MO_FACTOR = 0.035;
-const LAND_HEIGHT = 56;
-const SHORE_GRASS = 20;
+const LAND_HEIGHT = 44;
+const SHORE_GRASS = 26;
 const DAY_CYCLE_MS = 60000;
 /** Без столкновений в первые секунды — время на реакцию после старта */
 const START_INVULN_MS = 2800;
@@ -197,18 +225,33 @@ function waterLineY(canvasH: number): number {
 }
 
 function seaBlend(state: GameState): number {
-  if (state.score < 9) return 0;
-  if (state.score >= 15) return 1;
-  const t = (state.score - 9) / 6;
+  if (state.score < 6) return 0;
+  if (state.score >= 22) return 1;
+  const t = (state.score - 6) / 16;
   return t * t * (3 - 2 * t);
 }
 
+function elevationState(state: GameState): ElevationState {
+  return computeElevation({
+    score: state.score,
+    canvasH: state.height,
+    isCity: isCityLevel(state.level),
+    worldScroll: state.worldScroll,
+    elapsed: state.elapsed,
+  });
+}
+
+function inDungeon(state: GameState): boolean {
+  return inDungeonElevation(elevationState(state));
+}
+
 function worldSeaBlend(state: GameState): number {
-  return effectiveSeaBlend(biomeForLevel(state.level), seaBlend(state), state.level);
+  const base = effectiveSeaBlend(biomeForLevel(state.level), seaBlend(state), state.level);
+  return Math.max(base, elevationState(state).scubaDepth);
 }
 
 function seaActive(state: GameState): boolean {
-  return worldSeaBlend(state) >= 0.55;
+  return worldSeaBlend(state) >= 0.38;
 }
 
 function isGhostActive(state: GameState): boolean {
@@ -258,7 +301,7 @@ function speedRampProgress(state: GameState, rampMs: number): number {
 
 function extendGhostUntil(state: GameState, extraMs: number): number {
   const cap = state.elapsed + MAX_GHOST_MS;
-  const bonus = getBirdModifiers(state.birdSpeciesId).ghostExtraMs;
+  const bonus = getBirdModifiers(state.birdSpeciesId).ghostExtraMs + state.metaGhostBonusMs;
   return Math.min(Math.max(state.ghostUntil, state.elapsed + extraMs + bonus), cap);
 }
 
@@ -337,7 +380,9 @@ function treeGroundY(state: GameState): number {
   const b = worldSeaBlend(state);
   const landGround = state.height - LAND_HEIGHT;
   const seaShore = waterLineY(state.height) - SHORE_GRASS;
-  return landGround + (seaShore - landGround) * b;
+  const base = landGround + (seaShore - landGround) * b;
+  const elev = elevationState(state);
+  return base - elev.floorLift * (elev.scubaDepth > 0.35 ? 0.2 : 0.82);
 }
 
 /** Нижняя граница полёта — суша или вода (плавный переход) */
@@ -345,7 +390,15 @@ function floorY(state: GameState): number {
   const b = worldSeaBlend(state);
   const landFloor = state.height - LAND_HEIGHT;
   const seaFloor = waterLineY(state.height);
-  return landFloor + (seaFloor - landFloor) * b;
+  const base = landFloor + (seaFloor - landFloor) * b;
+  const elev = elevationState(state);
+  return base - (elev.scubaDepth > 0.35 ? 0 : elev.floorLift);
+}
+
+/** Верхняя граница полёта — пещера / склон */
+function ceilingY(state: GameState): number {
+  const elev = elevationState(state);
+  return elev.scubaDepth > 0.35 ? 0 : elev.ceilingDrop;
 }
 
 const FRUITS: FruitType[] = ["apple", "peach", "grape"];
@@ -396,14 +449,20 @@ export function levelFromScore(score: number): number {
 }
 
 function treeSpacing(level: number): number {
-  return Math.max(132, 228 - level * 5);
+  return Math.max(178, 292 - level * 4.2);
 }
 
-function gapHeightFor(score: number, nutrition: number, level: number, speciesId: string): number {
+function gapHeightFor(
+  score: number,
+  nutrition: number,
+  level: number,
+  speciesId: string,
+  extraGap = 0,
+): number {
   const base = 238 - score * 0.28 - (level - 1) * 3;
   const nutritionBonus = nutrition * GAP_NUTRITION_BONUS;
   const gapBonus = getBirdModifiers(speciesId).gapBonus;
-  return Math.max(108, base + nutritionBonus + gapBonus);
+  return Math.max(108, base + nutritionBonus + gapBonus + extraGap);
 }
 
 function pickTreeType(score: number): TreeType {
@@ -445,6 +504,7 @@ function spawnSegment(state: GameState, x: number): { tree: TreeObstacle; junk: 
     state.bird.nutrition,
     levelFromScore(state.score),
     state.birdSpeciesId,
+    state.metaGapBonus,
   );
   const skyTop = 32;
   const minTreeH = 38;
@@ -473,6 +533,19 @@ function spawnSegment(state: GameState, x: number): { tree: TreeObstacle; junk: 
   const junkType = pickJunkType(state.score);
   const size = junkSize(junkType);
 
+  if (!state.junkSpawnsEnabled) {
+    return {
+      tree: { x, type: treeType, height: treeHeight, passed: false },
+      junk: {
+        x: x + tw / 2 - 4,
+        type: "candy",
+        bottomY: 6,
+        size: 8,
+        passed: false,
+      },
+    };
+  }
+
   return {
     tree: { x, type: treeType, height: treeHeight, passed: false },
     junk: {
@@ -482,6 +555,33 @@ function spawnSegment(state: GameState, x: number): { tree: TreeObstacle; junk: 
       size,
       passed: false,
     },
+  };
+}
+
+function spawnDungeonSegment(state: GameState, x: number): JunkObstacle {
+  const floor = floorY(state);
+  const ceil = ceilingY(state);
+  const minGap = gapHeightFor(
+    state.score,
+    state.bird.nutrition,
+    levelFromScore(state.score),
+    state.birdSpeciesId,
+    state.metaGapBonus,
+  );
+  const top = ceil + 20;
+  const maxJunkBottom = floor - minGap * 0.8;
+  const minJunkBottom = top + minGap * 0.4;
+  const junkBottom =
+    minJunkBottom +
+    Math.random() * Math.max(28, maxJunkBottom - minJunkBottom);
+  const junkType = pickJunkType(state.score);
+  const size = junkSize(junkType);
+  return {
+    x: x + 8,
+    type: junkType,
+    bottomY: Math.max(minJunkBottom, Math.min(maxJunkBottom, junkBottom)),
+    size,
+    passed: false,
   };
 }
 
@@ -570,27 +670,55 @@ function spawnSegmentExtras(
   const offset = (n: number) => treeX + n + Math.random() * 40;
 
   if (!cityMode) {
-    if (level >= 3 && segmentIndex % 4 === 0 && Math.random() < hazardChance(level, 0.09)) {
+    const elev = elevationState(state);
+    const inOcean = worldSeaBlend(state) > 0.45;
+    const climbing = elev.activeKind === "climb" || elev.kind === "climb";
+    const scuba = elev.scubaDepth > 0.4;
+    if (
+      level >= 3 &&
+      !inOcean &&
+      (climbing || segmentIndex % 6 === 0) &&
+      Math.random() < hazardChance(level, climbing ? 0.11 : 0.05)
+    ) {
       hazards.push(spawnMountain(state, offset(15)));
     }
-    if (level >= SEA_LEVEL && segmentIndex % 5 !== 0 && Math.random() < hazardChance(level, 0.028)) {
+    if (
+      (scuba || (level >= SEA_LEVEL && inOcean)) &&
+      segmentIndex % (scuba ? 4 : 5) === 0 &&
+      Math.random() < hazardChance(level, scuba ? 0.07 : 0.045)
+    ) {
       hazards.push(spawnShark(offset(25)));
     }
-    if (level >= SEA_LEVEL && segmentIndex % 4 === 2 && Math.random() < hazardChance(level, 0.048)) {
+    if (
+      level >= SEA_LEVEL &&
+      !inOcean &&
+      segmentIndex % 7 === 3 &&
+      Math.random() < hazardChance(level, 0.018)
+    ) {
       octopusTentacles.push(spawnOctopusTentacle(offset(55)));
     }
   }
 
-  if (level >= 4 && Math.random() < 0.06) {
+  const dungeon = inDungeon(state);
+  if (level >= 5 && !dungeon && Math.random() < 0.028) {
     extraTrees.push(spawnSegment(state, offset(55)).tree);
   }
-  if (!cityMode && level >= SEA_LEVEL && Math.random() < 0.08) {
+  if (!cityMode && level >= SEA_LEVEL && Math.random() < 0.04) {
     extraJunks.push(spawnSegment(state, offset(30)).junk);
   }
 
-  if (level >= 2 && segmentIndex % 4 === 1 && Math.random() < 0.5) {
-    const seg = spawnSegment(state, treeX);
-    pickups.push(spawnFloatingPickup(state, offset(60), seg.tree, seg.junk));
+  if (level >= 2 && segmentIndex % 5 === 1 && Math.random() < 0.42) {
+    if (dungeon) {
+      pickups.push({
+        x: offset(60),
+        y: (ceilingY(state) + floorY(state)) / 2,
+        type: Math.random() < SPEED_PICKUP_CHANCE ? "speed" : FRUITS[Math.floor(Math.random() * FRUITS.length)],
+        collected: false,
+      });
+    } else {
+      const seg = spawnSegment(state, treeX);
+      pickups.push(spawnFloatingPickup(state, offset(60), seg.tree, seg.junk));
+    }
   }
 
   return { hazards, octopusTentacles, extraTrees, extraJunks, pickups };
@@ -647,26 +775,40 @@ function seedInitialSegments(width: number, height: number): {
     screenFlashAlpha: 0,
     screenFlashColor: "#FFFFFF",
     ...emptyJuiceFields(),
+    ...defaultSessionFields(),
   };
   const trees: TreeObstacle[] = [];
   const junks: JunkObstacle[] = [];
   let x = width + 120;
   const spacing = treeSpacing(1);
   let seg = 0;
-  while (x < width + spacing * 2.4) {
+  while (x < width + spacing * 1.85) {
     const segment = spawnSegment(stub, x);
     trees.push(segment.tree);
     junks.push(segment.junk);
-    x += spacing * (0.92 + Math.random() * 0.16);
+    x += spacing * (1.02 + Math.random() * 0.14);
     seg++;
   }
   return { trees, junks, nextX: x, segmentIndex: seg };
+}
+
+function bootFromState(state: GameState): GameBootOptions {
+  return {
+    birdBoostActive: false,
+    reduceMotion: state.reduceMotion,
+    metaGhostBonusMs: state.metaGhostBonusMs,
+    metaGapBonus: state.metaGapBonus,
+    metaNearMissMult: state.metaNearMissMult,
+    seasonalNutritionMult: state.seasonalNutritionMult,
+    ghostDuel: state.ghostDuel,
+  };
 }
 
 export function createGame(
   width: number,
   height: number,
   birdSpeciesId = "classic",
+  boot: GameBootOptions = {},
 ): GameState {
   const { trees, junks, nextX, segmentIndex } = seedInitialSegments(width, height);
   return {
@@ -714,11 +856,12 @@ export function createGame(
     screenFlashAlpha: 0,
     screenFlashColor: "#FFFFFF",
     ...emptyJuiceFields(),
+    ...defaultSessionFields(boot),
   };
 }
 
 export function startGame(state: GameState): GameState {
-  const fresh = createGame(state.width, state.height, state.birdSpeciesId);
+  const fresh = createGame(state.width, state.height, state.birdSpeciesId, bootFromState(state));
   return {
     ...fresh,
     phase: "playing",
@@ -766,6 +909,7 @@ function pointInTriangle(px: number, py: number, x1: number, y1: number, x2: num
 }
 
 function collideTree(state: GameState, tree: TreeObstacle): boolean {
+  if (inDungeon(state)) return false;
   const bx = birdX(state);
   const by = state.bird.y;
   const r = birdRadius(state.bird.nutrition) * 0.88;
@@ -806,23 +950,34 @@ function collideMountain(state: GameState, m: MountainHazard): boolean {
 
 function sharkPose(shark: SharkHazard, state: GameState) {
   const baseY = waterLineY(state.height);
-  const t = ((state.elapsed * 0.001 + shark.phaseSeed) % 2.8) / 1.2;
-  const jump = t <= 1 ? Math.sin(t * Math.PI) : 0;
+  const cycle = 3.4;
+  const raw = ((state.elapsed * 0.001 + shark.phaseSeed) % cycle) / cycle;
+  let jump = 0;
+  if (raw < 0.48) {
+    const t = raw / 0.48;
+    jump = Math.sin(t * Math.PI);
+  }
+  const birdY = state.bird.y;
+  const hunger = Math.max(0, Math.min(1, (baseY - birdY - 30) / 120));
+  const leapH = SHARK_JUMP_HEIGHT + hunger * 45;
   const bodyCx = shark.x + 38;
-  const bodyCy = baseY - jump * SHARK_JUMP_HEIGHT - 8;
+  const bodyCy = baseY - jump * leapH - 10 - hunger * jump * 12;
+  const lean = (birdY - bodyCy) * 0.08 * jump;
   return {
     x: shark.x,
     baseY,
     jump,
+    hunger,
     bodyCx,
-    bodyCy,
-    bodyRx: 30,
-    bodyRy: 10 + jump * 10,
-    mouthOpen: jump > 0.32,
-    mouthX: shark.x + 52,
-    mouthY: bodyCy + 5,
-    headX: shark.x + 48,
-    headY: bodyCy,
+    bodyCy: bodyCy + lean * 0.3,
+    bodyRx: 32,
+    bodyRy: 11 + jump * 12,
+    mouthOpen: jump > 0.28,
+    mouthX: shark.x + 54,
+    mouthY: bodyCy + lean * 0.2 + 6,
+    headX: shark.x + 50,
+    headY: bodyCy + lean * 0.25,
+    lean,
   };
 }
 
@@ -876,7 +1031,7 @@ function collideOctopusTentacle(state: GameState, tentacle: OctopusTentacle): bo
 }
 
 const MAX_DEBRIS = 90;
-const MAX_TREES = 56;
+const MAX_TREES = 34;
 const MAX_HAZARDS = 22;
 const MAX_PICKUPS = 28;
 
@@ -1250,21 +1405,36 @@ function collectPickup(state: GameState, pickup: Pickup): GameState {
       ...nitro,
     };
   }
-  const gain =
+  const baseGain =
     (NUTRITION_GAIN[pickup.type] / NUTRITION_THIN_SLOWDOWN) *
     getBirdModifiers(state.birdSpeciesId).fruitNutritionMult;
+  const fx = fruitPickupEffects(state, pickup.type, baseGain, GHOST_MS, {
+    ghostLevel: Math.round(state.metaGhostBonusMs / 400),
+    gapLevel: Math.round(state.metaGapBonus / 6),
+    nearMissLevel: Math.round((state.metaNearMissMult - 1) / 0.06),
+  });
   const debris = [...state.debris];
   spawnFruitEatParticles(state, pickup.type, debris);
   spawnGoldSparkBurst(debris, bx, by, 3, pushDebris);
+  const comboStreak =
+    fx.comboBump > 0 ? Math.max(state.comboStreak, fx.comboBump) : state.comboStreak;
   return {
     ...state,
     pickups,
     debris,
     fruitsCollected: state.fruitsCollected + 1,
-    ghostUntil: extendGhostUntil(state, GHOST_MS),
+    comboStreak,
+    ghostUntil: extendGhostUntil(state, fx.ghostMs),
     fruitEatFx: { fruit: pickup.type, until: state.elapsed + FRUIT_EAT_FX_MS },
     flapAnim: 1,
-    bird: { ...state.bird, nutrition: Math.min(100, state.bird.nutrition + gain), vy: state.bird.vy - 0.35 },
+    bird: {
+      ...state.bird,
+      nutrition: Math.min(100, state.bird.nutrition + fx.gain),
+      vy: state.bird.vy - 0.35,
+    },
+    screenFlashUntil: state.elapsed + 120,
+    screenFlashAlpha: state.reduceMotion ? 0.1 : 0.18,
+    screenFlashColor: pickup.type === "grape" ? "#7E57C2" : "#66BB6A",
   };
 }
 
@@ -1562,8 +1732,10 @@ function burnEmberJunks(state: GameState): GameState {
 
 function checkCollisions(state: GameState): GamePhase {
   const floor = floorY(state);
-  if (state.bird.y - birdRadius(state.bird.nutrition) < 0) return "gameover";
-  if (state.bird.y + birdRadius(state.bird.nutrition) > floor) return "gameover";
+  const ceil = ceilingY(state);
+  const r = birdRadius(state.bird.nutrition);
+  if (state.bird.y - r < ceil) return "gameover";
+  if (state.bird.y + r > floor) return "gameover";
   if (state.elapsed < START_INVULN_MS) return state.phase;
   if (canPassObstacles(state)) return state.phase;
   for (const tree of state.trees) {
@@ -1595,7 +1767,7 @@ function checkCollisions(state: GameState): GamePhase {
 }
 
 export function tick(state: GameState, dtMs: number): GameState {
-  if (state.phase !== "playing") return state;
+  if (state.phase !== "playing" || state.paused) return state;
 
   const safeDt = clampTickDt(dtMs);
   let next: GameState = { ...state, elapsed: state.elapsed + safeDt };
@@ -1637,9 +1809,6 @@ export function tick(state: GameState, dtMs: number): GameState {
     next.bossApproachSlowMoUsed = true;
     next.bossExplosion = null;
     next.bossEnergyAbsorbUntil = 0;
-    if (next.animalBoss && !next.animalBoss.defeatPendingAt) {
-      next.animalBoss = null;
-    }
     next.cityLandmarkDone = false;
     next.cityLandmarkX = next.width * 1.05;
   }
@@ -1731,13 +1900,17 @@ export function tick(state: GameState, dtMs: number): GameState {
   const maxSpawnSteps = 14;
   while (next.nextTreeX < spawnHorizon && spawnSteps < maxSpawnSteps) {
     spawnSteps += 1;
-    const segment = spawnSegment(next, next.nextTreeX);
-    next.trees.push(segment.tree);
-    next.junks.push(segment.junk);
+    const dungeon = inDungeon(next);
+    if (dungeon) {
+      next.junks.push(spawnDungeonSegment(next, next.nextTreeX));
+    } else {
+      const segment = spawnSegment(next, next.nextTreeX);
+      next.trees.push(segment.tree);
+      next.junks.push(segment.junk);
+      const pickup = maybeSpawnPickup(next, segment.tree, segment.junk, level);
+      if (pickup) next.pickups.push(pickup);
+    }
     next.segmentIndex += 1;
-
-    const pickup = maybeSpawnPickup(next, segment.tree, segment.junk, level);
-    if (pickup) next.pickups.push(pickup);
 
     const extras = spawnSegmentExtras(next, next.nextTreeX, next.segmentIndex);
     for (const h of extras.hazards) next.hazards.push(h);
@@ -1746,17 +1919,27 @@ export function tick(state: GameState, dtMs: number): GameState {
     for (const j of extras.extraJunks) next.junks.push(j);
     for (const p of extras.pickups) next.pickups.push(p);
 
-    next.nextTreeX += spacing * (0.88 + Math.random() * 0.18);
+    next.nextTreeX += spacing * (1.02 + Math.random() * 0.14);
   }
 
   const passOpts = {
     groundY: treeGroundY(next),
     birdR: birdRadius(next.bird.nutrition) * 0.88,
+    nearMissMult: next.metaNearMissMult,
   };
-  for (const tree of next.trees) {
-    if (!tree.passed && tree.x + TREE_WIDTH[tree.type] < bx) {
-      tree.passed = true;
-      next = onTreePassed(next, tree, passOpts);
+  if (inDungeon(next)) {
+    for (const junk of next.junks) {
+      if (!junk.passed && junk.x + junk.size < bx) {
+        junk.passed = true;
+        next = onGatePassed(next);
+      }
+    }
+  } else {
+    for (const tree of next.trees) {
+      if (!tree.passed && tree.x + TREE_WIDTH[tree.type] < bx) {
+        tree.passed = true;
+        next = onTreePassed(next, tree, passOpts);
+      }
     }
   }
 
@@ -1789,8 +1972,37 @@ export function tick(state: GameState, dtMs: number): GameState {
   next.level = levelAfter;
 
   next = pruneJuice(next);
+  next = applyNutritionDecay(next, safeDt);
+  next = recordGhostSamples(next);
+  next.junkSpawnsEnabled = junkEnabledForLevel(next.level);
+  if (!next.activeTutorialTip) {
+    const shown = new Set(next.tutorialShown);
+    const tip = pickTutorialTip(next.level, shown);
+    if (tip) {
+      next = {
+        ...next,
+        activeTutorialTip: tip,
+        tutorialShown: [...next.tutorialShown, tip],
+        tutorialTipUntil: next.elapsed + 4500,
+      };
+    }
+  }
+  if (next.activeTutorialTip && next.tutorialTipUntil > 0 && next.elapsed >= next.tutorialTipUntil) {
+    next = { ...next, activeTutorialTip: null, tutorialTipUntil: 0 };
+  }
 
-  const phase = checkCollisions(next);
+  let phase = checkCollisions(next);
+  if (phase === "gameover") {
+    if (next.birdBoostHits > 0) {
+      next = applyBirdBoostSave(next);
+      phase = "playing";
+    } else if (next.deathPendingUntil <= 0) {
+      next = beginDeathSlowMo(next);
+      phase = "playing";
+    } else if (next.elapsed < next.deathPendingUntil) {
+      phase = "playing";
+    }
+  }
   return { ...next, phase };
 }
 
@@ -1894,7 +2106,9 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
 
   resetCanvasState(ctx);
 
+  const dungeonDraw = inDungeon(state);
   for (const tree of state.trees) {
+    if (dungeonDraw) continue;
     if (visualCity && city) {
       if (zv.inTransition) {
         ctx.save();
@@ -1961,6 +2175,21 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
 
   if (state.meteor) drawMeteor(ctx, state.meteor, state.elapsed);
 
+  if (inDungeon(state)) {
+    const elev = elevationState(state);
+    drawDungeonGameplayProps(ctx, {
+      width: state.width,
+      height: state.height,
+      elapsed: state.elapsed,
+      worldScroll: state.worldScroll,
+      floorY: floorY(state),
+      ceilingY: ceilingY(state),
+      groundY: treeGroundY(state),
+      elev,
+      night: timeOfDay(state.elapsed).night,
+    });
+  }
+
   for (const junk of state.junks) {
     drawJunk(ctx, junk, state);
   }
@@ -1994,6 +2223,7 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   if (state.phase === "playing") {
     drawBirdTrail(ctx, birdX(state), state.bird.y, state.birdSpeciesId, state.elapsed);
   }
+  drawGhostOpponent(ctx, state);
   drawBird(ctx, state);
   if (state.fruitEatFx && state.elapsed < state.fruitEatFx.until) {
     drawFruitEatFx(ctx, state);
@@ -2008,6 +2238,7 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
     ctx.restore();
   }
   drawJuicePopups(ctx, state);
+  if (state.activeTutorialTip) drawTutorialBanner(ctx, state);
   drawHud(ctx, state, zv);
   drawComboHud(ctx, state);
   drawScreenFlash(ctx, state);
@@ -2032,14 +2263,17 @@ function drawNatureBackdrop(
 ): void {
   const biome = zv.biome;
   const pal = zv.naturePalette;
+  const dungeonZone = inDungeon(state);
 
   drawSky(ctx, state, pal);
-  drawSun(ctx, state);
-  if (tod.night > 0.2) drawStars(ctx, state);
-  if (tod.night > 0.55) drawMoon(ctx, state);
-  if (biome !== "underwater") drawClouds(ctx, state);
-  drawSkyDelicacies(ctx, state);
-  drawFarMountains(ctx, state, pal);
+  if (!dungeonZone) {
+    drawSun(ctx, state);
+    if (tod.night > 0.2) drawStars(ctx, state);
+    if (tod.night > 0.55) drawMoon(ctx, state);
+    if (biome !== "underwater") drawClouds(ctx, state);
+    drawSkyDelicacies(ctx, state);
+    drawFarMountains(ctx, state, pal);
+  }
 
   if (zv.prevBiome && zv.biomeDecorBlend > 0.03 && zv.biomeDecorBlend < 0.97) {
     ctx.save();
@@ -2060,8 +2294,40 @@ function drawNatureBackdrop(
     if (h.kind === "mountain") drawMountain(ctx, h, state);
   }
 
-  drawLand(ctx, state, pal, biomeCtx.seaBlend);
-  drawWater(ctx, state, pal, biomeCtx.seaBlend);
+  const oceanCtx: OceanDrawCtx = {
+    width: biomeCtx.width,
+    height: biomeCtx.height,
+    elapsed: biomeCtx.elapsed,
+    worldScroll: state.worldScroll,
+    waterTop: biomeCtx.floorY,
+    floorY: state.height,
+    seaBlend: biomeCtx.seaBlend,
+    birdX: birdX(state),
+    birdY: state.bird.y,
+    night: biomeCtx.night,
+  };
+
+  if (!dungeonZone) {
+    drawPainterlyBackdrop(ctx, oceanCtx, treeGroundY(state));
+    drawLand(ctx, state, pal, biomeCtx.seaBlend);
+    drawWater(ctx, state, pal, biomeCtx.seaBlend);
+    drawOceanAmbience(ctx, oceanCtx);
+    drawSoftOceanSurface(ctx, oceanCtx);
+  }
+
+  const elev = elevationState(state);
+  const elevCtx: ElevationDrawCtx = {
+    width: biomeCtx.width,
+    height: biomeCtx.height,
+    elapsed: biomeCtx.elapsed,
+    worldScroll: state.worldScroll,
+    floorY: biomeCtx.floorY,
+    ceilingY: ceilingY(state),
+    groundY: biomeCtx.groundY,
+    elev,
+    night: biomeCtx.night,
+  };
+  drawElevationDecor(ctx, elevCtx, drawDungeonBackdrop);
 }
 
 function drawCityBackdrop(
@@ -2568,12 +2834,10 @@ function drawLand(ctx: CanvasRenderingContext2D, state: GameState, palette?: Bio
   ctx.fillRect(0, landTop, w, h - landTop);
 
   ctx.fillStyle = pal.grass;
-  for (let i = 0; i < 16; i++) {
-    const gx = (i * 47 + 8) % w;
+  for (let i = 0; i < 10; i++) {
+    const gx = (i * 67 + 12) % w;
     ctx.beginPath();
-    ctx.moveTo(gx, landTop + 6);
-    ctx.lineTo(gx + 5, landTop - 3);
-    ctx.lineTo(gx + 10, landTop + 6);
+    ctx.ellipse(gx + 5, landTop + 2, 6, 4, 0, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.restore();
@@ -2584,25 +2848,38 @@ function drawLand(ctx: CanvasRenderingContext2D, state: GameState, palette?: Bio
   ctx.globalAlpha = Math.min(1, b * 1.15);
   const shoreH = Math.max(10, waterTop - shoreTop + 6);
   const shoreG = ctx.createLinearGradient(0, shoreTop, 0, waterTop + 4);
-  shoreG.addColorStop(0, "#9CCC65");
-  shoreG.addColorStop(0.35, "#7CB342");
-  shoreG.addColorStop(0.7, "#689F38");
-  shoreG.addColorStop(1, "#C2A878");
+  shoreG.addColorStop(0, "#8CBF6A");
+  shoreG.addColorStop(0.35, "#6FA85A");
+  shoreG.addColorStop(0.7, "#5A9450");
+  shoreG.addColorStop(1, "#B8A070");
   ctx.fillStyle = shoreG;
-  ctx.fillRect(0, shoreTop, w, shoreH);
+  ctx.beginPath();
+  ctx.moveTo(0, shoreTop + shoreH);
+  for (let x = 0; x <= w; x += 8) {
+    const wave = Math.sin(x * 0.04) * 3;
+    ctx.lineTo(x, shoreTop + wave);
+  }
+  ctx.lineTo(w, shoreTop + shoreH);
+  ctx.lineTo(0, shoreTop + shoreH);
+  ctx.closePath();
+  ctx.fill();
 
-  ctx.fillStyle = "#C2A878";
-  ctx.fillRect(0, waterTop - 4, w, 6);
-  ctx.fillStyle = "#A89060";
-  ctx.fillRect(0, waterTop + 1, w, 3);
+  ctx.fillStyle = "#B8A070";
+  ctx.beginPath();
+  ctx.moveTo(0, waterTop + 2);
+  for (let x = 0; x <= w; x += 6) {
+    ctx.lineTo(x, waterTop - 2 + Math.sin(x * 0.05) * 2);
+  }
+  ctx.lineTo(w, waterTop + 6);
+  ctx.lineTo(0, waterTop + 6);
+  ctx.closePath();
+  ctx.fill();
 
-  for (let i = 0; i < 14; i++) {
-    const gx = (i * 53 + 10) % w;
-    ctx.fillStyle = "#7CB342";
+  for (let i = 0; i < 8; i++) {
+    const gx = (i * 78 + 18) % w;
+    ctx.fillStyle = "#6FA85A";
     ctx.beginPath();
-    ctx.moveTo(gx, shoreTop + 4);
-    ctx.lineTo(gx + 4, shoreTop - 2);
-    ctx.lineTo(gx + 8, shoreTop + 4);
+    ctx.ellipse(gx + 4, shoreTop + 2, 5, 3.5, 0, 0, Math.PI * 2);
     ctx.fill();
   }
   ctx.restore();
@@ -2629,34 +2906,26 @@ function drawWater(ctx: CanvasRenderingContext2D, state: GameState, palette?: Bi
   ctx.fillStyle = g;
   ctx.fillRect(0, waterTop, w, h - waterTop);
 
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  for (let i = 0; i < 5; i++) {
-    const y = waterTop + 6 + i * 14;
+  ctx.fillStyle = "rgba(255,255,255,0.22)";
+  for (let i = 0; i < 3; i++) {
+    const y = waterTop + 18 + i * 22;
     ctx.beginPath();
-    for (let x = 0; x <= w; x += 6) {
-      ctx.lineTo(x, y + Math.sin(x * 0.04 + t * 2.2 + i * 0.9) * (3.5 - i * 0.4));
+    for (let x = 0; x <= w; x += 8) {
+      ctx.lineTo(x, y + Math.sin(x * 0.03 + t * 1.6 + i * 0.7) * (4 - i * 0.6));
     }
     ctx.lineTo(w, h);
     ctx.lineTo(0, h);
     ctx.closePath();
-    ctx.globalAlpha = b * (0.22 - i * 0.03);
+    ctx.globalAlpha = b * (0.18 - i * 0.04);
     ctx.fill();
   }
 
   ctx.globalAlpha = b;
-  ctx.strokeStyle = "rgba(255,255,255,0.45)";
-  ctx.lineWidth = 2.5;
-  ctx.beginPath();
-  for (let x = 0; x <= w; x += 5) {
-    ctx.lineTo(x, waterTop + Math.sin(x * 0.06 + t * 3) * 4);
-  }
-  ctx.stroke();
-
-  ctx.fillStyle = "rgba(255,255,255,0.55)";
-  for (let i = 0; i < 3; i++) {
-    const fx = ((i * 47 + t * 40) % (w + 30)) - 15;
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  for (let i = 0; i < 2; i++) {
+    const fx = ((i * 67 + t * 28) % (w + 40)) - 20;
     ctx.beginPath();
-    ctx.ellipse(fx, waterTop + 3 + Math.sin(t * 4 + i) * 2, 6 + (i % 3) * 2, 2, 0, 0, Math.PI * 2);
+    ctx.ellipse(fx, waterTop + 8 + Math.sin(t * 3 + i) * 3, 10 + i * 4, 3, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
@@ -3092,95 +3361,78 @@ function drawMountainClimber(
 function drawShark(ctx: CanvasRenderingContext2D, shark: SharkHazard, state: GameState): void {
   if (!seaActive(state)) return;
   const p = sharkPose(shark, state);
-  const { x, baseY, jump, bodyCx, bodyCy, bodyRx, bodyRy, mouthOpen } = p;
+  const { x, baseY, jump, hunger, bodyCx, bodyCy, bodyRx, bodyRy, mouthOpen, lean } = p;
+  const tilt = -0.12 + lean * 0.015;
 
   if (jump > 0.05) {
-    ctx.fillStyle = "rgba(255,255,255,0.45)";
-    for (let i = 0; i < 5; i++) {
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    for (let i = 0; i < 6; i++) {
       ctx.beginPath();
-      ctx.arc(bodyCx - 18 + i * 9, baseY + 2, 1.5 + (1 - jump) * 2, 0, Math.PI * 2);
+      ctx.arc(bodyCx - 20 + i * 8, baseY + 3, 2 + (1 - jump) * 2.5, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 
-  if (jump < 0.9) {
-    ctx.fillStyle = "rgba(38,50,56,0.4)";
+  if (jump < 0.92) {
+    ctx.fillStyle = "rgba(38,50,56,0.32)";
     ctx.beginPath();
-    ctx.ellipse(bodyCx, baseY + 5, bodyRx * 0.7, 8, 0, 0, Math.PI * 2);
+    ctx.ellipse(bodyCx, baseY + 6, bodyRx * 0.75, 9, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
   const grad = ctx.createLinearGradient(bodyCx, bodyCy - bodyRy, bodyCx, bodyCy + bodyRy);
-  grad.addColorStop(0, "#546E7A");
-  grad.addColorStop(0.5, "#78909C");
+  grad.addColorStop(0, "#607D8B");
+  grad.addColorStop(0.45, "#78909C");
   grad.addColorStop(1, "#ECEFF1");
   ctx.fillStyle = grad;
   ctx.beginPath();
-  ctx.ellipse(bodyCx, bodyCy, bodyRx, bodyRy, -0.12, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#455A64";
-  ctx.beginPath();
-  ctx.moveTo(x + 6, bodyCy - 2);
-  ctx.lineTo(x - 14, bodyCy - 12 - jump * 8);
-  ctx.lineTo(x - 10, bodyCy + 2);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = "#37474F";
-  ctx.beginPath();
-  ctx.moveTo(x + 2, bodyCy);
-  ctx.lineTo(x - 16, bodyCy - 10 - jump * 6);
-  ctx.lineTo(x - 14, bodyCy + 10 + jump * 4);
-  ctx.lineTo(x - 10, bodyCy + 6 + jump * 4);
-  ctx.closePath();
+  ctx.ellipse(bodyCx, bodyCy, bodyRx, bodyRy, tilt, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#546E7A";
   ctx.beginPath();
-  ctx.moveTo(bodyCx - 4, bodyCy - bodyRy - 2);
-  ctx.lineTo(bodyCx + 2, bodyCy - bodyRy - 14 - jump * 6);
-  ctx.lineTo(bodyCx + 8, bodyCy - bodyRy);
-  ctx.closePath();
+  ctx.ellipse(x - 4, bodyCy - 1, 12, 8 + jump * 3, tilt - 0.3, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#455A64";
   ctx.beginPath();
-  ctx.ellipse(p.headX, p.headY, 14 + jump * 3, 10 + jump * 4, 0.2, 0, Math.PI * 2);
+  ctx.ellipse(bodyCx - 2, bodyCy - bodyRy - 4, 7, 10 + jump * 5, tilt, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.fillStyle = "#546E7A";
+  ctx.beginPath();
+  ctx.ellipse(p.headX, p.headY, 15 + jump * 4, 11 + jump * 4, tilt + 0.15, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = "#ECEFF1";
   ctx.beginPath();
-  ctx.ellipse(p.headX + 2, p.headY + 5, 10, 5, 0.2, 0, Math.PI);
+  ctx.ellipse(p.headX + 3, p.headY + 5, 11, 5.5, tilt + 0.15, 0, Math.PI);
   ctx.fill();
 
   if (mouthOpen) {
     ctx.fillStyle = "#263238";
     ctx.beginPath();
-    ctx.ellipse(p.mouthX, p.mouthY + 2, 10, 6, 0.15, 0, Math.PI);
+    ctx.ellipse(p.mouthX, p.mouthY + 2, 11, 7, tilt + 0.15, 0, Math.PI);
     ctx.fill();
     ctx.fillStyle = "#fff";
     for (let i = 0; i < 4; i++) {
       ctx.beginPath();
-      ctx.moveTo(p.mouthX - 6 + i * 4, p.mouthY + 2);
-      ctx.lineTo(p.mouthX - 4 + i * 4, p.mouthY + 8);
-      ctx.lineTo(p.mouthX - 2 + i * 4, p.mouthY + 2);
+      ctx.ellipse(p.mouthX - 5 + i * 3.5, p.mouthY + 5, 2, 3, 0, 0, Math.PI * 2);
       ctx.fill();
     }
   }
 
-  ctx.fillStyle = "#1a1a1a";
+  const eyeR = hunger > 0.4 ? 2.8 : 2.2;
+  ctx.fillStyle = hunger > 0.5 ? "#FF5252" : "#1a1a1a";
   ctx.beginPath();
-  ctx.arc(p.headX + 4, p.headY - 2, 2, 0, Math.PI * 2);
+  ctx.arc(p.headX + 5, p.headY - 2, eyeR, 0, Math.PI * 2);
   ctx.fill();
-
-  ctx.fillStyle = "#263238";
-  ctx.beginPath();
-  ctx.moveTo(p.headX - 6, p.headY - 6);
-  ctx.lineTo(p.headX - 2, p.headY - 14);
-  ctx.lineTo(p.headX + 2, p.headY - 6);
-  ctx.closePath();
-  ctx.fill();
+  if (hunger > 0.35) {
+    ctx.fillStyle = "rgba(255,82,82,0.35)";
+    ctx.beginPath();
+    ctx.arc(p.headX + 5, p.headY - 2, eyeR + 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
 }
 
 function drawOctopusTentacle(ctx: CanvasRenderingContext2D, tentacle: OctopusTentacle, state: GameState): void {
@@ -3455,32 +3707,25 @@ function drawConiferCanopy(
   _seed: number,
   isPine: boolean,
 ): void {
-  const layers = isPine ? 5 : 4;
-  const greens = ["#2D4A32", "#3A5C3E", "#456B48", "#527856", "#5E8460"];
+  const layers = isPine ? 4 : 3;
+  const greens = ["#3A5C3E", "#4A7349", "#567B52", "#62885C"];
 
   const icx = Math.round(cx);
   for (let i = 0; i < layers; i += 1) {
-    const t0 = i / layers;
-    const t1 = (i + 1) / layers;
-    const layerTop = Math.round(bottom - t1 * ch);
-    const layerBot = Math.round(bottom - t0 * ch);
-    const spread = Math.round(w * (0.5 + (1 - t1) * 0.42));
+    const t = (i + 0.5) / layers;
+    const cy = Math.round(bottom - t * ch);
+    const rx = Math.round(w * (0.38 + (1 - t) * 0.28));
+    const ry = Math.round(ch * (0.22 + (1 - t) * 0.08));
 
     ctx.fillStyle = greens[i % greens.length];
     ctx.beginPath();
-    ctx.moveTo(icx, layerTop);
-    ctx.lineTo(icx - spread, layerBot);
-    ctx.lineTo(icx + spread, layerBot);
-    ctx.closePath();
+    ctx.ellipse(icx, cy, rx, ry, 0, 0, Math.PI * 2);
     ctx.fill();
   }
 
   ctx.fillStyle = "#6B9168";
   ctx.beginPath();
-  ctx.moveTo(icx, Math.round(top + ch * 0.05));
-  ctx.lineTo(icx - Math.round(w * 0.05), Math.round(top + ch * 0.12));
-  ctx.lineTo(icx + Math.round(w * 0.05), Math.round(top + ch * 0.12));
-  ctx.closePath();
+  ctx.ellipse(icx, Math.round(top + ch * 0.1), Math.round(w * 0.12), Math.round(ch * 0.08), 0, 0, Math.PI * 2);
   ctx.fill();
 }
 
@@ -4385,7 +4630,9 @@ function drawBird(ctx: CanvasRenderingContext2D, state: GameState): void {
     ctx.shadowBlur = 18;
   }
 
-  const underwater = !isCityLevel(state.level) && biomeForLevel(state.level) === "underwater";
+  const elev = elevationState(state);
+  const underwater =
+    (!isCityLevel(state.level) && biomeForLevel(state.level) === "underwater") || elev.scubaDepth > 0.38;
 
   const drawOpts = { nitro, ghost, bossBoost, absorbing };
 
@@ -4432,8 +4679,13 @@ function drawHud(ctx: CanvasRenderingContext2D, state: GameState, zv: ZoneVisual
     ctx.textAlign = "center";
     ctx.fillText(cityDisplayName(zv.city), state.width * 0.5, zoneY);
   } else {
+    const elev = elevationState(state);
+    const elevLabel =
+      elev.activeKind !== "ground" || elev.blend > 0.08
+        ? ` · ${elevationDisplayName(elev.activeKind)}`
+        : "";
     ctx.textAlign = "left";
-    ctx.fillText(biomeDisplayName(zv.biome), 10, zoneY);
+    ctx.fillText(biomeDisplayName(zv.biome) + elevLabel, 10, zoneY);
   }
   ctx.textAlign = "left";
 
@@ -4473,12 +4725,41 @@ function drawHud(ctx: CanvasRenderingContext2D, state: GameState, zv: ZoneVisual
   } else if (isGhostActive(state)) {
     ctx.fillStyle = "#29B6F6";
     ctx.font = "bold 11px Manrope, sans-serif";
-    ctx.fillText("GHOST", barX + 10, 52);
+    ctx.fillText(`GHOST ${ghostSecondsLeft(state)}s`, barX + 4, 52);
+  } else if (state.birdBoostHits > 0) {
+    ctx.fillStyle = "#0288D1";
+    ctx.font = "bold 11px Manrope, sans-serif";
+    ctx.fillText(`SHIELD x${state.birdBoostHits}`, barX + 4, 52);
   } else if (canOfferJunkRecovery(state)) {
     ctx.fillStyle = "#F57C00";
     ctx.font = "bold 11px Manrope, sans-serif";
     ctx.fillText("🍔×1", barX + 18, 52);
   }
+}
+
+const TUTORIAL_BANNER: Record<TutorialTipId, string> = {
+  trees: "Fly through gaps between trees!",
+  junk: "Junk food above — dodge it!",
+  fruit: "Fruit slims you and widens gaps.",
+  ghost: "Ghost mode — pass through obstacles!",
+  nitro: "Orange nitro — smash obstacles!",
+  boss: "Boss at level 100 — nitro + thin bird!",
+};
+
+function drawTutorialBanner(ctx: CanvasRenderingContext2D, state: GameState): void {
+  const tip = state.activeTutorialTip;
+  if (!tip) return;
+  const text = TUTORIAL_BANNER[tip];
+  const w = state.width;
+  ctx.save();
+  ctx.fillStyle = "rgba(15, 23, 42, 0.78)";
+  roundRect(ctx, w * 0.08, 58, w * 0.84, 34, 10);
+  ctx.fill();
+  ctx.fillStyle = "#fff";
+  ctx.font = "bold 11px Manrope, sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText(text, w * 0.5, 79);
+  ctx.restore();
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {

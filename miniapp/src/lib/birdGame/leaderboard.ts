@@ -86,6 +86,7 @@ export async function submitBirdScore(
   level: number,
   fruits: number,
   birdId?: string,
+  ghostSamples?: import("../../api/client").BirdGhostSample[],
 ): Promise<import("../../api/client").BirdScoreResponse | null> {
   const name = displayName();
   const local = loadLocal();
@@ -98,7 +99,7 @@ export async function submitBirdScore(
   }
 
   try {
-    return await api.submitBirdScore({ score, level, fruits, birdId });
+    return await api.submitBirdScore({ score, level, fruits, birdId, ghostSamples });
   } catch {
     return null;
   }

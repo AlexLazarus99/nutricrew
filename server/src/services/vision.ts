@@ -415,11 +415,12 @@ function fallbackAnalysis(reason: VisionFallbackReason, visionHint?: string): Me
   const protein = 25;
   const { carbs, fat } = estimateCarbsFat(calories, protein);
   return {
-    description: "Meal (estimate)",
+    description: "Meal (estimate) (300 g)",
     calories,
     protein,
     carbs,
     fat,
+    servingGrams: 300,
     confidence: 0.4,
     mealType: "unknown",
     source: "fallback",

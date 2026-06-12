@@ -3041,6 +3041,128 @@ button {
   background: rgba(255, 255, 255, 0.06);
 }
 
+.collapsible-section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.collapsible-section__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.collapsible-section__summary {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.collapsible-section__chevron {
+  margin-left: auto;
+  font-size: 0.75rem;
+  opacity: 0.65;
+}
+
+.collapsible-section__body {
+  margin-top: 10px;
+}
+
+.bird-game-guide.collapsible-section {
+  margin-top: 8px;
+}
+
+.bird-game-guide .bird-game-legend {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.bird-game-meta-panel {
+  margin-bottom: 10px;
+}
+
+.bird-game-season {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.bird-game-daily-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.bird-game-boost-hint {
+  margin: 0 0 8px;
+}
+
+.bird-game-upgrades-title {
+  margin: 8px 0 4px;
+  font-size: 0.95rem;
+}
+
+.bird-game-upgrades-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bird-game-meta--rich {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.bird-game-zone,
+.bird-game-ghost,
+.bird-game-nitro,
+.bird-game-shield,
+.bird-game-boss-warn {
+  font-size: 0.82rem;
+}
+
+.bird-game-boss-warn {
+  color: #ff5252;
+  font-weight: 700;
+}
+
+.bird-game-pause-btn {
+  border: 1px solid var(--surface-2);
+  background: var(--surface-1);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.bird-roster-skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bird-roster-skill-tags li {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.72rem;
+}
+
 .bird-game-canvas-wrap {
   position: relative;
   width: 100%;

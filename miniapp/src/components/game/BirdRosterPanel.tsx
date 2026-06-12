@@ -198,6 +198,16 @@ export function BirdRosterPanel({
               <p className="bird-roster-skills small muted">
                 {t(`birds.skills.${bird.id}`)}
               </p>
+              <ul className="bird-roster-skill-tags small">
+                {(
+                  (t(`birds.skillTags.${bird.id}`, {
+                    returnObjects: true,
+                    defaultValue: [],
+                  }) as string[]) ?? []
+                ).map((tag) => (
+                  <li key={tag}>{tag}</li>
+                ))}
+              </ul>
               {bird.trials.length > 0 && (
                 <ul className="bird-roster-trials small">
                   {bird.trials.map((trial) => (

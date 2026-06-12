@@ -59,11 +59,12 @@ function fallbackTextAnalysis(
   source: MealAnalysis["source"] = "fallback",
 ): MealAnalysis {
   return {
-    description: "Meal (estimate)",
+    description: "Meal (estimate) (300 g)",
     calories: 450,
     protein: 25,
     carbs: 50,
     fat: 18,
+    servingGrams: 300,
     confidence: 0.35,
     mealType: "unknown",
     source,

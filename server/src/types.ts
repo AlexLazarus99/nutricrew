@@ -54,6 +54,8 @@ export interface MealAnalysis {
   protein: number;
   carbs: number;
   fat: number;
+  /** Estimated total portion weight in grams (not per 100 g). */
+  servingGrams?: number;
   confidence: number;
   mealType?: MealType;
   source:

@@ -79,11 +79,11 @@ export function onLevelUp(state: GameState, prevLevel: number, level: number): G
   next = pushEvent(next, { type: "levelUp", value: level });
   next = {
     ...next,
-    screenFlashUntil: next.elapsed + 180,
-    screenFlashAlpha: 0.22,
+    screenFlashUntil: next.elapsed + 220,
+    screenFlashAlpha: state.reduceMotion ? 0.15 : 0.28,
     screenFlashColor: "#B388FF",
-    screenShakeUntil: next.elapsed + 220,
-    screenShakeMag: 3,
+    screenShakeUntil: state.reduceMotion ? 0 : next.elapsed + 260,
+    screenShakeMag: state.reduceMotion ? 0 : 4,
   };
   return next;
 }
@@ -91,6 +91,7 @@ export function onLevelUp(state: GameState, prevLevel: number, level: number): G
 export type TreePassOpts = {
   groundY: number;
   birdR: number;
+  nearMissMult?: number;
 };
 
 export function onTreePassed(state: GameState, tree: TreeObstacle, opts: TreePassOpts): GameState {
@@ -111,7 +112,55 @@ export function onTreePassed(state: GameState, tree: TreeObstacle, opts: TreePas
   if (extra > 0) {
     next = pushPopup(next, "CLOSE! +1", bx, state.bird.y - 42, "#29B6F6", 1);
     next = pushEvent(next, { type: "nearMiss" });
+    if (!state.reduceMotion) {
+      next = {
+        ...next,
+        screenFlashUntil: Math.max(next.screenFlashUntil, next.elapsed + 140),
+        screenFlashAlpha: Math.max(next.screenFlashAlpha, 0.2),
+        screenFlashColor: "#29B6F6",
+      };
+    }
   }
+
+  if (streak >= 3 && streak % COMBO_BONUS_EVERY === 0) {
+    const bonus = COMBO_BONUS_POINTS;
+    next = {
+      ...next,
+      score: next.score + bonus,
+      level: levelFromScore(next.score),
+    };
+    next = pushPopup(
+      next,
+      `COMBO ×${streak}! +${bonus}`,
+      bx,
+      state.bird.y - 28,
+      "#FF6D00",
+      1.1,
+    );
+    next = pushEvent(next, { type: "combo", value: streak });
+    next = {
+      ...next,
+      screenShakeUntil: Math.max(next.screenShakeUntil, next.elapsed + 120),
+      screenShakeMag: Math.max(next.screenShakeMag, 2.5),
+    };
+  } else if (streak >= 5 && streak % 3 === 0) {
+    next = pushPopup(next, `×${streak}`, bx + 12, state.bird.y - 18, "#FFB300", 0.95);
+  }
+
+  return next;
+}
+
+/** Score gate in dungeon segments (no bottom trees). */
+export function onGatePassed(state: GameState): GameState {
+  const bx = state.width * 0.26;
+  const streak = state.comboStreak + 1;
+  let next: GameState = {
+    ...state,
+    comboStreak: streak,
+    comboBest: Math.max(state.comboBest, streak),
+    score: state.score + 1,
+    level: levelFromScore(state.score + 1),
+  };
 
   if (streak >= 3 && streak % COMBO_BONUS_EVERY === 0) {
     const bonus = COMBO_BONUS_POINTS;
@@ -143,7 +192,8 @@ export function onTreePassed(state: GameState, tree: TreeObstacle, opts: TreePas
 
 function wasNearMissTree(state: GameState, tree: TreeObstacle, opts: TreePassOpts): boolean {
   if (nearMissTreeHit(state, tree, opts, 0.88)) return false;
-  return nearMissTreeHit(state, tree, opts, 1.14);
+  const mult = opts.nearMissMult ?? 1;
+  return nearMissTreeHit(state, tree, opts, 1.14 * mult);
 }
 
 function nearMissTreeHit(
