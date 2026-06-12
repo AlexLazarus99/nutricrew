@@ -783,6 +783,7 @@
   },
   "nutriRun": {
     "title": "NutriRun",
+    "playHint": "Fly first — activities and aviary below.",
     "activities": {
       "title": "NutriCrew activities",
       "heroHint": "Fly, collect healthy food, sync scores with your crew.",
@@ -811,6 +812,8 @@
     },
     "birds": {
       "shopTitle": "Bird roster — 6 pilots",
+      "aviaryTitle": "Bird aviary",
+      "aviaryHint": "Animated pilots with unique perks — unlock and equip before your run.",
       "wallet": "{{xp}} XP · {{stars}} ⭐",
       "select": "Equip",
       "selected": "Equipped",

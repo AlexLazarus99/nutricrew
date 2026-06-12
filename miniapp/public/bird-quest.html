@@ -329,7 +329,8 @@ const eatRings = [];
 const FOOD_COLORS = {
   apple:'#e53935', banana:'#ffd54f', carrot:'#fb8c00', broccoli:'#43a047',
   strawberry:'#e53935', cherry:'#d32f2f', grapes:'#8e24aa', watermelon:'#e53935',
-  pepper:'#43a047', kiwi:'#8bc34a'
+  pepper:'#43a047', kiwi:'#8bc34a',
+  alarmclock:'#90caf9', turboorange:'#ff9800'
 };
 function addFloatText(x,y,text,color,scale){
   floatTexts.push({x,y,text,color,life:1,vy:-95,scale:scale||1});
@@ -412,7 +413,7 @@ const game = {
   level:0, params:null,
   scrollX:0, t:0,
   bird:null,
-  obstacles:[], foods:[],
+  obstacles:[], foods:[], debris:[],
   spawnTimer:0, distance:0,
   foodCollected:0, flightsPassed:0, score:0, lives:3, invuln:0,
   displayFat:1, targetFat:1,
@@ -420,16 +421,26 @@ const game = {
   intro:0,
   unlockBanner:null,
   combo:0, comboTimer:0, multiplier:1,
-  shieldTime:0, magnetTime:0, slowmoTime:0,
+  shieldTime:0, magnetTime:0, slowmoTime:0, chronoTime:0, nitroTime:0,
   thermals:[], thermalTimer:8,
   nearMissCd:0, speedMult:1,
+  hazardWasActive:false, hazardBanner:null,
 };
 const POWER = {
   shield:{ label:'Щит', color:'#64b5f6', dur:5 },
   magnet:{ label:'Магнит', color:'#ba68c8', dur:6 },
   slowmo:{ label:'Замедление', color:'#4dd0e1', dur:4 },
+  chrono:{ label:'Стоп-время!', color:'#90caf9', dur:5 },
+  nitro:{ label:'Нитро!', color:'#ff9800', dur:0 },
   golden:{ label:'Золотой бонус', color:'#ffd54f', dur:0 }
 };
+function hazardActive(){ return game.score > 100; }
+function scrollSlowFactor(){
+  if(game.chronoTime > 0) return 0.42;
+  if(game.slowmoTime > 0) return 0.62;
+  return 1;
+}
+function nitroSpeedMult(){ return game.nitroTime > 0 ? 1.32 : 1; }
 
 /* Bird object factory */
 function makeBird(){
@@ -494,6 +505,12 @@ function addScore(pts, label, x, y){
   const gain = Math.round(pts * mult);
   game.score += gain;
   progress.best = Math.max(progress.best, game.score);
+  if(!game.hazardWasActive && game.score > 100){
+    game.hazardWasActive = true;
+    game.hazardBanner = { time: 2.8 };
+    addFloatText(W/2, H*0.26, '⚠ Движущиеся трубы!', '#fff59d', 1.05);
+    haptic('warning');
+  }
   if(label) addFloatText(x||game.bird.x, y||game.bird.y-30, label+(mult>1?' x'+mult.toFixed(1):''), mult>1?'#ffd54f':'#eef5f0', mult>1?1.15:1);
 }
 function bumpCombo(){
@@ -520,6 +537,27 @@ function activatePower(kind){
   if(kind==='shield') game.shieldTime = p.dur + (getBirdSpec().perk === 'frost' ? 1.5 : 0);
   if(kind==='magnet') game.magnetTime = p.dur;
   if(kind==='slowmo') game.slowmoTime = p.dur;
+  if(kind==='chrono'){
+    game.chronoTime = p.dur;
+    game.slowmoTime = Math.max(game.slowmoTime, p.dur * 0.6);
+    burst(game.bird.x, game.bird.y, '#90caf9', 20, 180);
+    game.flashColor = '#90caf9'; game.flashTime = 0.35;
+  }
+  if(kind==='nitro'){
+    game.nitroTime = 3.8;
+    burst(game.bird.x, game.bird.y, '#ff9800', 24, 220);
+    for(let i=0;i<12;i++){
+      spawnParticle(game.bird.x - game.bird.r, game.bird.y+rand(-8,12), {
+        vx:rand(-280,-120), vy:rand(-30,30), g:40,
+        color:['#ff9800','#ffeb3b','#ff5722'][randi(0,2)],
+        size:rand(4,9), decay:rand(1.2,2), shape:'circle'
+      });
+    }
+    SFX.level();
+    haptic('heavy');
+    addFloatText(game.bird.x, game.bird.y-36, p.label+'!', p.color, 1.15);
+    return;
+  }
   addFloatText(game.bird.x, game.bird.y-36, p.label+'!', p.color, 1.05);
   SFX.eat();
   haptic('medium');
@@ -582,7 +620,9 @@ function drawPowerIcons(c){
   const icons = [];
   if(game.shieldTime>0) icons.push({t:game.shieldTime, icon:'🛡', col:'#64b5f6'});
   if(game.magnetTime>0) icons.push({t:game.magnetTime, icon:'🧲', col:'#ba68c8'});
-  if(game.slowmoTime>0) icons.push({t:game.slowmoTime, icon:'⏱', col:'#4dd0e1'});
+  if(game.chronoTime>0) icons.push({t:game.chronoTime, icon:'⏰', col:'#90caf9'});
+  else if(game.slowmoTime>0) icons.push({t:game.slowmoTime, icon:'⏱', col:'#4dd0e1'});
+  if(game.nitroTime>0) icons.push({t:game.nitroTime, icon:'🔥', col:'#ff9800'});
   let x = W - 18;
   const y = H*0.80 - 42 - safeBottom();
   for(const ic of icons){
@@ -917,6 +957,32 @@ function drawFood(c, type, x, y, r, t){
       c.fillStyle='#ffc107'; c.beginPath(); c.arc(0,0,r*0.8,0,TAU); c.fill();
       c.fillStyle='#ffeb3b'; c.font=fontSans(r*0.55,'700'); c.textAlign='center'; c.textBaseline='middle';
       c.fillText('★',0,r*0.05);
+      break; }
+    case 'alarmclock': {
+      const tick = Math.sin(t*10)*0.08;
+      c.save(); c.rotate(tick);
+      c.fillStyle='#eceff1'; rr(c,-r*0.75,-r*0.55,r*1.5,r*1.1,r*0.2); c.fill();
+      c.strokeStyle='#546e7a'; c.lineWidth=2; rr(c,-r*0.75,-r*0.55,r*1.5,r*1.1,r*0.2); c.stroke();
+      c.fillStyle='#37474f'; c.beginPath(); c.arc(0,0,r*0.42,0,TAU); c.fill();
+      c.strokeStyle='#fff'; c.lineWidth=r*0.08; c.lineCap='round';
+      const ha = t*4; c.beginPath(); c.moveTo(0,0); c.lineTo(Math.sin(ha)*r*0.08,-Math.cos(ha)*r*0.28); c.stroke();
+      c.beginPath(); c.moveTo(0,0); c.lineTo(Math.sin(ha*2.5)*r*0.22,-Math.cos(ha*2.5)*r*0.18); c.stroke();
+      c.fillStyle='#90caf9'; c.globalAlpha=0.45+0.35*Math.sin(t*8);
+      c.beginPath(); c.arc(0,0,r*1.05,0,TAU); c.fill();
+      c.restore();
+      break; }
+    case 'turboorange': {
+      const pulse = 0.85+0.15*Math.sin(t*7);
+      c.save(); c.scale(pulse,pulse);
+      c.globalAlpha=0.4+0.25*Math.sin(t*9);
+      c.fillStyle='#ff9800'; c.beginPath(); c.arc(0,0,r*1.1,0,TAU); c.fill();
+      c.globalAlpha=1;
+      c.fillStyle='#ff6f00'; c.beginPath(); c.arc(0,0,r*0.78,0,TAU); c.fill();
+      c.fillStyle='#ffb74d';
+      for(let i=0;i<8;i++){ const a=i/8*TAU; c.beginPath(); c.ellipse(Math.cos(a)*r*0.5,Math.sin(a)*r*0.5,r*0.06,r*0.14,a,0,TAU); c.fill(); }
+      c.fillStyle='#fff3e0'; c.beginPath(); c.ellipse(-r*0.2,-r*0.15,r*0.2,r*0.28,0.3,0,TAU); c.fill();
+      c.strokeStyle='#e65100'; c.lineWidth=r*0.1; c.beginPath(); c.moveTo(0,-r*0.5); c.lineTo(r*0.08,-r*0.85); c.stroke();
+      c.restore();
       break; }
     /* ---- JUNK ---- */
     case 'donut': {
@@ -1326,6 +1392,24 @@ function onObstaclePassed(o){
   progress.best = Math.max(progress.best, game.score);
   saveProgress(progress);
 }
+function debrisKindForTheme(theme){
+  if(theme==='forest') return 'branch';
+  if(theme==='antarctica') return 'icicle';
+  if(theme==='desert') return 'stone';
+  if(theme==='underwater') return 'kelp';
+  return Math.random()<0.5 ? 'branch' : 'stone';
+}
+function spawnDebrisFromPipe(o){
+  const fromTop = Math.random()<0.5;
+  const y = fromTop ? o.gapY - 6 : o.gapY + o.gapH + 6;
+  game.debris.push({
+    x: o.x + o.w*0.45 + rand(-8, 8),
+    y, vy: rand(95, 185), vx: rand(-35, 35),
+    type: debrisKindForTheme(o.kind),
+    r: rand(12, 20), rot: rand(0, TAU), spin: rand(-5, 5),
+    wobble: rand(0, TAU)
+  });
+}
 function spawnObstacle(){
   const p=game.params;
   const lv=getLevel(game.level);
@@ -1333,8 +1417,15 @@ function spawnObstacle(){
   const minTop = H*0.10, maxTop = H*0.80 - gapH;
   const gapY = rand(minTop, Math.max(minTop+10,maxTop));
   const w = clamp(W*0.13, 56, 92);
-  game.obstacles.push({ x:W+w, w, gapY, gapH, passed:false, kind:lv.theme });
-  // spawn food in the gap region (more items for longer levels)
+  const hazard = hazardActive();
+  const moveChance = hazard ? clamp(0.45 + (game.score-100)/350, 0.45, 0.88) : 0.12;
+  const moving = Math.random() < moveChance;
+  const gapVy = moving ? rand(-48, 48) * (hazard ? 1 + clamp((game.score-100)/250, 0, 0.6) : 0.7) : 0;
+  game.obstacles.push({
+    x:W+w, w, gapY, gapH, gapVy, gapYMin:minTop, gapYMax:maxTop,
+    moving, passed:false, kind:lv.theme,
+    debrisTimer: hazard ? rand(0.6, 1.8) : 999
+  });
   const n = randi(2, 4);
   for(let i=0;i<n;i++){
     const junk = i>0 && Math.random() < p.junkChance;
@@ -1342,16 +1433,69 @@ function spawnObstacle(){
     let type = list[randi(0,list.length-1)];
     let power = junk ? null : powerFromFood(type);
     if(!junk && Math.random()<0.045){ type='golden'; power='golden'; }
+    if(!junk && Math.random()<0.05){ type='alarmclock'; power='chrono'; }
+    if(!junk && Math.random()<0.045){ type='turboorange'; power='nitro'; }
     const fy = junk
       ? (Math.random()<0.5 ? gapY - rand(20,60) : gapY+gapH + rand(20,60))
       : gapY + rand(gapH*0.15, gapH*0.85);
-    game.foods.push({ x:W+w*0.5 + rand(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: power?20:18, type, junk, power, taken:false, bob:rand(0,TAU) });
+    const special = type==='alarmclock' || type==='turboorange';
+    game.foods.push({ x:W+w*0.5 + rand(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: special?19:18, type, junk, power, taken:false, bob:rand(0,TAU) });
   }
   if(Math.random()<0.14) spawnThermal();
 }
+function drawDebris(c, d, t){
+  c.save();
+  c.translate(d.x, d.y);
+  c.rotate(d.rot + t*d.spin*0.3);
+  if(d.type==='branch'){
+    c.strokeStyle='#5d4037'; c.lineWidth=d.r*0.22; c.lineCap='round';
+    c.beginPath(); c.moveTo(-d.r*0.6,0); c.quadraticCurveTo(0,-d.r*0.35,d.r*0.7,d.r*0.1); c.stroke();
+    c.fillStyle='#6d4c41'; c.beginPath(); c.ellipse(-d.r*0.45,0,d.r*0.18,d.r*0.1,0.4,0,TAU); c.fill();
+  } else if(d.type==='icicle'){
+    c.fillStyle='#b3e5fc';
+    c.beginPath(); c.moveTo(0,-d.r); c.lineTo(-d.r*0.35,d.r*0.5); c.lineTo(d.r*0.35,d.r*0.5); c.closePath(); c.fill();
+    c.fillStyle='#e1f5fe'; c.beginPath(); c.moveTo(0,-d.r*0.85); c.lineTo(-d.r*0.15,d.r*0.2); c.lineTo(d.r*0.15,d.r*0.2); c.fill();
+  } else if(d.type==='kelp'){
+    c.strokeStyle='#1b9e7a'; c.lineWidth=d.r*0.2; c.lineCap='round';
+    c.beginPath(); c.moveTo(0,-d.r*0.5); c.quadraticCurveTo(d.r*0.4,d.r*0.2,0,d.r*0.6); c.stroke();
+  } else {
+    c.fillStyle='#9e9e9e';
+    c.beginPath(); c.arc(0,0,d.r*0.55,0,TAU); c.fill();
+    c.fillStyle='#bdbdbd'; c.beginPath(); c.arc(-d.r*0.15,-d.r*0.1,d.r*0.2,0,TAU); c.fill();
+  }
+  c.restore();
+}
+function drawNitroFlames(c, b){
+  if(game.nitroTime<=0) return;
+  c.save();
+  const pulse = 0.7 + 0.3*Math.sin(game.t*18);
+  for(let i=0;i<6;i++){
+    const fy = b.y + Math.sin(game.t*14 + i*1.7)*10;
+    const fx = b.x - b.r*(0.9 + i*0.12);
+    c.globalAlpha = pulse * (0.35 + i*0.08);
+    c.fillStyle = ['#ff9800','#ffeb3b','#ff5722'][i%3];
+    c.beginPath(); c.ellipse(fx, fy, 8+i*2, 4+i, 0, 0, TAU); c.fill();
+  }
+  c.globalAlpha = 0.25*pulse;
+  c.fillStyle = '#ff9800';
+  c.beginPath(); c.moveTo(b.x-b.r*1.1, b.y);
+  c.lineTo(b.x-b.r*2.2, b.y-b.r*0.35);
+  c.lineTo(b.x-b.r*2.0, b.y+b.r*0.4);
+  c.closePath(); c.fill();
+  c.restore();
+}
 function drawObstacle(c, o, lv){
   const col=obstacleColor(lv);
-  const topH=o.gapY, botY=o.gapY+o.gapH, botH=H*0.80-botY+ (H*0.20);
+  const topH=o.gapY, botY=o.gapY+o.gapH;
+  if(o.moving){
+    c.save();
+    c.globalAlpha = 0.35 + 0.2*Math.sin(game.t*6 + o.x*0.02);
+    c.fillStyle = '#fff59d';
+    const ax = o.x + o.w*0.5;
+    c.beginPath(); c.moveTo(ax, topH-14); c.lineTo(ax-6, topH-4); c.lineTo(ax+6, topH-4); c.fill();
+    c.beginPath(); c.moveTo(ax, botY+14); c.lineTo(ax-6, botY+4); c.lineTo(ax+6, botY+4); c.fill();
+    c.restore();
+  }
   // style per theme
   if(o.kind==='forest'){
     // tree trunks
@@ -1449,6 +1593,13 @@ function drawHUD(c){
     c.textAlign='center'; c.fillStyle='#ffd54f'; c.font=fontSans(13,'700');
     c.fillText('Комбо '+game.combo, W/2, H-16-safeBottom());
     c.textAlign='left';
+  }
+  if(game.hazardBanner && game.hazardBanner.time > 0){
+    const a = clamp(game.hazardBanner.time / 2.8, 0, 1);
+    c.save(); c.globalAlpha = a * (0.75 + 0.25*Math.sin(game.t*5));
+    c.textAlign='center'; c.font=fontSans(13,'700'); c.fillStyle='#fff59d';
+    c.fillText('🌿 Ветки и лёд падают с труб!', W/2, pad + 58);
+    c.restore();
   }
   if(pointer.down && state===STATE.PLAY && game.intro<=0){
     c.textAlign='right'; c.fillStyle='rgba(238,245,240,0.55)'; c.font=fontSans(10,'500');
@@ -1576,11 +1727,11 @@ function startLevel(idx){
   game.level=idx;
   game.params=levelParams(idx);
   game.scrollX=0; game.spawnTimer=0.6; game.distance=0;
-  game.obstacles.length=0; game.foods.length=0; particles.length=0; floatTexts.length=0; eatRings.length=0;
+  game.obstacles.length=0; game.foods.length=0; game.debris.length=0; particles.length=0; floatTexts.length=0; eatRings.length=0;
   game.foodCollected=0; game.flightsPassed=0; game.score=0; game.lives=3; game.invuln=0;
-  game.unlockBanner=null;
+  game.unlockBanner=null; game.hazardWasActive=false; game.hazardBanner=null;
   game.combo=0; game.comboTimer=0; game.multiplier=1;
-  game.shieldTime=0; game.magnetTime=0; game.slowmoTime=0; game.speedMult=1;
+  game.shieldTime=0; game.magnetTime=0; game.slowmoTime=0; game.chronoTime=0; game.nitroTime=0; game.speedMult=1;
   game.thermals.length=0; game.thermalTimer=6; game.nearMissCd=0;
   game.bird=makeBird();
   game.bird.y=H*0.45; game.bird.vy=0;
@@ -1692,14 +1843,15 @@ function renderWorld(c, frozen){
   for(let x=-( (game.scrollX*0.6)%40);x<W;x+=40){ c.fillRect(x,gy,20,6); }
 
   drawThermals(c);
-  // obstacles
+  for(const d of game.debris){ drawDebris(c, d, game.t); }
   for(const o of game.obstacles){ drawObstacle(c, o, lv); }
   // foods
   for(const f of game.foods){ if(f.taken) continue;
     const by=f.y + Math.sin(game.t*3+f.bob)*4;
     if(!f.junk){
       c.save(); c.globalAlpha=0.35;
-      c.fillStyle = f.power==='golden' ? '#ffd54f' : (f.power ? POWER[f.power].color : '#fff59d');
+      const glowCol = f.type==='alarmclock' ? '#90caf9' : f.type==='turboorange' ? '#ff9800' : f.power==='golden' ? '#ffd54f' : (f.power ? POWER[f.power].color : '#fff59d');
+      c.fillStyle = glowCol;
       c.beginPath(); c.arc(f.x,by,f.r*1.5,0,TAU); c.fill(); c.restore();
     }
     drawFood(c, f.type, f.x, by, f.r, game.t);
@@ -1710,8 +1862,14 @@ function renderWorld(c, frozen){
     c.beginPath(); c.arc(game.bird.x, game.bird.y, magnetRadius(), 0, TAU); c.stroke();
     c.restore();
   }
-  if(game.slowmoTime>0){
+  if(game.chronoTime>0){
+    c.save(); c.globalAlpha=0.1+0.05*Math.sin(game.t*4); c.fillStyle='#90caf9'; c.fillRect(0,0,W,H); c.restore();
+  } else if(game.slowmoTime>0){
     c.save(); c.globalAlpha=0.08; c.fillStyle='#4dd0e1'; c.fillRect(0,0,W,H); c.restore();
+  }
+  if(game.nitroTime>0 && game.bird){
+    c.save(); c.globalAlpha=0.06; c.fillStyle='#ff9800'; c.fillRect(0,0,W,H); c.restore();
+    drawNitroFlames(c, game.bird);
   }
   // bird
   if(game.bird){
@@ -1762,7 +1920,9 @@ function renderWorld(c, frozen){
 /* ============================ UPDATE (PLAY) ============================= */
 function updatePlay(dt){
   const p=game.params, b=game.bird;
+  if(game.chronoTime>0) game.chronoTime -= dt;
   if(game.slowmoTime>0) game.slowmoTime -= dt;
+  if(game.nitroTime>0) game.nitroTime -= dt;
   if(game.shieldTime>0) game.shieldTime -= dt;
   if(game.magnetTime>0) game.magnetTime -= dt;
   if(game.comboTimer>0){
@@ -1771,9 +1931,9 @@ function updatePlay(dt){
   }
   if(game.nearMissCd>0) game.nearMissCd -= dt;
 
-  const slow = game.slowmoTime>0 ? 0.62 : 1;
+  const slow = scrollSlowFactor();
   const scrollDt = dt * slow;
-  const speed = p.speed * slow;
+  const speed = p.speed * slow * nitroSpeedMult();
   game.scrollX += speed*scrollDt;
   game.distance += speed*scrollDt;
 
@@ -1782,7 +1942,8 @@ function updatePlay(dt){
   game.displayFat = lerp(game.displayFat, game.targetFat, 1-Math.pow(0.5, dt*1.2));
 
   const gliding = pointer.down;
-  const grav = gliding ? 720 : 1500;
+  const nitro = game.nitroTime > 0;
+  const grav = gliding ? (nitro ? 560 : 720) : (nitro ? 1050 : 1500);
   b.vy += grav*dt;
   if(gliding) b.vy = clamp(b.vy, -280, 420);
   else b.vy = clamp(b.vy, -520, 760);
@@ -1803,6 +1964,10 @@ function updatePlay(dt){
   if(game.unlockBanner){
     game.unlockBanner.time -= dt;
     if(game.unlockBanner.time <= 0) game.unlockBanner = null;
+  }
+  if(game.hazardBanner){
+    game.hazardBanner.time -= dt;
+    if(game.hazardBanner.time <= 0) game.hazardBanner = null;
   }
 
   // ground / ceiling collision
@@ -1829,6 +1994,18 @@ function updatePlay(dt){
   for(let i=game.obstacles.length-1;i>=0;i--){
     const o=game.obstacles[i];
     o.x -= speed*scrollDt;
+    if(o.moving){
+      o.gapY += o.gapVy * dt;
+      if(o.gapY < o.gapYMin){ o.gapY = o.gapYMin; o.gapVy = Math.abs(o.gapVy); }
+      if(o.gapY + o.gapH > o.gapYMax){ o.gapY = o.gapYMax; o.gapVy = -Math.abs(o.gapVy); }
+    }
+    if(hazardActive() && !o.passed && o.x < W && o.x > -o.w){
+      o.debrisTimer -= dt;
+      if(o.debrisTimer <= 0){
+        spawnDebrisFromPipe(o);
+        o.debrisTimer = rand(1.1, 2.8) / (1 + clamp((game.score-100)/200, 0, 0.8));
+      }
+    }
     checkNearMiss(b, o);
     if(!o.passed && o.x+o.w < b.x){ o.passed=true; onObstaclePassed(o); }
     if(o.x+o.w < -20) game.obstacles.splice(i,1);
@@ -1836,6 +2013,25 @@ function updatePlay(dt){
       if(circleRect(b.x,b.y,b.r*0.78, o.x,0,o.w,o.gapY) ||
          circleRect(b.x,b.y,b.r*0.78, o.x,o.gapY+o.gapH,o.w,H-(o.gapY+o.gapH))){
         hitPlayer();
+      }
+    }
+  }
+  for(let i=game.debris.length-1;i>=0;i--){
+    const d = game.debris[i];
+    d.x += (d.vx - speed*0.85) * scrollDt;
+    d.y += d.vy * dt;
+    d.vy += 320 * dt;
+    d.rot += d.spin * dt;
+    if(d.y > H*0.82 || d.x < -40){
+      game.debris.splice(i,1);
+      continue;
+    }
+    if(game.invuln<=0 && !shielded){
+      const dx = b.x - d.x, dy = b.y - d.y;
+      if(dx*dx + dy*dy < (b.r*0.75 + d.r)*(b.r*0.75 + d.r)){
+        hitPlayer();
+        burst(d.x, d.y, '#ff7043', 10);
+        game.debris.splice(i,1);
       }
     }
   }
@@ -1868,6 +2064,18 @@ function updatePlay(dt){
         resetCombo();
         game.flashColor='#ff5252'; game.flashTime=0.5; game.shake=8;
         game.displayFat=clamp(game.displayFat+0.05,0,1);
+      } else if(f.type==='alarmclock' || f.type==='turboorange'){
+        game.foodCollected++;
+        bumpCombo();
+        b.eat=1; b.eatPop=1.2; b.happy=1;
+        if(f.type==='alarmclock'){
+          SFX.eat(); haptic('medium');
+          eatRings.push({x:f.x,y:by,r:10,life:1,color:'#90caf9'});
+          activatePower('chrono');
+        } else {
+          b.bodySquash=1.22;
+          activatePower('nitro');
+        }
       } else {
         SFX.eat(); haptic('light');
         spawnEatBurst(f.x, by, f.type==='golden'?'apple':f.type);
@@ -1877,7 +2085,7 @@ function updatePlay(dt){
         if(f.power==='golden') activatePower('golden');
         else {
           addScore(10, null, f.x, by);
-          if(f.power) activatePower(f.power);
+          if(f.power && f.power!=='chrono' && f.power!=='nitro') activatePower(f.power);
           else {
             const roll = powerFromFood(f.type);
             if(roll && Math.random()<0.35) activatePower(roll);
@@ -1885,6 +2093,9 @@ function updatePlay(dt){
         }
       }
     }
+  }
+  if(game.nitroTime>0 && Math.random()<0.55){
+    spawnParticle(b.x-b.r*0.8, b.y+rand(-8,10), {vx:rand(-320,-140), vy:rand(-25,25), g:30, color:['#ff9800','#ffeb3b'][randi(0,1)], size:rand(3,7), decay:1.4, shape:'circle'});
   }
   if(Math.random()<0.3) spawnParticle(b.x-b.r*0.7, b.y+rand(-6,8), {vx:-speed*0.2,vy:rand(-20,20),g:40,color:'rgba(255,255,255,0.5)',size:rand(1.5,3),decay:2.5});
 }

@@ -1,17 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type BirdCatalogRow, type BirdRosterResponse } from "../../api/client";
+import { BirdBadge } from "./BirdBadge";
 
 const BIRD_ORDER = ["classic", "ember", "frost", "neon", "royal", "storm"] as const;
-
-const BIRD_SWATCH: Record<string, string> = {
-  classic: "linear-gradient(135deg,#7fe0c0,#43c6e0)",
-  ember: "linear-gradient(135deg,#ff8a65,#e64a19)",
-  frost: "linear-gradient(135deg,#b3e5fc,#4fc3f7)",
-  neon: "linear-gradient(135deg,#f48fb1,#26c6da)",
-  royal: "linear-gradient(135deg,#ffd54f,#7e57c2)",
-  storm: "linear-gradient(135deg,#fff176,#7e57c2)",
-};
 
 type Props = {
   onRosterChange: (roster: BirdRosterResponse) => void;
@@ -22,7 +14,7 @@ export function NutriRunBirdShop({ onRosterChange, onToast }: Props) {
   const { t } = useTranslation();
   const [roster, setRoster] = useState<BirdRosterResponse | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const load = useCallback(async () => {
     try {
@@ -117,12 +109,13 @@ export function NutriRunBirdShop({ onRosterChange, onToast }: Props) {
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
       >
-        <span>{t("nutriRun.birds.shopTitle")}</span>
+        <span>{t("nutriRun.birds.aviaryTitle")}</span>
         <span className="muted small">{open ? "▲" : "▼"}</span>
       </button>
 
       {open && (
         <div className="nutrirun-birdshop__body">
+          <p className="muted small nutrirun-birdshop__intro">{t("nutriRun.birds.aviaryHint")}</p>
           {roster && (
             <p className="muted small nutrirun-birdshop__wallet">
               {t("nutriRun.birds.wallet", {
@@ -138,13 +131,13 @@ export function NutriRunBirdShop({ onRosterChange, onToast }: Props) {
               return (
                 <article
                   key={bird.id}
-                  className={`nutrirun-birdshop__card${selected ? " is-selected" : ""}${bird.owned ? " is-owned" : ""}`}
+                  className={`nutrirun-birdshop__card${selected ? " is-selected" : ""}${bird.owned ? " is-owned" : " is-locked"}`}
                 >
-                  <div
-                    className="nutrirun-birdshop__avatar"
-                    style={{ background: BIRD_SWATCH[bird.id] ?? BIRD_SWATCH.classic }}
-                    aria-hidden
-                  />
+                  <div className="nutrirun-birdshop__badge-wrap">
+                    <BirdBadge birdId={bird.id} size={bird.id === "classic" ? 100 : 112} />
+                    {!bird.owned && <span className="nutrirun-birdshop__lock" aria-hidden>🔒</span>}
+                    {selected && <span className="nutrirun-birdshop__equipped">{t("nutriRun.birds.selected")}</span>}
+                  </div>
                   <h3>{t(`nutriRun.birds.${bird.id}.name`)}</h3>
                   <p className="muted small">{t(`nutriRun.birds.${bird.id}.perk`)}</p>
                   {bird.owned ? (

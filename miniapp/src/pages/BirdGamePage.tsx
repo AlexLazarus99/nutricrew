@@ -35,7 +35,7 @@ export function BirdGamePage() {
   const [leaderboard, setLeaderboard] = useState<BirdGameLeaderboardEntry[] | null>(null);
   const [lastRun, setLastRun] = useState<NutriRunLastRun | null>(null);
   const [claimBusy, setClaimBusy] = useState(false);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
   const [roster, setRoster] = useState<BirdRosterResponse | null>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -125,7 +125,7 @@ export function BirdGamePage() {
     <section className="stack nutrirun-page" aria-label={t("nutriRun.title")}>
       <div className="card hero nutrirun-hero">
         <h1 className="nutrirun-hero__title">{t("nutriRun.title")}</h1>
-        <p className="muted small">{t("nutriRun.activities.heroHint")}</p>
+        <p className="muted small">{t("nutriRun.playHint")}</p>
       </div>
 
       {toast && (
@@ -136,6 +136,19 @@ export function BirdGamePage() {
           </button>
         </p>
       )}
+
+      <div className="bird-quest-page nutrirun-game-first">
+        <iframe
+          ref={iframeRef}
+          src="/bird-quest.html"
+          title={t("nutriRun.title")}
+          className="bird-quest-frame"
+          allow="autoplay"
+          onLoad={() => {
+            if (roster) syncRosterToGame(roster);
+          }}
+        />
+      </div>
 
       <NutriRunActivities
         meta={meta}
@@ -155,19 +168,6 @@ export function BirdGamePage() {
         }}
         onToast={setToast}
       />
-
-      <div className="bird-quest-page">
-        <iframe
-          ref={iframeRef}
-          src="/bird-quest.html"
-          title={t("nutriRun.title")}
-          className="bird-quest-frame"
-          allow="autoplay"
-          onLoad={() => {
-            if (roster) syncRosterToGame(roster);
-          }}
-        />
-      </div>
     </section>
   );
 }
