@@ -792,14 +792,13 @@
     "startHint": "You start chubby with wide gaps. Trees below, candy and fast food above — gets harder with level.",
     "overTitle": "Game over",
     "overHint": "Score {{score}} · fruit {{fruit}}. Tap to retry.",
-    "legendTrees": "🌲 Levels 1–4: spruces on land; from level 5 — shore and sea with sharks.",
+    "legendTrees": "🌲 Trees below, junk food above — the gap narrows as you level up.",
     "legendFruit": "🍎🍑🍇 Fruit slims the bird and grants ghost — pass through obstacles. Nutrition slowly decays without fruit.",
     "legendSpeed": "🔥 Orange nitro stacks to x5 ORANGE NITRO (max 10 seconds total). Each orange adds a stack!",
     "legendJunk": "🍬🍳🍔🍕🥤 Candy, egg & bacon, spinning burger, pizza and soda above — don't hit them! At min size, eat 🍔 or 🍕 once.",
     "legendSkyFood": "🌭 Sausages, links and pasta drift in the sky — just for fun.",
     "legendMountain": "⛰ Low mountains rise from the water with snowy peaks — fly above! A tiny climber scales the slope.",
-    "legendWhale": "🦈 From level 5, sharks leap from the sea — dodge them!",
-    "legendOctopus": "🐙 Octopus tentacles rise from the water periodically — stay high!",
+    "legendElevations": "⛰️ Each run cycles valley, climb, and dungeon — backdrop follows the biome.",
     "legendNight": "🌅 At sunset the sun dips behind the mountains; stars and moon at night (~1 min cycle).",
     "legendWolves": "🐺 At night, small wolves on the hills howl at the moon.",
     "legendMeteor": "☄️ Meteors fall day and night — they leave craters on the ground!",
@@ -859,13 +858,12 @@
       "antarctica": "Antarctica",
       "jungle": "Jungle",
       "mountains": "Mountains",
-      "underwater": "Underwater"
+      "forest": "Deep Forest"
     },
     "elevations": {
       "ground": "Valley",
       "climb": "Climb",
-      "dungeon": "Dungeon",
-      "scuba": "Depths"
+      "dungeon": "Dungeon"
     },
     "cities": {
       "paris": "Paris",

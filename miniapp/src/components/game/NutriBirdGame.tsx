@@ -590,8 +590,7 @@ export function NutriBirdGame({ onActivity }: NutriBirdGameProps = {}) {
           <li>{t("game.legendJunk")}</li>
           <li>{t("game.legendSkyFood")}</li>
           <li>{t("game.legendMountain")}</li>
-          <li>{t("game.legendWhale")}</li>
-          <li>{t("game.legendOctopus")}</li>
+          <li>{t("game.legendElevations")}</li>
           <li>{t("game.legendNight")}</li>
           <li>{t("game.legendWolves")}</li>
           <li>{t("game.legendMeteor")}</li>

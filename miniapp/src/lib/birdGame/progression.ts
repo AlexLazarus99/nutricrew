@@ -33,7 +33,7 @@ export type BiomeId =
   | "antarctica"
   | "jungle"
   | "mountains"
-  | "underwater";
+  | "forest";
 
 export const BIOME_IDS: BiomeId[] = [
   "meadow",
@@ -42,7 +42,7 @@ export const BIOME_IDS: BiomeId[] = [
   "antarctica",
   "jungle",
   "mountains",
-  "underwater",
+  "forest",
 ];
 
 export type CityId =
@@ -186,19 +186,19 @@ const BIOME_PALETTES: Record<BiomeId, BiomePalette> = {
     farMountains: "rgba(69,90,100,0.5)",
     grass: "#689F38",
   },
-  underwater: {
-    skyTop: "#01579B",
-    skyMid: "#0277BD",
-    skyBot: "#0288D1",
-    landTop: "#C2A878",
-    landMid: "#A89060",
-    landBot: "#8D6E63",
-    landSoil: "#5D4037",
-    waterTop: "#0288D1",
-    waterMid: "#0277BD",
-    waterBot: "#01579B",
-    farMountains: "rgba(1,87,155,0.35)",
-    grass: "#00695C",
+  forest: {
+    skyTop: "#7EB8D8",
+    skyMid: "#A8D4E8",
+    skyBot: "#C5E4F0",
+    landTop: "#4A7C42",
+    landMid: "#3D6B38",
+    landBot: "#2E5A30",
+    landSoil: "#4E342E",
+    waterTop: "#4A7C42",
+    waterMid: "#3D6B38",
+    waterBot: "#2E5A30",
+    farMountains: "rgba(45,74,50,0.45)",
+    grass: "#388E3C",
   },
 };
 
@@ -442,7 +442,7 @@ export function biomeDisplayName(biome: BiomeId): string {
     antarctica: "Antarctica",
     jungle: "Jungle",
     mountains: "Mountains",
-    underwater: "Deep Sea",
+    forest: "Deep Forest",
   };
   return names[biome];
 }

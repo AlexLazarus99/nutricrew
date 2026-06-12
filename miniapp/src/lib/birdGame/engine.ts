@@ -36,12 +36,6 @@ import {
 } from "./gameSession";
 import { drawGhostOpponent, ghostSecondsLeft } from "./gameHud";
 import { junkEnabledForLevel, pickTutorialTip } from "./gameTutorial";
-import {
-  drawOceanAmbience,
-  drawPainterlyBackdrop,
-  drawSoftOceanSurface,
-  type OceanDrawCtx,
-} from "./oceanLife";
 import { drawDungeonBackdrop, drawDungeonGameplayProps } from "./dungeonDecor";
 import {
   computeElevation,
@@ -64,7 +58,7 @@ import {
   biomeDisplayName,
   cityDisplayName,
 } from "./progression";
-import { effectiveSeaBlend, drawBiomeBackdrop, drawBiomeForeground, drawDiveSuitBird } from "./biomes";
+import { drawBiomeBackdrop, drawBiomeForeground } from "./biomes";
 import { drawCityscape, drawCityGround, drawCitySky, drawCityObstacleBuilding, drawCityLandmarkForeground } from "./cities";
 import { computeZoneVisual, type ZoneVisual } from "./zoneTransition";
 import { parseColorRgb, rgbString, lerpRgb, sanitizeBiomePalette } from "./colorUtils.js";
@@ -119,11 +113,6 @@ const MAX_GHOST_MS = 10000;
 const FRUIT_EAT_FX_MS = 520;
 const NITRO_RAMP_MS = 2600;
 const BOSS_BOOST_RAMP_MS = 5200;
-const SEA_HEIGHT = 118;
-const SEA_LEVEL = 5;
-const SHARK_JUMP_HEIGHT = 128;
-const TENTACLE_MAX_REACH = 98;
-const TENTACLE_COUNT = 4;
 const MIN_SIZE_NUTRITION = 98;
 const JUNK_RECOVERY_NUTRITION_DROP = 32;
 /** Во сколько раз медленнее растёт «питание» и худеет птичка (фрукты, размер, зазоры). */
@@ -144,7 +133,6 @@ const BOSS_APPROACH_SLOW_MO_MS = 7000;
 const BOSS_APPROACH_SLOW_MO_FACTOR = 0.022;
 const BOSS_EXPLOSION_SLOW_MO_FACTOR = 0.035;
 const LAND_HEIGHT = 44;
-const SHORE_GRASS = 26;
 const DAY_CYCLE_MS = 60000;
 /** Без столкновений в первые секунды — время на реакцию после старта */
 const START_INVULN_MS = 2800;
@@ -220,17 +208,6 @@ function sunVisual(state: GameState): {
   return hidden;
 }
 
-function waterLineY(canvasH: number): number {
-  return canvasH - SEA_HEIGHT;
-}
-
-function seaBlend(state: GameState): number {
-  if (state.score < 6) return 0;
-  if (state.score >= 22) return 1;
-  const t = (state.score - 6) / 16;
-  return t * t * (3 - 2 * t);
-}
-
 function elevationState(state: GameState): ElevationState {
   return computeElevation({
     score: state.score,
@@ -243,15 +220,6 @@ function elevationState(state: GameState): ElevationState {
 
 function inDungeon(state: GameState): boolean {
   return inDungeonElevation(elevationState(state));
-}
-
-function worldSeaBlend(state: GameState): number {
-  const base = effectiveSeaBlend(biomeForLevel(state.level), seaBlend(state), state.level);
-  return Math.max(base, elevationState(state).scubaDepth);
-}
-
-function seaActive(state: GameState): boolean {
-  return worldSeaBlend(state) >= 0.38;
 }
 
 function isGhostActive(state: GameState): boolean {
@@ -375,30 +343,21 @@ function meteorSpawnChance(elapsed: number): number {
   return 0.000055 + nf * 0.00004;
 }
 
-/** Линия, на которой стоят деревья (суша / берег) */
+/** Линия, на которой стоят деревья */
 function treeGroundY(state: GameState): number {
-  const b = worldSeaBlend(state);
-  const landGround = state.height - LAND_HEIGHT;
-  const seaShore = waterLineY(state.height) - SHORE_GRASS;
-  const base = landGround + (seaShore - landGround) * b;
   const elev = elevationState(state);
-  return base - elev.floorLift * (elev.scubaDepth > 0.35 ? 0.2 : 0.82);
+  return state.height - LAND_HEIGHT - elev.floorLift * 0.82;
 }
 
-/** Нижняя граница полёта — суша или вода (плавный переход) */
+/** Нижняя граница полёта */
 function floorY(state: GameState): number {
-  const b = worldSeaBlend(state);
-  const landFloor = state.height - LAND_HEIGHT;
-  const seaFloor = waterLineY(state.height);
-  const base = landFloor + (seaFloor - landFloor) * b;
   const elev = elevationState(state);
-  return base - (elev.scubaDepth > 0.35 ? 0 : elev.floorLift);
+  return state.height - LAND_HEIGHT - elev.floorLift;
 }
 
 /** Верхняя граница полёта — пещера / склон */
 function ceilingY(state: GameState): number {
-  const elev = elevationState(state);
-  return elev.scubaDepth > 0.35 ? 0 : elev.ceilingDrop;
+  return elevationState(state).ceilingDrop;
 }
 
 const FRUITS: FruitType[] = ["apple", "peach", "grape"];
@@ -468,7 +427,7 @@ function gapHeightFor(
 function pickTreeType(score: number): TreeType {
   const level = levelFromScore(score);
   const roll = Math.random();
-  if (level < SEA_LEVEL) return roll < 0.72 ? "spruce" : "pine";
+  if (level < 5) return roll < 0.72 ? "spruce" : "pine";
   if (score < 8) return roll < 0.55 ? "spruce" : "pine";
   if (score < 20) return roll < 0.35 ? "oak" : roll < 0.7 ? "pine" : "spruce";
   if (roll < 0.35) return "oak";
@@ -596,20 +555,6 @@ function spawnMountain(state: GameState, x: number): MountainHazard {
   };
 }
 
-function spawnShark(x: number): SharkHazard {
-  return {
-    kind: "shark",
-    x,
-    phaseSeed: Math.random() * 100,
-  };
-}
-
-function spawnOctopusTentacle(x: number): OctopusTentacle {
-  return {
-    x,
-    phaseSeed: Math.random() * 100,
-  };
-}
 
 function maybeSpawnPickup(
   state: GameState,
@@ -671,31 +616,13 @@ function spawnSegmentExtras(
 
   if (!cityMode) {
     const elev = elevationState(state);
-    const inOcean = worldSeaBlend(state) > 0.45;
     const climbing = elev.activeKind === "climb" || elev.kind === "climb";
-    const scuba = elev.scubaDepth > 0.4;
     if (
       level >= 3 &&
-      !inOcean &&
       (climbing || segmentIndex % 6 === 0) &&
       Math.random() < hazardChance(level, climbing ? 0.11 : 0.05)
     ) {
       hazards.push(spawnMountain(state, offset(15)));
-    }
-    if (
-      (scuba || (level >= SEA_LEVEL && inOcean)) &&
-      segmentIndex % (scuba ? 4 : 5) === 0 &&
-      Math.random() < hazardChance(level, scuba ? 0.07 : 0.045)
-    ) {
-      hazards.push(spawnShark(offset(25)));
-    }
-    if (
-      level >= SEA_LEVEL &&
-      !inOcean &&
-      segmentIndex % 7 === 3 &&
-      Math.random() < hazardChance(level, 0.018)
-    ) {
-      octopusTentacles.push(spawnOctopusTentacle(offset(55)));
     }
   }
 
@@ -703,7 +630,7 @@ function spawnSegmentExtras(
   if (level >= 5 && !dungeon && Math.random() < 0.028) {
     extraTrees.push(spawnSegment(state, offset(55)).tree);
   }
-  if (!cityMode && level >= SEA_LEVEL && Math.random() < 0.04) {
+  if (!cityMode && level >= 5 && Math.random() < 0.04) {
     extraJunks.push(spawnSegment(state, offset(30)).junk);
   }
 
@@ -948,85 +875,11 @@ function collideMountain(state: GameState, m: MountainHazard): boolean {
   return false;
 }
 
-function sharkPose(shark: SharkHazard, state: GameState) {
-  const baseY = waterLineY(state.height);
-  const cycle = 3.4;
-  const raw = ((state.elapsed * 0.001 + shark.phaseSeed) % cycle) / cycle;
-  let jump = 0;
-  if (raw < 0.48) {
-    const t = raw / 0.48;
-    jump = Math.sin(t * Math.PI);
-  }
-  const birdY = state.bird.y;
-  const hunger = Math.max(0, Math.min(1, (baseY - birdY - 30) / 120));
-  const leapH = SHARK_JUMP_HEIGHT + hunger * 45;
-  const bodyCx = shark.x + 38;
-  const bodyCy = baseY - jump * leapH - 10 - hunger * jump * 12;
-  const lean = (birdY - bodyCy) * 0.08 * jump;
-  return {
-    x: shark.x,
-    baseY,
-    jump,
-    hunger,
-    bodyCx,
-    bodyCy: bodyCy + lean * 0.3,
-    bodyRx: 32,
-    bodyRy: 11 + jump * 12,
-    mouthOpen: jump > 0.28,
-    mouthX: shark.x + 54,
-    mouthY: bodyCy + lean * 0.2 + 6,
-    headX: shark.x + 50,
-    headY: bodyCy + lean * 0.25,
-    lean,
-  };
+function collideShark(_state: GameState, _shark: SharkHazard): boolean {
+  return false;
 }
 
-function collideShark(state: GameState, shark: SharkHazard): boolean {
-  if (!seaActive(state)) return false;
-  const p = sharkPose(shark, state);
-  if (p.jump < 0.12) return false;
-  const bx = birdX(state);
-  const by = state.bird.y;
-  const r = birdRadius(state.bird.nutrition) * 0.8;
-  if (p.mouthOpen && circleCircleHit(bx, by, r, p.mouthX, p.mouthY, 16)) return true;
-  return circleRectHit(bx, by, r, p.bodyCx - p.bodyRx, p.bodyCy - p.bodyRy, p.bodyRx * 2, p.bodyRy * 2);
-}
-
-function tentaclePose(tentacle: OctopusTentacle, state: GameState) {
-  const baseY = waterLineY(state.height);
-  const cycle = 4.4;
-  const raw = ((state.elapsed * 0.001 + tentacle.phaseSeed) % cycle) / cycle;
-  let rise = 0;
-  if (raw >= 0.08 && raw <= 0.84) {
-    const u = (raw - 0.08) / 0.76;
-    rise = Math.sin(u * Math.PI);
-  }
-  const baseX = tentacle.x + 24;
-  const tips: { x: number; y: number; r: number }[] = [];
-  for (let i = 0; i < TENTACLE_COUNT; i++) {
-    const spread = (i - (TENTACLE_COUNT - 1) / 2) * 15;
-    const wiggle = Math.sin(state.elapsed * 0.005 + tentacle.phaseSeed + i * 1.3) * 10;
-    const reach = rise * (TENTACLE_MAX_REACH + i * 8);
-    tips.push({
-      x: baseX + spread + wiggle,
-      y: baseY - reach,
-      r: 6 + rise * 5,
-    });
-  }
-  return { baseY, rise, baseX, tips };
-}
-
-function collideOctopusTentacle(state: GameState, tentacle: OctopusTentacle): boolean {
-  if (!seaActive(state)) return false;
-  const p = tentaclePose(tentacle, state);
-  if (p.rise < 0.16) return false;
-  const bx = birdX(state);
-  const by = state.bird.y;
-  const r = birdRadius(state.bird.nutrition) * 0.78;
-  for (const tip of p.tips) {
-    if (circleCircleHit(bx, by, r, tip.x, tip.y, tip.r)) return true;
-  }
-  if (p.rise > 0.35 && circleCircleHit(bx, by, r, p.baseX, p.baseY - 6, 14 + p.rise * 8)) return true;
+function collideOctopusTentacle(_state: GameState, _tentacle: OctopusTentacle): boolean {
   return false;
 }
 
@@ -1208,44 +1061,12 @@ function spawnMountainDebris(m: MountainHazard, state: GameState, debris: Debris
   }
 }
 
-function spawnSharkDebris(shark: SharkHazard, state: GameState, debris: DebrisParticle[], bx: number, by: number): void {
-  const p = sharkPose(shark, state);
+function spawnSharkDebris(_shark: SharkHazard, _state: GameState, debris: DebrisParticle[], bx: number, by: number): void {
   spawnImpactSparks(debris, bx, by);
-  for (let i = 0; i < 3; i++) {
-    pushDebris(debris, {
-      x: p.bodyCx + (Math.random() - 0.5) * 24,
-      y: p.baseY + 2,
-      vx: -1 - Math.random() * 2,
-      vy: -1 - Math.random() * 3,
-      life: 1,
-      maxLife: 0.35 + Math.random() * 0.3,
-      size: 3 + Math.random() * 5,
-      color: i % 2 === 0 ? "#4FC3F7" : "#ECEFF1",
-      kind: "splash",
-      rotation: 0,
-      spin: 0,
-    });
-  }
 }
 
-function spawnTentacleDebris(tentacle: OctopusTentacle, state: GameState, debris: DebrisParticle[], bx: number, by: number): void {
-  const p = tentaclePose(tentacle, state);
+function spawnTentacleDebris(_tentacle: OctopusTentacle, _state: GameState, debris: DebrisParticle[], bx: number, by: number): void {
   spawnImpactSparks(debris, bx, by);
-  for (let i = 0; i < 4; i++) {
-    pushDebris(debris, {
-      x: p.baseX + (Math.random() - 0.5) * 28,
-      y: p.baseY + 2,
-      vx: -1 - Math.random() * 2,
-      vy: -1 - Math.random() * 3,
-      life: 1,
-      maxLife: 0.35 + Math.random() * 0.3,
-      size: 3 + Math.random() * 5,
-      color: i % 2 === 0 ? "#7B1FA2" : "#4FC3F7",
-      kind: "splash",
-      rotation: 0,
-      spin: 0,
-    });
-  }
 }
 
 function collideMeteor(state: GameState, meteor: Meteor): boolean {
@@ -1750,10 +1571,6 @@ function checkCollisions(state: GameState): GamePhase {
   }
   for (const h of state.hazards) {
     if (h.kind === "mountain" && collideMountain(state, h)) return "gameover";
-    if (seaActive(state) && h.kind === "shark" && collideShark(state, h)) return "gameover";
-  }
-  for (const tentacle of state.octopusTentacles) {
-    if (seaActive(state) && collideOctopusTentacle(state, tentacle)) return "gameover";
   }
   if (
     state.animalBoss &&
@@ -1866,10 +1683,8 @@ export function tick(state: GameState, dtMs: number): GameState {
     }
   }
 
-  if (!seaActive(next)) {
-    next.hazards = next.hazards.filter((h) => h.kind !== "shark");
-    next.octopusTentacles = [];
-  }
+  next.hazards = next.hazards.filter((h) => h.kind !== "shark");
+  next.octopusTentacles = [];
 
   next = updateMeteor(next, dt, move);
   next = updatePterodactyl(next, dt, move);
@@ -2054,15 +1869,14 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
   const warm = Math.max(tod.sunset, tod.sunrise * 0.75);
   const groundLine = treeGroundY(state);
   const floorLine = floorY(state);
-  const seaBlend = worldSeaBlend(state) * zv.natureWeight;
   const biomeCtx = {
     width,
     height,
     elapsed: state.elapsed,
+    worldScroll: state.worldScroll,
     groundY: groundLine,
     floorY: floorLine,
     treeGroundY: groundLine,
-    seaBlend,
     night: tod.night,
   };
   const cityCtx = {
@@ -2162,15 +1976,6 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
 
   if (state.bossExplosion) drawBoarExplosion(ctx, state, state.bossExplosion);
 
-  if (seaActive(state)) {
-    for (const h of state.hazards) {
-      if (h.kind === "shark") drawShark(ctx, h, state);
-    }
-    for (const tentacle of state.octopusTentacles) {
-      drawOctopusTentacle(ctx, tentacle, state);
-    }
-  }
-
   drawCraters(ctx, state);
 
   if (state.meteor) drawMeteor(ctx, state.meteor, state.elapsed);
@@ -2216,7 +2021,7 @@ export function drawGame(ctx: CanvasRenderingContext2D, state: GameState): void 
     ctx.restore();
   }
 
-  const fxCtx = buildFxCtx(state, biome, visualCity, groundLine, floorLine, tod.night, seaBlend);
+  const fxCtx = buildFxCtx(state, biome, visualCity, groundLine, floorLine, tod.night);
   drawSpeedStreaks(ctx, fxCtx);
   drawBoostVignette(ctx, fxCtx);
   drawBirdWake(ctx, fxCtx);
@@ -2257,7 +2062,7 @@ function drawNatureBackdrop(
     groundY: number;
     floorY: number;
     treeGroundY: number;
-    seaBlend: number;
+    worldScroll: number;
     night: number;
   },
 ): void {
@@ -2270,9 +2075,9 @@ function drawNatureBackdrop(
     drawSun(ctx, state);
     if (tod.night > 0.2) drawStars(ctx, state);
     if (tod.night > 0.55) drawMoon(ctx, state);
-    if (biome !== "underwater") drawClouds(ctx, state);
+    drawClouds(ctx, state);
     drawSkyDelicacies(ctx, state);
-    drawFarMountains(ctx, state, pal);
+    // Each biome has its own parallax backdrop in biomeBackdrops.ts
   }
 
   if (zv.prevBiome && zv.biomeDecorBlend > 0.03 && zv.biomeDecorBlend < 0.97) {
@@ -2288,31 +2093,14 @@ function drawNatureBackdrop(
     drawBiomeBackdrop(ctx, biome, biomeCtx);
   }
 
-  if (tod.night > 0.5 && biome !== "underwater") drawNightWolves(ctx, state);
+  if (tod.night > 0.5) drawNightWolves(ctx, state);
 
   for (const h of state.hazards) {
     if (h.kind === "mountain") drawMountain(ctx, h, state);
   }
 
-  const oceanCtx: OceanDrawCtx = {
-    width: biomeCtx.width,
-    height: biomeCtx.height,
-    elapsed: biomeCtx.elapsed,
-    worldScroll: state.worldScroll,
-    waterTop: biomeCtx.floorY,
-    floorY: state.height,
-    seaBlend: biomeCtx.seaBlend,
-    birdX: birdX(state),
-    birdY: state.bird.y,
-    night: biomeCtx.night,
-  };
-
   if (!dungeonZone) {
-    drawPainterlyBackdrop(ctx, oceanCtx, treeGroundY(state));
-    drawLand(ctx, state, pal, biomeCtx.seaBlend);
-    drawWater(ctx, state, pal, biomeCtx.seaBlend);
-    drawOceanAmbience(ctx, oceanCtx);
-    drawSoftOceanSurface(ctx, oceanCtx);
+    drawLand(ctx, state, pal);
   }
 
   const elev = elevationState(state);
@@ -2374,7 +2162,6 @@ function buildFxCtx(
   groundY: number,
   floorY: number,
   night: number,
-  seaBlend: number,
 ): FxDrawCtx {
   return {
     width: state.width,
@@ -2383,7 +2170,7 @@ function buildFxCtx(
     night,
     biome,
     cityMode,
-    seaBlend,
+    seaBlend: 0,
     birdX: birdX(state),
     birdY: state.bird.y,
     groundY,
@@ -2814,16 +2601,11 @@ function drawFarMountains(ctx: CanvasRenderingContext2D, state: GameState, palet
   }
 }
 
-function drawLand(ctx: CanvasRenderingContext2D, state: GameState, palette?: BiomePalette, seaBlendOverride?: number): void {
+function drawLand(ctx: CanvasRenderingContext2D, state: GameState, palette?: BiomePalette): void {
   const { width: w, height: h } = state;
-  const b = seaBlendOverride ?? worldSeaBlend(state);
   const pal = palette ?? biomePalette(biomeForLevel(state.level));
-  const landTop = h - LAND_HEIGHT;
-  const shoreTop = treeGroundY(state);
-  const waterTop = floorY(state);
+  const landTop = treeGroundY(state);
 
-  ctx.save();
-  ctx.globalAlpha = 1 - b * 0.9;
   const landG = ctx.createLinearGradient(0, landTop, 0, h);
   landG.addColorStop(0, pal.landTop);
   landG.addColorStop(0.25, pal.landMid);
@@ -2840,103 +2622,6 @@ function drawLand(ctx: CanvasRenderingContext2D, state: GameState, palette?: Bio
     ctx.ellipse(gx + 5, landTop + 2, 6, 4, 0, 0, Math.PI * 2);
     ctx.fill();
   }
-  ctx.restore();
-
-  if (b <= 0.01) return;
-
-  ctx.save();
-  ctx.globalAlpha = Math.min(1, b * 1.15);
-  const shoreH = Math.max(10, waterTop - shoreTop + 6);
-  const shoreG = ctx.createLinearGradient(0, shoreTop, 0, waterTop + 4);
-  shoreG.addColorStop(0, "#8CBF6A");
-  shoreG.addColorStop(0.35, "#6FA85A");
-  shoreG.addColorStop(0.7, "#5A9450");
-  shoreG.addColorStop(1, "#B8A070");
-  ctx.fillStyle = shoreG;
-  ctx.beginPath();
-  ctx.moveTo(0, shoreTop + shoreH);
-  for (let x = 0; x <= w; x += 8) {
-    const wave = Math.sin(x * 0.04) * 3;
-    ctx.lineTo(x, shoreTop + wave);
-  }
-  ctx.lineTo(w, shoreTop + shoreH);
-  ctx.lineTo(0, shoreTop + shoreH);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = "#B8A070";
-  ctx.beginPath();
-  ctx.moveTo(0, waterTop + 2);
-  for (let x = 0; x <= w; x += 6) {
-    ctx.lineTo(x, waterTop - 2 + Math.sin(x * 0.05) * 2);
-  }
-  ctx.lineTo(w, waterTop + 6);
-  ctx.lineTo(0, waterTop + 6);
-  ctx.closePath();
-  ctx.fill();
-
-  for (let i = 0; i < 8; i++) {
-    const gx = (i * 78 + 18) % w;
-    ctx.fillStyle = "#6FA85A";
-    ctx.beginPath();
-    ctx.ellipse(gx + 4, shoreTop + 2, 5, 3.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-  ctx.restore();
-}
-
-function drawWater(ctx: CanvasRenderingContext2D, state: GameState, palette?: BiomePalette, seaBlendOverride?: number): void {
-  const b = seaBlendOverride ?? worldSeaBlend(state);
-  if (b <= 0.01) return;
-
-  const { width: w, height: h, elapsed } = state;
-  const pal = palette ?? biomePalette(biomeForLevel(state.level));
-  const waterTop = floorY(state);
-  const t = elapsed * 0.001;
-  const nf = nightFactor(elapsed);
-
-  ctx.save();
-  ctx.globalAlpha = b;
-
-  const g = ctx.createLinearGradient(0, waterTop, 0, h);
-  g.addColorStop(0, lerpColor(pal.waterTop, "#1A237E", nf * 0.65));
-  g.addColorStop(0.35, lerpColor(pal.waterMid, "#0D47A1", nf * 0.65));
-  g.addColorStop(0.75, lerpColor(pal.waterBot, "#0D47A1", nf * 0.7));
-  g.addColorStop(1, lerpColor(pal.waterBot, "#051A38", nf * 0.75));
-  ctx.fillStyle = g;
-  ctx.fillRect(0, waterTop, w, h - waterTop);
-
-  ctx.fillStyle = "rgba(255,255,255,0.22)";
-  for (let i = 0; i < 3; i++) {
-    const y = waterTop + 18 + i * 22;
-    ctx.beginPath();
-    for (let x = 0; x <= w; x += 8) {
-      ctx.lineTo(x, y + Math.sin(x * 0.03 + t * 1.6 + i * 0.7) * (4 - i * 0.6));
-    }
-    ctx.lineTo(w, h);
-    ctx.lineTo(0, h);
-    ctx.closePath();
-    ctx.globalAlpha = b * (0.18 - i * 0.04);
-    ctx.fill();
-  }
-
-  ctx.globalAlpha = b;
-  ctx.fillStyle = "rgba(255,255,255,0.35)";
-  for (let i = 0; i < 2; i++) {
-    const fx = ((i * 67 + t * 28) % (w + 40)) - 20;
-    ctx.beginPath();
-    ctx.ellipse(fx, waterTop + 8 + Math.sin(t * 3 + i) * 3, 10 + i * 4, 3, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  if (b > 0.85) {
-    ctx.fillStyle = "#C2A878";
-    ctx.fillRect(0, h - 10, w, 10);
-    ctx.fillStyle = "#A89060";
-    ctx.fillRect(0, h - 4, w, 4);
-  }
-
-  ctx.restore();
 }
 
 function drawBoarExplosionPart(
@@ -3356,160 +3041,6 @@ function drawMountainClimber(
   ctx.fill();
 
   ctx.restore();
-}
-
-function drawShark(ctx: CanvasRenderingContext2D, shark: SharkHazard, state: GameState): void {
-  if (!seaActive(state)) return;
-  const p = sharkPose(shark, state);
-  const { x, baseY, jump, hunger, bodyCx, bodyCy, bodyRx, bodyRy, mouthOpen, lean } = p;
-  const tilt = -0.12 + lean * 0.015;
-
-  if (jump > 0.05) {
-    ctx.fillStyle = "rgba(255,255,255,0.5)";
-    for (let i = 0; i < 6; i++) {
-      ctx.beginPath();
-      ctx.arc(bodyCx - 20 + i * 8, baseY + 3, 2 + (1 - jump) * 2.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  if (jump < 0.92) {
-    ctx.fillStyle = "rgba(38,50,56,0.32)";
-    ctx.beginPath();
-    ctx.ellipse(bodyCx, baseY + 6, bodyRx * 0.75, 9, 0, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  const grad = ctx.createLinearGradient(bodyCx, bodyCy - bodyRy, bodyCx, bodyCy + bodyRy);
-  grad.addColorStop(0, "#607D8B");
-  grad.addColorStop(0.45, "#78909C");
-  grad.addColorStop(1, "#ECEFF1");
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.ellipse(bodyCx, bodyCy, bodyRx, bodyRy, tilt, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#546E7A";
-  ctx.beginPath();
-  ctx.ellipse(x - 4, bodyCy - 1, 12, 8 + jump * 3, tilt - 0.3, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#455A64";
-  ctx.beginPath();
-  ctx.ellipse(bodyCx - 2, bodyCy - bodyRy - 4, 7, 10 + jump * 5, tilt, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#546E7A";
-  ctx.beginPath();
-  ctx.ellipse(p.headX, p.headY, 15 + jump * 4, 11 + jump * 4, tilt + 0.15, 0, Math.PI * 2);
-  ctx.fill();
-
-  ctx.fillStyle = "#ECEFF1";
-  ctx.beginPath();
-  ctx.ellipse(p.headX + 3, p.headY + 5, 11, 5.5, tilt + 0.15, 0, Math.PI);
-  ctx.fill();
-
-  if (mouthOpen) {
-    ctx.fillStyle = "#263238";
-    ctx.beginPath();
-    ctx.ellipse(p.mouthX, p.mouthY + 2, 11, 7, tilt + 0.15, 0, Math.PI);
-    ctx.fill();
-    ctx.fillStyle = "#fff";
-    for (let i = 0; i < 4; i++) {
-      ctx.beginPath();
-      ctx.ellipse(p.mouthX - 5 + i * 3.5, p.mouthY + 5, 2, 3, 0, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  const eyeR = hunger > 0.4 ? 2.8 : 2.2;
-  ctx.fillStyle = hunger > 0.5 ? "#FF5252" : "#1a1a1a";
-  ctx.beginPath();
-  ctx.arc(p.headX + 5, p.headY - 2, eyeR, 0, Math.PI * 2);
-  ctx.fill();
-  if (hunger > 0.35) {
-    ctx.fillStyle = "rgba(255,82,82,0.35)";
-    ctx.beginPath();
-    ctx.arc(p.headX + 5, p.headY - 2, eyeR + 3, 0, Math.PI * 2);
-    ctx.fill();
-  }
-}
-
-function drawOctopusTentacle(ctx: CanvasRenderingContext2D, tentacle: OctopusTentacle, state: GameState): void {
-  if (!seaActive(state)) return;
-  const p = tentaclePose(tentacle, state);
-  if (p.rise < 0.04) return;
-
-  const { baseY, rise, baseX, tips } = p;
-
-  if (rise > 0.08) {
-    ctx.fillStyle = "rgba(255,255,255,0.35)";
-    for (let i = 0; i < 4; i++) {
-      ctx.beginPath();
-      ctx.arc(baseX - 12 + i * 8, baseY + 2, 1.5 + (1 - rise) * 2, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
-
-  if (rise > 0.12) {
-    const headY = baseY - 4;
-    const headR = 12 + rise * 6;
-    const headGrad = ctx.createRadialGradient(baseX - 4, headY - 4, 2, baseX, headY, headR);
-    headGrad.addColorStop(0, "#CE93D8");
-    headGrad.addColorStop(0.55, "#8E24AA");
-    headGrad.addColorStop(1, "#4A148C");
-    ctx.fillStyle = headGrad;
-    ctx.beginPath();
-    ctx.ellipse(baseX, headY, headR, headR * 0.72, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.fillStyle = "#fff";
-    for (let e = 0; e < 2; e++) {
-      const ex = baseX + (e === 0 ? -5 : 5);
-      ctx.beginPath();
-      ctx.ellipse(ex, headY - 3, 3.5, 4.5, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#1a1a1a";
-      ctx.beginPath();
-      ctx.arc(ex, headY - 2, 1.6, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = "#fff";
-    }
-  }
-
-  for (let i = 0; i < TENTACLE_COUNT; i++) {
-    const tip = tips[i];
-    const spread = (i - (TENTACLE_COUNT - 1) / 2) * 15;
-    const reach = baseY - tip.y;
-    const midX = baseX + spread * 0.55 + Math.sin(state.elapsed * 0.004 + tentacle.phaseSeed + i) * 6;
-    const midY = baseY - reach * 0.45;
-    const ctrlX = baseX + spread * 0.35 + Math.sin(state.elapsed * 0.006 + i * 1.1) * 14;
-    const ctrlY = baseY - reach * 0.62;
-
-    const tentGrad = ctx.createLinearGradient(baseX, baseY, tip.x, tip.y);
-    tentGrad.addColorStop(0, "#6A1B9A");
-    tentGrad.addColorStop(0.5, "#AB47BC");
-    tentGrad.addColorStop(1, "#CE93D8");
-    ctx.strokeStyle = tentGrad;
-    ctx.lineWidth = 7 + rise * 3 - i * 0.6;
-    ctx.lineCap = "round";
-    ctx.beginPath();
-    ctx.moveTo(baseX + spread * 0.25, baseY - 2);
-    ctx.quadraticCurveTo(ctrlX, ctrlY, midX, midY);
-    ctx.quadraticCurveTo(tip.x + spread * 0.08, tip.y + 8, tip.x, tip.y);
-    ctx.stroke();
-
-    const suckerCount = 4 + Math.floor(rise * 3);
-    for (let s = 1; s <= suckerCount; s++) {
-      const t = s / (suckerCount + 1);
-      const sx = baseX + (tip.x - baseX) * t + Math.sin(t * 8 + i) * 3;
-      const sy = baseY + (tip.y - baseY) * t;
-      ctx.fillStyle = `rgba(74,20,140,${0.35 + rise * 0.25})`;
-      ctx.beginPath();
-      ctx.ellipse(sx + 3, sy, 2.2, 2.8, 0.3, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  }
 }
 
 function drawDebris(ctx: CanvasRenderingContext2D, debris: DebrisParticle[]): void {
@@ -4630,22 +4161,7 @@ function drawBird(ctx: CanvasRenderingContext2D, state: GameState): void {
     ctx.shadowBlur = 18;
   }
 
-  const elev = elevationState(state);
-  const underwater =
-    (!isCityLevel(state.level) && biomeForLevel(state.level) === "underwater") || elev.scubaDepth > 0.38;
-
   const drawOpts = { nitro, ghost, bossBoost, absorbing };
-
-  if (underwater) {
-    ctx.fillStyle = bossBoost ? "#FFF59D" : nitro ? "#FFE082" : absorbing ? "#FFECB3" : "#B3E5FC";
-    ctx.beginPath();
-    ctx.ellipse(0, 0, r * 1.05, r, 0, 0, Math.PI * 2);
-    ctx.fill();
-    drawDiveSuitBird(ctx, r, state.flapAnim);
-    ctx.restore();
-    return;
-  }
-
   drawSpeciesBird(ctx, state.birdSpeciesId, r, state.flapAnim, state.elapsed, drawOpts);
 
   ctx.restore();
