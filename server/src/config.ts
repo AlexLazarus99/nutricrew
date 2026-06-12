@@ -30,6 +30,7 @@ export const config = {
   claudeVisionModel: process.env.CLAUDE_VISION_MODEL ?? "claude-sonnet-4-6",
   claudeTextModel: process.env.CLAUDE_TEXT_MODEL ?? "claude-sonnet-4-6",
   openaiApiKey: (process.env.OPENAI_API_KEY ?? "").trim(),
+  whisperModel: process.env.WHISPER_MODEL ?? "whisper-1",
   visionModel: process.env.VISION_MODEL ?? "gpt-4o-mini",
   geminiApiKey: (process.env.GEMINI_API_KEY ?? "").trim(),
   geminiVisionModel: process.env.GEMINI_VISION_MODEL ?? "gemini-2.5-flash",

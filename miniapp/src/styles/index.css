@@ -910,6 +910,17 @@ html[data-nav-collapsed="1"] .app-shell {
   gap: 10px;
 }
 
+.voice-meal-log__error {
+  margin: 0;
+}
+
+.voice-meal-log__recording {
+  margin: 0;
+  text-align: center;
+  color: var(--section-accent);
+  font-weight: 600;
+}
+
 .voice-meal-log__mic--active {
   animation: nc-pulse-soft 1.6s ease-in-out infinite;
   border-color: var(--section-accent);

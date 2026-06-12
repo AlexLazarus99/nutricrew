@@ -6,6 +6,7 @@ import * as teamsRepo from "../../repositories/teams.js";
 import * as usersRepo from "../../repositories/users.js";
 import * as birdGameRepo from "../../repositories/birdGame.js";
 import { logMealForUser } from "../../services/meals.js";
+import { transcribeMealAudio } from "../../services/mealAudioTranscription.js";
 import {
   analyzeMealText,
   assertTextAnalyzeLimit,
@@ -364,6 +365,50 @@ apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
     },
   ]);
   res.json(analysis);
+});
+
+apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
+  const { audioBase64, mimeType } = req.body as { audioBase64?: string; mimeType?: string };
+  if (!audioBase64?.trim()) {
+    res.status(400).json({ error: "AUDIO_REQUIRED" });
+    return;
+  }
+
+  try {
+    await assertTextAnalyzeLimit(req.dbUser!.id);
+  } catch {
+    res.status(429).json({ error: "ANALYZE_LIMIT" });
+    return;
+  }
+
+  try {
+    const transcript = await transcribeMealAudio(
+      audioBase64,
+      req.dbUser!.locale,
+      mimeType ?? "audio/webm",
+    );
+    const analysis = await analyzeMealText(transcript, req.dbUser!.locale, { source: "voice" });
+    const { trackEvents } = await import("../../services/analytics.js");
+    await trackEvents(req.dbUser!.id, [
+      {
+        name: "meal_analyze_text",
+        props: { kind: "voice_audio", source: analysis.source },
+      },
+    ]);
+    res.json({ ...analysis, transcript });
+  } catch (err) {
+    const code = (err as Error).message;
+    if (
+      code === "INVALID_AUDIO" ||
+      code === "AUDIO_TOO_SHORT" ||
+      code === "TRANSCRIBE_NO_KEY" ||
+      code === "TRANSCRIBE_FAILED"
+    ) {
+      res.status(400).json({ error: code });
+      return;
+    }
+    throw err;
+  }
 });
 
 apiRouter.post("/meals/barcode-estimate", ...authedProfile, async (req, res) => {

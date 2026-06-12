@@ -315,7 +315,6 @@ export function LogMealPage() {
               setVoiceOpen(false);
               applyMealEstimate(result, { clearPreview: true });
             }}
-            onError={setCaptureError}
           />
         </div>
       )}

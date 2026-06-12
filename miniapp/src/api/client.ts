@@ -560,6 +560,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ text }),
     }),
+  analyzeMealAudio: (audioBase64: string, mimeType?: string) =>
+    request<MealAnalysisResponse & { transcript?: string }>("/meals/analyze-audio", {
+      method: "POST",
+      body: JSON.stringify({ audioBase64, mimeType }),
+    }),
   estimateBarcodeAi: (barcode: string, hint?: string) =>
     request<MealAnalysisResponse & { barcode: string }>("/meals/barcode-estimate", {
       method: "POST",

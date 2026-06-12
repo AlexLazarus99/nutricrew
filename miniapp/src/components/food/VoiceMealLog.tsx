@@ -4,117 +4,211 @@ import { api, type MealAnalysisResponse } from "../../api/client";
 
 type Props = {
   onApply: (result: MealAnalysisResponse) => void;
-  onError: (message: string) => void;
 };
 
-type SpeechRecognitionCtor = new () => {
-  lang: string;
-  interimResults: boolean;
-  continuous: boolean;
-  start: () => void;
-  stop: () => void;
-  onresult: ((event: { results: { [index: number]: { [index: number]: { transcript: string } } } }) => void) | null;
-  onerror: ((event: { error?: string }) => void) | null;
-  onend: (() => void) | null;
-};
+type RecordPhase = "idle" | "recording" | "processing";
 
-function getSpeechRecognition(): SpeechRecognitionCtor | null {
-  const w = window as Window & {
-    SpeechRecognition?: SpeechRecognitionCtor;
-    webkitSpeechRecognition?: SpeechRecognitionCtor;
-  };
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+function pickRecorderMimeType(): string {
+  if (typeof MediaRecorder === "undefined") return "";
+  const candidates = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg;codecs=opus",
+    "audio/ogg",
+  ];
+  return candidates.find((type) => MediaRecorder.isTypeSupported(type)) ?? "";
 }
 
-export function VoiceMealLog({ onApply, onError }: Props) {
-  const { t, i18n } = useTranslation();
-  const recognitionRef = useRef<InstanceType<SpeechRecognitionCtor> | null>(null);
-  const [listening, setListening] = useState(false);
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result ?? ""));
+    reader.onerror = () => reject(reader.error ?? new Error("read failed"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+export function VoiceMealLog({ onApply }: Props) {
+  const { t } = useTranslation();
+  const streamRef = useRef<MediaStream | null>(null);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const mimeTypeRef = useRef("audio/webm");
+
+  const [phase, setPhase] = useState<RecordPhase>("idle");
   const [transcript, setTranscript] = useState("");
   const [manualText, setManualText] = useState("");
-  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const recorderReady =
+    typeof navigator !== "undefined" &&
+    Boolean(navigator.mediaDevices?.getUserMedia) &&
+    typeof MediaRecorder !== "undefined";
 
-  const stopListening = useCallback(() => {
-    recognitionRef.current?.stop();
-    recognitionRef.current = null;
-    setListening(false);
+  const stopStream = useCallback(() => {
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    recorderRef.current = null;
   }, []);
 
-  useEffect(() => () => stopListening(), [stopListening]);
+  useEffect(() => () => stopStream(), [stopStream]);
+
+  const mapVoiceError = useCallback(
+    (code: string) => {
+      switch (code) {
+        case "ANALYZE_LIMIT":
+          return t("log.error_ANALYZE_LIMIT");
+        case "TRANSCRIBE_NO_KEY":
+          return t("log.voiceTranscribeNoKey");
+        case "TRANSCRIBE_FAILED":
+          return t("log.voiceTranscribeFailed");
+        case "AUDIO_TOO_SHORT":
+          return t("log.voiceAudioTooShort");
+        case "INVALID_AUDIO":
+        case "AUDIO_REQUIRED":
+          return t("log.voiceError");
+        default:
+          return code;
+      }
+    },
+    [t],
+  );
 
   const analyzeText = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed) return;
 
-      setAnalyzing(true);
-      onError("");
+      setPhase("processing");
+      setError(null);
       try {
         const analysis = await api.analyzeMealText(trimmed);
         onApply(analysis);
       } catch (err) {
-        const msg = (err as Error).message;
-        onError(msg === "ANALYZE_LIMIT" ? t("log.error_ANALYZE_LIMIT") : msg);
+        setError(mapVoiceError((err as Error).message));
       } finally {
-        setAnalyzing(false);
+        setPhase("idle");
       }
     },
-    [onApply, onError, t],
+    [mapVoiceError, onApply],
   );
 
-  function startListening() {
-    const SpeechRecognition = getSpeechRecognition();
-    if (!SpeechRecognition) {
-      onError(t("log.voiceUnsupported"));
+  const sendAudio = useCallback(
+    async (blob: Blob, mimeType: string) => {
+      setPhase("processing");
+      setError(null);
+      try {
+        const dataUrl = await blobToDataUrl(blob);
+        const result = await api.analyzeMealAudio(dataUrl, mimeType);
+        if (result.transcript) {
+          setTranscript(result.transcript);
+          setManualText(result.transcript);
+        }
+        onApply(result);
+      } catch (err) {
+        setError(mapVoiceError((err as Error).message));
+      } finally {
+        setPhase("idle");
+        stopStream();
+      }
+    },
+    [mapVoiceError, onApply, stopStream],
+  );
+
+  async function startRecording() {
+    if (!recorderReady) {
+      setError(t("log.voiceUnsupported"));
       return;
     }
 
-    stopListening();
-    const recognition = new SpeechRecognition();
-    recognition.lang = i18n.language.startsWith("ru") ? "ru-RU" : "en-US";
-    recognition.interimResults = false;
-    recognition.continuous = false;
-
-    recognition.onresult = (event) => {
-      const text = event.results[0]?.[0]?.transcript ?? "";
-      setTranscript(text);
-      setManualText(text);
-      void analyzeText(text);
-    };
-
-    recognition.onerror = () => {
-      setListening(false);
-      onError(t("log.voiceError"));
-    };
-
-    recognition.onend = () => {
-      setListening(false);
-      recognitionRef.current = null;
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setListening(true);
+    setError(null);
     setTranscript("");
-    onError("");
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: true, noiseSuppression: true },
+      });
+      streamRef.current = stream;
+
+      const mimeType = pickRecorderMimeType();
+      mimeTypeRef.current = mimeType || "audio/webm";
+      const recorder = mimeType
+        ? new MediaRecorder(stream, { mimeType })
+        : new MediaRecorder(stream);
+
+      chunksRef.current = [];
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) chunksRef.current.push(event.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, {
+          type: mimeTypeRef.current || recorder.mimeType || "audio/webm",
+        });
+        chunksRef.current = [];
+        if (blob.size < 400) {
+          setPhase("idle");
+          setError(t("log.voiceAudioTooShort"));
+          stopStream();
+          return;
+        }
+        void sendAudio(blob, blob.type || mimeTypeRef.current);
+      };
+      recorder.onerror = () => {
+        setPhase("idle");
+        setError(t("log.voiceError"));
+        stopStream();
+      };
+
+      recorderRef.current = recorder;
+      recorder.start();
+      setPhase("recording");
+    } catch {
+      setPhase("idle");
+      setError(t("log.voiceMicDenied"));
+      stopStream();
+    }
   }
+
+  function stopRecording() {
+    const recorder = recorderRef.current;
+    if (!recorder || recorder.state === "inactive") {
+      setPhase("idle");
+      stopStream();
+      return;
+    }
+    recorder.stop();
+  }
+
+  const busy = phase === "processing";
 
   return (
     <div className="voice-meal-log">
       <p className="muted small">{t("log.voiceHint")}</p>
 
+      {error && <p className="error-text small voice-meal-log__error">{error}</p>}
+
       <button
         type="button"
-        className={`btn btn-secondary btn-block voice-meal-log__mic ${listening ? "voice-meal-log__mic--active" : ""}`}
-        onClick={listening ? stopListening : startListening}
-        disabled={analyzing}
+        className={`btn btn-secondary btn-block voice-meal-log__mic ${
+          phase === "recording" ? "voice-meal-log__mic--active" : ""
+        }`}
+        onClick={() => {
+          if (busy) return;
+          if (phase === "recording") stopRecording();
+          else void startRecording();
+        }}
+        disabled={busy}
       >
-        {analyzing
-          ? t("log.analyzing")
-          : listening
-            ? t("log.voiceListening")
+        {busy
+          ? t("log.voiceTranscribing")
+          : phase === "recording"
+            ? t("log.voiceRecordStop")
             : t("log.voiceStart")}
       </button>
+
+      {phase === "recording" && (
+        <p className="voice-meal-log__recording small">{t("log.voiceRecording")}</p>
+      )}
 
       {transcript && (
         <p className="voice-meal-log__transcript small">
@@ -129,16 +223,17 @@ export function VoiceMealLog({ onApply, onError }: Props) {
           value={manualText}
           onChange={(e) => setManualText(e.target.value)}
           placeholder={t("log.voicePrompt")}
+          disabled={busy}
         />
       </label>
 
       <button
         type="button"
         className="btn btn-primary btn-block"
-        disabled={analyzing || !manualText.trim()}
+        disabled={busy || !manualText.trim()}
         onClick={() => void analyzeText(manualText)}
       >
-        {analyzing ? t("log.analyzing") : t("log.voiceAnalyze")}
+        {busy ? t("log.analyzing") : t("log.voiceAnalyze")}
       </button>
     </div>
   );
