@@ -1,4 +1,6 @@
 import { config } from "../config.js";
+import { claudeModelsToTry } from "../lib/claudeModels.js";
+import { requestClaudeMessage } from "../lib/claudeMessages.js";
 import { hashImageBase64 } from "../lib/imageHash.js";
 import {
   buildFoodImagePrompt,
@@ -65,56 +67,34 @@ async function callClaudeVision(
   }
 
   const mediaType = mimeType.startsWith("image/") ? mimeType : "image/jpeg";
+  const errors: string[] = [];
 
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": config.anthropicApiKey,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: config.claudeVisionModel,
-        max_tokens: 400,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "image",
-                source: { type: "base64", media_type: mediaType, data: base64 },
-              },
-              { type: "text", text: buildFoodImagePrompt(locale) },
-            ],
-          },
-        ],
-      }),
-    });
+  for (const model of claudeModelsToTry(config.claudeVisionModel)) {
+    try {
+      const result = await requestClaudeMessage(config.anthropicApiKey, model, [
+        {
+          type: "image",
+          source: { type: "base64", media_type: mediaType, data: base64 },
+        },
+        { type: "text", text: buildFoodImagePrompt(locale) },
+      ]);
 
-    if (!res.ok) {
-      const errText = await res.text();
-      lastVisionHints.claude = parseApiError(errText, `HTTP ${res.status}`);
-      console.error("Claude vision error", res.status, errText.slice(0, 500));
-      return null;
+      if (!result.ok) {
+        errors.push(result.hint);
+        if (!result.notFound) break;
+        continue;
+      }
+
+      lastVisionHints.claude = undefined;
+      return parseMealJsonResponse(result.raw, locale, "claude", imageHash);
+    } catch (err) {
+      errors.push(`${model}: ${(err as Error).message}`);
     }
-
-    const data = (await res.json()) as {
-      content?: Array<{ type?: string; text?: string }>;
-    };
-    const raw = data.content?.find((c) => c.type === "text")?.text?.trim() ?? "";
-    if (!raw) {
-      lastVisionHints.claude = "empty response";
-      return null;
-    }
-
-    lastVisionHints.claude = undefined;
-    return parseMealJsonResponse(raw, locale, "claude", imageHash);
-  } catch (err) {
-    lastVisionHints.claude = (err as Error).message;
-    console.error("Claude vision parse failed", err);
-    return null;
   }
+
+  lastVisionHints.claude = errors[0] ?? "all models failed";
+  console.error("Claude vision failed", errors.join(" | "));
+  return null;
 }
 
 async function callOpenAIVision(
@@ -325,27 +305,30 @@ export async function probeVisionProviders(): Promise<{
   const gemini: ProviderProbe = { ok: false };
 
   if (config.anthropicApiKey) {
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": config.anthropicApiKey,
-          "anthropic-version": "2023-06-01",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: config.claudeTextModel,
-          max_tokens: 8,
-          messages: [{ role: "user", content: "Reply with ok" }],
-        }),
-      });
-      claude.status = res.status;
-      claude.ok = res.ok;
-      if (!res.ok) {
-        claude.hint = parseApiError(await res.text(), `HTTP ${res.status}`);
+    const probeErrors: string[] = [];
+    for (const model of claudeModelsToTry(config.claudeTextModel)) {
+      try {
+        const result = await requestClaudeMessage(
+          config.anthropicApiKey,
+          model,
+          [{ type: "text", text: "Reply with ok" }],
+          8,
+        );
+        claude.status = result.ok ? 200 : result.status;
+        if (result.ok) {
+          claude.ok = true;
+          claude.hint = `model ${result.model}`;
+          break;
+        }
+        probeErrors.push(result.hint);
+        if (!result.notFound) break;
+      } catch (err) {
+        probeErrors.push((err as Error).message);
+        break;
       }
-    } catch (err) {
-      claude.hint = (err as Error).message;
+    }
+    if (!claude.ok) {
+      claude.hint = probeErrors[0] ?? "probe failed";
     }
   } else {
     claude.hint = "not configured";

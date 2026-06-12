@@ -27,8 +27,8 @@ export const config = {
     process.env.DATABASE_URL ??
     "postgresql://nutricrew:nutricrew@localhost:5432/nutricrew",
   anthropicApiKey: (process.env.ANTHROPIC_API_KEY ?? "").trim(),
-  claudeVisionModel: process.env.CLAUDE_VISION_MODEL ?? "claude-sonnet-4-20250514",
-  claudeTextModel: process.env.CLAUDE_TEXT_MODEL ?? "claude-sonnet-4-20250514",
+  claudeVisionModel: process.env.CLAUDE_VISION_MODEL ?? "claude-sonnet-4-6",
+  claudeTextModel: process.env.CLAUDE_TEXT_MODEL ?? "claude-sonnet-4-6",
   openaiApiKey: (process.env.OPENAI_API_KEY ?? "").trim(),
   visionModel: process.env.VISION_MODEL ?? "gpt-4o-mini",
   geminiApiKey: (process.env.GEMINI_API_KEY ?? "").trim(),

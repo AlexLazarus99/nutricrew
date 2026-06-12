@@ -1,4 +1,6 @@
 import { config } from "../config.js";
+import { claudeModelsToTry } from "../lib/claudeModels.js";
+import { requestClaudeMessage } from "../lib/claudeMessages.js";
 import {
   buildBarcodeAiPrompt,
   buildFoodTextPrompt,
@@ -66,42 +68,32 @@ function buildTextHint(): string | undefined {
 async function callClaudeText(prompt: string): Promise<string | null> {
   if (!config.anthropicApiKey) return null;
 
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": config.anthropicApiKey,
-        "anthropic-version": "2023-06-01",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: config.claudeTextModel,
-        max_tokens: 400,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+  const errors: string[] = [];
 
-    if (!res.ok) {
-      const errText = await res.text();
-      lastTextHints.claude = parseApiError(errText, `HTTP ${res.status}`);
-      return null;
+  for (const model of claudeModelsToTry(config.claudeTextModel)) {
+    try {
+      const result = await requestClaudeMessage(
+        config.anthropicApiKey,
+        model,
+        [{ type: "text", text: prompt }],
+      );
+
+      if (!result.ok) {
+        errors.push(result.hint);
+        if (!result.notFound) break;
+        continue;
+      }
+
+      lastTextHints.claude = undefined;
+      return result.raw;
+    } catch (err) {
+      errors.push(`${model}: ${(err as Error).message}`);
+      break;
     }
-
-    const data = (await res.json()) as {
-      content?: Array<{ type?: string; text?: string }>;
-    };
-    const raw = data.content?.find((c) => c.type === "text")?.text?.trim() ?? "";
-    if (!raw) {
-      lastTextHints.claude = "empty response";
-      return null;
-    }
-
-    lastTextHints.claude = undefined;
-    return raw;
-  } catch (err) {
-    lastTextHints.claude = (err as Error).message;
-    return null;
   }
+
+  lastTextHints.claude = errors[0] ?? "all models failed";
+  return null;
 }
 
 async function callOpenAIText(prompt: string): Promise<string | null> {
