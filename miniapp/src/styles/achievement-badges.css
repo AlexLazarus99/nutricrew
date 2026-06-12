@@ -1,0 +1,652 @@
+/* Achievement badges — large illustrated SVG + motion */
+
+.ach-badge {
+  --ach-badge-size: 140px;
+  position: relative;
+  width: var(--ach-badge-size);
+  height: var(--ach-badge-size);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 28%;
+  background:
+    radial-gradient(circle at 50% 26%, rgba(255, 255, 255, 0.24) 0%, transparent 54%),
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, var(--section-surface) 86%, #fff) 0%,
+      color-mix(in srgb, var(--section-surface-2) 90%, #000) 100%
+    );
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--section-accent) 22%, transparent),
+    0 10px 28px color-mix(in srgb, var(--section-accent) 14%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.ach-badge__svg {
+  width: 84%;
+  height: 84%;
+  display: block;
+  overflow: visible;
+}
+
+.ach-badge__ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 30%;
+  padding: 2.5px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--section-accent) 80%, #fff) 50deg,
+    transparent 110deg,
+    color-mix(in srgb, #f5c842 55%, transparent) 200deg,
+    transparent 360deg
+  );
+  opacity: 0;
+  pointer-events: none;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.ach-badge__shine {
+  position: absolute;
+  inset: 7%;
+  border-radius: 24%;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ach-badge__shine::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -70%;
+  width: 48%;
+  height: 190%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.62) 48%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+}
+
+.ach-badge__aura {
+  position: absolute;
+  inset: 2%;
+  border-radius: 26%;
+  background: radial-gradient(
+    circle at 50% 40%,
+    color-mix(in srgb, var(--section-accent) 28%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ach-badge__particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.ach-badge__particles::before,
+.ach-badge__particles::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff6a8;
+}
+
+.ach-badge__particles::before {
+  top: 8%;
+  right: 12%;
+}
+
+.ach-badge__particles::after {
+  bottom: 14%;
+  left: 10%;
+  width: 4px;
+  height: 4px;
+}
+
+.ach-badge__check,
+.ach-badge__lock {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.28);
+  z-index: 2;
+}
+
+.ach-badge__check {
+  background: linear-gradient(145deg, #6ec4a0, #3d9e78);
+  color: #fff;
+}
+
+.ach-badge__lock {
+  background: color-mix(in srgb, var(--surface-2) 92%, #000);
+  font-size: 0.7rem;
+}
+
+/* Unlocked state */
+.ach-badge--unlocked .ach-badge__ring {
+  opacity: 1;
+  animation: ach-badge-ring-spin 8s linear infinite;
+}
+
+.ach-badge--unlocked .ach-badge__shine {
+  opacity: 1;
+}
+
+.ach-badge--unlocked .ach-badge__shine::after {
+  animation: ach-badge-shine-sweep 4.5s ease-in-out infinite;
+}
+
+.ach-badge--unlocked .ach-badge__aura {
+  opacity: 1;
+  animation: ach-badge-aura 3.6s ease-in-out infinite;
+}
+
+.ach-badge--unlocked .ach-badge__particles {
+  opacity: 1;
+}
+
+.ach-badge--unlocked .ach-badge__particles::before {
+  animation: ach-badge-sparkle 3.2s ease-in-out infinite;
+}
+
+.ach-badge--unlocked .ach-badge__particles::after {
+  animation: ach-badge-sparkle 3.2s ease-in-out 1.1s infinite;
+}
+
+.ach-badge--unlocked {
+  animation:
+    ach-badge-enter 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) both,
+    ach-badge-float 4.5s ease-in-out 0.7s infinite,
+    ach-badge-glow 3.8s ease-in-out infinite;
+}
+
+.ach-badge--unlocked .ach-badge__svg {
+  animation: ach-badge-drift 4.2s ease-in-out infinite;
+}
+
+/* Locked state */
+.ach-badge--locked {
+  opacity: 0.42;
+  filter: saturate(0.35) brightness(0.82);
+}
+
+.ach-badge--locked .ach-badge__ring,
+.ach-badge--locked .ach-badge__shine,
+.ach-badge--locked .ach-badge__aura,
+.ach-badge--locked .ach-badge__particles {
+  opacity: 0;
+  animation: none !important;
+}
+
+.ach-badge--locked .ach-badge__svg {
+  animation: none !important;
+}
+
+.ach-badge--locked .ach-badge__check {
+  display: none;
+}
+
+.ach-badge--unlocked .ach-badge__lock {
+  display: none;
+}
+
+/* Tier accents */
+.ach-badge--streak-7,
+.ach-badge--streak-30 {
+  --ach-tier-accent: #ff9a5c;
+}
+
+.ach-badge--streak-30,
+.ach-badge--league-gold,
+.ach-badge--challenge-done {
+  background:
+    radial-gradient(circle at 50% 26%, rgba(255, 233, 168, 0.2) 0%, transparent 54%),
+    linear-gradient(
+      168deg,
+      color-mix(in srgb, #3a3420 35%, var(--section-surface)) 0%,
+      color-mix(in srgb, var(--section-surface-2) 88%, #000) 100%
+    );
+}
+
+.ach-badge--league-gold.ach-badge--unlocked .ach-badge__ring {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    #ffe9a8 45deg,
+    #f5c842 90deg,
+    transparent 150deg,
+    rgba(245, 200, 66, 0.4) 240deg,
+    transparent 360deg
+  );
+}
+
+/* Strokes */
+.ach-badge__plate-rim,
+.ach-badge__steam,
+.ach-badge__fork,
+.ach-badge__crew-arc,
+.ach-badge__bird-wing,
+.ach-badge__trophy-handle,
+.ach-badge__trophy-stem,
+.ach-badge__sword-guard,
+.ach-badge__shake,
+.ach-badge__spark-ray,
+.ach-badge__diamond-shine,
+.ach-badge__medal-shine,
+.ach-badge__medal-inner {
+  fill: none;
+  stroke: color-mix(in srgb, var(--section-accent) 68%, #3d5c4a);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ach-badge__steam {
+  stroke: color-mix(in srgb, var(--section-accent) 40%, transparent);
+}
+
+.ach-badge__medal-inner {
+  stroke: #c49a10;
+  stroke-width: 1.5;
+}
+
+.ach-badge__food {
+  fill: #f59a6a;
+  stroke: rgba(0, 0, 0, 0.1);
+  stroke-width: 0.75;
+}
+
+.ach-badge__food--g {
+  fill: #8fd4a0;
+}
+
+.ach-badge__leaf {
+  stroke: #4a9e68;
+  stroke-width: 0.8;
+}
+
+.ach-badge__cam-body {
+  fill: #e8eef0;
+  stroke: #8aa0a8;
+  stroke-width: 1.5;
+}
+
+.ach-badge__cam-flash {
+  fill: #ffe9a0;
+}
+
+.ach-badge__lens-inner {
+  fill: color-mix(in srgb, #1e3a4a 75%, #000);
+}
+
+.ach-badge__lens-glint,
+.ach-badge__bird-eye-glint,
+.ach-badge__spark {
+  stroke: none;
+}
+
+.ach-badge__link-heart {
+  stroke: none;
+}
+
+.ach-badge__flame-mid,
+.ach-badge__flame-core {
+  stroke: none;
+}
+
+.ach-badge__flame-outer {
+  stroke: #e07a50;
+  stroke-width: 1;
+}
+
+.ach-badge__num {
+  font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+  stroke: none;
+}
+
+.ach-badge__trophy-star {
+  stroke: none;
+}
+
+.ach-badge__fallback {
+  stroke: var(--section-accent);
+  stroke-width: 2;
+}
+
+/* Per-achievement motion */
+.ach-badge--first-meal .ach-badge__steam--1 {
+  animation: ach-badge-steam 3.5s ease-in-out infinite;
+  transform-origin: 32px 28px;
+}
+
+.ach-badge--first-meal .ach-badge__steam--2 {
+  animation: ach-badge-steam 3.5s ease-in-out 0.4s infinite;
+  transform-origin: 42px 24px;
+}
+
+.ach-badge--first-meal .ach-badge__steam--3 {
+  animation: ach-badge-steam 3.5s ease-in-out 0.8s infinite;
+  transform-origin: 52px 28px;
+}
+
+.ach-badge--streak-7 .ach-badge__flame-core {
+  animation: ach-badge-flicker 3s ease-in-out infinite;
+  transform-origin: 40px 42px;
+}
+
+.ach-badge--streak-30 .ach-badge__diamond {
+  animation: ach-badge-pulse 4.5s ease-in-out infinite;
+  transform-origin: 40px 32px;
+}
+
+.ach-badge--team-join .ach-badge__crew--lead {
+  animation: ach-badge-breathe 4.8s ease-in-out infinite;
+  transform-origin: 40px 26px;
+}
+
+.ach-badge--meals-50 .ach-badge__lens {
+  animation: ach-badge-focus 5s ease-in-out infinite;
+  transform-origin: 40px 35px;
+}
+
+.ach-badge--meals-50 .ach-badge__thumb--1 {
+  animation: ach-badge-bob 3s ease-in-out infinite;
+}
+
+.ach-badge--meals-50 .ach-badge__thumb--2 {
+  animation: ach-badge-bob 3s ease-in-out 0.35s infinite;
+}
+
+.ach-badge--meals-50 .ach-badge__thumb--3 {
+  animation: ach-badge-bob 3s ease-in-out 0.7s infinite;
+}
+
+.ach-badge--referral-1 .ach-badge__spark {
+  animation: ach-badge-twinkle 3.5s ease-in-out infinite;
+  transform-origin: 40px 22px;
+}
+
+.ach-badge--bird-100 .ach-badge__bird-wing {
+  animation: ach-badge-flap 2.8s ease-in-out infinite;
+  transform-origin: 40px 42px;
+}
+
+.ach-badge--bird-100 .ach-badge__bird-body {
+  animation: ach-badge-bob 3.2s ease-in-out infinite;
+  transform-origin: 40px 42px;
+}
+
+.ach-badge--challenge-done .ach-badge__trophy-cup {
+  animation: ach-badge-breathe 5s ease-in-out infinite;
+  transform-origin: 40px 30px;
+}
+
+.ach-badge--challenge-done .ach-badge__spark {
+  animation: ach-badge-twinkle 4s ease-in-out infinite;
+}
+
+.ach-badge--duel-win .ach-badge__clash-star {
+  animation: ach-badge-twinkle 2.5s ease-in-out infinite;
+  transform-origin: 40px 32px;
+}
+
+.ach-badge--league-gold .ach-badge__medal {
+  animation: ach-badge-pulse 4.5s ease-in-out infinite;
+  transform-origin: 40px 34px;
+}
+
+.ach-badge--locked [class*="ach-badge__"] {
+  animation: none !important;
+}
+
+/* Achievement grid tiles */
+.achievement-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.achievement-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 18px 12px 14px;
+  border-radius: calc(var(--radius) + 4px);
+  background: var(--section-surface);
+  border: 1px solid color-mix(in srgb, var(--muted) 16%, transparent);
+  color: var(--text);
+  font-family: var(--font-sans);
+  transition:
+    transform 0.25s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.achievement-tile__badge-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 4px 0;
+}
+
+.achievement-tile__title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.achievement-tile__desc {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+}
+
+.achievement-tile:not(.unlocked) {
+  opacity: 0.72;
+}
+
+.achievement-tile.unlocked {
+  opacity: 1;
+  border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--section-accent-soft) 55%, var(--section-surface)) 0%,
+    var(--section-surface) 100%
+  );
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--section-accent) 12%, transparent);
+}
+
+.achievement-tile--unlocked {
+  animation: ach-badge-tile-pop 0.65s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+
+.achievement-grid .achievement-tile:nth-child(1) { animation-delay: 0.02s; }
+.achievement-grid .achievement-tile:nth-child(2) { animation-delay: 0.06s; }
+.achievement-grid .achievement-tile:nth-child(3) { animation-delay: 0.1s; }
+.achievement-grid .achievement-tile:nth-child(4) { animation-delay: 0.14s; }
+.achievement-grid .achievement-tile:nth-child(5) { animation-delay: 0.18s; }
+.achievement-grid .achievement-tile:nth-child(6) { animation-delay: 0.22s; }
+.achievement-grid .achievement-tile:nth-child(7) { animation-delay: 0.26s; }
+.achievement-grid .achievement-tile:nth-child(8) { animation-delay: 0.3s; }
+.achievement-grid .achievement-tile:nth-child(9) { animation-delay: 0.34s; }
+.achievement-grid .achievement-tile:nth-child(10) { animation-delay: 0.38s; }
+
+/* Keyframes */
+@keyframes ach-badge-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.78) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes ach-badge-tile-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ach-badge-float {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.03);
+  }
+}
+
+@keyframes ach-badge-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 2px color-mix(in srgb, var(--section-accent) 22%, transparent),
+      0 10px 28px color-mix(in srgb, var(--section-accent) 14%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      inset 0 -8px 16px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 0 0 2.5px color-mix(in srgb, var(--section-accent) 38%, transparent),
+      0 14px 36px color-mix(in srgb, var(--section-accent) 26%, transparent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -8px 16px rgba(0, 0, 0, 0.08);
+  }
+}
+
+@keyframes ach-badge-ring-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ach-badge-shine-sweep {
+  0%, 70%, 100% {
+    left: -70%;
+    opacity: 0;
+  }
+  8% { opacity: 1; }
+  38% {
+    left: 125%;
+    opacity: 0;
+  }
+}
+
+@keyframes ach-badge-drift {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-4px) rotate(0.8deg); }
+}
+
+@keyframes ach-badge-aura {
+  0%, 100% {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+@keyframes ach-badge-sparkle {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes ach-badge-steam {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50% { opacity: 0.9; transform: translateY(-4px); }
+}
+
+@keyframes ach-badge-flicker {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.88; }
+}
+
+@keyframes ach-badge-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes ach-badge-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes ach-badge-focus {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+@keyframes ach-badge-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes ach-badge-twinkle {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes ach-badge-flap {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-6deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ach-badge,
+  .ach-badge__svg,
+  .ach-badge__aura,
+  .ach-badge__ring,
+  .ach-badge__shine,
+  .ach-badge__shine::after,
+  .ach-badge__particles,
+  .ach-badge [class*="ach-badge__"],
+  .achievement-tile--unlocked {
+    animation: none !important;
+  }
+
+  .ach-badge--unlocked .ach-badge__ring,
+  .ach-badge--unlocked .ach-badge__shine {
+    opacity: 0.65;
+  }
+}
+
+.app-shell[data-reduce-motion="true"] .ach-badge,
+.app-shell[data-reduce-motion="true"] .ach-badge *,
+.app-shell[data-reduce-motion="true"] .achievement-tile--unlocked {
+  animation: none !important;
+}

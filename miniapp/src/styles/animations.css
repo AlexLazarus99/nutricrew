@@ -282,11 +282,6 @@
   animation: nc-fade-in 0.6s ease both;
 }
 
-/* Quests & achievements */
-  .achievement-tile.unlocked {
-    animation: nc-pulse-soft 2.5s ease-in-out infinite;
-  }
-
 .feature-chip {
   transition:
     transform 0.18s ease,

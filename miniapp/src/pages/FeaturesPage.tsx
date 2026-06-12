@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { api, type GrowthPayload } from "../api/client";
 import { useMe } from "../hooks/useMe";
 import "../styles/features.css";
+import { AchievementBadgeIcon } from "../components/AchievementBadgeIcon";
 import { ChallengeIcon } from "../components/QuestIcon";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { LeagueTierBadge } from "../components/LeagueTierBadge";
@@ -331,7 +332,7 @@ function BattlePassCard({ growth }: { growth: GrowthPayload }) {
 function AchievementsCard({ growth }: { growth: GrowthPayload }) {
   const { t } = useTranslation();
   return (
-    <div className="card feature-card">
+    <div className="card feature-card achievement-card">
       <h3>{t("features.achievementsTitle")}</h3>
       <div className="achievement-grid">
         {growth.achievements.map((a) => (
@@ -339,9 +340,11 @@ function AchievementsCard({ growth }: { growth: GrowthPayload }) {
             key={a.id}
             className={`achievement-tile ${a.unlocked ? "unlocked achievement-tile--unlocked" : ""}`}
           >
-            <span className="achievement-tile__emoji">{a.emoji}</span>
-            <p className="small">{t(`features.achievements.${a.titleKey}`)}</p>
-            {a.unlocked && <span className="achievement-tile__badge">✓</span>}
+            <div className="achievement-tile__badge-wrap">
+              <AchievementBadgeIcon achievementId={a.id} unlocked={a.unlocked} size={132} />
+            </div>
+            <p className="achievement-tile__title">{t(`features.achievements.${a.titleKey}`)}</p>
+            <p className="achievement-tile__desc muted">{t(`features.achievements.${a.descKey}`)}</p>
           </div>
         ))}
       </div>
