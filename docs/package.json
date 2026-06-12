@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "pitch:pdf": "node scripts/generate-pitch-pdf.mjs"
+    "pitch:pdf": "node scripts/generate-pitch-pdf.mjs",
+    "marketing:png": "node marketing/generate-ads.mjs"
   },
   "devDependencies": {
     "puppeteer": "^24.2.1"
