@@ -17,6 +17,7 @@ import {
 } from "../../services/mealTextAnalysis.js";
 import { analyzeFoodImage, getLastVisionHints, probeVisionProviders } from "../../services/vision.js";
 import { getRuCatalogSize, lookupBarcodeProduct } from "../../services/barcodeLookup.js";
+import { attachNutritionInsight } from "../../services/nutritionRemarks.js";
 import { createTeamForUser, joinTeam } from "../../services/teams.js";
 import { notifyMealLogged } from "../../services/notifications.js";
 import { streakMultiplier } from "../../services/streak.js";
@@ -343,7 +344,7 @@ apiRouter.post("/meals/analyze", ...authedProfile, async (req, res) => {
       props: { kind: "image", source: analysis.source, cacheHit: !!analysis.cacheHit },
     },
   ]);
-  res.json(analysis);
+  res.json(attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"));
 });
 
 apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
@@ -371,7 +372,7 @@ apiRouter.post("/meals/analyze-text", ...authedProfile, async (req, res) => {
       props: { kind: "text", source: analysis.source, confidence: analysis.confidence },
     },
   ]);
-  res.json(analysis);
+  res.json(attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"));
 });
 
 apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
@@ -405,7 +406,10 @@ apiRouter.post("/meals/analyze-audio", ...authedProfile, async (req, res) => {
         props: { kind: "audio", source: analysis.source },
       },
     ]);
-    res.json({ ...analysis, transcript });
+    res.json({
+      ...attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"),
+      transcript,
+    });
   } catch (err) {
     const code = (err as Error).message;
     if (
@@ -444,7 +448,10 @@ apiRouter.post("/meals/barcode-estimate", ...authedProfile, async (req, res) => 
       props: { kind: "barcode_ai", barcode: code, source: analysis.source },
     },
   ]);
-  res.json({ ...analysis, barcode: code });
+  res.json({
+    ...attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"),
+    barcode: code,
+  });
 });
 
 apiRouter.post("/meals", ...authedProfile, async (req, res) => {

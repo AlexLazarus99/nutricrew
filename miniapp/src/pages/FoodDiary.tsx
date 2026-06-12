@@ -12,6 +12,7 @@ import {
   resolveDailyTargetKcal,
 } from "../lib/diaryTarget";
 import { FoodLogHero } from "../components/food/FoodLogHero";
+import { WaterWidget } from "../components/wellness/WaterWidget";
 
 function formatDayLabel(date: Date, locale: string): string {
   return date.toLocaleDateString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
@@ -87,6 +88,7 @@ export function FoodDiaryPage() {
         titleKey="diary.title"
         subtitleKey="diary.hint"
       />
+      <WaterWidget date={day} readOnly={!isToday} />
 
       <div className="card diary-section diary-section--picker">
         <div className="diary-day-picker">

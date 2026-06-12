@@ -30,21 +30,189 @@
   padding-left: 1.1rem;
 }
 
+/* ——— Water droplet widget (Food tab) ——— */
+
+.water-widget {
+  overflow: hidden;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, #3eb8e8 12%, var(--surface)) 0%,
+    var(--surface) 55%,
+    color-mix(in srgb, #1a7fc4 8%, var(--surface)) 100%
+  );
+}
+
+.water-widget__layout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.water-widget__drop-wrap {
+  flex-shrink: 0;
+  width: 76px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: water-float 3.2s ease-in-out infinite;
+}
+
+.water-widget__drop {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 6px 14px rgba(30, 140, 200, 0.28));
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.water-widget__drop-shell {
+  fill: color-mix(in srgb, #3eb8e8 8%, transparent);
+  stroke: color-mix(in srgb, #9ee4ff 55%, transparent);
+  stroke-width: 1.5;
+}
+
+.water-widget__drop-shine {
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.water-widget__fill {
+  transition:
+    y 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.water-widget__surface {
+  transition: cy 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.water-widget__wave {
+  transition: d 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: water-wave 2.8s ease-in-out infinite;
+}
+
+.water-widget__body {
+  flex: 1;
+  min-width: 0;
+}
+
 .water-widget__head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 8px;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.water-widget__head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.water-widget__pct {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #5ec8ef;
+  letter-spacing: 0.02em;
+}
+
+.water-widget__amount {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.water-widget__amount strong {
+  font-size: 1.35rem;
+  font-weight: 700;
+  background: linear-gradient(118deg, #d4f4ff 0%, #5ec8ef 55%, #1a7fc4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .water-widget__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  margin-top: 10px;
 }
 
-.water-widget__bar {
-  margin-top: 4px;
+.water-widget__btn {
+  border-color: color-mix(in srgb, #3eb8e8 35%, transparent);
+  background: color-mix(in srgb, #3eb8e8 10%, var(--surface-2));
+}
+
+.water-widget__btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.water-widget--splash .water-widget__drop {
+  animation: water-splash 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.water-widget--splash .water-widget__wave {
+  animation: water-wave 0.55s ease-out, water-wave-idle 2.8s ease-in-out 0.55s infinite;
+}
+
+@keyframes water-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes water-wave {
+  0%,
+  100% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes water-wave-idle {
+  0%,
+  100% {
+    transform: translateX(-3px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes water-splash {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+  35% {
+    transform: scale(1.08) rotate(-2deg);
+  }
+  65% {
+    transform: scale(0.96) rotate(1deg);
+  }
+}
+
+.water-widget--static .water-widget__drop-wrap,
+.water-widget--static .water-widget__wave {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .water-widget__drop-wrap,
+  .water-widget__wave {
+    animation: none !important;
+  }
+
+  .water-widget__fill,
+  .water-widget__surface,
+  .water-widget__wave {
+    transition-duration: 0.01ms;
+  }
 }
 
 .meal-edit-modal {
@@ -119,4 +287,50 @@
   justify-content: space-between;
   padding: 6px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Micronutrient remarks (barcode / search / AI) */
+
+.nutrition-notes {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #3eb8e8 10%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, #3eb8e8 22%, transparent);
+}
+
+.nutrition-notes--overlay {
+  margin-top: 8px;
+  text-align: left;
+  background: rgba(8, 20, 28, 0.72);
+  border-color: rgba(94, 200, 239, 0.25);
+}
+
+.nutrition-notes__list {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.nutrition-notes__list li + li {
+  margin-top: 4px;
+}
+
+.nutrition-notes__encyclopedia {
+  margin: 8px 0 0;
+  padding-top: 8px;
+  border-top: 1px dashed color-mix(in srgb, #3eb8e8 25%, transparent);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.food-search-remark {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #7ec8e8;
 }

@@ -1,4 +1,10 @@
 import ruCatalogSeed from "../data/russianBarcodes.json" with { type: "json" };
+import {
+  buildNutritionInsight,
+  extractMicronutrients,
+  type MicronutrientSnapshot,
+  type NutritionInsight,
+} from "./nutritionRemarks.js";
 
 export type BarcodeProduct = {
   barcode: string;
@@ -10,6 +16,8 @@ export type BarcodeProduct = {
   servingGrams: number;
   brand?: string;
   source: "ru_catalog" | "off_ru" | "off_world";
+  nutritionRemarks?: string[];
+  encyclopediaNote?: string;
 };
 
 type RussianBarcodeSeed = {
@@ -33,6 +41,20 @@ type OffNutriments = {
   carbohydrates?: number;
   fat_100g?: number;
   fat?: number;
+  potassium_100g?: number;
+  potassium?: number;
+  magnesium_100g?: number;
+  magnesium?: number;
+  calcium_100g?: number;
+  calcium?: number;
+  iron_100g?: number;
+  iron?: number;
+  fiber_100g?: number;
+  fiber?: number;
+  sodium_100g?: number;
+  sodium?: number;
+  "vitamin-c_100g"?: number;
+  "vitamin-c"?: number;
 };
 
 type OffProduct = {
@@ -109,6 +131,24 @@ function pickName(product: OffProduct, locale: string): string {
   return "Product";
 }
 
+function withNutritionInsight(
+  product: Omit<BarcodeProduct, "nutritionRemarks" | "encyclopediaNote">,
+  locale: string,
+  micro?: MicronutrientSnapshot,
+): BarcodeProduct {
+  const insight: NutritionInsight = buildNutritionInsight({
+    name: product.name,
+    locale,
+    micro,
+    proteinG: product.protein,
+  });
+  return {
+    ...product,
+    nutritionRemarks: insight.remarks,
+    encyclopediaNote: insight.encyclopedia,
+  };
+}
+
 function parseOffProduct(
   code: string,
   product: OffProduct,
@@ -123,7 +163,7 @@ function parseOffProduct(
 
   if (calories <= 0 && protein <= 0 && carbs <= 0 && fat <= 0) return null;
 
-  return {
+  const base = {
     barcode: code,
     name: pickName(product, locale),
     brand: product.brands?.split(",")[0]?.trim(),
@@ -134,6 +174,11 @@ function parseOffProduct(
     servingGrams: parseServingGrams(product.serving_size),
     source,
   };
+
+  const micro = extractMicronutrients(product.nutriments as Record<string, unknown>);
+  micro.proteinG = base.protein;
+
+  return withNutritionInsight(base, locale, micro);
 }
 
 async function fetchOffProduct(
@@ -161,7 +206,9 @@ export async function lookupBarcodeProduct(
   if (code.length < 8) return null;
 
   const local = loadRuCatalog().get(code);
-  if (local) return local;
+  if (local) {
+    return withNutritionInsight(local, locale, { proteinG: local.protein });
+  }
 
   const preferRu = locale.startsWith("ru");
   const hosts: Array<"ru" | "world"> = preferRu ? ["ru", "world"] : ["world", "ru"];
@@ -184,6 +231,8 @@ export type SearchProduct = {
   fat: number;
   servingGrams: number;
   source: string;
+  nutritionRemarks?: string[];
+  encyclopediaNote?: string;
 };
 
 type OffSearchHit = {
@@ -199,12 +248,17 @@ type OffSearchResponse = {
   products?: OffSearchHit[];
 };
 
-function searchLocalCatalog(query: string, limit: number): SearchProduct[] {
+function searchLocalCatalog(query: string, limit: number, locale: string): SearchProduct[] {
   const q = query.toLowerCase().trim();
   if (q.length < 2) return [];
   const out: SearchProduct[] = [];
   for (const p of loadRuCatalog().values()) {
     if (p.name.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q)) {
+      const insight = buildNutritionInsight({
+        name: p.name,
+        locale,
+        proteinG: p.protein,
+      });
       out.push({
         id: p.barcode,
         name: p.name,
@@ -215,6 +269,8 @@ function searchLocalCatalog(query: string, limit: number): SearchProduct[] {
         fat: p.fat,
         servingGrams: p.servingGrams,
         source: p.source,
+        nutritionRemarks: insight.remarks,
+        encyclopediaNote: insight.encyclopedia,
       });
       if (out.length >= limit) break;
     }
@@ -243,6 +299,8 @@ function hitToSearchProduct(hit: OffSearchHit, locale: string): SearchProduct | 
     fat: parsed.fat,
     servingGrams: parsed.servingGrams,
     source: parsed.source,
+    nutritionRemarks: parsed.nutritionRemarks,
+    encyclopediaNote: parsed.encyclopediaNote,
   };
 }
 
@@ -252,9 +310,9 @@ export async function searchProducts(
   limit = 12,
 ): Promise<SearchProduct[]> {
   const q = query.trim();
-  if (q.length < 3) return searchLocalCatalog(q, limit);
+  if (q.length < 3) return searchLocalCatalog(q, limit, locale);
 
-  const local = searchLocalCatalog(q, limit);
+  const local = searchLocalCatalog(q, limit, locale);
   const host = locale.startsWith("ru") ? "ru.openfoodfacts.org" : "world.openfoodfacts.org";
   try {
     const url = `https://${host}/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=${limit}`;

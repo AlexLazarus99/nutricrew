@@ -13,7 +13,9 @@ import { BarcodeScanner } from "../components/food/BarcodeScanner";
 import { FoodCatalogPicker } from "../components/food/FoodCatalogPicker";
 import { clearMealDraft, loadMealDraft, saveMealDraft } from "../lib/offlineMealDraft";
 import { FoodLogHero } from "../components/food/FoodLogHero";
+import { WaterWidget } from "../components/wellness/WaterWidget";
 import { FoodSearchPanel } from "../components/food/FoodSearchPanel";
+import { NutritionNotesPanel } from "../components/food/NutritionNotesPanel";
 import type { FoodSearchResult } from "../api/client";
 import { VoiceMealLog } from "../components/food/VoiceMealLog";
 
@@ -49,6 +51,8 @@ export function LogMealPage() {
   const [resultError, setResultError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [aiNote, setAiNote] = useState<string | null>(null);
+  const [nutritionRemarks, setNutritionRemarks] = useState<string[]>([]);
+  const [encyclopediaNote, setEncyclopediaNote] = useState<string | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [qualityTag, setQualityTag] = useState("balanced");
   const [mealSlot, setMealSlot] = useState("");
@@ -253,6 +257,8 @@ export function LogMealPage() {
     setLastAnalysis(normalizedAnalysis);
     setMealResult(null);
     setResultError(null);
+    setNutritionRemarks(normalizedAnalysis.nutritionRemarks ?? []);
+    setEncyclopediaNote(normalizedAnalysis.encyclopediaNote ?? null);
   }
 
   function applyAnalysis(analysis: MealPhotoAnalysis) {
@@ -295,6 +301,8 @@ export function LogMealPage() {
       trackEvent("meal_logged", { calories: Number(calories) || 0 });
       setMealResult(res);
       setLastAnalysis(null);
+      setNutritionRemarks([]);
+      setEncyclopediaNote(null);
       clearMealDraft();
       setFavoriteId(undefined);
       await refresh();
@@ -316,6 +324,7 @@ export function LogMealPage() {
         titleKey="log.title"
         subtitleKey="log.hint"
       />
+      <WaterWidget />
       <div className="card log-section log-section--capture">
         <MealPhotoCapture
           analyzing={analyzing}
@@ -362,13 +371,21 @@ export function LogMealPage() {
 
       <FoodSearchPanel
         onSelect={(item: FoodSearchResult) => {
-          setDescription(item.name);
-          setCalories(String(item.calories));
-          setProtein(String(item.protein));
-          setCarbs(String(item.carbs));
-          setFat(String(item.fat));
-          setPortionGrams(String(item.servingGrams));
-          setAiNote(`${item.source} · ${item.servingGrams}g`);
+          applyMealEstimate(
+            {
+              description: item.name,
+              calories: item.calories,
+              protein: item.protein,
+              carbs: item.carbs,
+              fat: item.fat,
+              servingGrams: item.servingGrams,
+              confidence: 0.9,
+              source: "catalog",
+              nutritionRemarks: item.nutritionRemarks,
+              encyclopediaNote: item.encyclopediaNote,
+            },
+            { clearPreview: true },
+          );
         }}
       />
 
@@ -481,6 +498,7 @@ export function LogMealPage() {
             required
           />
         </label>
+        <NutritionNotesPanel remarks={nutritionRemarks} encyclopedia={encyclopediaNote ?? undefined} />
         {portionGrams && (
           <label>
             {t("log.portionGrams")}

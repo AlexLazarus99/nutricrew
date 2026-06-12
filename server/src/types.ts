@@ -72,4 +72,8 @@ export interface MealAnalysis {
   visionHint?: string;
   imageHash?: string;
   cacheHit?: boolean;
+  /** Micronutrient / vitamin bullet points (localized). */
+  nutritionRemarks?: string[];
+  /** Short encyclopedic nutrition fact. */
+  encyclopediaNote?: string;
 }

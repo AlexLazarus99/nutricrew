@@ -6,6 +6,7 @@ import { api } from "../../api/client";
 import { lookupBarcode } from "../../lib/barcodeLookup";
 import { macrosFromPer100g } from "../../lib/foodPortion";
 import type { MealAnalysisResponse } from "../../api/client";
+import { NutritionNotesPanel } from "./NutritionNotesPanel";
 
 export type BarcodeMealResult = MealAnalysisResponse & {
   barcode: string;
@@ -67,6 +68,8 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
         barcode: per100.barcode,
         servingGrams: portionGrams,
         barcodeDataSource: per100.source,
+        nutritionRemarks: per100.nutritionRemarks,
+        encyclopediaNote: per100.encyclopediaNote,
       };
     },
     [],
@@ -238,6 +241,11 @@ export function BarcodeScanner({ onApply, onClose }: Props) {
                 fat: product.fat,
               })}
             </p>
+            <NutritionNotesPanel
+              className="nutrition-notes--overlay"
+              remarks={product.nutritionRemarks}
+              encyclopedia={product.encyclopediaNote}
+            />
           </div>
         )}
       </div>

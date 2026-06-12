@@ -47,6 +47,9 @@ export function FoodSearchPanel({ onSelect }: Props) {
               <span className="muted small block">
                 {r.calories} kcal · P{r.protein} C{r.carbs} F{r.fat}
               </span>
+              {r.nutritionRemarks?.[0] && (
+                <span className="food-search-remark">{r.nutritionRemarks[0]}</span>
+              )}
             </button>
           </li>
         ))}

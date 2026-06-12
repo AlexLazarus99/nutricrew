@@ -322,6 +322,8 @@ export interface FoodSearchResult {
   fat: number;
   servingGrams: number;
   source: string;
+  nutritionRemarks?: string[];
+  encyclopediaNote?: string;
 }
 
 export interface OrgDashboardResponse {
@@ -490,6 +492,8 @@ export interface BarcodeLookupResponse {
   servingGrams: number;
   brand?: string;
   source: "ru_catalog" | "off_ru" | "off_world";
+  nutritionRemarks?: string[];
+  encyclopediaNote?: string;
 }
 
 export interface MealAnalysisResponse {
@@ -515,6 +519,8 @@ export interface MealAnalysisResponse {
   visionHint?: string;
   imageHash?: string;
   cacheHit?: boolean;
+  nutritionRemarks?: string[];
+  encyclopediaNote?: string;
 }
 
 export interface MealResponse {
