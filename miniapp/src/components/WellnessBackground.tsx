@@ -55,6 +55,114 @@ function DriftIcon({ kind }: { kind: DriftPiece["kind"] }) {
   }
 }
 
+type LargeDriftPiece = {
+  kind: "leafCluster" | "bowl" | "avocado" | "apple" | "citrus" | "herbRing";
+  top: string;
+  left: string;
+  size: number;
+  anim: "lg-a" | "lg-b" | "lg-c" | "lg-d";
+  duration: number;
+  delay: number;
+  opacity: number;
+};
+
+const LARGE_DRIFT_PIECES: LargeDriftPiece[] = [
+  { kind: "leafCluster", top: "-6%", left: "-14%", size: 200, anim: "lg-a", duration: 42, delay: 0, opacity: 0.11 },
+  { kind: "citrus", top: "4%", left: "48%", size: 170, anim: "lg-b", duration: 38, delay: -9, opacity: 0.09 },
+  { kind: "bowl", top: "30%", left: "-18%", size: 190, anim: "lg-c", duration: 46, delay: -14, opacity: 0.1 },
+  { kind: "herbRing", top: "38%", left: "68%", size: 155, anim: "lg-d", duration: 40, delay: -5, opacity: 0.08 },
+  { kind: "avocado", top: "52%", left: "54%", size: 165, anim: "lg-a", duration: 44, delay: -11, opacity: 0.1 },
+  { kind: "apple", top: "68%", left: "-10%", size: 150, anim: "lg-b", duration: 36, delay: -7, opacity: 0.11 },
+  { kind: "leafCluster", top: "78%", left: "72%", size: 175, anim: "lg-c", duration: 48, delay: -16, opacity: 0.09 },
+  { kind: "bowl", top: "88%", left: "28%", size: 140, anim: "lg-d", duration: 41, delay: -3, opacity: 0.08 },
+];
+
+function LargeDriftIcon({ kind }: { kind: LargeDriftPiece["kind"] }) {
+  switch (kind) {
+    case "leafCluster":
+      return (
+        <>
+          <path d="M52 8 C72 28 78 58 52 78 C26 58 32 28 52 8 Z" fill="currentColor" opacity="0.45" />
+          <path d="M28 42 C42 18 62 22 58 48 C48 62 28 42 28 42 Z" fill="currentColor" opacity="0.3" />
+          <path d="M68 38 C88 24 92 50 72 62 C58 68 68 38 68 38 Z" fill="currentColor" opacity="0.28" />
+        </>
+      );
+    case "bowl":
+      return (
+        <>
+          <ellipse cx="50" cy="68" rx="42" ry="12" fill="currentColor" opacity="0.35" />
+          <path d="M14 64 Q50 28 86 64" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.4" />
+          <circle cx="38" cy="58" r="9" fill="currentColor" opacity="0.28" />
+          <circle cx="58" cy="54" r="7" fill="currentColor" opacity="0.22" />
+          <circle cx="72" cy="60" r="6" fill="currentColor" opacity="0.2" />
+        </>
+      );
+    case "avocado":
+      return (
+        <>
+          <ellipse cx="50" cy="54" rx="28" ry="38" fill="currentColor" opacity="0.32" />
+          <circle cx="50" cy="48" r="11" fill="currentColor" opacity="0.45" />
+        </>
+      );
+    case "apple":
+      return (
+        <>
+          <path
+            d="M50 14 C60 4 66 20 62 30 C72 42 68 74 50 88 C32 74 28 42 38 30 C34 20 40 4 50 14 Z"
+            fill="currentColor"
+            opacity="0.3"
+          />
+          <path d="M50 8 L52 -4" stroke="currentColor" strokeWidth="2.5" opacity="0.4" />
+        </>
+      );
+    case "citrus":
+      return (
+        <>
+          <circle cx="50" cy="50" r="34" fill="currentColor" opacity="0.22" />
+          <circle cx="50" cy="50" r="26" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.28" />
+          <path d="M50 24 L50 76 M24 50 L76 50 M32 32 L68 68 M68 32 L32 68" stroke="currentColor" strokeWidth="1.5" opacity="0.2" />
+        </>
+      );
+    case "herbRing":
+      return (
+        <>
+          <circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" strokeWidth="2" opacity="0.18" />
+          <path d="M50 18 C58 30 58 42 50 50 C42 42 42 30 50 18 Z" fill="currentColor" opacity="0.25" />
+          <path d="M72 38 C64 46 52 48 44 42 C48 54 58 62 72 38 Z" fill="currentColor" opacity="0.2" />
+          <path d="M28 62 C36 54 48 52 56 58 C52 46 42 38 28 62 Z" fill="currentColor" opacity="0.2" />
+        </>
+      );
+    default:
+      return null;
+  }
+}
+
+function WellnessDriftLargeField() {
+  return (
+    <div className="wellness-drift-large" aria-hidden="true">
+      {LARGE_DRIFT_PIECES.map((piece, index) => (
+        <span
+          key={`lg-${piece.kind}-${index}`}
+          className={`wellness-drift-large__piece wellness-drift-large__piece--${piece.anim}`}
+          style={{
+            top: piece.top,
+            left: piece.left,
+            width: piece.size,
+            height: piece.size,
+            opacity: piece.opacity,
+            animationDuration: `${piece.duration}s`,
+            animationDelay: `${piece.delay}s`,
+          }}
+        >
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <LargeDriftIcon kind={piece.kind} />
+          </svg>
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function WellnessDriftField() {
   return (
     <div className="wellness-drift" aria-hidden="true">
@@ -85,6 +193,7 @@ function WellnessDriftField() {
 export function WellnessBackground() {
   return (
     <div className="fitness-bg wellness-bg" aria-hidden="true">
+      <WellnessDriftLargeField />
       <WellnessDriftField />
       <svg className="fitness-bg-svg" viewBox="0 0 480 900" preserveAspectRatio="xMidYMid slice">
         <defs>

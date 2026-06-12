@@ -36,6 +36,8 @@ body {
 .form h3,
 .wellness-hero-card h2,
 .wellness-card h3,
+.meal-plan .card > h3,
+.meal-card-body h4,
 .post-registration-rec h3,
 .stat-value,
 .stars {
@@ -187,11 +189,110 @@ body {
   color: var(--section-accent);
 }
 
-.wellness-drift {
+.wellness-drift-large {
   position: absolute;
   inset: 0;
   overflow: hidden;
   z-index: 0;
+  color: var(--section-accent);
+  pointer-events: none;
+}
+
+.wellness-drift-large__piece {
+  position: absolute;
+  display: block;
+  will-change: transform;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.wellness-drift-large__piece svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: blur(0.4px);
+}
+
+.wellness-drift-large__piece--lg-a {
+  animation-name: wellness-drift-large-a;
+}
+
+.wellness-drift-large__piece--lg-b {
+  animation-name: wellness-drift-large-b;
+}
+
+.wellness-drift-large__piece--lg-c {
+  animation-name: wellness-drift-large-c;
+}
+
+.wellness-drift-large__piece--lg-d {
+  animation-name: wellness-drift-large-d;
+}
+
+@keyframes wellness-drift-large-a {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translate(28px, -34px) rotate(5deg) scale(1.04);
+  }
+  55% {
+    transform: translate(-22px, 26px) rotate(-4deg) scale(0.97);
+  }
+  80% {
+    transform: translate(18px, 14px) rotate(3deg) scale(1.02);
+  }
+}
+
+@keyframes wellness-drift-large-b {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  30% {
+    transform: translate(-32px, 18px) rotate(-6deg) scale(1.03);
+  }
+  60% {
+    transform: translate(24px, -28px) rotate(4deg) scale(0.96);
+  }
+}
+
+@keyframes wellness-drift-large-c {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(20px, 32px) rotate(7deg);
+  }
+  50% {
+    transform: translate(-26px, -20px) rotate(-5deg);
+  }
+  75% {
+    transform: translate(14px, -36px) rotate(4deg);
+  }
+}
+
+@keyframes wellness-drift-large-d {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  35% {
+    transform: translate(-18px, -40px) rotate(-7deg) scale(1.05);
+  }
+  65% {
+    transform: translate(30px, 22px) rotate(5deg) scale(0.95);
+  }
+}
+
+.wellness-drift {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
   color: var(--section-accent);
 }
 
@@ -2612,10 +2713,18 @@ button {
 
 .meal-plan {
   gap: 10px;
+  font-family: var(--font-sans);
 }
 
-.meal-plan-week {
-  margin: 8px 0 0;
+.meal-plan .card > h3 {
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.meal-plan-week,
+.meal-plan .muted {
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
 }
 
 .meal-day-tabs {
@@ -2633,8 +2742,10 @@ button {
   color: var(--muted);
   border-radius: 999px;
   padding: 8px 14px;
+  font-family: var(--font-sans);
   font-size: 0.8rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
 }
 
@@ -2653,9 +2764,11 @@ button {
 }
 
 .meal-day-kcal {
+  font-family: var(--font-sans);
   font-size: 0.85rem;
   color: var(--muted);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .meal-card {
@@ -2694,26 +2807,32 @@ button {
   padding: 12px;
   flex: 1;
   min-width: 0;
+  font-family: var(--font-sans);
 }
 
 .meal-slot-label {
+  font-family: var(--font-sans);
   font-size: 0.72rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--accent);
   font-weight: 700;
 }
 
 .meal-card-body h4 {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.3;
+  font-size: 1.08rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .meal-kcal {
-  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
   color: var(--muted);
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .dish-recipe {
@@ -2724,8 +2843,10 @@ button {
   border: none;
   background: none;
   color: var(--accent);
-  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
   font-weight: 700;
+  letter-spacing: 0.02em;
   padding: 0;
   cursor: pointer;
   text-decoration: underline;
@@ -2736,15 +2857,21 @@ button {
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--surface-2);
-  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 1.45;
   color: var(--text);
 }
 
 .dish-recipe-content strong {
   display: block;
+  font-family: var(--font-sans);
   font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   color: var(--muted);
   margin: 8px 0 4px;
 }
@@ -2759,8 +2886,9 @@ button {
 }
 
 .dish-recipe-list li {
-  margin-bottom: 4px;
-  line-height: 1.35;
+  margin-bottom: 6px;
+  line-height: 1.45;
+  font-family: var(--font-sans);
 }
 
 .dish-recipe-steps {
@@ -2769,7 +2897,10 @@ button {
 
 .dish-recipe-timing {
   margin: 0 0 8px;
+  font-family: var(--font-sans);
   font-weight: 600;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
   color: var(--accent);
 }
 
@@ -2779,6 +2910,11 @@ button {
   border-radius: calc(var(--radius) - 2px);
   background: color-mix(in srgb, var(--section-accent) 8%, var(--surface-2));
   border: 1px solid color-mix(in srgb, var(--section-accent) 14%, transparent);
+  font-family: var(--font-sans);
+}
+
+.dish-recipe-tips strong {
+  font-family: var(--font-sans);
 }
 
 .dish-recipe-tips .dish-recipe-list li {

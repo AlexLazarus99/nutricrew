@@ -938,12 +938,14 @@
 }
 
 .app-shell[data-reduce-motion="true"] .wellness-drift__piece,
+.app-shell[data-reduce-motion="true"] .wellness-drift-large__piece,
 .app-shell[data-reduce-motion="true"] .wellness-drift-fig {
   animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .wellness-drift__piece,
+  .wellness-drift-large__piece,
   .wellness-drift-fig {
     animation: none;
   }
