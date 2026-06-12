@@ -41,7 +41,24 @@ export function WellnessGuidePage() {
   const sortedDiets = dietsForBody(selectedBody);
 
   useEffect(() => {
-    void ensureWellnessTranslations().then(() => setWellnessReady(true));
+    let cancelled = false;
+
+    async function load() {
+      for (let attempt = 0; attempt < 2 && !cancelled; attempt += 1) {
+        try {
+          await ensureWellnessTranslations();
+          if (!cancelled) setWellnessReady(true);
+          return;
+        } catch {
+          await new Promise((r) => setTimeout(r, 400));
+        }
+      }
+    }
+
+    void load();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {

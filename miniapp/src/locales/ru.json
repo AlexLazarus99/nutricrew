@@ -646,8 +646,6 @@
     "recommendedBadge": "Рекомендуем",
     "viewAllDiets": "Все диеты",
     "viewAllExercises": "Все тренировки",
-    "waterTitle": "Вода сегодня",
-    "waterMl": "мл",
     "disclaimer": "Только образовательная информация — не медицинская консультация. Перед сменой питания или нагрузок обратитесь к врачу или диетологу, особенно при хронических заболеваниях.",
     "sources": "Основано на: ВОЗ «Здоровое питание» (2024), USDA Dietary Guidelines, NIH DASH, EAT-Lancet, ACSM Physical Activity Guidelines.",
     "sections": {
@@ -1430,6 +1428,10 @@
         "delta": "+500 ккал"
       }
     }
+  },
+  "water": {
+    "title": "Вода сегодня",
+    "ml": "мл"
   },
   "trends": {
     "title": "Тренды",

@@ -38,9 +38,9 @@ export function WaterWidget() {
   return (
     <div className="card water-widget">
       <div className="water-widget__head">
-        <h3>{t("wellness.waterTitle")}</h3>
+        <h3>{t("water.title")}</h3>
         <span className="muted small">
-          {ml} / {goal} {t("wellness.waterMl")}
+          {ml} / {goal} {t("water.ml")}
         </span>
       </div>
       <div className="diary-progress water-widget__bar">

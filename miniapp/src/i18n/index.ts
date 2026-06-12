@@ -3,6 +3,12 @@ import { initReactI18next } from "react-i18next";
 import { detectInitialLocale, type AppLocale } from "../lib/locale";
 
 const wellnessLoaded = new Set<AppLocale>();
+const wellnessLoads = new Map<AppLocale, Promise<void>>();
+
+function wellnessGuideLooksComplete(lng: AppLocale): boolean {
+  const sample = i18n.t("wellness.bodyTypes.ectomorph.name", { lng });
+  return sample !== "wellness.bodyTypes.ectomorph.name" && sample.length > 0;
+}
 
 async function loadBaseBundle(locale: AppLocale) {
   if (locale === "ru") {
@@ -66,29 +72,51 @@ export async function ensureLocale(locale: AppLocale) {
 export async function ensureWellnessTranslations(locale?: AppLocale) {
   const lng: AppLocale =
     locale ?? (i18n.language.startsWith("ru") ? "ru" : "en");
-  if (wellnessLoaded.has(lng)) return;
 
-  await ensureLocale(lng);
-  const extras = await loadWellnessBundle(lng);
-  const base = (i18n.getResourceBundle(lng, "translation") ?? {}) as Record<
-    string,
-    unknown
-  >;
-  const wellness = (base.wellness ?? {}) as Record<string, unknown>;
-  i18n.addResourceBundle(
-    lng,
-    "translation",
-    {
-      ...base,
-      wellness: { ...wellness, exercises: extras.exercises },
-      exerciseNames: extras.exerciseNames,
-      dishNames: extras.dishNames,
-      dishRecipes: extras.dishRecipes,
-    },
-    true,
-    true,
-  );
-  wellnessLoaded.add(lng);
+  if (wellnessLoaded.has(lng) && wellnessGuideLooksComplete(lng)) return;
+
+  const pending = wellnessLoads.get(lng);
+  if (pending) return pending;
+
+  const job = (async () => {
+    await ensureLocale(lng);
+    const [base, extras] = await Promise.all([
+      loadBaseBundle(lng),
+      loadWellnessBundle(lng),
+    ]);
+    const wellness = (base.wellness ?? {}) as Record<string, unknown>;
+
+    i18n.addResourceBundle(
+      lng,
+      "translation",
+      {
+        ...base,
+        wellness: { ...wellness, exercises: extras.exercises },
+        exerciseNames: extras.exerciseNames,
+        dishNames: extras.dishNames,
+        dishRecipes: extras.dishRecipes,
+      },
+      true,
+      true,
+    );
+
+    if (!wellnessGuideLooksComplete(lng)) {
+      wellnessLoaded.delete(lng);
+      throw new Error(`Wellness guide translations incomplete for ${lng}`);
+    }
+
+    wellnessLoaded.add(lng);
+    if (i18n.language === lng) {
+      await i18n.changeLanguage(lng);
+    }
+  })();
+
+  wellnessLoads.set(lng, job);
+  try {
+    await job;
+  } finally {
+    wellnessLoads.delete(lng);
+  }
 }
 
 export default i18n;
