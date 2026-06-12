@@ -936,3 +936,13 @@
 .app-shell[data-reduce-motion="true"] .hero:hover {
   transform: none;
 }
+
+.app-shell[data-reduce-motion="true"] .wellness-wave {
+  animation: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wellness-wave {
+    animation: none;
+  }
+}

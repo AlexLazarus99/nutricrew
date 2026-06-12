@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { enrichRecipe } from "./recipe-enricher.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -319,8 +320,9 @@ const RECIPES = {
 const en = {};
 const ru = {};
 for (const [id, data] of Object.entries(RECIPES)) {
-  en[id] = data.en;
-  ru[id] = data.ru;
+  const rich = enrichRecipe(id, data);
+  en[id] = rich.en;
+  ru[id] = rich.ru;
 }
 
 fs.writeFileSync(path.join(root, "src/locales/dishRecipes.en.json"), JSON.stringify(en, null, 2) + "\n");

@@ -25,7 +25,11 @@ function MealCard({ meal, slot }: { meal: MealEntry; slot: MealSlot }) {
   const prefix = `dishRecipes.${meal.dishId}`;
   const ingredients = asStringArray(t(`${prefix}.ingredients`, { returnObjects: true, defaultValue: [] }));
   const steps = asStringArray(t(`${prefix}.steps`, { returnObjects: true, defaultValue: [] }));
+  const tips = asStringArray(t(`${prefix}.tips`, { returnObjects: true, defaultValue: [] }));
+  const prepMinutes = t(`${prefix}.prepMinutes`, { defaultValue: "" });
+  const cookMinutes = t(`${prefix}.cookMinutes`, { defaultValue: "" });
   const hasRecipe = ingredients.length > 0 || steps.length > 0;
+  const hasTiming = prepMinutes !== "" || cookMinutes !== "";
 
   return (
     <article className="card meal-card">
@@ -46,6 +50,13 @@ function MealCard({ meal, slot }: { meal: MealEntry; slot: MealSlot }) {
             </button>
             {open && (
               <div className="dish-recipe-content">
+                {hasTiming && (
+                  <p className="dish-recipe-timing muted small">
+                    {prepMinutes !== "" && t("wellness.prepTime", { minutes: prepMinutes })}
+                    {prepMinutes !== "" && cookMinutes !== "" && " · "}
+                    {cookMinutes !== "" && t("wellness.cookTime", { minutes: cookMinutes })}
+                  </p>
+                )}
                 {ingredients.length > 0 && (
                   <div>
                     <strong>{t("wellness.ingredients")}</strong>
@@ -60,10 +71,20 @@ function MealCard({ meal, slot }: { meal: MealEntry; slot: MealSlot }) {
                   <div>
                     <strong>{t("wellness.steps")}</strong>
                     <ol className="dish-recipe-list dish-recipe-steps">
-                      {steps.map((item) => (
-                        <li key={item}>{item}</li>
+                      {steps.map((item, idx) => (
+                        <li key={`${idx}-${item.slice(0, 24)}`}>{item}</li>
                       ))}
                     </ol>
+                  </div>
+                )}
+                {tips.length > 0 && (
+                  <div className="dish-recipe-tips">
+                    <strong>{t("wellness.recipeTips")}</strong>
+                    <ul className="dish-recipe-list">
+                      {tips.map((item, idx) => (
+                        <li key={`${idx}-${item.slice(0, 24)}`}>{item}</li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>

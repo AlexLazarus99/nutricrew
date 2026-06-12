@@ -637,6 +637,9 @@
     "hideRecipe": "Скрыть",
     "ingredients": "Ингредиенты",
     "steps": "Приготовление",
+    "prepTime": "Подготовка: {{minutes}} мин",
+    "cookTime": "Готовка: {{minutes}} мин",
+    "recipeTips": "Советы",
     "meals": {
       "breakfast": "Завтрак",
       "lunch": "Обед",

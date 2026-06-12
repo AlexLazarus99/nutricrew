@@ -2,33 +2,75 @@
   "appleAlmondButter": {
     "ingredients": [
       "1 apple",
-      "1 tbsp almond butter"
+      "1 tbsp almond butter",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Slice apple into wedges.",
-      "Serve with almond butter for dipping."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with almond butter for dipping.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "applePeanutSnack": {
     "ingredients": [
       "1 apple",
-      "1 tbsp peanut butter"
+      "1 tbsp peanut butter",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Slice apple.",
-      "Serve with peanut butter for dipping."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with peanut butter for dipping.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "avocadoToast": {
     "ingredients": [
       "1 slice whole-grain bread",
       "1/2 avocado",
-      "Lemon, chili flakes"
+      "Lemon, chili flakes",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread.",
-      "Mash avocado with lemon; spread on toast.",
-      "Season with salt and chili flakes."
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
+      "Season with salt and chili flakes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "bakedAppleOats": {
@@ -36,24 +78,59 @@
       "40 g oats",
       "1 apple, diced",
       "150 ml milk",
-      "Cinnamon"
+      "Cinnamon",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix oats, apple and milk in a ramekin.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Bake at 180 °C for 25 min.",
-      "Serve warm with cinnamon."
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Serve warm with cinnamon.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "bakedCodHerbs": {
     "ingredients": [
       "150 g cod fillet",
       "1 tbsp olive oil",
-      "Lemon, dill, garlic"
+      "Lemon, dill, garlic",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Place cod in a baking dish.",
+      "Continue to the next step while timing overlaps when possible.",
       "Top with oil, lemon, dill and garlic.",
-      "Bake at 200 °C for 12–15 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 200 °C for 12–15 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "bakedSalmonAsparagus": {
@@ -61,12 +138,30 @@
       "150 g salmon",
       "150 g asparagus",
       "1 tbsp olive oil",
-      "Lemon"
+      "Lemon",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Arrange salmon and asparagus on a tray.",
+      "Continue to the next step while timing overlaps when possible.",
       "Drizzle with oil, salt and pepper.",
-      "Bake at 200 °C for 15 min; finish with lemon."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 200 °C for 15 min; finish with lemon.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "bakedWhiteFishDill": {
@@ -74,12 +169,30 @@
       "150 g white fish",
       "Fresh dill",
       "Lemon",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Place fish in dish with dill and lemon.",
+      "Continue to the next step while timing overlaps when possible.",
       "Drizzle oil.",
-      "Bake at 190 °C for 12 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 190 °C for 12 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "barleyBreakfastBowl": {
@@ -87,12 +200,27 @@
       "50 g pearl barley",
       "200 ml water",
       "Cinnamon",
-      "Berries, 1 tsp honey"
+      "Berries, 1 tsp honey",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer barley 25 min until tender.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Sweeten with cinnamon and honey.",
-      "Top with berries."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "barleyVegetableSoup": {
@@ -100,12 +228,29 @@
       "40 g barley",
       "Mixed vegetables",
       "500 ml low-sodium broth",
-      "Bay leaf"
+      "Bay leaf",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer barley in broth 20 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Add diced vegetables.",
-      "Cook 15 min until tender."
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
+      "Cook 15 min until tender.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "beanBurritoBowl": {
@@ -113,12 +258,26 @@
       "80 g black beans",
       "80 g brown rice",
       "Corn, salsa, lettuce",
-      "1 tbsp Greek yogurt"
+      "1 tbsp Greek yogurt",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Warm beans and rice.",
+      "Continue to the next step while timing overlaps when possible.",
       "Layer rice, beans, corn and lettuce in a bowl.",
-      "Top with salsa and yogurt."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with salsa and yogurt.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "beefStirFry": {
@@ -126,24 +285,55 @@
       "120 g lean beef strips",
       "Mixed stir-fry vegetables",
       "1 tbsp soy sauce",
-      "1 tsp sesame oil"
+      "1 tsp sesame oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Stir-fry beef on high heat 2 min; set aside.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Cook vegetables 4 min.",
-      "Return beef; add soy and sesame oil."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Return beef; add soy and sesame oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "beefVeggieSkewers": {
     "ingredients": [
       "120 g lean beef cubes",
       "Bell pepper, onion, zucchini",
-      "1 tbsp olive oil"
+      "1 tbsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Thread beef and vegetables on skewers.",
+      "Continue to the next step while timing overlaps when possible.",
       "Brush with oil; season.",
-      "Grill 8–10 min, turning often."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
+      "Grill 8–10 min, turning often.",
+      "Flip only once halfway through unless the recipe says otherwise.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "berryChiaParfait": {
@@ -151,12 +341,26 @@
       "150 g plant yogurt",
       "2 tbsp chia",
       "Mixed berries",
-      "Granola 15 g"
+      "Granola 15 g",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Layer yogurt, chia and berries in a glass.",
+      "Continue to the next step while timing overlaps when possible.",
       "Refrigerate 20 min or overnight.",
-      "Top with granola."
+      "Seal the container tightly to prevent odors and keep the texture fresh.",
+      "Top with granola.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 0,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "bisonSweetPotato": {
@@ -164,24 +368,54 @@
       "120 g lean bison",
       "150 g roasted sweet potato",
       "Green beans",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill bison 4 min per side.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Serve with sweet potato and steamed beans.",
-      "Drizzle with oil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "blackBeanTacos": {
     "ingredients": [
       "2 corn tortillas",
       "80 g black beans",
-      "Salsa, lettuce, avocado"
+      "Salsa, lettuce, avocado",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Warm tortillas.",
+      "Continue to the next step while timing overlaps when possible.",
       "Fill with heated beans and toppings.",
-      "Fold and serve immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Fold and serve immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "breakfastBurrito": {
@@ -189,12 +423,28 @@
       "1 large tortilla",
       "2 eggs",
       "Black beans, salsa",
-      "30 g cheese"
+      "30 g cheese",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Scramble eggs with beans.",
+      "Continue to the next step while timing overlaps when possible.",
       "Fill tortilla; add salsa and cheese.",
-      "Roll and optionally toast seam-side down."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "buckwheatPorridge": {
@@ -202,24 +452,56 @@
       "50 g buckwheat groats",
       "200 ml water",
       "Berries",
-      "1 tsp maple syrup"
+      "1 tsp maple syrup",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer buckwheat 15 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Sweeten lightly.",
-      "Top with berries."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "buddhaBowl": {
     "ingredients": [
       "80 g quinoa",
       "Chickpeas, roasted veggies",
-      "Greens, tahini dressing"
+      "Greens, tahini dressing",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Cook quinoa; roast vegetables.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Arrange quinoa, chickpeas and greens in a bowl.",
-      "Drizzle with tahini dressing."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with tahini dressing.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "capreseSalad": {
@@ -228,45 +510,100 @@
       "80 g mozzarella",
       "Fresh basil",
       "1 tbsp olive oil",
-      "Balsamic (optional)"
+      "Balsamic (optional)",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Slice tomato and mozzarella.",
+      "Continue to the next step while timing overlaps when possible.",
       "Layer with basil on a plate.",
-      "Drizzle with olive oil and balsamic."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with olive oil and balsamic.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "carrotHummusSnack": {
     "ingredients": [
       "2 carrots",
-      "3 tbsp hummus"
+      "3 tbsp hummus",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cut carrots into sticks.",
-      "Serve with hummus."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with hummus.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "celeryHummusSnack": {
     "ingredients": [
       "3 celery stalks",
       "3 tbsp hummus",
-      "Paprika"
+      "Paprika",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cut celery into sticks.",
+      "Continue to the next step while timing overlaps when possible.",
       "Serve with hummus for dipping.",
-      "Sprinkle paprika on hummus."
+      "Continue to the next step while timing overlaps when possible.",
+      "Sprinkle paprika on hummus.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "cheeseCrackersGrapes": {
     "ingredients": [
       "30 g cheese",
       "4 whole-grain crackers",
-      "80 g grapes"
+      "80 g grapes",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Slice cheese.",
-      "Serve with crackers and washed grapes."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with crackers and washed grapes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "chefSalad": {
@@ -274,12 +611,26 @@
       "Mixed greens",
       "Ham, turkey, cheese",
       "Boiled egg",
-      "Light vinaigrette"
+      "Light vinaigrette",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Arrange greens on a large plate.",
+      "Continue to the next step while timing overlaps when possible.",
       "Top with meats, cheese and egg.",
-      "Dress with vinaigrette."
+      "Continue to the next step while timing overlaps when possible.",
+      "Dress with vinaigrette.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "chickenQuinoaPower": {
@@ -287,12 +638,27 @@
       "120 g chicken breast",
       "80 g quinoa",
       "Roasted peppers",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill chicken; slice.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Serve over quinoa with peppers.",
-      "Drizzle oil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "chickenSouvlaki": {
@@ -300,12 +666,27 @@
       "150 g chicken breast",
       "1 tbsp olive oil",
       "Oregano, garlic",
-      "Tzatziki, whole-grain pita"
+      "Tzatziki, whole-grain pita",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
       "Cube chicken; marinate with oil, oregano, garlic 20 min.",
+      "Turn the protein once during marinating so flavor coats evenly.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Thread on skewers; grill 8–10 min.",
-      "Serve with tzatziki and warmed pita."
+      "Flip only once halfway through unless the recipe says otherwise.",
+      "Serve with tzatziki and warmed pita.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 27,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "chickenTeriyakiRice": {
@@ -313,24 +694,55 @@
       "120 g chicken breast",
       "80 g brown rice",
       "Teriyaki sauce 1 tbsp",
-      "Broccoli"
+      "Broccoli",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook rice.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill chicken; glaze with teriyaki.",
-      "Serve with steamed broccoli."
+      "Flip only once halfway through unless the recipe says otherwise.",
+      "Serve with steamed broccoli.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "chickenWrap": {
     "ingredients": [
       "1 whole-wheat tortilla",
       "100 g grilled chicken",
-      "Lettuce, tomato, yogurt sauce"
+      "Lettuce, tomato, yogurt sauce",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Warm tortilla.",
+      "Continue to the next step while timing overlaps when possible.",
       "Layer chicken and vegetables.",
-      "Roll tightly and cut in half."
+      "Continue to the next step while timing overlaps when possible.",
+      "Roll tightly and cut in half.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "chickpeaCurry": {
@@ -338,12 +750,28 @@
       "1 can chickpeas",
       "100 g spinach",
       "200 ml coconut milk",
-      "Curry powder, onion"
+      "Curry powder, onion",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté onion; add curry powder.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Add chickpeas and coconut milk; simmer 10 min.",
-      "Stir in spinach until wilted."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Stir in spinach until wilted.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "coconutLentilSoup": {
@@ -351,12 +779,29 @@
       "80 g red lentils",
       "200 ml coconut milk",
       "400 ml broth",
-      "Curry powder"
+      "Curry powder",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer lentils in broth 15 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Stir in coconut milk and curry.",
-      "Cook 10 min until creamy."
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
+      "Cook 10 min until creamy.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "coconutOvernightOats": {
@@ -364,44 +809,105 @@
       "50 g oats",
       "150 ml coconut milk",
       "1 tsp maple syrup",
-      "Shredded coconut"
+      "Shredded coconut",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix oats and coconut milk in a jar.",
+      "Continue to the next step while timing overlaps when possible.",
       "Refrigerate overnight.",
-      "Top with coconut before serving."
+      "Seal the container tightly to prevent odors and keep the texture fresh.",
+      "Top with coconut before serving.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 0,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "codSweetPotato": {
     "ingredients": [
       "150 g cod",
       "1 small sweet potato",
-      "Olive oil, paprika"
+      "Olive oil, paprika",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Bake sweet potato 40 min at 200 °C.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Bake cod alongside last 15 min.",
-      "Season with paprika and serve."
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Season with paprika and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "cottageCheeseBerries": {
     "ingredients": [
       "150 g cottage cheese",
-      "80 g mixed berries"
+      "80 g mixed berries",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Choose a bowl or plate slightly larger than your portion so toppings fit comfortably.",
       "Place cottage cheese in a bowl.",
-      "Top with fresh berries."
+      "Level the base with the back of a spoon for an even presentation.",
+      "Top with fresh berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "cottageCheeseMelon": {
     "ingredients": [
       "150 g cottage cheese",
-      "150 g melon cubes"
+      "150 g melon cubes",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Choose a bowl or plate slightly larger than your portion so toppings fit comfortably.",
       "Place cottage cheese in a bowl.",
-      "Add chilled melon cubes and serve."
+      "Level the base with the back of a spoon for an even presentation.",
+      "Add chilled melon cubes and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "cottageCheeseToast": {
@@ -409,12 +915,26 @@
       "1 slice whole-grain bread",
       "80 g cottage cheese",
       "Tomato slices",
-      "Pepper"
+      "Pepper",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Spread cottage cheese.",
-      "Top with tomato and pepper."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with tomato and pepper.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "crabAvocadoSalad": {
@@ -422,12 +942,27 @@
       "100 g crab meat",
       "Half avocado",
       "Mixed greens",
-      "Lime juice"
+      "Lime juice",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Arrange greens and avocado.",
+      "Continue to the next step while timing overlaps when possible.",
       "Top with crab.",
-      "Dress with lime."
+      "Continue to the next step while timing overlaps when possible.",
+      "Dress with lime.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "dateNutBalls": {
@@ -435,47 +970,104 @@
       "6 dates",
       "30 g walnuts",
       "1 tbsp cocoa",
-      "Pinch of salt"
+      "Pinch of salt",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Blend all ingredients.",
+      "Continue to the next step while timing overlaps when possible.",
       "Roll into 4 balls.",
-      "Chill 30 min before serving."
+      "Continue to the next step while timing overlaps when possible.",
+      "Chill 30 min before serving.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "deliTurkeyRoll": {
     "ingredients": [
       "60 g sliced turkey",
       "30 g cream cheese",
-      "Cucumber strips"
+      "Cucumber strips",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Spread cheese on turkey slices.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add cucumber.",
-      "Roll up and slice."
+      "Continue to the next step while timing overlaps when possible.",
+      "Roll up and slice.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "edamameCup": {
     "ingredients": [
       "100 g frozen edamame",
       "Sea salt",
-      "Sesame (optional)"
+      "Sesame (optional)",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Steam or microwave edamame 3 min.",
+      "Continue to the next step while timing overlaps when possible.",
       "Sprinkle with sea salt.",
-      "Serve warm in a cup."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve warm in a cup.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "edamameSeaSalt": {
     "ingredients": [
       "100 g edamame in pods",
-      "Sea salt"
+      "Sea salt",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Steam edamame 4 min.",
+      "Continue to the next step while timing overlaps when possible.",
       "Toss with sea salt.",
-      "Serve warm."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve warm.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "eggCheeseEnglishMuffin": {
@@ -483,12 +1075,26 @@
       "1 whole-grain English muffin",
       "1 egg",
       "1 slice cheese",
-      "Spinach leaf"
+      "Spinach leaf",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast muffin halves.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Fry egg; melt cheese on top.",
-      "Stack with spinach on muffin."
+      "Continue to the next step while timing overlaps when possible.",
+      "Stack with spinach on muffin.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "eggMuffinTurkey": {
@@ -496,12 +1102,29 @@
       "2 eggs",
       "40 g diced turkey breast",
       "Bell pepper",
-      "Muffin tin spray"
+      "Muffin tin spray",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Whisk eggs with turkey and pepper.",
+      "Continue to the next step while timing overlaps when possible.",
       "Pour into greased muffin cups.",
-      "Bake at 180 °C for 18 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 180 °C for 18 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "eggWhiteOmeletteCheese": {
@@ -509,12 +1132,26 @@
       "4 egg whites",
       "30 g low-fat cheese",
       "Spinach",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Whisk egg whites.",
+      "Continue to the next step while timing overlaps when possible.",
       "Cook in oiled pan; add spinach and cheese.",
-      "Fold and cook until cheese melts."
+      "Continue to the next step while timing overlaps when possible.",
+      "Fold and cook until cheese melts.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "eggWhiteVeggieScramble": {
@@ -522,12 +1159,26 @@
       "3 egg whites",
       "50 g bell pepper",
       "50 g mushrooms",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté vegetables 3 min.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Add egg whites; scramble until set.",
-      "Season with pepper; serve immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Season with pepper; serve immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "falafelPlate": {
@@ -535,12 +1186,27 @@
       "4 falafel balls",
       "Salad greens",
       "2 tbsp tahini",
-      "Whole-grain pita"
+      "Whole-grain pita",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Bake or pan-fry falafel until crisp.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Serve with salad and warmed pita.",
-      "Drizzle tahini over everything."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle tahini over everything.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "figRicottaToast": {
@@ -548,24 +1214,55 @@
       "1 slice whole-grain bread",
       "40 g ricotta",
       "2 dried figs",
-      "Honey drizzle"
+      "Honey drizzle",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Spread ricotta.",
-      "Top with sliced figs and honey."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with sliced figs and honey.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "fishTacos": {
     "ingredients": [
       "120 g white fish",
       "2 corn tortillas",
-      "Slaw, lime, cilantro"
+      "Slaw, lime, cilantro",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Grill or bake fish; flake.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Warm tortillas.",
-      "Fill with fish, slaw and lime."
+      "Continue to the next step while timing overlaps when possible.",
+      "Fill with fish, slaw and lime.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "frenchToastGrain": {
@@ -573,57 +1270,131 @@
       "2 slices whole-grain bread",
       "1 egg",
       "60 ml milk",
-      "Cinnamon"
+      "Cinnamon",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Whisk egg, milk and cinnamon.",
+      "Continue to the next step while timing overlaps when possible.",
       "Soak bread 1 min per side.",
-      "Pan-fry 2 min per side."
+      "Continue to the next step while timing overlaps when possible.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
+      "Pan-fry 2 min per side.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "frozenGrapeSnack": {
     "ingredients": [
-      "150 g seedless grapes"
+      "150 g seedless grapes",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Wash and dry grapes.",
+      "Continue to the next step while timing overlaps when possible.",
       "Freeze at least 2 hours.",
-      "Serve straight from freezer."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve straight from freezer.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "fruitNuts": {
     "ingredients": [
       "1 apple or pear",
       "20 g mixed nuts",
-      "Cinnamon (optional)"
+      "Cinnamon (optional)",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Wash and slice fruit.",
+      "Continue to the next step while timing overlaps when possible.",
       "Serve with nuts on the side.",
-      "Sprinkle cinnamon if desired."
+      "Continue to the next step while timing overlaps when possible.",
+      "Sprinkle cinnamon if desired.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "greekYogurtGranola": {
     "ingredients": [
       "150 g Greek yogurt",
       "30 g granola",
-      "Honey (optional)"
+      "Honey (optional)",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Choose a bowl or plate slightly larger than your portion so toppings fit comfortably.",
       "Spoon yogurt into a bowl.",
+      "Level the base with the back of a spoon for an even presentation.",
       "Top with granola.",
-      "Drizzle honey if desired."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle honey if desired.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "greekYogurtHoney": {
     "ingredients": [
       "150 g Greek yogurt",
       "1 tsp honey",
-      "15 g walnuts, chopped"
+      "15 g walnuts, chopped",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Choose a bowl or plate slightly larger than your portion so toppings fit comfortably.",
       "Spoon yogurt into a bowl.",
-      "Drizzle with honey and top with walnuts."
+      "Level the base with the back of a spoon for an even presentation.",
+      "Drizzle with honey and top with walnuts.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "greenSmoothieMango": {
@@ -631,24 +1402,54 @@
       "80 g mango",
       "Handful spinach",
       "200 ml plant milk",
-      "1 tbsp flax"
+      "1 tbsp flax",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Blend all ingredients until smooth.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add ice if desired.",
-      "Serve immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "grilledChickenBreastRice": {
     "ingredients": [
       "150 g chicken breast",
       "80 g white or brown rice",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill seasoned chicken 6 min per side.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Serve sliced over cooked rice.",
-      "Drizzle with olive oil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with olive oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "grilledChickenBrownRice": {
@@ -656,12 +1457,27 @@
       "150 g chicken breast",
       "80 g cooked brown rice",
       "1 tsp olive oil",
-      "Steamed broccoli"
+      "Steamed broccoli",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Season chicken; grill 6 min per side.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Serve over brown rice with broccoli.",
-      "Drizzle with olive oil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with olive oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "grilledFishQuinoa": {
@@ -669,12 +1485,27 @@
       "150 g white fish",
       "80 g cooked quinoa",
       "1 tsp olive oil",
-      "Lemon, parsley"
+      "Lemon, parsley",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Season fish; grill 4 min per side.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Serve over quinoa with lemon and parsley.",
-      "Drizzle with olive oil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with olive oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "grilledHalloumiSalad": {
@@ -683,12 +1514,26 @@
       "Mixed greens",
       "Cucumber, tomato",
       "1 tbsp olive oil",
-      "Lemon"
+      "Lemon",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill halloumi 2 min per side.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Toss greens with vegetables.",
-      "Top with cheese; dress with oil and lemon."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with cheese; dress with oil and lemon.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "grilledSalmonVeg": {
@@ -696,12 +1541,27 @@
       "150 g salmon fillet",
       "200 g mixed vegetables",
       "1 tbsp olive oil",
-      "Lemon, herbs"
+      "Lemon, herbs",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Season salmon and veggies with oil, salt, pepper.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill salmon 4 min/side, veggies 8–10 min.",
-      "Serve with lemon and herbs."
+      "Flip only once halfway through unless the recipe says otherwise.",
+      "Serve with lemon and herbs.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "halibutLemon": {
@@ -709,48 +1569,106 @@
       "150 g halibut",
       "Lemon zest",
       "Asparagus",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Season halibut with zest.",
+      "Continue to the next step while timing overlaps when possible.",
       "Pan-sear fish 3 min per side.",
-      "Serve with steamed asparagus."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with steamed asparagus.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "hamSandwich": {
     "ingredients": [
       "2 slices whole-grain bread",
       "60 g lean ham",
-      "Lettuce, mustard"
+      "Lettuce, mustard",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Layer ham and lettuce on bread.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add mustard.",
-      "Cut and serve."
+      "Continue to the next step while timing overlaps when possible.",
+      "Cut and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "hardBoiledEggSnack": {
     "ingredients": [
       "2 eggs",
       "Pinch of salt",
-      "Pepper"
+      "Pepper",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Boil eggs 10 min.",
+      "Continue to the next step while timing overlaps when possible.",
       "Cool in ice water.",
-      "Peel and halve; season."
+      "Continue to the next step while timing overlaps when possible.",
+      "Peel and halve; season.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "hummusPita": {
     "ingredients": [
       "80 g hummus",
       "1 whole-grain pita",
-      "Paprika, olive oil"
+      "Paprika, olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Warm pita in oven or pan.",
+      "Continue to the next step while timing overlaps when possible.",
       "Spread hummus on a plate.",
-      "Serve with pita; drizzle oil and paprika."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with pita; drizzle oil and paprika.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "jackfruitTacoBowl": {
@@ -758,34 +1676,77 @@
       "100 g young jackfruit",
       "Black beans 60 g",
       "Salsa, lettuce",
-      "Lime"
+      "Lime",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Season and sauté jackfruit 8 min.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Serve over lettuce with beans and salsa.",
-      "Squeeze lime on top."
+      "Continue to the next step while timing overlaps when possible.",
+      "Squeeze lime on top.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "jerkyApple": {
     "ingredients": [
       "20 g lean beef jerky",
-      "1 apple"
+      "1 apple",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Slice apple.",
-      "Serve with jerky for a protein snack."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with jerky for a protein snack.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "labnehPitaSnack": {
     "ingredients": [
       "60 g labneh",
       "1 mini whole-wheat pita",
-      "Za'atar, olive oil"
+      "Za'atar, olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Warm pita.",
+      "Continue to the next step while timing overlaps when possible.",
       "Spread labneh on plate.",
-      "Drizzle oil and za'atar; dip pita."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle oil and za'atar; dip pita.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "leanBeefBurrito": {
@@ -793,12 +1754,27 @@
       "100 g lean ground beef",
       "80 g brown rice",
       "Black beans",
-      "Salsa, lettuce"
+      "Salsa, lettuce",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Brown beef with spices.",
+      "Continue to the next step while timing overlaps when possible.",
       "Serve over rice and beans in a bowl.",
-      "Top with salsa and lettuce."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with salsa and lettuce.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "leanBeefSweetPotato": {
@@ -806,12 +1782,28 @@
       "120 g lean beef",
       "1 medium sweet potato",
       "1 tsp olive oil",
-      "Rosemary"
+      "Rosemary",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Bake sweet potato at 200 °C for 40 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Pan-sear beef 3 min per side.",
-      "Serve beef with split potato and rosemary."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve beef with split potato and rosemary.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "leanSteakSalad": {
@@ -819,12 +1811,27 @@
       "120 g lean steak",
       "Mixed greens",
       "Cherry tomatoes",
-      "Balsamic vinaigrette"
+      "Balsamic vinaigrette",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat grill or grill pan on medium-high for 5 minutes; lightly oil the surface.",
       "Grill steak to desired doneness; rest 5 min.",
+      "Flip only once halfway through unless the recipe says otherwise.",
       "Slice over greens and tomatoes.",
-      "Dress with vinaigrette."
+      "Continue to the next step while timing overlaps when possible.",
+      "Dress with vinaigrette.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "lemonHerbChicken": {
@@ -832,24 +1839,53 @@
       "150 g chicken breast",
       "Lemon juice",
       "Rosemary, thyme",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
       "Marinate chicken 15 min.",
+      "Turn the protein once during marinating so flavor coats evenly.",
       "Pan-sear 5 min per side.",
-      "Rest 3 min; slice and serve."
+      "Continue to the next step while timing overlaps when possible.",
+      "Rest 3 min; slice and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 27,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "lentilBolognese": {
     "ingredients": [
       "80 g cooked lentils",
       "80 g whole-wheat pasta",
-      "Tomato sauce, garlic, oregano"
+      "Tomato sauce, garlic, oregano",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer lentils in tomato sauce 10 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Cook pasta al dente.",
-      "Toss pasta with lentil bolognese."
+      "Continue to the next step while timing overlaps when possible.",
+      "Combine components gently so textures stay distinct (do not over-stir delicate greens).",
+      "Toss pasta with lentil bolognese.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "lentilPenneProtein": {
@@ -857,12 +1893,28 @@
       "60 g whole-wheat penne",
       "80 g cooked lentils",
       "Marinara",
-      "Parmesan 10 g"
+      "Parmesan 10 g",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook pasta al dente.",
+      "Continue to the next step while timing overlaps when possible.",
       "Heat lentils with sauce.",
-      "Toss together; top with parmesan."
+      "Continue to the next step while timing overlaps when possible.",
+      "Combine components gently so textures stay distinct (do not over-stir delicate greens).",
+      "Toss together; top with parmesan.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "lentilSoup": {
@@ -870,12 +1922,28 @@
       "80 g red lentils",
       "1 carrot, 1 onion",
       "500 ml vegetable broth",
-      "1 tsp cumin"
+      "1 tsp cumin",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté onion and carrot 5 min.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Add lentils, broth and cumin; simmer 20 min.",
-      "Blend lightly or serve chunky."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Blend lightly or serve chunky.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "lentilStew": {
@@ -883,34 +1951,78 @@
       "80 g green lentils",
       "1 onion, carrot",
       "400 ml broth",
-      "Bay leaf"
+      "Bay leaf",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté onion and carrot.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Add lentils and broth; simmer 25 min.",
-      "Remove bay leaf; season and serve."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Remove bay leaf; season and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "lowFatYogurtBerries": {
     "ingredients": [
       "150 g low-fat yogurt",
-      "80 g mixed berries"
+      "80 g mixed berries",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Choose a bowl or plate slightly larger than your portion so toppings fit comfortably.",
       "Spoon yogurt into a bowl.",
-      "Top with fresh or thawed berries."
+      "Level the base with the back of a spoon for an even presentation.",
+      "Top with fresh or thawed berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "medDatesAlmonds": {
     "ingredients": [
       "4 Medjool dates",
       "12 almonds",
-      "Pinch of cinnamon"
+      "Pinch of cinnamon",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Pit dates if needed.",
+      "Continue to the next step while timing overlaps when possible.",
       "Stuff each with 3 almonds.",
-      "Sprinkle cinnamon lightly."
+      "Continue to the next step while timing overlaps when possible.",
+      "Sprinkle cinnamon lightly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "mediterraneanOmelette": {
@@ -919,23 +2031,54 @@
       "50 g spinach",
       "30 g feta",
       "1 tsp olive oil",
-      "Cherry tomatoes"
+      "Cherry tomatoes",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté spinach in oil 1 min.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Pour beaten eggs, add feta and tomatoes.",
-      "Cook 3–4 min per side until set."
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
+      "Cook 3–4 min per side until set.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "melonCottageSnack": {
     "ingredients": [
       "150 g melon cubes",
-      "80 g low-fat cottage cheese"
+      "80 g low-fat cottage cheese",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cube melon.",
+      "Continue to the next step while timing overlaps when possible.",
       "Serve alongside cottage cheese.",
-      "Optional mint leaf."
+      "Continue to the next step while timing overlaps when possible.",
+      "Optional mint leaf.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "minestrone": {
@@ -943,12 +2086,28 @@
       "80 g pasta",
       "Beans, zucchini, carrots",
       "500 ml vegetable broth",
-      "Tomato paste"
+      "Tomato paste",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer vegetables in broth 15 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Add pasta and beans; cook 10 min.",
-      "Season with herbs and serve."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Season with herbs and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "mushroomRisotto": {
@@ -956,12 +2115,26 @@
       "80 g arborio rice",
       "100 g mushrooms",
       "250 ml vegetable broth",
-      "Nutritional yeast (optional)"
+      "Nutritional yeast (optional)",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Sauté mushrooms; add rice and toast 1 min.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Add broth gradually, stirring 18–20 min.",
-      "Finish with nutritional yeast."
+      "Continue to the next step while timing overlaps when possible.",
+      "Finish with nutritional yeast.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "oatmealBanana": {
@@ -969,24 +2142,53 @@
       "50 g oats",
       "200 ml water or milk",
       "1 banana",
-      "Pinch of cinnamon"
+      "Pinch of cinnamon",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Cook oats with liquid 5 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Slice banana on top.",
-      "Add cinnamon and serve warm."
+      "Continue to the next step while timing overlaps when possible.",
+      "Add cinnamon and serve warm.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "oliveTapenadeToast": {
     "ingredients": [
       "1 slice whole-grain bread",
       "2 tbsp olive tapenade",
-      "Cherry tomatoes (optional)"
+      "Cherry tomatoes (optional)",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread until crisp.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Spread tapenade evenly.",
-      "Top with halved tomatoes if desired."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with halved tomatoes if desired.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "overnightChiaPudding": {
@@ -994,12 +2196,27 @@
       "30 g chia seeds",
       "150 ml milk",
       "1 tsp maple syrup",
-      "Berries"
+      "Berries",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix chia, milk and syrup in a jar.",
+      "Continue to the next step while timing overlaps when possible.",
       "Refrigerate 4 hours or overnight.",
-      "Top with berries before serving."
+      "Seal the container tightly to prevent odors and keep the texture fresh.",
+      "Top with berries before serving.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 0,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "overnightOatsBerries": {
@@ -1007,12 +2224,27 @@
       "50 g rolled oats",
       "120 ml milk",
       "80 g mixed berries",
-      "1 tsp chia seeds"
+      "1 tsp chia seeds",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix oats, milk and chia in a jar.",
+      "Continue to the next step while timing overlaps when possible.",
       "Refrigerate overnight.",
-      "Top with berries before serving."
+      "Seal the container tightly to prevent odors and keep the texture fresh.",
+      "Top with berries before serving.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 0,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "pastaPrimavera": {
@@ -1020,48 +2252,112 @@
       "80 g whole-wheat pasta",
       "Zucchini, peas, carrot",
       "1 tbsp olive oil",
-      "Garlic, parmesan (optional)"
+      "Garlic, parmesan (optional)",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook pasta al dente.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté vegetables with garlic.",
-      "Toss pasta with veggies and oil."
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Combine components gently so textures stay distinct (do not over-stir delicate greens).",
+      "Toss pasta with veggies and oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "peanutButterToastBanana": {
     "ingredients": [
       "1 slice whole-grain bread",
       "1 tbsp peanut butter",
-      "1/2 banana"
+      "1/2 banana",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Spread peanut butter.",
-      "Top with banana slices."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with banana slices.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "peanutNoodleSalad": {
     "ingredients": [
       "80 g whole-wheat noodles",
       "2 tbsp peanut sauce",
-      "Shredded cabbage, carrot"
+      "Shredded cabbage, carrot",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook and cool noodles.",
+      "Continue to the next step while timing overlaps when possible.",
       "Toss with vegetables and peanut sauce.",
-      "Serve chilled or at room temp."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve chilled or at room temp.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "pizzaWholeWheat": {
     "ingredients": [
       "1 whole-wheat pita or base",
       "3 tbsp tomato sauce",
-      "Vegetables, 40 g mozzarella"
+      "Vegetables, 40 g mozzarella",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Spread sauce on base.",
+      "Continue to the next step while timing overlaps when possible.",
       "Top with vegetables and cheese.",
-      "Bake at 220 °C for 8–10 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 220 °C for 8–10 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "poachedEggAvocado": {
@@ -1069,23 +2365,54 @@
       "1 slice whole-grain bread",
       "Half avocado",
       "1 poached egg",
-      "Chili flakes"
+      "Chili flakes",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread; mash avocado on top.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Poach egg 3 min in simmering water.",
-      "Place egg on toast; season."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "popcornNutMix": {
     "ingredients": [
       "2 cups air-popped popcorn",
-      "15 g mixed nuts"
+      "15 g mixed nuts",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Pop corn without excess oil.",
+      "Continue to the next step while timing overlaps when possible.",
       "Combine with nuts in a bowl.",
-      "Serve immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "porkTenderloinGreenBeans": {
@@ -1093,12 +2420,28 @@
       "120 g pork tenderloin",
       "150 g green beans",
       "Garlic",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Roast pork at 200 °C for 18 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Blanch beans 4 min.",
-      "Serve sliced pork with beans."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve sliced pork with beans.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "porkTenderloinGreens": {
@@ -1106,12 +2449,28 @@
       "120 g pork tenderloin",
       "200 g leafy greens",
       "1 tsp olive oil",
-      "Garlic"
+      "Garlic",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Season pork; roast at 200 °C for 18–20 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté greens with garlic.",
-      "Slice pork and serve with greens."
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Slice pork and serve with greens.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "proteinOvernightOats": {
@@ -1119,12 +2478,27 @@
       "40 g oats",
       "1 scoop protein powder",
       "150 ml milk",
-      "Berries"
+      "Berries",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix oats, protein and milk.",
+      "Continue to the next step while timing overlaps when possible.",
       "Refrigerate overnight.",
-      "Top with berries."
+      "Seal the container tightly to prevent odors and keep the texture fresh.",
+      "Top with berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 0,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "proteinPancakes": {
@@ -1132,24 +2506,55 @@
       "1 scoop protein powder",
       "1 egg, 50 ml milk",
       "50 g oats",
-      "Berries"
+      "Berries",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Blend oats, protein, egg and milk.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Cook pancakes in a non-stick pan 2 min/side.",
-      "Serve with berries."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Serve with berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "proteinShakeBanana": {
     "ingredients": [
       "1 scoop protein powder",
       "1 banana",
-      "200 ml milk or water"
+      "200 ml milk or water",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Add all ingredients to a blender.",
+      "Continue to the next step while timing overlaps when possible.",
       "Blend 30 sec until smooth.",
-      "Drink immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drink immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "quinoaTabbouleh": {
@@ -1158,12 +2563,26 @@
       "1 tomato",
       "Cucumber, parsley",
       "1 tbsp olive oil",
-      "Lemon juice"
+      "Lemon juice",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Dice tomato and cucumber; chop parsley.",
+      "Continue to the next step while timing overlaps when possible.",
       "Toss with quinoa, oil and lemon.",
-      "Chill 15 min before serving."
+      "Continue to the next step while timing overlaps when possible.",
+      "Chill 15 min before serving.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "quinoaVeggieBowl": {
@@ -1171,12 +2590,29 @@
       "80 g quinoa",
       "Roasted vegetables",
       "Chickpeas 60 g",
-      "Tahini drizzle"
+      "Tahini drizzle",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook quinoa.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Top with roasted veg and chickpeas.",
-      "Drizzle tahini."
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Drizzle tahini.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "ratatouilleQuinoa": {
@@ -1184,36 +2620,83 @@
       "80 g cooked quinoa",
       "Zucchini, eggplant, pepper",
       "Tomato sauce",
-      "Herbs de Provence"
+      "Herbs de Provence",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Roast diced vegetables 20 min at 200 °C.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer with sauce and herbs 10 min.",
-      "Serve over quinoa."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Serve over quinoa.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "riceBeansCheese": {
     "ingredients": [
       "80 g brown rice",
       "80 g black beans",
-      "30 g shredded cheese"
+      "30 g shredded cheese",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook rice; heat beans.",
+      "Continue to the next step while timing overlaps when possible.",
       "Combine in a bowl.",
-      "Sprinkle cheese on top."
+      "Continue to the next step while timing overlaps when possible.",
+      "Sprinkle cheese on top.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "riceCakeAlmond": {
     "ingredients": [
       "1 plain rice cake",
       "1 tbsp almond butter",
-      "Cinnamon"
+      "Cinnamon",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Spread almond butter on rice cake.",
+      "Continue to the next step while timing overlaps when possible.",
       "Sprinkle cinnamon.",
-      "Serve immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "roastChickenVegetables": {
@@ -1221,12 +2704,29 @@
       "120 g chicken thigh, skinless",
       "Carrots, broccoli",
       "1 tsp olive oil",
-      "Garlic powder"
+      "Garlic powder",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Toss vegetables with oil on a sheet pan.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add seasoned chicken.",
-      "Roast at 200 °C for 25 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Roast at 200 °C for 25 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "roastedCauliflowerPlate": {
@@ -1234,12 +2734,28 @@
       "200 g cauliflower steaks",
       "1 tbsp olive oil",
       "Tahini drizzle",
-      "Parsley"
+      "Parsley",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Roast cauliflower at 200 °C for 22 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Drizzle tahini.",
-      "Garnish with parsley."
+      "Continue to the next step while timing overlaps when possible.",
+      "Garnish with parsley.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "roastedChickpeas": {
@@ -1250,9 +2766,25 @@
       "Salt"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Pat chickpeas dry.",
+      "Continue to the next step while timing overlaps when possible.",
       "Toss with oil and spices.",
-      "Roast at 200 °C for 25 min, shaking once."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Roast at 200 °C for 25 min, shaking once.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "salmonBowl": {
@@ -1260,12 +2792,29 @@
       "120 g salmon",
       "80 g rice",
       "Edamame, cucumber",
-      "Soy-ginger dressing"
+      "Soy-ginger dressing",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Cook rice; grill or bake salmon.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Arrange rice, salmon and vegetables in a bowl.",
-      "Drizzle with dressing."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with dressing.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 18,
+    "tips": [
+      "Preheat the grill or pan until hot; oil the grates to prevent sticking.",
+      "Do not press meat — juices escape and the surface dries out."
     ]
   },
   "sardineCitrusSalad": {
@@ -1273,12 +2822,26 @@
       "1 can sardines in olive oil",
       "Orange segments",
       "Arugula",
-      "Red onion slices"
+      "Red onion slices",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Arrange arugula on a plate.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add sardines, orange and onion.",
-      "Drizzle with oil from the can."
+      "Continue to the next step while timing overlaps when possible.",
+      "Drizzle with oil from the can.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "seafoodOrzo": {
@@ -1286,12 +2849,28 @@
       "60 g orzo",
       "100 g mixed seafood",
       "Garlic, parsley",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook orzo al dente.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté seafood with garlic 4 min.",
-      "Toss with orzo, parsley and oil."
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Combine components gently so textures stay distinct (do not over-stir delicate greens).",
+      "Toss with orzo, parsley and oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "shakshukaFeta": {
@@ -1300,12 +2879,26 @@
       "200 g canned tomatoes",
       "30 g feta",
       "1 tsp olive oil",
-      "Cumin, paprika"
+      "Cumin, paprika",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer tomatoes with spices 8 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
       "Make wells; crack in eggs.",
-      "Cover 5 min; crumble feta on top."
+      "Continue to the next step while timing overlaps when possible.",
+      "Cover 5 min; crumble feta on top.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "sheetPanSalmon": {
@@ -1313,24 +2906,57 @@
       "150 g salmon",
       "Zucchini, cherry tomatoes",
       "1 tbsp olive oil",
-      "Dill"
+      "Dill",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Arrange salmon and veg on sheet pan.",
+      "Continue to the next step while timing overlaps when possible.",
       "Drizzle oil; season.",
-      "Bake at 200 °C for 15 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 200 °C for 15 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "shrimpQuinoa": {
     "ingredients": [
       "120 g shrimp",
       "80 g cooked quinoa",
-      "Garlic, lemon, parsley"
+      "Garlic, lemon, parsley",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté shrimp with garlic 3 min.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Serve over quinoa.",
-      "Finish with lemon and parsley."
+      "Continue to the next step while timing overlaps when possible.",
+      "Finish with lemon and parsley.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "smokedSalmonToast": {
@@ -1338,12 +2964,26 @@
       "1 slice whole-grain bread",
       "40 g smoked salmon",
       "Cream cheese",
-      "Capers"
+      "Capers",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Spread cream cheese.",
-      "Top with salmon and capers."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with salmon and capers.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "smoothieBowl": {
@@ -1351,12 +2991,27 @@
       "1 banana",
       "80 g spinach",
       "100 ml milk",
-      "Toppings: granola, berries"
+      "Toppings: granola, berries",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Blend banana, spinach and milk until thick.",
+      "Continue to the next step while timing overlaps when possible.",
       "Pour into a bowl.",
-      "Top with granola and berries."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with granola and berries.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   },
   "sobaEdamameBowl": {
@@ -1364,12 +3019,27 @@
       "60 g soba noodles",
       "80 g edamame",
       "Carrot, cucumber",
-      "Tamari, sesame"
+      "Tamari, sesame",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook soba; rinse cold.",
+      "Continue to the next step while timing overlaps when possible.",
       "Toss with edamame and sliced vegetables.",
-      "Dress with tamari and sesame."
+      "Continue to the next step while timing overlaps when possible.",
+      "Dress with tamari and sesame.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "spinachEggWrap": {
@@ -1377,12 +3047,28 @@
       "1 whole-wheat tortilla",
       "1 egg",
       "30 g spinach",
-      "Salsa (low sodium)"
+      "Salsa (low sodium)",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Scramble egg with spinach.",
+      "Continue to the next step while timing overlaps when possible.",
       "Fill tortilla; add salsa.",
-      "Roll tightly and toast seam-side down."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "spinachFrittata": {
@@ -1390,12 +3076,27 @@
       "3 eggs",
       "80 g spinach",
       "20 g parmesan",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Wilt spinach in oil.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Pour beaten eggs; cook 4 min.",
-      "Finish under broiler 2 min until set."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Finish under broiler 2 min until set.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "stirFryTofuBroccoli": {
@@ -1403,12 +3104,26 @@
       "120 g firm tofu",
       "150 g broccoli",
       "1 tbsp low-sodium soy sauce",
-      "1 tsp sesame oil"
+      "1 tsp sesame oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Cube tofu; pan-fry until golden.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Add broccoli and splash of water; cover 4 min.",
-      "Stir in soy sauce and sesame oil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Stir in soy sauce and sesame oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "stuffedPeppers": {
@@ -1416,24 +3131,60 @@
       "2 bell peppers",
       "80 g cooked rice",
       "100 g lean ground meat or beans",
-      "Tomato sauce"
+      "Tomato sauce",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Hollow peppers; mix rice with filling.",
+      "Continue to the next step while timing overlaps when possible.",
       "Stuff peppers and top with sauce.",
-      "Bake at 190 °C for 25–30 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 190 °C for 25–30 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "stuffedSweetPotato": {
     "ingredients": [
       "1 sweet potato",
       "80 g black beans",
-      "Corn, salsa, cilantro"
+      "Corn, salsa, cilantro",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Bake potato at 200 °C for 45 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Split and fluff inside.",
-      "Top with beans, corn, salsa and cilantro."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with beans, corn, salsa and cilantro.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "sweetPotatoBlackBean": {
@@ -1441,24 +3192,56 @@
       "1 medium sweet potato",
       "80 g black beans",
       "Corn, salsa",
-      "Cilantro"
+      "Cilantro",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Bake sweet potato 40 min at 200 °C.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
       "Split and fill with warmed beans and corn.",
-      "Top with salsa and cilantro."
+      "Continue to the next step while timing overlaps when possible.",
+      "Top with salsa and cilantro.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "tapenadeCrackers": {
     "ingredients": [
       "2 tbsp olive tapenade",
       "6 whole-grain crackers",
-      "Cherry tomatoes"
+      "Cherry tomatoes",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Spread tapenade on crackers.",
+      "Continue to the next step while timing overlaps when possible.",
       "Top with halved tomatoes.",
-      "Serve immediately."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve immediately.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "tempehStirFry": {
@@ -1466,34 +3249,80 @@
       "120 g tempeh",
       "Mixed greens",
       "1 tbsp soy sauce",
-      "Ginger, garlic"
+      "Ginger, garlic",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Slice tempeh; pan-fry until golden.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Add greens, ginger and garlic; stir-fry 3 min.",
-      "Finish with soy sauce."
+      "Continue to the next step while timing overlaps when possible.",
+      "Finish with soy sauce.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "tofuScramble": {
     "ingredients": [
       "150 g firm tofu",
       "Turmeric, onion, peppers",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Crumble tofu with hands.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté onion and peppers; add tofu and turmeric.",
-      "Cook 5 min until heated through."
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
+      "Cook 5 min until heated through.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "trailMixFruit": {
     "ingredients": [
       "25 g trail mix",
-      "1 seasonal fruit"
+      "1 seasonal fruit",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Portion trail mix.",
-      "Serve with washed fresh fruit."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with washed fresh fruit.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "tunaNicoise": {
@@ -1501,24 +3330,53 @@
       "1 can tuna in water",
       "Boiled egg, green beans",
       "Lettuce, olives",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Arrange lettuce on a plate.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add tuna, egg halves, beans and olives.",
-      "Dress with olive oil and lemon."
+      "Continue to the next step while timing overlaps when possible.",
+      "Dress with olive oil and lemon.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "tunaNoodleLight": {
     "ingredients": [
       "1 can tuna in water",
       "60 g whole-wheat pasta",
-      "Peas, light mayo 1 tbsp"
+      "Peas, light mayo 1 tbsp",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook pasta; cool slightly.",
+      "Continue to the next step while timing overlaps when possible.",
       "Mix with drained tuna, peas and mayo.",
-      "Chill 15 min before serving."
+      "Continue to the next step while timing overlaps when possible.",
+      "Chill 15 min before serving.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 10,
+    "cookMinutes": 20,
+    "tips": [
+      "Salt pasta water generously — it should taste like mild seawater.",
+      "Save pasta water: starch helps sauce cling to noodles."
     ]
   },
   "tunaSaladWholeGrain": {
@@ -1526,12 +3384,26 @@
       "1 can tuna",
       "1 tbsp Greek yogurt",
       "Celery, onion",
-      "2 slices whole-grain bread"
+      "2 slices whole-grain bread",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix tuna with yogurt, celery and onion.",
+      "Continue to the next step while timing overlaps when possible.",
       "Season with pepper.",
-      "Serve on bread or as open sandwich."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve on bread or as open sandwich.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "turkeyBaconScramble": {
@@ -1539,12 +3411,27 @@
       "2 eggs",
       "2 slices turkey bacon",
       "30 g spinach",
-      "Black pepper"
+      "Black pepper",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook bacon until crisp; chop.",
+      "Continue to the next step while timing overlaps when possible.",
       "Scramble eggs with spinach.",
-      "Fold in bacon; season."
+      "Continue to the next step while timing overlaps when possible.",
+      "Fold in bacon; season.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "turkeyChili": {
@@ -1552,12 +3439,29 @@
       "150 g ground turkey",
       "1 can kidney beans",
       "Tomatoes, chili powder",
-      "Onion, bell pepper"
+      "Onion, bell pepper",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Brown turkey with onion and pepper.",
+      "Continue to the next step while timing overlaps when possible.",
       "Add beans, tomatoes and chili powder.",
-      "Simmer 20 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
+      "Simmer 20 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "turkeyMeatballsZucchini": {
@@ -1565,12 +3469,30 @@
       "150 g ground turkey",
       "1 zucchini (spiralized)",
       "Tomato sauce",
-      "Italian herbs"
+      "Italian herbs",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Form and bake turkey meatballs 15 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté zucchini noodles 2 min.",
-      "Serve meatballs and sauce over zoodles."
+      "Stir or flip occasionally so nothing burns on the bottom.",
+      "Serve meatballs and sauce over zoodles.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "turkeyMeatloafSlice": {
@@ -1578,12 +3500,31 @@
       "150 g lean ground turkey",
       "Oats, egg white",
       "Onion, herbs",
-      "Low-sodium ketchup"
+      "Low-sodium ketchup",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix turkey with binders and herbs.",
+      "Continue to the next step while timing overlaps when possible.",
       "Shape loaf; top with ketchup.",
-      "Bake at 180 °C for 30 min; slice one portion."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 180 °C for 30 min; slice one portion.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "turkeyVegetableSoup": {
@@ -1591,24 +3532,57 @@
       "100 g turkey breast",
       "1 carrot, celery, onion",
       "500 ml low-sodium broth",
-      "Herbs"
+      "Herbs",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Dice vegetables; simmer in broth 10 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Add diced turkey; cook 10 min more.",
-      "Season with herbs; serve hot."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Season with herbs; serve hot.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 30,
+    "tips": [
+      "Skim foam from the surface in the first 5 minutes for a clearer broth.",
+      "Cool soup quickly before refrigerating in shallow containers."
     ]
   },
   "turkeyVeggiePlate": {
     "ingredients": [
       "120 g turkey breast",
       "200 g mixed vegetables",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Grill or roast turkey.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
       "Steam or roast half a plate of vegetables.",
-      "Serve together with a drizzle of oil."
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Serve together with a drizzle of oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "tzatzikiCucumber": {
@@ -1616,22 +3590,49 @@
       "100 g Greek yogurt",
       "Half cucumber, diced",
       "Garlic, dill",
-      "Mini pita (optional)"
+      "Mini pita (optional)",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Mix yogurt with cucumber, garlic and dill.",
+      "Continue to the next step while timing overlaps when possible.",
       "Chill 10 min.",
-      "Serve in cucumber cups or with pita."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve in cucumber cups or with pita.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "unsaltedNutsApple": {
     "ingredients": [
       "1 apple",
-      "20 g unsalted mixed nuts"
+      "20 g unsalted mixed nuts",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Slice apple.",
-      "Serve with nuts as a snack."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve with nuts as a snack.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 5,
+    "cookMinutes": 0,
+    "tips": [
+      "Portion snacks into small bowls to avoid mindless overeating.",
+      "Pair fruit with protein (nuts, yogurt) for longer satiety."
     ]
   },
   "vegetableLasagnaLight": {
@@ -1639,12 +3640,31 @@
       "Whole-wheat lasagna sheets",
       "Zucchini, spinach",
       "Ricotta 60 g",
-      "Tomato sauce"
+      "Tomato sauce",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Layer sheets, vegetables, ricotta and sauce.",
+      "Continue to the next step while timing overlaps when possible.",
       "Repeat once.",
-      "Bake at 180 °C for 30 min; serve one portion."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 180 °C for 30 min; serve one portion.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Let the dish rest 2–3 minutes off the heat so juices redistribute before serving.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 25,
+    "tips": [
+      "Preheat the oven fully before baking — uneven heat causes dry edges.",
+      "Use a thermometer for poultry and fish if unsure about doneness."
     ]
   },
   "veggieBeanChili": {
@@ -1652,12 +3672,29 @@
       "120 g kidney beans",
       "Tomatoes, bell pepper",
       "Chili powder",
-      "Cumin"
+      "Cumin",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Heat oil in a non-stick pan over medium heat until shimmering (about 1 minute).",
       "Sauté pepper 5 min.",
+      "Stir or flip occasionally so nothing burns on the bottom.",
       "Add beans, tomatoes and spices.",
-      "Simmer 20 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
+      "Simmer 20 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "veggieEggMuffins": {
@@ -1665,12 +3702,30 @@
       "3 eggs",
       "Bell pepper, spinach",
       "30 g cheese",
-      "Muffin tin"
+      "Muffin tin",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Whisk eggs with diced vegetables.",
+      "Continue to the next step while timing overlaps when possible.",
       "Pour into greased muffin cups.",
-      "Bake at 180 °C for 18–20 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Preheat the oven to the temperature in the recipe while you prep ingredients.",
+      "Place food in a single layer on a lined baking sheet or oven-safe dish for even cooking.",
+      "Bake at 180 °C for 18–20 min.",
+      "Rotate the tray halfway through if your oven heats unevenly.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "veggieThaiCurry": {
@@ -1678,12 +3733,28 @@
       "Mixed vegetables 250 g",
       "2 tbsp red curry paste",
       "200 ml light coconut milk",
-      "Basil"
+      "Basil",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer paste with coconut milk 5 min.",
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Add vegetables; cook 12 min.",
-      "Finish with basil."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Finish with basil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 10,
+    "tips": [
+      "Keep heat medium-low for creamy eggs; high heat makes them rubbery.",
+      "Whisk eggs just before cooking — not much earlier."
     ]
   },
   "whiteBeanArugula": {
@@ -1692,22 +3763,50 @@
       "Arugula",
       "Cherry tomatoes",
       "1 tbsp olive oil",
-      "Lemon"
+      "Lemon",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Warm beans slightly.",
+      "Continue to the next step while timing overlaps when possible.",
       "Toss with arugula and halved tomatoes.",
-      "Dress with oil and lemon."
+      "Continue to the next step while timing overlaps when possible.",
+      "Dress with oil and lemon.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "wholeGrainCerealMilk": {
     "ingredients": [
       "40 g whole-grain cereal",
-      "150 ml milk"
+      "150 ml milk",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Pour cereal into a bowl.",
-      "Add cold milk and serve."
+      "Continue to the next step while timing overlaps when possible.",
+      "Add cold milk and serve.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 12,
+    "cookMinutes": 20,
+    "tips": [
+      "Taste as you cook and adjust seasoning gradually.",
+      "Leftovers reheat best gently with a splash of water or broth."
     ]
   },
   "wholeGrainTurkeySandwich": {
@@ -1715,24 +3814,54 @@
       "2 slices whole-grain bread",
       "80 g sliced turkey",
       "Lettuce, tomato",
-      "1 tsp mustard"
+      "1 tsp mustard",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
-      "Toast bread lightly.",
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Preheat a toaster or dry skillet over medium heat.",
+      "Toast bread until golden and crisp on both sides, 2–3 minutes per side if using a pan.",
       "Layer turkey, lettuce and tomato.",
-      "Spread mustard; cut in half."
+      "Continue to the next step while timing overlaps when possible.",
+      "Spread mustard; cut in half.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "wholeWheatPastaMarinara": {
     "ingredients": [
       "80 g whole-wheat pasta",
       "150 g marinara sauce",
-      "Garlic, basil"
+      "Garlic, basil",
+      "Salt and black pepper to taste",
+      "1–2 tsp olive oil (or cooking spray)"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook pasta al dente.",
+      "Continue to the next step while timing overlaps when possible.",
       "Heat marinara with garlic.",
-      "Toss pasta with sauce and basil."
+      "Continue to the next step while timing overlaps when possible.",
+      "Combine components gently so textures stay distinct (do not over-stir delicate greens).",
+      "Toss pasta with sauce and basil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "wholeWheatPastaTomato": {
@@ -1740,23 +3869,52 @@
       "80 g whole-wheat pasta",
       "200 g canned tomatoes",
       "Garlic, basil",
-      "1 tsp olive oil"
+      "1 tsp olive oil",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Cook pasta al dente.",
+      "Continue to the next step while timing overlaps when possible.",
+      "Reduce heat to low or medium-low once liquid is bubbling gently.",
       "Simmer tomatoes with garlic and basil 10 min.",
-      "Toss pasta with sauce and a drizzle of oil."
+      "Partially cover the pot if liquid reduces too quickly; stir every few minutes.",
+      "Combine components gently so textures stay distinct (do not over-stir delicate greens).",
+      "Toss pasta with sauce and a drizzle of oil.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve chilled or at room temperature. Store leftovers in a sealed container up to 2 days."
+    ],
+    "prepMinutes": 15,
+    "cookMinutes": 0,
+    "tips": [
+      "Dress salads right before eating so greens stay crisp.",
+      "Dry lettuce well — dressing slides off wet leaves."
     ]
   },
   "yogurtParfaitGranola": {
     "ingredients": [
       "150 g yogurt",
       "40 g granola",
-      "Mixed berries"
+      "Mixed berries",
+      "Salt and black pepper to taste"
     ],
     "steps": [
+      "Gather all ingredients, measuring cups, and the pans you will need before you start.",
+      "Wash fresh produce under cold water and pat proteins dry with paper towels.",
+      "Prepare ingredients as listed: chop, measure, and set near the stove.",
       "Layer yogurt, granola and berries.",
-      "Serve immediately or chill 10 min."
+      "Continue to the next step while timing overlaps when possible.",
+      "Serve immediately or chill 10 min.",
+      "Taste and adjust seasoning with salt, pepper, or acid (lemon/vinegar) if needed.",
+      "Serve immediately while hot and fresh for the best texture and flavor."
+    ],
+    "prepMinutes": 8,
+    "cookMinutes": 12,
+    "tips": [
+      "Use thick Greek yogurt for more protein and creaminess.",
+      "Prep overnight oats in a jar with a lid for grab-and-go mornings."
     ]
   }
 }

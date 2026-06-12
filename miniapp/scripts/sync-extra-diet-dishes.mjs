@@ -6,6 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { EXTRA_DISH_NAMES, EXTRA_DISH_RECIPES, EXTRA_DISH_PHOTO_COPY_FROM } from "./extra-diet-dishes.mjs";
+import { enrichRecipe } from "./recipe-enricher.mjs";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dishesDir = path.join(root, "public/dishes");
@@ -24,8 +25,9 @@ mergeJson("src/locales/dishNames.ru.json", EXTRA_DISH_NAMES.ru);
 const recipesEn = {};
 const recipesRu = {};
 for (const [id, data] of Object.entries(EXTRA_DISH_RECIPES)) {
-  recipesEn[id] = data.en;
-  recipesRu[id] = data.ru;
+  const rich = enrichRecipe(id, data);
+  recipesEn[id] = rich.en;
+  recipesRu[id] = rich.ru;
 }
 mergeJson("src/locales/dishRecipes.en.json", recipesEn);
 mergeJson("src/locales/dishRecipes.ru.json", recipesRu);

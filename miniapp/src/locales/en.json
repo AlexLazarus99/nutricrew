@@ -637,6 +637,9 @@
     "hideRecipe": "Hide",
     "ingredients": "Ingredients",
     "steps": "Steps",
+    "prepTime": "Prep: {{minutes}} min",
+    "cookTime": "Cook: {{minutes}} min",
+    "recipeTips": "Tips",
     "meals": {
       "breakfast": "Breakfast",
       "lunch": "Lunch",

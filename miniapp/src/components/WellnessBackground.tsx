@@ -1,7 +1,29 @@
 /** Soft organic shapes — wellness / nutrition mood (not gym-heavy). */
+function WaveLayer({ className, d }: { className: string; d: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 960 160"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <path d={d} fill="currentColor" />
+    </svg>
+  );
+}
+
+const WAVE_PATH =
+  "M0,72 C60,32 120,108 180,72 C240,36 300,108 360,72 C420,36 480,108 540,72 C600,36 660,108 720,72 C780,36 840,108 900,72 C930,56 960,88 960,72 L960,160 L0,160 Z";
+
+/** Soft organic shapes — wellness / nutrition mood (not gym-heavy). */
 export function WellnessBackground() {
   return (
     <div className="fitness-bg wellness-bg" aria-hidden="true">
+      <div className="wellness-waves">
+        <WaveLayer className="wellness-wave wellness-wave--sky" d={WAVE_PATH} />
+        <WaveLayer className="wellness-wave wellness-wave--mid" d={WAVE_PATH} />
+        <WaveLayer className="wellness-wave wellness-wave--front" d={WAVE_PATH} />
+      </div>
       <svg className="fitness-bg-svg" viewBox="0 0 480 900" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="wellness-bg-glow" x1="0" y1="0" x2="0" y2="1">
@@ -68,14 +90,6 @@ export function WellnessBackground() {
           <ellipse cx="32" cy="40" rx="22" ry="32" fill="currentColor" opacity="0.2" />
           <circle cx="32" cy="36" r="8" fill="currentColor" opacity="0.35" />
         </g>
-
-        {/* Gentle wave — hydration */}
-        <path
-          className="fitness-bg-fig wellness-bg-fig-4"
-          d="M0 520 Q120 480 240 520 T480 520 L480 560 L0 560 Z"
-          fill="currentColor"
-          opacity="0.08"
-        />
 
         {/* Apple silhouette */}
         <g className="fitness-bg-fig wellness-bg-fig-5" transform="translate(72 580)">
