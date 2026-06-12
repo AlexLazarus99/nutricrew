@@ -5,27 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0d1b2a">
-<title>Птичка-Чемпион · Healthy Bird Quest</title>
+<title>NutriRun · Healthy Bird Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap&subset=cyrillic,cyrillic-ext,latin,latin-ext" rel="stylesheet" />
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{
     width:100%;height:100%;overflow:hidden;
-    background:#0d1b2a;
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:#141a17;
+    font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
     touch-action:none;user-select:none;-webkit-user-select:none;
     overscroll-behavior:none;
+    -webkit-font-smoothing:antialiased;
   }
   #game{display:block;width:100vw;height:100vh;touch-action:none;}
   #loader{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
-    background:linear-gradient(160deg,#1a2a6c,#2a5298,#42b883);color:#fff;z-index:50;gap:18px;
+    background:linear-gradient(160deg,#1e2a24,#283530,#7ec4a0);color:#eef5f0;z-index:50;gap:18px;
   }
   #loader .dot{width:64px;height:64px;border-radius:50%;
     background:radial-gradient(circle at 35% 30%,#ffe082,#ffb300);
     box-shadow:0 8px 30px rgba(0,0,0,.35);animation:bob 1s ease-in-out infinite;}
-  #loader h1{font-size:20px;font-weight:800;letter-spacing:.5px;text-shadow:0 2px 8px rgba(0,0,0,.3);}
-  #loader p{font-size:13px;opacity:.85;}
+  #loader h1{font-family:"Fraunces",Georgia,serif;font-size:22px;font-weight:700;letter-spacing:.02em;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+  #loader p{font-size:13px;opacity:.85;font-weight:500;}
   @keyframes bob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.05)}}
   .hidden{display:none !important;}
 </style>
@@ -34,7 +38,7 @@
 <canvas id="game"></canvas>
 <div id="loader">
   <div class="dot"></div>
-  <h1>Птичка-Чемпион</h1>
+  <h1>NutriRun</h1>
   <p>Загрузка здорового приключения…</p>
 </div>
 
@@ -44,7 +48,7 @@
    ПТИЧКА-ЧЕМПИОН · HEALTHY BIRD QUEST
    Прогрессивная мини-игра для Telegram Mini App.
    Толстенькая птичка постепенно становится стройной, питаясь здоровой едой.
-   15 уровней: лес, пустыня, антарктика, подводный мир и мировые столицы.
+   Бесконечный полёт; новые локации открываются за пролёты (50, 70, 90…).
    Всё рисуется процедурно через Canvas API. Никаких внешних картинок.
    ========================================================================== */
 
@@ -78,6 +82,13 @@ function tgSendScore(score, level){
   if(!TG) return;
   try{ TG.sendData(JSON.stringify({event:'game_result', score, level})); }catch(e){}
 }
+function notifyParent(payload){
+  try{
+    if(window.parent && window.parent !== window){
+      window.parent.postMessage(Object.assign({ source:'nutrirun' }, payload), '*');
+    }
+  }catch(e){}
+}
 
 /* ----------------------------- Canvas setup ------------------------------ */
 const canvas = document.getElementById('game');
@@ -105,6 +116,12 @@ const rand  = (a,b)=> a+Math.random()*(b-a);
 const randi = (a,b)=> Math.floor(rand(a,b+1));
 const easeOut = t=> 1-Math.pow(1-t,3);
 const easeInOut = t=> t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+
+/* Typography — match NutriCrew miniapp */
+const FONT_SANS = '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif';
+const FONT_DISPLAY = '"Fraunces", Georgia, serif';
+function fontSans(px, weight){ return weight+' '+px+'px '+FONT_SANS; }
+function fontDisplay(px, weight){ return weight+' '+px+'px '+FONT_DISPLAY; }
 
 function rr(c,x,y,w,h,r){ // rounded rect path
   r = Math.min(r, w/2, h/2);
@@ -157,8 +174,7 @@ const SFX = {
 };
 
 /* ----------------------------- Level configs ----------------------------- */
-/* Each level: theme + palette. Difficulty scales with index.
-   foodGoal grows, speed grows, gap shrinks → progressive difficulty.       */
+/* Themes cycle forever; difficulty scales with level index. */
 const LEVELS = [
   { name:'Зелёный Лес',        theme:'forest',     sky:['#9be7ff','#cdf6c9'], ground:'#4caf50', accent:'#2e7d32' },
   { name:'Жаркая Пустыня',     theme:'desert',     sky:['#ffd27f','#ffe6a0'], ground:'#e0a458', accent:'#c97b3a' },
@@ -177,26 +193,68 @@ const LEVELS = [
   { name:'Дубай',              theme:'dubai',      sky:['#ffba8a','#ffd9b0'], ground:'#d9b483', accent:'#9c7a4a', landmark:'burj' },
 ];
 
+/* Пролёты для открытия следующего уровня: ур.2 → 50, ур.3 → 70, ур.4 → 90 … */
+function flightsToUnlockNext(unlockedCount){
+  return 50 + Math.max(0, unlockedCount - 1) * 20;
+}
+function cumulativeFlightsForLevel(levelIndex){
+  let sum = 0;
+  for(let i = 0; i < levelIndex; i++) sum += flightsToUnlockNext(i + 1);
+  return sum;
+}
+function computeUnlockedFromFlights(totalFlights){
+  let unlocked = 1, needed = 0;
+  while(true){
+    needed += flightsToUnlockNext(unlocked);
+    if(totalFlights >= needed) unlocked++;
+    else break;
+    if(unlocked > 500) break;
+  }
+  return unlocked;
+}
+function getLevel(idx){ return LEVELS[((idx % LEVELS.length) + LEVELS.length) % LEVELS.length]; }
+function levelLabel(idx){
+  const lv = getLevel(idx);
+  const cycle = Math.floor(idx / LEVELS.length);
+  return cycle > 0 ? lv.name + ' · ' + (cycle + 1) : lv.name;
+}
 function levelParams(idx){
-  // idx: 0..14
-  const t = idx/(LEVELS.length-1);
+  const t = 1 - Math.exp(-idx / 14);
   return {
-    speed:   lerp(150, 280, t),                 // px/s scroll speed
-    gap:     lerp(0.40, 0.27, t) ,              // gap as fraction of H
-    spacing: lerp(2.4, 1.7, t),                 // seconds between obstacle pairs
-    goal:    Math.round(lerp(7, 16, t)),        // healthy foods to collect
-    junkChance: lerp(0.12, 0.34, t),            // chance a food item is junk
-    fat:     1 - t                              // bird fitness target (1 chubby → 0 slim)
+    speed:   lerp(150, 300, t),
+    gap:     lerp(0.40, 0.24, t),
+    spacing: lerp(2.4, 1.55, t),
+    junkChance: lerp(0.12, 0.36, t),
+    fat:     clamp(1 - t, 0.05, 1)
   };
 }
 
 /* --------------------------- Persistent storage -------------------------- */
-const STORE_KEY = 'healthy_bird_progress_v1';
+const STORE_KEY = 'healthy_bird_progress_v2';
 function loadProgress(){
-  try{ const r = JSON.parse(localStorage.getItem(STORE_KEY)); if(r&&typeof r==='object') return r; }catch(e){}
-  return { unlocked:1, best:0, totalFood:0 };
+  try{
+    const r = JSON.parse(localStorage.getItem(STORE_KEY));
+    if(r && typeof r === 'object'){
+      r.totalFlights = r.totalFlights || 0;
+      r.unlocked = Math.max(1, computeUnlockedFromFlights(r.totalFlights));
+      return r;
+    }
+    const legacy = JSON.parse(localStorage.getItem('healthy_bird_progress_v1'));
+    if(legacy && typeof legacy === 'object'){
+      return {
+        unlocked: legacy.unlocked || 1,
+        best: legacy.best || 0,
+        totalFood: legacy.totalFood || 0,
+        totalFlights: 0
+      };
+    }
+  }catch(e){}
+  return { unlocked:1, best:0, totalFood:0, totalFlights:0 };
 }
-function saveProgress(p){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(p)); }catch(e){} }
+function saveProgress(p){
+  p.unlocked = Math.max(p.unlocked || 1, computeUnlockedFromFlights(p.totalFlights || 0));
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(p)); }catch(e){}
+}
 let progress = loadProgress();
 
 /* ------------------------------- Particles ------------------------------- */
@@ -240,7 +298,10 @@ function drawParticles(c){
     c.translate(p.x,p.y);
     c.rotate(p.rot);
     c.fillStyle = p.color;
-    if(p.shape==='rect'){
+    if(p.shape==='wind'){
+      c.strokeStyle=p.color; c.lineWidth=2; c.lineCap='round';
+      c.beginPath(); c.moveTo(-p.size/2,0); c.lineTo(p.size/2,0); c.stroke();
+    }else if(p.shape==='rect'){
       c.fillRect(-p.size/2,-p.size/2,p.size,p.size*0.6);
     }else if(p.shape==='star'){
       drawStar(c,0,0,p.size,p.size*0.45,5);
@@ -262,6 +323,87 @@ function drawStar(c,cx,cy,outer,inner,points){
   c.closePath();
 }
 
+/* --------------------------- Eat / flap VFX ------------------------------ */
+const floatTexts = [];
+const eatRings = [];
+const FOOD_COLORS = {
+  apple:'#e53935', banana:'#ffd54f', carrot:'#fb8c00', broccoli:'#43a047',
+  strawberry:'#e53935', cherry:'#d32f2f', grapes:'#8e24aa', watermelon:'#e53935',
+  pepper:'#43a047', kiwi:'#8bc34a'
+};
+function addFloatText(x,y,text,color,scale){
+  floatTexts.push({x,y,text,color,life:1,vy:-95,scale:scale||1});
+}
+function spawnEatBurst(x,y,type){
+  const col = FOOD_COLORS[type] || '#aeea00';
+  eatRings.push({x,y,r:8,life:1,color:col});
+  burst(x,y,col,22,200);
+  for(let i=0;i<14;i++){
+    const a=rand(0,TAU), s=rand(80,220);
+    spawnParticle(x,y,{vx:Math.cos(a)*s,vy:Math.sin(a)*s-50,color:col,size:rand(3,8),decay:rand(1.2,2.2),shape:Math.random()<0.5?'star':'circle',g:180});
+  }
+  for(let i=0;i<8;i++){
+    spawnParticle(x,y,{vx:rand(-40,40),vy:rand(-160,-60),color:'#fff59d',size:rand(2,5),decay:1.8,shape:'star',g:120});
+  }
+  addFloatText(x,y-12,'+10','#aeea00',1.2);
+  addFloatText(x,y+8,'🥗','#fff',0.9);
+}
+function spawnFlapBurst(b){
+  const perk = getBirdSpec().perk;
+  const windCol = perk==='ember' ? 'rgba(255,138,101,' : perk==='storm' ? 'rgba(255,241,118,' : perk==='neon' ? 'rgba(234,128,252,' : 'rgba(255,255,255,';
+  for(let i=0;i<10;i++){
+    spawnParticle(b.x-b.r*0.4, b.y+rand(-10,14), {
+      vx:rand(-200,-90), vy:rand(-35,45), g:60,
+      color: windCol + rand(0.35,0.75) + ')',
+      size:rand(10,26), decay:rand(2.5,4), shape:'wind', rot:rand(-0.2,0.2), spin:0
+    });
+  }
+  const sparkCols = perk==='ember' ? ['#ff7043','#ffca28','#ff5722'] : perk==='frost' ? ['#e1f5fe','#b3e5fc','#fff'] : perk==='neon' ? ['#ea80fc','#26c6da','#fff'] : perk==='royal' ? ['#ffd54f','#fff59d','#fff'] : perk==='storm' ? ['#ffee58','#b39ddb','#fff'] : ['#b2ebf2','#e0f7fa','#fff'];
+  for(let i=0;i<6;i++){
+    spawnParticle(b.x-b.r*0.2, b.y+rand(-6,10), {
+      vx:rand(-120,-50), vy:rand(-20,30), g:140,
+      color: sparkCols[randi(0,2)],
+      size:rand(2,5), decay:rand(1.8,2.8), shape: perk==='royal'||perk==='ember' ? 'star' : 'circle'
+    });
+  }
+}
+function updateFloatTexts(dt){
+  for(let i=floatTexts.length-1;i>=0;i--){
+    const t=floatTexts[i];
+    t.y += t.vy*dt; t.vy *= 0.96; t.life -= dt*1.4;
+    if(t.life<=0) floatTexts.splice(i,1);
+  }
+  for(let i=eatRings.length-1;i>=0;i--){
+    const r=eatRings[i];
+    r.r += 180*dt; r.life -= dt*1.8;
+    if(r.life<=0) eatRings.splice(i,1);
+  }
+}
+function drawEatRings(c){
+  for(const r of eatRings){
+    c.save();
+    c.globalAlpha = clamp(r.life,0,1)*0.55;
+    c.strokeStyle = r.color;
+    c.lineWidth = 3;
+    c.beginPath(); c.arc(r.x,r.y,r.r,0,TAU); c.stroke();
+    c.restore();
+  }
+}
+function drawFloatTexts(c){
+  for(const t of floatTexts){
+    c.save();
+    c.globalAlpha = clamp(t.life,0,1);
+    const sc = t.scale * (1 + (1-t.life)*0.15);
+    c.translate(t.x,t.y);
+    c.scale(sc,sc);
+    c.fillStyle = t.color;
+    c.font = fontSans(18,'800');
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText(t.text,0,0);
+    c.restore();
+  }
+}
+
 /* ------------------------------ Game state ------------------------------- */
 const STATE = { MENU:'menu', LEVELS:'levels', PLAY:'play', COMPLETE:'complete', OVER:'over', WIN:'win' };
 let state = STATE.MENU;
@@ -272,18 +414,30 @@ const game = {
   bird:null,
   obstacles:[], foods:[],
   spawnTimer:0, distance:0,
-  foodCollected:0, score:0, lives:3, invuln:0,
+  foodCollected:0, flightsPassed:0, score:0, lives:3, invuln:0,
   displayFat:1, targetFat:1,
   shake:0, flashColor:null, flashTime:0,
-  intro:0, // countdown / intro timer
+  intro:0,
+  unlockBanner:null,
+  combo:0, comboTimer:0, multiplier:1,
+  shieldTime:0, magnetTime:0, slowmoTime:0,
+  thermals:[], thermalTimer:8,
+  nearMissCd:0, speedMult:1,
+};
+const POWER = {
+  shield:{ label:'Щит', color:'#64b5f6', dur:5 },
+  magnet:{ label:'Магнит', color:'#ba68c8', dur:6 },
+  slowmo:{ label:'Замедление', color:'#4dd0e1', dur:4 },
+  golden:{ label:'Золотой бонус', color:'#ffd54f', dur:0 }
 };
 
 /* Bird object factory */
 function makeBird(){
   return {
     x: W*0.30, y: H*0.45, vy:0,
-    r: 30, wing:0, blink:0, blinkTimer:rand(1.5,4),
-    tilt:0, eat:0, happy:0
+    r: 30, wing:0, flapBoost:0, bodySquash:1,
+    blink:0, blinkTimer:rand(1.5,4),
+    tilt:0, eat:0, eatPop:0, happy:0
   };
 }
 
@@ -310,31 +464,248 @@ function handleDown(px,py){
 }
 function flap(){
   if(!game.bird) return;
-  game.bird.vy = -360;
-  game.bird.wing = 1;
+  const b = game.bird;
+  b.vy = -360;
+  b.wing = 1;
+  b.flapBoost = 1;
+  b.bodySquash = 0.82;
   SFX.flap();
   haptic('light');
-  for(let i=0;i<4;i++) spawnParticle(game.bird.x-14, game.bird.y+10, {vx:rand(-30,-90),vy:rand(-10,40),g:120,color:'rgba(255,255,255,0.7)',size:rand(2,4),decay:2.5,shape:'circle'});
+  spawnFlapBurst(b);
 }
 canvas.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.changedTouches[0]; const r=canvas.getBoundingClientRect(); handleDown(t.clientX-r.left, t.clientY-r.top); }, {passive:false});
 canvas.addEventListener('touchend', e=>{ e.preventDefault(); pointer.down=false; }, {passive:false});
 canvas.addEventListener('mousedown', e=>{ const r=canvas.getBoundingClientRect(); handleDown(e.clientX-r.left, e.clientY-r.top); });
 canvas.addEventListener('mouseup', ()=>{ pointer.down=false; });
+window.addEventListener('keyup', e=>{
+  if(e.code==='Space'||e.code==='ArrowUp') pointer.down=false;
+});
 window.addEventListener('keydown', e=>{
-  if(e.code==='Space'||e.code==='ArrowUp'){ e.preventDefault();
+  if(e.code==='Space'||e.code==='ArrowUp'){
+    e.preventDefault();
+    pointer.down=true;
     if(state===STATE.PLAY && game.intro<=0) flap();
     else handleDown(W/2,H/2);
   }
 });
 
+function addScore(pts, label, x, y){
+  const mult = game.multiplier;
+  const gain = Math.round(pts * mult);
+  game.score += gain;
+  progress.best = Math.max(progress.best, game.score);
+  if(label) addFloatText(x||game.bird.x, y||game.bird.y-30, label+(mult>1?' x'+mult.toFixed(1):''), mult>1?'#ffd54f':'#eef5f0', mult>1?1.15:1);
+}
+function bumpCombo(){
+  game.combo++;
+  game.comboTimer = 4;
+  game.multiplier = Math.min(maxComboMult(), 1 + Math.floor(game.combo / 4) * 0.5);
+}
+function resetCombo(){
+  game.combo = 0;
+  game.comboTimer = 0;
+  game.multiplier = 1;
+}
+function activatePower(kind){
+  const p = POWER[kind];
+  if(!p) return;
+  if(kind==='golden'){
+    addScore(50, '+50★', game.bird.x, game.bird.y-40);
+    game.magnetTime = Math.max(game.magnetTime, 4);
+    game.shieldTime = Math.max(game.shieldTime, 3);
+    burst(game.bird.x, game.bird.y, '#ffd54f', 28, 240);
+    SFX.level();
+    return;
+  }
+  if(kind==='shield') game.shieldTime = p.dur + (getBirdSpec().perk === 'frost' ? 1.5 : 0);
+  if(kind==='magnet') game.magnetTime = p.dur;
+  if(kind==='slowmo') game.slowmoTime = p.dur;
+  addFloatText(game.bird.x, game.bird.y-36, p.label+'!', p.color, 1.05);
+  SFX.eat();
+  haptic('medium');
+}
+function powerFromFood(type){
+  if(type==='broccoli') return 'shield';
+  if(type==='grapes') return 'magnet';
+  if(type==='kiwi') return 'slowmo';
+  return null;
+}
+function spawnThermal(){
+  game.thermals.push({
+    x: W + rand(40, 120),
+    y: rand(H*0.18, H*0.58),
+    w: rand(70, 110),
+    h: rand(90, 150),
+    phase: rand(0, TAU)
+  });
+}
+function drawThermals(c){
+  for(const t of game.thermals){
+    c.save();
+    const pulse = 0.55 + 0.45*Math.sin(game.t*2.2 + t.phase);
+    c.globalAlpha = 0.22 * pulse;
+    const g = c.createLinearGradient(t.x, t.y+t.h, t.x, t.y);
+    g.addColorStop(0, 'rgba(255,255,255,0)');
+    g.addColorStop(0.5, 'rgba(255,255,255,0.55)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = g;
+    c.beginPath();
+    c.moveTo(t.x, t.y+t.h);
+    c.quadraticCurveTo(t.x+t.w*0.55, t.y+t.h*0.35, t.x+t.w, t.y);
+    c.lineTo(t.x+t.w*0.7, t.y);
+    c.quadraticCurveTo(t.x+t.w*0.2, t.y+t.h*0.4, t.x, t.y+t.h);
+    c.fill();
+    c.strokeStyle = 'rgba(255,255,255,0.35)';
+    c.lineWidth = 1.5;
+    for(let i=0;i<3;i++){
+      const lx = t.x + t.w*0.25 + i*t.w*0.22;
+      c.beginPath();
+      c.moveTo(lx, t.y+t.h);
+      c.quadraticCurveTo(lx+8, t.y+t.h*0.45, lx+4, t.y+12);
+      c.stroke();
+    }
+    c.restore();
+  }
+}
+function drawShieldBubble(c, b){
+  if(game.shieldTime<=0) return;
+  c.save();
+  c.globalAlpha = 0.35 + 0.15*Math.sin(game.t*8);
+  c.strokeStyle = '#64b5f6';
+  c.lineWidth = 3;
+  c.fillStyle = 'rgba(100,181,246,0.12)';
+  const rr = b.r * (1.1 + game.displayFat*0.25);
+  c.beginPath(); c.arc(0, 0, rr, 0, TAU); c.fill(); c.stroke();
+  c.restore();
+}
+function drawPowerIcons(c){
+  const icons = [];
+  if(game.shieldTime>0) icons.push({t:game.shieldTime, icon:'🛡', col:'#64b5f6'});
+  if(game.magnetTime>0) icons.push({t:game.magnetTime, icon:'🧲', col:'#ba68c8'});
+  if(game.slowmoTime>0) icons.push({t:game.slowmoTime, icon:'⏱', col:'#4dd0e1'});
+  let x = W - 18;
+  const y = H*0.80 - 42 - safeBottom();
+  for(const ic of icons){
+    c.save();
+    c.textAlign='right'; c.textBaseline='middle';
+    c.font = fontSans(11,'600');
+    c.fillStyle = ic.col;
+    c.fillText(ic.icon+' '+Math.ceil(ic.t)+'с', x, y);
+    x -= 72;
+    c.restore();
+  }
+}
+function checkNearMiss(b, o){
+  if(o.passed || game.nearMissCd>0) return;
+  const bx = b.x, by = b.y, br = b.r*0.78;
+  if(o.x > bx+br+8 || o.x+o.w < bx-br-8) return;
+  const gapTop = o.gapY, gapBot = o.gapY+o.gapH;
+  const margin = 14;
+  const nearTop = by-br < gapTop+margin && by+br > gapTop-margin && bx > o.x-10 && bx < o.x+o.w+10;
+  const nearBot = by+br > gapBot-margin && by-br < gapBot+margin && bx > o.x-10 && bx < o.x+o.w+10;
+  if(nearTop || nearBot){
+    game.nearMissCd = 1.2;
+    const riskPts = getBirdSpec().perk === 'storm' ? 8 : 5;
+    addScore(riskPts, 'Риск!', bx, by-24);
+    haptic('light');
+    burst(bx, by, '#ffca28', 8, 90);
+  }
+}
+
+/* ============================ BIRD SPECIES =============================== */
+let selectedBirdId = 'classic';
+let ownedBirdIds = ['classic'];
+const BIRD_SPECIES = {
+  classic: { perk:'classic', top:'#7fe0c0', bot:'#27a89a', wing:'#2bb6c4', tail:'#2bb6c4', beak:'#ffb300', cheek:'rgba(255,120,130,0.45)', eye:'#1a2a33' },
+  ember:   { perk:'ember',   top:'#ffccbc', bot:'#e64a19', wing:'#ff7043', tail:'#bf360c', beak:'#ffca28', cheek:'rgba(255,87,34,0.55)', eye:'#4e342e' },
+  frost:   { perk:'frost',   top:'#e1f5fe', bot:'#4fc3f7', wing:'#81d4fa', tail:'#0288d1', beak:'#ffd54f', cheek:'rgba(129,212,250,0.65)', eye:'#01579b' },
+  neon:    { perk:'neon',    top:'#f8bbd0', bot:'#26c6da', wing:'#ea80fc', tail:'#00bcd4', beak:'#ffeb3b', cheek:'rgba(234,128,252,0.5)', eye:'#311b92' },
+  royal:   { perk:'royal',   top:'#fff9c4', bot:'#9575cd', wing:'#ffd54f', tail:'#7e57c2', beak:'#ffb300', cheek:'rgba(255,213,79,0.55)', eye:'#4a148c' },
+  storm:   { perk:'storm',   top:'#fff59d', bot:'#5e35b1', wing:'#ffee58', tail:'#4527a0', beak:'#ffca28', cheek:'rgba(126,87,194,0.55)', eye:'#1a237e' }
+};
+function getBirdSpec(){ return BIRD_SPECIES[selectedBirdId] || BIRD_SPECIES.classic; }
+function maxComboMult(){ return getBirdSpec().perk === 'royal' ? 5 : 4; }
+function magnetRadius(){ return getBirdSpec().perk === 'neon' ? 155 : 120; }
+function applyRosterMessage(d){
+  if(!d || d.source !== 'nutricrew' || d.event !== 'roster') return;
+  if(d.selectedBirdId && BIRD_SPECIES[d.selectedBirdId]) selectedBirdId = d.selectedBirdId;
+  if(Array.isArray(d.ownedBirdIds)) ownedBirdIds = d.ownedBirdIds.filter(id => BIRD_SPECIES[id]);
+  try{ localStorage.setItem('nutrirun_bird', selectedBirdId); }catch(e){}
+}
+try{
+  const saved = localStorage.getItem('nutrirun_bird');
+  if(saved && BIRD_SPECIES[saved]) selectedBirdId = saved;
+}catch(e){}
+window.addEventListener('message', e => applyRosterMessage(e.data));
+
+function drawBirdSpeciesFx(c, spec, b, fat, time, bodyW, bodyH){
+  const perk = spec.perk;
+  if(perk === 'ember'){
+    c.save(); c.globalAlpha = 0.35 + 0.2*Math.sin(time*12);
+    const g = c.createRadialGradient(-bodyW*0.5, 0, 4, -bodyW*0.5, 0, bodyW*0.9);
+    g.addColorStop(0,'#ffab91'); g.addColorStop(1,'rgba(255,87,34,0)');
+    c.fillStyle = g; c.beginPath(); c.arc(-bodyW*0.45, 0, bodyW*0.75, 0, TAU); c.fill();
+    for(let i=0;i<3;i++){
+      const fy = Math.sin(time*14+i)*bodyH*0.2;
+      c.fillStyle = ['#ff7043','#ffca28','#ff5722'][i];
+      c.beginPath(); c.ellipse(-bodyW*(1.1+i*0.08), fy, bodyW*0.12, bodyH*0.2, -0.4, 0, TAU); c.fill();
+    }
+    c.restore();
+  } else if(perk === 'frost'){
+    c.save(); c.globalAlpha = 0.5;
+    c.strokeStyle = '#e1f5fe'; c.lineWidth = 2;
+    for(let i=0;i<5;i++){
+      const a = time*1.8 + i*TAU/5;
+      const sx = Math.cos(a)*bodyW*0.75, sy = Math.sin(a)*bodyH*0.55;
+      c.beginPath(); c.moveTo(sx, sy); c.lineTo(sx*1.15, sy*1.15); c.stroke();
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(sx*1.18, sy*1.18, 3, 0, TAU); c.fill();
+    }
+    if(pointer.down){
+      c.globalAlpha = 0.25; c.fillStyle = '#b3e5fc';
+      c.beginPath(); c.ellipse(bodyW*0.9, 0, bodyW*0.35, bodyH*0.2, 0, 0, TAU); c.fill();
+    }
+    c.restore();
+  } else if(perk === 'neon'){
+    c.save(); c.globalAlpha = 0.22 + 0.12*Math.sin(time*8);
+    c.strokeStyle = '#ea80fc'; c.lineWidth = 3;
+    c.beginPath(); c.ellipse(0, 0, bodyW*1.05, bodyH*1.02, 0, 0, TAU); c.stroke();
+    c.strokeStyle = '#26c6da';
+    c.beginPath(); c.ellipse(0, 0, bodyW*1.18, bodyH*1.12, 0, 0, TAU); c.stroke();
+    c.restore();
+  } else if(perk === 'royal'){
+    c.save();
+    c.fillStyle = '#ffd54f'; c.strokeStyle = '#f9a825'; c.lineWidth = 1.5;
+    const cx = bodyW*0.22, cy = -bodyH*0.88;
+    for(let i=-2;i<=2;i++){
+      c.beginPath(); c.moveTo(cx+i*bodyW*0.14, cy+bodyH*0.12);
+      c.lineTo(cx+i*bodyW*0.14 - bodyW*0.05, cy-bodyH*0.2); c.lineTo(cx+i*bodyW*0.14 + bodyW*0.05, cy-bodyH*0.2); c.fill();
+    }
+    c.fillStyle = '#ffeb3b'; c.fillRect(cx-bodyW*0.32, cy+bodyH*0.08, bodyW*0.64, bodyH*0.1);
+    c.restore();
+  } else if(perk === 'storm'){
+    if(b.flapBoost > 0.25){
+      c.save(); c.globalAlpha = b.flapBoost*0.85; c.strokeStyle = '#ffee58'; c.lineWidth = 2.5; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(-bodyW*0.3, -bodyH*0.2);
+      c.lineTo(-bodyW*0.7, -bodyH*0.45); c.lineTo(-bodyW*0.5, -bodyH*0.05); c.lineTo(-bodyW*1.0, bodyH*0.1); c.stroke();
+      c.strokeStyle = '#b39ddb';
+      c.beginPath(); c.moveTo(-bodyW*0.2, bodyH*0.1); c.lineTo(-bodyW*0.55, bodyH*0.35); c.stroke();
+      c.restore();
+    }
+  }
+}
+
 /* ============================ DRAWING: BIRD =============================== */
-/* fat: 1 = chubby, 0 = slim. Smoothly morphs body shape & color.            */
 function drawBird(c, b, fat, time){
-  const flap = Math.sin(time*10)*0.5+0.5;
-  const wingUp = b.wing;
+  const spec = getBirdSpec();
+  const idleFlap = Math.sin(time*10)*0.5+0.5;
+  const wingUp = Math.max(b.wing, b.flapBoost*0.85);
+  const flap = wingUp > 0.25 ? wingUp : idleFlap;
+  const eatScale = 1 + (b.eatPop||0)*0.12;
+  const squash = b.bodySquash || 1;
   c.save();
   c.translate(b.x, b.y);
   c.rotate(clamp(b.tilt,-0.5,0.9));
+  c.scale(eatScale/squash, squash/eatScale);
 
   const bodyW = b.r*(1.05 + 0.55*fat);
   const bodyH = b.r*(1.0 + 0.32*fat);
@@ -345,8 +716,7 @@ function drawBird(c, b, fat, time){
   c.beginPath(); c.ellipse(6, bodyH*0.95, bodyW*0.9, bodyH*0.32,0,0,TAU); c.fill();
   c.restore();
 
-  // Tail
-  const tailCol = shade('#2bb6c4', -20);
+  const tailCol = shade(spec.tail, -20);
   c.fillStyle = tailCol;
   c.beginPath();
   c.moveTo(-bodyW*0.7, 0);
@@ -355,13 +725,11 @@ function drawBird(c, b, fat, time){
   c.closePath(); c.fill();
 
   // Back wing (behind body)
-  drawWing(c, -bodyW*0.15, -2, bodyW*0.85, bodyH*0.9, -1, wingUp, flap, shade('#1f9aa8',-10));
+  drawWing(c, -bodyW*0.15, -2, bodyW*0.85, bodyH*0.9, -1, wingUp, flap, shade(spec.wing,-10));
 
-  // Body gradient
   const grad = c.createLinearGradient(0,-bodyH,0,bodyH);
-  // slimmer bird → cooler healthier teal/green; chubby → warmer
-  const top = mixColor('#7fe0c0','#43c6e0', 1-fat);
-  const bot = mixColor('#27a89a','#1f8fb0', 1-fat);
+  const top = mixColor(spec.top, shade(spec.top, 30), 1-fat);
+  const bot = mixColor(spec.bot, shade(spec.bot, -25), 1-fat);
   grad.addColorStop(0, top);
   grad.addColorStop(1, bot);
   c.fillStyle = grad;
@@ -375,11 +743,24 @@ function drawBird(c, b, fat, time){
   c.ellipse(bodyW*0.12, bodyH*0.28, bodyW*0.62, bodyH*0.6*(0.7+0.4*fat), 0,0,TAU);
   c.fill();
   // Cheek blush
-  c.fillStyle='rgba(255,120,130,0.45)';
+  c.fillStyle = spec.cheek;
   c.beginPath(); c.ellipse(bodyW*0.45, bodyH*0.12, bodyW*0.14, bodyH*0.10,0,0,TAU); c.fill();
 
+  // Happy sparkles after eating fruit
+  if((b.happy||0)>0.1){
+    c.save();
+    c.globalAlpha = clamp(b.happy,0,1)*0.9;
+    for(let i=0;i<4;i++){
+      const a = time*6 + i*TAU/4;
+      const sx = bodyW*0.55 + Math.cos(a)*bodyW*0.35;
+      const sy = -bodyH*0.35 + Math.sin(a)*bodyH*0.25;
+      drawStar(c,sx,sy,5,2.5,4); c.fillStyle='#fff59d'; c.fill();
+    }
+    c.restore();
+  }
+
   // Front wing
-  drawWing(c, bodyW*0.05, -bodyH*0.1, bodyW*0.95, bodyH*1.0, 1, wingUp, flap, '#2bb6c4');
+  drawWing(c, bodyW*0.05, -bodyH*0.1, bodyW*0.95, bodyH*1.0, 1, wingUp, flap, spec.wing);
 
   // Headband (sweatband) appears as bird gets fitter
   if(fat<0.7){
@@ -403,14 +784,15 @@ function drawBird(c, b, fat, time){
     c.strokeStyle='#1a1a1a'; c.lineWidth=2.5; c.beginPath();
     c.moveTo(eyeX-eyeR*0.8,eyeY); c.lineTo(eyeX+eyeR*0.8,eyeY); c.stroke();
   } else {
-    c.fillStyle='#1a2a33';
+    c.fillStyle = spec.eye;
     c.beginPath(); c.arc(eyeX+eyeR*0.18,eyeY+ (b.eat>0?eyeR*0.1:0), eyeR*0.55,0,TAU); c.fill();
     c.fillStyle='#fff';
     c.beginPath(); c.arc(eyeX+eyeR*0.05,eyeY-eyeR*0.18, eyeR*0.18,0,TAU); c.fill();
   }
 
-  // Beak
-  c.fillStyle='#ffb300';
+  drawBirdSpeciesFx(c, spec, b, fat, time, bodyW, bodyH);
+
+  c.fillStyle = spec.beak;
   const beakOpen = b.eat>0 ? 0.5*Math.sin(time*30)+0.5 : 0;
   c.beginPath();
   c.moveTo(bodyW*0.85, -bodyH*0.05);
@@ -434,13 +816,17 @@ function drawBird(c, b, fat, time){
     c.stroke();
   }
 
+  drawShieldBubble(c, b);
   c.restore();
 }
 function drawWing(c, x, y, w, h, dir, wingUp, flap, color){
   c.save();
   c.translate(x,y);
-  const a = (-0.5 + (wingUp*0.9 - flap*0.25))*dir;
-  c.rotate(a*0.6);
+  const boost = wingUp > 0.4 ? wingUp : 0;
+  const a = (-0.65 + (boost*1.15 + flap*0.35 - (1-boost)*flap*0.2))*dir;
+  const wingStretch = 1 + boost*0.18;
+  c.rotate(a*0.75);
+  c.scale(wingStretch, 1 - boost*0.12);
   c.fillStyle=color;
   c.beginPath();
   c.ellipse(dir*w*0.1, h*0.15, w*0.45, h*0.32, dir*0.3, 0, TAU);
@@ -525,6 +911,13 @@ function drawFood(c, type, x, y, r, t){
       c.fillStyle='#f1f8e9'; c.beginPath(); c.arc(0,0,r*0.22,0,TAU); c.fill();
       c.fillStyle='#33691e'; for(let i=0;i<10;i++){ const a=i/10*TAU; c.beginPath(); c.ellipse(Math.cos(a)*r*0.45,Math.sin(a)*r*0.45,r*0.04,r*0.08,a,0,TAU); c.fill(); }
       break; }
+    case 'golden': {
+      c.save(); c.globalAlpha=0.45+0.25*Math.sin(t*5); c.fillStyle='#fff59d';
+      c.beginPath(); c.arc(0,0,r*1.15,0,TAU); c.fill(); c.restore();
+      c.fillStyle='#ffc107'; c.beginPath(); c.arc(0,0,r*0.8,0,TAU); c.fill();
+      c.fillStyle='#ffeb3b'; c.font=fontSans(r*0.55,'700'); c.textAlign='center'; c.textBaseline='middle';
+      c.fillText('★',0,r*0.05);
+      break; }
     /* ---- JUNK ---- */
     case 'donut': {
       c.fillStyle='#8d6e63'; c.beginPath(); c.arc(0,0,r*0.85,0,TAU); c.fill();
@@ -546,7 +939,7 @@ function drawFood(c, type, x, y, r, t){
     case 'soda': {
       c.fillStyle='#d32f2f'; rr(c,-r*0.5,-r*0.8,r*1.0,r*1.6,r*0.12); c.fill();
       c.fillStyle='#fff'; c.beginPath(); c.ellipse(0,-r*0.1,r*0.32,r*0.5,0,0,TAU); c.fill();
-      c.fillStyle='#d32f2f'; c.font='bold '+(r*0.4)+'px sans-serif'; c.textAlign='center'; c.fillText('●',0,r*0.05);
+      c.fillStyle='#d32f2f'; c.font=fontSans(r*0.4,'700'); c.textAlign='center'; c.fillText('●',0,r*0.05);
       break; }
     case 'candy': {
       c.fillStyle='#ab47bc'; c.beginPath(); c.arc(0,0,r*0.55,0,TAU); c.fill();
@@ -912,25 +1305,49 @@ function obstacleColor(lv){
     default: return {main:shade(lv.accent,10), cap:shade(lv.accent,-20)};
   }
 }
+function onObstaclePassed(o){
+  const b = game.bird;
+  game.flightsPassed++;
+  progress.totalFlights = (progress.totalFlights || 0) + 1;
+  bumpCombo();
+  const gapMid = o.gapY + o.gapH*0.5;
+  const perfect = Math.abs(b.y - gapMid) < o.gapH*0.16;
+  addScore(perfect ? 8 : 2, perfect ? 'Идеально!' : null, b.x, b.y-20);
+  if(perfect){ burst(b.x, b.y, '#7ec4a0', 10, 100); haptic('light'); }
+  const prevUnlocked = progress.unlocked;
+  progress.unlocked = computeUnlockedFromFlights(progress.totalFlights);
+  if(progress.unlocked > prevUnlocked){
+    game.unlockBanner = { level: progress.unlocked, time: 3.2 };
+    SFX.level();
+    haptic('success');
+    confetti(W/2, H*0.35, 36);
+    addFloatText(W*0.5, H*0.28, 'Ур. '+progress.unlocked+' открыт!', '#7ec4a0', 1.1);
+  }
+  progress.best = Math.max(progress.best, game.score);
+  saveProgress(progress);
+}
 function spawnObstacle(){
   const p=game.params;
-  const lv=LEVELS[game.level];
+  const lv=getLevel(game.level);
   const gapH = H*p.gap;
   const minTop = H*0.10, maxTop = H*0.80 - gapH;
   const gapY = rand(minTop, Math.max(minTop+10,maxTop));
   const w = clamp(W*0.13, 56, 92);
   game.obstacles.push({ x:W+w, w, gapY, gapH, passed:false, kind:lv.theme });
-  // spawn food in the gap region (and sometimes outside)
-  const n = randi(1,2);
+  // spawn food in the gap region (more items for longer levels)
+  const n = randi(2, 4);
   for(let i=0;i<n;i++){
-    const junk = Math.random() < p.junkChance;
+    const junk = i>0 && Math.random() < p.junkChance;
     const list = junk?JUNK:HEALTHY;
-    const type = list[randi(0,list.length-1)];
+    let type = list[randi(0,list.length-1)];
+    let power = junk ? null : powerFromFood(type);
+    if(!junk && Math.random()<0.045){ type='golden'; power='golden'; }
     const fy = junk
-      ? (Math.random()<0.5 ? gapY - rand(20,60) : gapY+gapH + rand(20,60)) // junk often near edges
-      : gapY + rand(gapH*0.2, gapH*0.8);
-    game.foods.push({ x:W+w*0.5 + rand(-10,30) + i*40, y:clamp(fy,H*0.08,H*0.86), r:18, type, junk, taken:false, bob:rand(0,TAU) });
+      ? (Math.random()<0.5 ? gapY - rand(20,60) : gapY+gapH + rand(20,60))
+      : gapY + rand(gapH*0.15, gapH*0.85);
+    game.foods.push({ x:W+w*0.5 + rand(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: power?20:18, type, junk, power, taken:false, bob:rand(0,TAU) });
   }
+  if(Math.random()<0.14) spawnThermal();
 }
 function drawObstacle(c, o, lv){
   const col=obstacleColor(lv);
@@ -995,15 +1412,15 @@ function drawIceCol(c,x,y,w,h,top){
 /* ============================ HUD / OVERLAYS ============================= */
 let muteHotspot=null;
 function drawHUD(c){
-  const lv=LEVELS[game.level], p=game.params;
+  const p=game.params;
   // top gradient
   const g=c.createLinearGradient(0,0,0,80); g.addColorStop(0,'rgba(0,0,0,0.32)'); g.addColorStop(1,'rgba(0,0,0,0)');
   c.fillStyle=g; c.fillRect(0,0, W, 90);
 
   const pad = 14 + safeTop();
   // Level name
-  c.fillStyle='#fff'; c.font='800 18px sans-serif'; c.textAlign='left'; c.textBaseline='top';
-  c.fillText('Ур. '+(game.level+1)+'/15 · '+lv.name, 16, pad);
+  c.fillStyle='#fff'; c.font=fontSans(18,'700'); c.textAlign='left'; c.textBaseline='top';
+  c.fillText('Ур. '+(game.level+1)+' · '+levelLabel(game.level), 16, pad);
 
   // Hearts
   c.textAlign='right';
@@ -1011,26 +1428,41 @@ function drawHUD(c){
     drawHeart(c, W-22 - i*30, pad+10, 11, i<game.lives ? '#ff5252':'rgba(255,255,255,0.25)');
   }
 
-  // progress bar (healthy food toward goal)
+  // progress bar — пролёты до следующего уровня
   const barW=Math.min(W-32, 360), barX=(W-barW)/2, barY=pad+34, barH=14;
+  const nextReq = flightsToUnlockNext(progress.unlocked);
+  const tierStart = cumulativeFlightsForLevel(progress.unlocked - 1);
+  const tierProg = clamp((progress.totalFlights - tierStart) / nextReq, 0, 1);
   rr(c,barX,barY,barW,barH,7); c.fillStyle='rgba(0,0,0,0.3)'; c.fill();
-  const prog = clamp(game.foodCollected/p.goal,0,1);
-  rr(c,barX,barY, Math.max(8,barW*prog), barH,7);
-  const bg=c.createLinearGradient(barX,0,barX+barW,0); bg.addColorStop(0,'#aeea00'); bg.addColorStop(1,'#43a047');
+  rr(c,barX,barY, Math.max(8,barW*tierProg), barH,7);
+  const bg=c.createLinearGradient(barX,0,barX+barW,0); bg.addColorStop(0,'#9fd9b8'); bg.addColorStop(1,'#7ec4a0');
   c.fillStyle=bg; c.fill();
-  c.fillStyle='#fff'; c.font='700 11px sans-serif'; c.textAlign='center'; c.textBaseline='middle';
-  c.fillText(game.foodCollected+' / '+p.goal+' 🥗', barX+barW/2, barY+barH/2+1);
+  c.fillStyle='#fff'; c.font=fontSans(11,'600'); c.textAlign='center'; c.textBaseline='middle';
+  const flightsInTier = progress.totalFlights - tierStart;
+  c.fillText('Пролёты: '+game.flightsPassed+' · '+flightsInTier+'/'+nextReq+' до ур. '+(progress.unlocked+1), barX+barW/2, barY+barH/2+1);
 
   // score bottom-left
-  c.textAlign='left'; c.textBaseline='bottom'; c.font='800 16px sans-serif'; c.fillStyle='#fff';
-  c.fillText('Очки: '+game.score, 16, H-14-safeBottom());
+  c.textAlign='left'; c.textBaseline='bottom'; c.font=fontSans(16,'700'); c.fillStyle='#fff';
+  c.fillText('Очки: '+game.score+(game.multiplier>1?'  x'+game.multiplier.toFixed(1):''), 16, H-14-safeBottom());
+
+  if(game.combo>1){
+    c.textAlign='center'; c.fillStyle='#ffd54f'; c.font=fontSans(13,'700');
+    c.fillText('Комбо '+game.combo, W/2, H-16-safeBottom());
+    c.textAlign='left';
+  }
+  if(pointer.down && state===STATE.PLAY && game.intro<=0){
+    c.textAlign='right'; c.fillStyle='rgba(238,245,240,0.55)'; c.font=fontSans(10,'500');
+    c.fillText('Планирование', W-16, H-16-safeBottom());
+    c.textAlign='left';
+  }
+  drawPowerIcons(c);
 
   // mute button (top-left under title not to overlap)
   const mx=16, my=pad+ (barY-pad) + 0; // we'll place near bottom-right corner instead
   muteHotspot = {x:W-46, y:H-46-safeBottom(), w:34, h:34};
   c.save();
   rr(c,muteHotspot.x,muteHotspot.y,muteHotspot.w,muteHotspot.h,8); c.fillStyle='rgba(0,0,0,0.3)'; c.fill();
-  c.fillStyle='#fff'; c.font='16px sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+  c.fillStyle='#fff'; c.font=fontSans(16,'500'); c.textAlign='center'; c.textBaseline='middle';
   c.fillText(muted?'🔇':'🔊', muteHotspot.x+muteHotspot.w/2, muteHotspot.y+muteHotspot.h/2+1);
   c.restore();
 }
@@ -1057,11 +1489,11 @@ function panel(c, x,y,w,h, col='rgba(20,30,48,0.86)'){
 }
 function bigButton(c,b, primary=true){
   const grad=c.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
-  if(primary){ grad.addColorStop(0,'#5ddc8b'); grad.addColorStop(1,'#2eaf5f'); }
+  if(primary){ grad.addColorStop(0,'#9fd9b8'); grad.addColorStop(1,'#7ec4a0'); }
   else { grad.addColorStop(0,'#4a6079'); grad.addColorStop(1,'#33455c'); }
   rr(c,b.x,b.y,b.w,b.h,b.h/2); c.fillStyle=grad; c.fill();
   rr(c,b.x,b.y,b.w,b.h,b.h/2); c.strokeStyle='rgba(255,255,255,0.25)'; c.lineWidth=1.5; c.stroke();
-  c.fillStyle='#fff'; c.font='800 '+Math.round(b.h*0.4)+'px sans-serif'; c.textAlign='center'; c.textBaseline='middle';
+  c.fillStyle='#fff'; c.font=fontSans(Math.round(b.h*0.4),'700'); c.textAlign='center'; c.textBaseline='middle';
   c.fillText(b.label, b.x+b.w/2, b.y+b.h/2+1);
 }
 
@@ -1069,7 +1501,7 @@ function bigButton(c,b, primary=true){
 function buildMenu(){
   clearButtons();
   const bw=Math.min(W*0.7,300), bx=(W-bw)/2;
-  addButton({ x:bx, y:H*0.60, w:bw, h:58, label:'▶  Играть', onClick:()=>{ startLevel(progress.unlocked-1>=0?Math.min(progress.unlocked-1,14):0); }, id:'play' });
+  addButton({ x:bx, y:H*0.60, w:bw, h:58, label:'▶  Играть', onClick:()=>{ startLevel(Math.max(0, progress.unlocked - 1)); }, id:'play' });
   addButton({ x:bx, y:H*0.60+72, w:bw, h:52, label:'🗺  Выбор уровня', onClick:()=>{ state=STATE.LEVELS; buildLevels(); }, id:'levels' });
 }
 function drawMenu(c){
@@ -1078,33 +1510,35 @@ function drawMenu(c){
   c.fillStyle='rgba(8,16,30,0.45)'; c.fillRect(0,0,W,H);
 
   // floating demo bird
-  const b={x:W*0.5, y:H*0.34+Math.sin(game.t*1.6)*16, r:42, wing:0.5+0.5*Math.sin(game.t*8), blink:0, tilt:Math.sin(game.t*1.2)*0.12, eat:0};
+  const b={x:W*0.5, y:H*0.34+Math.sin(game.t*1.6)*16, r:42, wing:0.5+0.5*Math.sin(game.t*8), flapBoost:0, bodySquash:1, blink:0, tilt:Math.sin(game.t*1.2)*0.12, eat:0, eatPop:0, happy:0};
   drawBird(c,b, 0.5+0.5*Math.sin(game.t*0.6), game.t);
 
   c.textAlign='center'; c.textBaseline='middle';
-  c.fillStyle='#fff'; c.font='900 clamp(26px,8vw,46px) sans-serif';
-  c.font='900 '+Math.round(clamp(W*0.085,26,46))+'px sans-serif';
-  c.fillText('Птичка-Чемпион', W/2, H*0.50);
-  c.fillStyle='rgba(255,255,255,0.85)'; c.font='600 15px sans-serif';
-  c.fillText('Питайся правильно — стань стройным!', W/2, H*0.50+34);
+  c.fillStyle='#eef5f0';
+  c.font=fontDisplay(Math.round(clamp(W*0.085,26,46)),'700');
+  c.fillText('NutriRun', W/2, H*0.50);
+  c.fillStyle='rgba(238,245,240,0.85)'; c.font=fontSans(15,'500');
+  c.fillText('Комбо · идеальные пролёты · бонусы из еды', W/2, H*0.50+34);
 
   for(const b2 of buttons){ bigButton(c,b2, b2.id==='play'); }
 
-  c.fillStyle='rgba(255,255,255,0.6)'; c.font='600 12px sans-serif';
-  c.fillText('Рекорд: '+progress.best+' · Открыто уровней: '+progress.unlocked+'/15', W/2, H*0.60+150);
+  c.fillStyle='rgba(238,245,240,0.6)'; c.font=fontSans(12,'500');
+  c.fillText('Рекорд: '+progress.best+' · Пролётов: '+progress.totalFlights+' · Ур. '+progress.unlocked, W/2, H*0.60+150);
 }
 
 function buildLevels(){
   clearButtons();
-  // grid of 15
-  const cols=3, rows=5;
+  const cols=3;
+  const levelCount = Math.max(6, progress.unlocked + 1);
+  const rows = Math.ceil(levelCount / cols);
   const gw=Math.min(W*0.86,420), cell=gw/cols, gx=(W-gw)/2, gy=H*0.16+safeTop();
   const size=cell-12;
-  for(let i=0;i<15;i++){
+  for(let i=0;i<levelCount;i++){
     const cx=gx + (i%cols)*cell + 6;
     const cy=gy + Math.floor(i/cols)*(size+14);
     const unlocked = i < progress.unlocked;
-    addButton({ x:cx, y:cy, w:size, h:size, label:'', idx:i, locked:!unlocked,
+    const need = cumulativeFlightsForLevel(i);
+    addButton({ x:cx, y:cy, w:size, h:size, label:'', idx:i, locked:!unlocked, needFlights:need,
       onClick:()=>{ if(unlocked){ startLevel(i); } else { haptic('warning'); } }, id:'lvl'+i });
   }
   const bw=Math.min(W*0.6,260);
@@ -1113,23 +1547,27 @@ function buildLevels(){
 function drawLevels(c){
   drawBackground(c, LEVELS[0], game.t*30, game.t);
   c.fillStyle='rgba(8,16,30,0.6)'; c.fillRect(0,0,W,H);
-  c.fillStyle='#fff'; c.textAlign='center'; c.textBaseline='top'; c.font='900 24px sans-serif';
+  c.fillStyle='#eef5f0'; c.textAlign='center'; c.textBaseline='top'; c.font=fontDisplay(24,'700');
   c.fillText('Выбор уровня', W/2, H*0.07+safeTop());
   for(const b of buttons){
     if(b.id==='back'){ bigButton(c,b,false); continue; }
-    const i=b.idx, lv=LEVELS[i];
-    // tile
+    const i=b.idx, lv=getLevel(i);
+    const label = levelLabel(i);
     rr(c,b.x,b.y,b.w,b.h,14);
     const g=c.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
     g.addColorStop(0,lv.sky[0]); g.addColorStop(1,lv.sky[1]); c.fillStyle=g; c.fill();
     rr(c,b.x,b.y,b.w,b.h,14); c.strokeStyle='rgba(255,255,255,0.3)'; c.lineWidth=1.5; c.stroke();
-    // mini icon: number
     c.fillStyle=b.locked?'rgba(0,0,0,0.45)':'rgba(0,0,0,0.18)';
     if(b.locked){ rr(c,b.x,b.y,b.w,b.h,14); c.fill(); }
-    c.fillStyle='#fff'; c.font='900 '+Math.round(b.h*0.34)+'px sans-serif'; c.textAlign='center'; c.textBaseline='middle';
-    c.fillText(b.locked?'🔒':(i+1), b.x+b.w/2, b.y+b.h*0.4);
-    c.font='700 '+Math.round(b.h*0.13)+'px sans-serif';
-    c.fillText(lv.name.length>11?lv.name.slice(0,10)+'…':lv.name, b.x+b.w/2, b.y+b.h*0.78);
+    c.fillStyle='#fff'; c.font=fontDisplay(Math.round(b.h*0.34),'700'); c.textAlign='center'; c.textBaseline='middle';
+    c.fillText(b.locked?'🔒':(i+1), b.x+b.w/2, b.y+b.h*0.38);
+    c.font=fontSans(Math.round(b.h*0.12),'600');
+    c.fillText(label.length>11?label.slice(0,10)+'…':label, b.x+b.w/2, b.y+b.h*0.66);
+    if(b.locked){
+      c.font=fontSans(Math.round(b.h*0.1),'500');
+      c.fillStyle='rgba(255,255,255,0.75)';
+      c.fillText(b.needFlights+' пр.', b.x+b.w/2, b.y+b.h*0.86);
+    }
   }
 }
 
@@ -1138,8 +1576,12 @@ function startLevel(idx){
   game.level=idx;
   game.params=levelParams(idx);
   game.scrollX=0; game.spawnTimer=0.6; game.distance=0;
-  game.obstacles.length=0; game.foods.length=0; particles.length=0;
-  game.foodCollected=0; game.score=0; game.lives=3; game.invuln=0;
+  game.obstacles.length=0; game.foods.length=0; particles.length=0; floatTexts.length=0; eatRings.length=0;
+  game.foodCollected=0; game.flightsPassed=0; game.score=0; game.lives=3; game.invuln=0;
+  game.unlockBanner=null;
+  game.combo=0; game.comboTimer=0; game.multiplier=1;
+  game.shieldTime=0; game.magnetTime=0; game.slowmoTime=0; game.speedMult=1;
+  game.thermals.length=0; game.thermalTimer=6; game.nearMissCd=0;
   game.bird=makeBird();
   game.bird.y=H*0.45; game.bird.vy=0;
   game.targetFat=game.params.fat;
@@ -1171,18 +1613,18 @@ function drawComplete(c){
   const pw=Math.min(W*0.86,420), ph=H*0.5, px=(W-pw)/2, py=H*0.16+safeTop();
   panel(c,px,py,pw,ph);
   c.textAlign='center'; c.textBaseline='top';
-  c.fillStyle='#aeea00'; c.font='900 26px sans-serif'; c.fillText('Уровень пройден!', W/2, py+22);
-  c.fillStyle='#fff'; c.font='700 15px sans-serif';
+  c.fillStyle='#7ec4a0'; c.font=fontDisplay(26,'700'); c.fillText('Уровень пройден!', W/2, py+22);
+  c.fillStyle='#eef5f0'; c.font=fontSans(15,'600');
   c.fillText(LEVELS[game.level].name, W/2, py+58);
 
   // transforming bird preview
-  const b={x:W/2, y:py+ph*0.5, r:44, wing:0.5+0.5*Math.sin(game.t*9), blink:0, tilt:0, eat:0, happy:1};
+  const b={x:W/2, y:py+ph*0.5, r:44, wing:0.5+0.5*Math.sin(game.t*9), flapBoost:0, bodySquash:1, blink:0, tilt:0, eat:0, eatPop:0, happy:1};
   drawBird(c,b, game.displayFat, game.t);
   // arrow / fitness note
-  c.fillStyle='rgba(255,255,255,0.9)'; c.font='700 14px sans-serif';
+  c.fillStyle='rgba(238,245,240,0.9)'; c.font=fontSans(14,'600');
   const pct=Math.round((1-game.displayFat)*100);
   c.fillText('Стройность: '+pct+'%  💪', W/2, py+ph*0.72);
-  c.fillStyle='#ffca28'; c.font='800 18px sans-serif';
+  c.fillStyle='#e8c080'; c.font=fontSans(18,'700');
   c.fillText('+'+game.lastGain+' очков · Всего '+game.score, W/2, py+ph*0.80);
 
   for(const b2 of buttons){ bigButton(c,b2, b2.id!=='map'); }
@@ -1200,11 +1642,13 @@ function drawOver(c){
   const pw=Math.min(W*0.86,420), ph=H*0.42, px=(W-pw)/2, py=H*0.22+safeTop();
   panel(c,px,py,pw,ph,'rgba(48,20,28,0.9)');
   c.textAlign='center'; c.textBaseline='top';
-  c.fillStyle='#ff6b6b'; c.font='900 28px sans-serif'; c.fillText('Упс!', W/2, py+24);
-  c.fillStyle='#fff'; c.font='700 15px sans-serif';
+  c.fillStyle='#ff6b6b'; c.font=fontDisplay(28,'700'); c.fillText('Упс!', W/2, py+24);
+  c.fillStyle='#eef5f0'; c.font=fontSans(15,'600');
   c.fillText('Попробуй снова — здоровье важнее!', W/2, py+62);
-  c.fillStyle='#ffca28'; c.font='800 18px sans-serif';
-  c.fillText('Очки: '+game.score, W/2, py+92);
+  c.fillStyle='#e8c080'; c.font=fontSans(18,'700');
+  c.fillText('Очки: '+game.score+' · Пролётов: '+game.flightsPassed, W/2, py+92);
+  c.fillStyle='rgba(238,245,240,0.75)'; c.font=fontSans(13,'500');
+  c.fillText('Всего пролётов: '+progress.totalFlights, W/2, py+118);
   for(const b of buttons){ bigButton(c,b, b.id==='retry'); }
 }
 
@@ -1224,20 +1668,20 @@ function drawWin(c){
   if(Math.random()<0.5) confetti(rand(0,W), -10, 4);
   updateParticles(1/60); drawParticles(c);
 
-  const b={x:W/2, y:H*0.34+Math.sin(winT*2)*10, r:52, wing:0.5+0.5*Math.sin(winT*10), blink:0, tilt:Math.sin(winT)*0.1, eat:0, happy:1};
+  const b={x:W/2, y:H*0.34+Math.sin(winT*2)*10, r:52, wing:0.5+0.5*Math.sin(winT*10), flapBoost:0, bodySquash:1, blink:0, tilt:Math.sin(winT)*0.1, eat:0, eatPop:0, happy:1};
   drawBird(c,b, 0, winT); // fully slim & fit!
-  c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#fff';
-  c.font='900 30px sans-serif'; c.fillText('Ты — Чемпион! 🏆', W/2, H*0.52);
-  c.font='700 16px sans-serif'; c.fillStyle='rgba(255,255,255,0.9)';
+  c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#eef5f0';
+  c.font=fontDisplay(30,'700'); c.fillText('Ты — Чемпион! 🏆', W/2, H*0.52);
+  c.font=fontSans(16,'600'); c.fillStyle='rgba(238,245,240,0.9)';
   c.fillText('Птичка стройная и здоровая!', W/2, H*0.52+34);
-  c.fillStyle='#ffca28'; c.font='800 20px sans-serif';
+  c.fillStyle='#e8c080'; c.font=fontSans(20,'700');
   c.fillText('Рекорд: '+progress.best+' очков', W/2, H*0.52+66);
   for(const b2 of buttons){ bigButton(c,b2,true); }
 }
 
 /* ============================ WORLD RENDER ============================== */
 function renderWorld(c, frozen){
-  const lv=LEVELS[game.level];
+  const lv=getLevel(game.level);
   c.save();
   if(game.shake>0){ const s=game.shake; c.translate(rand(-s,s),rand(-s,s)); }
   drawBackground(c, lv, game.scrollX, game.t);
@@ -1247,21 +1691,36 @@ function renderWorld(c, frozen){
   c.fillStyle=shade(lv.ground,-18);
   for(let x=-( (game.scrollX*0.6)%40);x<W;x+=40){ c.fillRect(x,gy,20,6); }
 
+  drawThermals(c);
   // obstacles
   for(const o of game.obstacles){ drawObstacle(c, o, lv); }
   // foods
   for(const f of game.foods){ if(f.taken) continue;
     const by=f.y + Math.sin(game.t*3+f.bob)*4;
-    // glow for healthy
-    if(!f.junk){ c.save(); c.globalAlpha=0.35; c.fillStyle='#fff59d'; c.beginPath(); c.arc(f.x,by,f.r*1.5,0,TAU); c.fill(); c.restore(); }
+    if(!f.junk){
+      c.save(); c.globalAlpha=0.35;
+      c.fillStyle = f.power==='golden' ? '#ffd54f' : (f.power ? POWER[f.power].color : '#fff59d');
+      c.beginPath(); c.arc(f.x,by,f.r*1.5,0,TAU); c.fill(); c.restore();
+    }
     drawFood(c, f.type, f.x, by, f.r, game.t);
+  }
+  if(game.magnetTime>0 && game.bird){
+    c.save(); c.globalAlpha=0.12+0.06*Math.sin(game.t*6);
+    c.strokeStyle = getBirdSpec().perk==='neon' ? '#ea80fc' : '#ba68c8'; c.lineWidth=2;
+    c.beginPath(); c.arc(game.bird.x, game.bird.y, magnetRadius(), 0, TAU); c.stroke();
+    c.restore();
+  }
+  if(game.slowmoTime>0){
+    c.save(); c.globalAlpha=0.08; c.fillStyle='#4dd0e1'; c.fillRect(0,0,W,H); c.restore();
   }
   // bird
   if(game.bird){
     const flash = game.invuln>0 && Math.floor(game.invuln*12)%2===0;
     if(!flash) drawBird(c, game.bird, game.displayFat, game.t);
   }
+  drawEatRings(c);
   drawParticles(c);
+  drawFloatTexts(c);
   c.restore();
 
   // flash overlay
@@ -1274,92 +1733,160 @@ function renderWorld(c, frozen){
   if(game.intro>0){
     c.save();
     c.fillStyle='rgba(0,0,0,0.25)'; c.fillRect(0,0,W,H);
-    c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#fff';
+    c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#eef5f0';
     const n=Math.ceil(game.intro);
-    c.font='900 80px sans-serif';
+    c.font=fontDisplay(80,'700');
     c.globalAlpha=clamp(game.intro%1+0.2,0,1);
     c.fillText(n>0?n:'', W/2, H*0.45);
-    c.globalAlpha=1; c.font='700 18px sans-serif';
-    c.fillText('Тапай, чтобы взлететь!', W/2, H*0.45+70);
+    c.globalAlpha=1; c.font=fontSans(18,'600');
+    c.fillText('Тап — взлёт · Удерживай — планирование', W/2, H*0.45+70);
+    c.restore();
+  }
+
+  if(game.unlockBanner){
+    const ub = game.unlockBanner;
+    const alpha = clamp(ub.time / 0.4, 0, 1);
+    c.save();
+    c.globalAlpha = alpha * 0.92;
+    const bw = Math.min(W*0.88, 360), bx = (W-bw)/2, by = H*0.14 + safeTop();
+    rr(c, bx, by, bw, 52, 14);
+    c.fillStyle = 'rgba(30,42,36,0.92)'; c.fill();
+    rr(c, bx, by, bw, 52, 14); c.strokeStyle = '#7ec4a0'; c.lineWidth = 2; c.stroke();
+    c.fillStyle = '#7ec4a0'; c.font = fontDisplay(20,'700');
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText('🎉 Открыт уровень '+ub.level+'!', W/2, by+26);
     c.restore();
   }
 }
 
 /* ============================ UPDATE (PLAY) ============================= */
 function updatePlay(dt){
-  const p=game.params, b=game.bird, lv=LEVELS[game.level];
-  game.scrollX += p.speed*dt;
-  game.distance += p.speed*dt;
+  const p=game.params, b=game.bird;
+  if(game.slowmoTime>0) game.slowmoTime -= dt;
+  if(game.shieldTime>0) game.shieldTime -= dt;
+  if(game.magnetTime>0) game.magnetTime -= dt;
+  if(game.comboTimer>0){
+    game.comboTimer -= dt;
+    if(game.comboTimer<=0) resetCombo();
+  }
+  if(game.nearMissCd>0) game.nearMissCd -= dt;
+
+  const slow = game.slowmoTime>0 ? 0.62 : 1;
+  const scrollDt = dt * slow;
+  const speed = p.speed * slow;
+  game.scrollX += speed*scrollDt;
+  game.distance += speed*scrollDt;
 
   if(game.intro>0){ game.intro-=dt; b.y=H*0.45+Math.sin(game.t*4)*8; b.tilt=0; return; }
 
-  // ease bird fat toward target across the level for smooth transformation
   game.displayFat = lerp(game.displayFat, game.targetFat, 1-Math.pow(0.5, dt*1.2));
 
-  // bird physics
-  b.vy += 1500*dt;
-  b.vy = clamp(b.vy, -520, 760);
+  const gliding = pointer.down;
+  const grav = gliding ? 720 : 1500;
+  b.vy += grav*dt;
+  if(gliding) b.vy = clamp(b.vy, -280, 420);
+  else b.vy = clamp(b.vy, -520, 760);
   b.y += b.vy*dt;
-  b.tilt = clamp(b.vy/700, -0.5, 0.9);
-  b.wing = Math.max(0, b.wing - dt*3);
+  b.tilt = gliding ? clamp(b.vy/500, -0.35, 0.55) : clamp(b.vy/700, -0.5, 0.9);
+  if(gliding && b.wing<0.6) b.wing = 0.35;
+  b.wing = Math.max(0, b.wing - dt*2.2);
+  b.flapBoost = Math.max(0, b.flapBoost - dt*3.5);
+  b.bodySquash = lerp(b.bodySquash, 1, 1-Math.pow(0.001, dt));
   b.blinkTimer-=dt; if(b.blinkTimer<=0){ b.blink=1; if(b.blinkTimer<-0.12){ b.blink=0; b.blinkTimer=rand(1.8,4.5);} }
-  if(b.blink>0 && b.blinkTimer>-0.12) {} 
+  if(b.blink>0 && b.blinkTimer>-0.12) {}
   b.eat=Math.max(0,b.eat-dt*3);
+  b.eatPop=Math.max(0,b.eatPop-dt*2.5);
+  b.happy=Math.max(0,b.happy-dt*1.8);
   if(game.invuln>0) game.invuln-=dt;
   if(game.shake>0) game.shake=Math.max(0,game.shake-dt*30);
   if(game.flashTime>0) game.flashTime-=dt*2;
+  if(game.unlockBanner){
+    game.unlockBanner.time -= dt;
+    if(game.unlockBanner.time <= 0) game.unlockBanner = null;
+  }
 
   // ground / ceiling collision
   const gy=H*0.80;
   if(b.y + b.r*0.8 > gy){ b.y=gy-b.r*0.8; if(game.invuln<=0){ hitPlayer(); } b.vy=-300; }
   if(b.y - b.r < 0){ b.y=b.r; b.vy=0; }
 
-  // spawn obstacles
-  game.spawnTimer-=dt;
+  game.thermalTimer -= dt;
+  if(game.thermalTimer<=0){ spawnThermal(); game.thermalTimer = rand(5, 9); }
+  for(let i=game.thermals.length-1;i>=0;i--){
+    const t = game.thermals[i];
+    t.x -= speed*scrollDt;
+    if(b.x>t.x && b.x<t.x+t.w && b.y>t.y && b.y<t.y+t.h){
+      b.vy -= 520*dt;
+      if(Math.random()<0.25) spawnParticle(b.x, b.y+b.r*0.5, {vx:rand(-20,20), vy:rand(-80,-30), g:80, color:'rgba(255,255,255,0.6)', size:rand(2,4), decay:2});
+    }
+    if(t.x+t.w<-40) game.thermals.splice(i,1);
+  }
+
+  game.spawnTimer-=scrollDt;
   if(game.spawnTimer<=0){ spawnObstacle(); game.spawnTimer=p.spacing*rand(0.85,1.12); }
 
-  // move + cull obstacles
+  const shielded = game.shieldTime>0;
   for(let i=game.obstacles.length-1;i>=0;i--){
     const o=game.obstacles[i];
-    o.x -= p.speed*dt;
-    if(!o.passed && o.x+o.w < b.x){ o.passed=true; game.score+=2; }
+    o.x -= speed*scrollDt;
+    checkNearMiss(b, o);
+    if(!o.passed && o.x+o.w < b.x){ o.passed=true; onObstaclePassed(o); }
     if(o.x+o.w < -20) game.obstacles.splice(i,1);
-    else if(game.invuln<=0){
-      // collision: bird circle vs two rects
+    else if(game.invuln<=0 && !shielded){
       if(circleRect(b.x,b.y,b.r*0.78, o.x,0,o.w,o.gapY) ||
          circleRect(b.x,b.y,b.r*0.78, o.x,o.gapY+o.gapH,o.w,H-(o.gapY+o.gapH))){
         hitPlayer();
       }
     }
   }
-  // foods
+  const magnetR = game.magnetTime>0 ? magnetRadius() : 0;
+  const perk = getBirdSpec().perk;
+  if(state===STATE.PLAY && game.intro<=0 && (perk==='ember'||perk==='neon') && Math.random()<0.35){
+    const col = perk==='ember' ? '#ff7043' : '#ea80fc';
+    spawnParticle(b.x-b.r*0.5, b.y+rand(-8,8), {vx:-p.speed*0.15, vy:rand(-15,15), g:30, color:col, size:rand(2,4), decay:2, shape:'circle'});
+  }
   for(let i=game.foods.length-1;i>=0;i--){
     const f=game.foods[i]; if(f.taken){ continue; }
-    f.x -= p.speed*dt;
-    if(f.x < -40){ game.foods.splice(i,1); continue; }
-    const by=f.y + Math.sin(game.t*3+f.bob)*4;
+    f.x -= speed*scrollDt;
+    const bobY = Math.sin(game.t*3+f.bob)*4;
+    if(magnetR>0 && !f.junk){
+      const fy = f.y + bobY;
+      const dx=b.x-f.x, dy=b.y-fy, d=Math.sqrt(dx*dx+dy*dy)||1;
+      if(d<magnetR){
+        f.x += (dx/d)*240*dt;
+        f.y += (dy/d)*240*dt;
+      }
+    }
+    const by=f.y + bobY;
     const dx=b.x-f.x, dy=b.y-by;
     if(dx*dx+dy*dy < (b.r*0.85+f.r)*(b.r*0.85+f.r)){
       f.taken=true; game.foods.splice(i,1);
       if(f.junk){
         SFX.bad(); haptic('warning');
         burst(f.x,by,'#ff7043',16);
-        game.score=Math.max(0,game.score-3);
+        game.score=Math.max(0, game.score-3);
+        resetCombo();
         game.flashColor='#ff5252'; game.flashTime=0.5; game.shake=8;
-        // small fat-back wobble
         game.displayFat=clamp(game.displayFat+0.05,0,1);
       } else {
         SFX.eat(); haptic('light');
-        burst(f.x,by,'#aeea00',14);
-        for(let k=0;k<6;k++) spawnParticle(f.x,by,{vx:rand(-60,60),vy:rand(-120,-30),color:'#fff59d',size:rand(2,5),decay:2,shape:'star'});
-        game.score+=10; game.foodCollected++;
-        b.eat=0.5; b.happy=1;
-        if(game.foodCollected>=p.goal){ completeLevel(); return; }
+        spawnEatBurst(f.x, by, f.type==='golden'?'apple':f.type);
+        game.foodCollected++;
+        bumpCombo();
+        b.eat=1; b.eatPop=1; b.happy=1; b.bodySquash=1.14;
+        if(f.power==='golden') activatePower('golden');
+        else {
+          addScore(10, null, f.x, by);
+          if(f.power) activatePower(f.power);
+          else {
+            const roll = powerFromFood(f.type);
+            if(roll && Math.random()<0.35) activatePower(roll);
+          }
+        }
       }
     }
   }
-  // trail sparkle
-  if(Math.random()<0.3) spawnParticle(b.x-b.r*0.7, b.y+rand(-6,8), {vx:-p.speed*0.2,vy:rand(-20,20),g:40,color:'rgba(255,255,255,0.5)',size:rand(1.5,3),decay:2.5});
+  if(Math.random()<0.3) spawnParticle(b.x-b.r*0.7, b.y+rand(-6,8), {vx:-speed*0.2,vy:rand(-20,20),g:40,color:'rgba(255,255,255,0.5)',size:rand(1.5,3),decay:2.5});
 }
 
 function circleRect(cx,cy,r, rx,ry,rw,rh){
@@ -1368,7 +1895,8 @@ function circleRect(cx,cy,r, rx,ry,rw,rh){
   return dx*dx+dy*dy < r*r;
 }
 function hitPlayer(){
-  if(game.invuln>0) return;
+  if(game.invuln>0 || game.shieldTime>0) return;
+  resetCombo();
   game.lives--; game.invuln=1.3;
   SFX.hit(); haptic('error');
   game.shake=14; game.flashColor='#ff3b3b'; game.flashTime=0.6;
@@ -1376,22 +1904,21 @@ function hitPlayer(){
   if(game.lives<=0){ gameOver(); }
 }
 function gameOver(){
+  progress.best = Math.max(progress.best, game.score);
+  progress.totalFood += game.foodCollected;
+  progress.unlocked = Math.max(progress.unlocked, computeUnlockedFromFlights(progress.totalFlights || 0));
+  saveProgress(progress);
+  notifyParent({
+    event:'game_over',
+    score: game.score,
+    level: progress.unlocked,
+    flights: game.flightsPassed,
+    fruits: game.foodCollected,
+    best: progress.best,
+    totalFlights: progress.totalFlights
+  });
   state=STATE.OVER; buildOver();
   haptic('error');
-}
-function completeLevel(){
-  game.lastGain = 50 + game.lives*25 + game.level*10;
-  game.score += game.lastGain;
-  SFX.level();
-  haptic('success');
-  confetti(W/2, H*0.4, 40);
-  // progress: unlock next, save best, transformation snapshot
-  game.displayFat = game.params.fat; // snap toward this level's fitness
-  if(game.level+1 > progress.unlocked-1){ progress.unlocked=Math.min(15, game.level+2); }
-  progress.best=Math.max(progress.best, game.score);
-  progress.totalFood += game.foodCollected;
-  saveProgress(progress);
-  state=STATE.COMPLETE; buildComplete();
 }
 
 /* ============================== MAIN LOOP ============================== */
@@ -1402,8 +1929,8 @@ function loop(now){
   game.t += dt;
 
   // background animation for menu/levels uses game.t
-  if(state===STATE.PLAY){ updatePlay(dt); updateParticles(dt); }
-  else if(state!==STATE.WIN){ updateParticles(dt); }
+  if(state===STATE.PLAY){ updatePlay(dt); updateParticles(dt); updateFloatTexts(dt); }
+  else if(state!==STATE.WIN){ updateParticles(dt); updateFloatTexts(dt); }
 
   // render
   ctx.save();
@@ -1411,7 +1938,6 @@ function loop(now){
     case STATE.MENU: drawMenu(ctx); break;
     case STATE.LEVELS: drawLevels(ctx); break;
     case STATE.PLAY: renderWorld(ctx,false); break;
-    case STATE.COMPLETE: drawComplete(ctx); break;
     case STATE.OVER: drawOver(ctx); break;
     case STATE.WIN: drawWin(ctx); break;
   }
@@ -1424,6 +1950,10 @@ function loop(now){
 function boot(){
   initTelegram();
   resize();
+  try{
+    const saved = localStorage.getItem('nutrirun_bird');
+    if(saved && BIRD_SPECIES[saved]) selectedBirdId = saved;
+  }catch(e){}
   buildMenu();
   state=STATE.MENU;
   const loader=document.getElementById('loader');
