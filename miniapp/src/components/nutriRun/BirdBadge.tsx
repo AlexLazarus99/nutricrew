@@ -12,9 +12,9 @@ type Props = {
 
 const SPECS: Record<
   BirdId,
-  { top: string; bot: string; wing: string; tail: string; beak: string; perk: string }
+  { top: string; bot: string; wing: string; tail: string; beak: string; beakLower?: string; perk: string }
 > = {
-  classic: { top: "#7fe0c0", bot: "#27a89a", wing: "#2bb6c4", tail: "#2bb6c4", beak: "#ffb300", perk: "classic" },
+  classic: { top: "#ffd4b8", bot: "#ffab91", wing: "#ff8a65", tail: "#ff7043", beak: "#ffeb3b", beakLower: "#ffc107", perk: "classic" },
   ember: { top: "#ffccbc", bot: "#e64a19", wing: "#ff7043", tail: "#bf360c", beak: "#ffca28", perk: "ember" },
   frost: { top: "#e1f5fe", bot: "#4fc3f7", wing: "#81d4fa", tail: "#0288d1", beak: "#ffd54f", perk: "frost" },
   neon: { top: "#f8bbd0", bot: "#26c6da", wing: "#ea80fc", tail: "#00bcd4", beak: "#ffeb3b", perk: "neon" },
@@ -50,8 +50,11 @@ function drawBirdBody(
   cy: number,
   scale: number,
 ) {
-  const flap = Math.sin(t * 8) * 0.5 + 0.5;
-  const wingA = -0.5 + flap * 0.9;
+  const flap =
+    spec.perk === "classic"
+      ? (Math.sin(t * 14) * 0.5 + 0.5) * 0.82 + (Math.sin(t * 22 + 1.1) * 0.5 + 0.5) * 0.38
+      : Math.sin(t * 8) * 0.5 + 0.5;
+  const wingA = spec.perk === "classic" ? -0.78 + flap * 1.38 : -0.5 + flap * 0.9;
   const r = 28 * scale;
   const bodyW = r * 1.15;
   const bodyH = r;
@@ -88,6 +91,15 @@ function drawBirdBody(
   c.lineTo(-bodyW * 1.15, bodyH * 0.15);
   c.closePath();
   c.fill();
+
+  if (spec.perk === "classic") {
+    c.globalAlpha = 0.2 + 0.12 * Math.sin(t * 8);
+    c.fillStyle = "#ffe0b2";
+    c.beginPath();
+    c.ellipse(0, 0, bodyW * 1.05, bodyH * 1.02, 0, 0, TAU);
+    c.fill();
+    c.globalAlpha = 1;
+  }
 
   if (spec.perk === "ember") {
     c.globalAlpha = 0.5 + 0.3 * Math.sin(t * 10);
@@ -173,6 +185,13 @@ function drawBirdBody(
   c.moveTo(bodyW * 0.82, -bodyH * 0.04);
   c.lineTo(bodyW * 1.2, bodyH * 0.02);
   c.lineTo(bodyW * 0.84, bodyH * 0.1);
+  c.closePath();
+  c.fill();
+  c.fillStyle = spec.beakLower ?? "#ffc107";
+  c.beginPath();
+  c.moveTo(bodyW * 0.82, bodyH * 0.06);
+  c.lineTo(bodyW * 1.18, bodyH * 0.08);
+  c.lineTo(bodyW * 0.84, bodyH * 0.16);
   c.closePath();
   c.fill();
 
