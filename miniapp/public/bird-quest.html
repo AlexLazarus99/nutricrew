@@ -112,6 +112,7 @@ window.addEventListener('orientationchange', ()=>setTimeout(resize,120));
 const TAU = Math.PI*2;
 const clamp = (v,a,b)=> v<a?a:(v>b?b:v);
 const lerp  = (a,b,t)=> a+(b-a)*t;
+const smoothstep = (a,b,t)=>{ const x=clamp((t-a)/(b-a),0,1); return x*x*(3-2*x); };
 const rand  = (a,b)=> a+Math.random()*(b-a);
 const randi = (a,b)=> Math.floor(rand(a,b+1));
 const easeOut = t=> 1-Math.pow(1-t,3);
@@ -193,24 +194,45 @@ const LEVELS = [
   { name:'Дубай',              theme:'dubai',      sky:['#ffba8a','#ffd9b0'], ground:'#d9b483', accent:'#9c7a4a', landmark:'burj' },
 ];
 
-/* Пролёты для открытия следующего уровня: ур.2 → 125, ур.3 → 175, ур.4 → 225 … (~×2.5) */
-function flightsToUnlockNext(unlockedCount){
-  return 125 + Math.max(0, unlockedCount - 1) * 50;
+/* Очки за один забег на уровне N, чтобы открыть уровень N+1: 125, 175, 225 … */
+function scoreGoalForLevel(levelIdx){
+  return 125 + Math.max(0, levelIdx) * 50;
 }
-function cumulativeFlightsForLevel(levelIndex){
-  let sum = 0;
-  for(let i = 0; i < levelIndex; i++) sum += flightsToUnlockNext(i + 1);
-  return sum;
-}
-function computeUnlockedFromFlights(totalFlights){
-  let unlocked = 1, needed = 0;
+function computeUnlockedFromLevelBests(levelBests){
+  let unlocked = 1;
   while(true){
-    needed += flightsToUnlockNext(unlocked);
-    if(totalFlights >= needed) unlocked++;
+    const idx = unlocked - 1;
+    if((levelBests[idx] || 0) >= scoreGoalForLevel(idx)) unlocked++;
     else break;
     if(unlocked > 500) break;
   }
   return unlocked;
+}
+function migrateProgressFromFlights(p){
+  if(!p.levelBests) p.levelBests = [];
+  if(p.levelBests.length === 0 && (p.totalFlights || 0) > 0 && (p.unlocked || 1) > 1){
+    for(let i = 0; i < (p.unlocked || 1) - 1; i++) p.levelBests[i] = scoreGoalForLevel(i);
+  }
+}
+function recordLevelBest(levelIdx, score){
+  if(score <= 0) return;
+  progress.levelBests = progress.levelBests || [];
+  progress.levelBests[levelIdx] = Math.max(progress.levelBests[levelIdx] || 0, score);
+}
+function tryUnlockFromRunScore(){
+  const goal = scoreGoalForLevel(game.level);
+  if(game.score < goal) return;
+  recordLevelBest(game.level, game.score);
+  const prevUnlocked = progress.unlocked;
+  progress.unlocked = Math.max(progress.unlocked || 1, computeUnlockedFromLevelBests(progress.levelBests));
+  if(progress.unlocked > prevUnlocked){
+    game.unlockBanner = { level: progress.unlocked, time: 3.2 };
+    SFX.level();
+    haptic('success');
+    confetti(W/2, H*0.35, 36);
+    addFloatText(W*0.5, H*0.28, 'Ур. '+progress.unlocked+' открыт!', '#7ec4a0', 1.1);
+  }
+  saveProgress(progress);
 }
 function getLevel(idx){ return LEVELS[((idx % LEVELS.length) + LEVELS.length) % LEVELS.length]; }
 function levelLabel(idx){
@@ -236,7 +258,9 @@ function loadProgress(){
     const r = JSON.parse(localStorage.getItem(STORE_KEY));
     if(r && typeof r === 'object'){
       r.totalFlights = r.totalFlights || 0;
-      r.unlocked = Math.max(1, computeUnlockedFromFlights(r.totalFlights));
+      r.levelBests = r.levelBests || [];
+      migrateProgressFromFlights(r);
+      r.unlocked = Math.max(1, computeUnlockedFromLevelBests(r.levelBests));
       return r;
     }
     const legacy = JSON.parse(localStorage.getItem('healthy_bird_progress_v1'));
@@ -245,14 +269,17 @@ function loadProgress(){
         unlocked: legacy.unlocked || 1,
         best: legacy.best || 0,
         totalFood: legacy.totalFood || 0,
-        totalFlights: 0
+        totalFlights: 0,
+        levelBests: []
       };
     }
   }catch(e){}
-  return { unlocked:1, best:0, totalFood:0, totalFlights:0 };
+  return { unlocked:1, best:0, totalFood:0, totalFlights:0, levelBests:[] };
 }
 function saveProgress(p){
-  p.unlocked = Math.max(p.unlocked || 1, computeUnlockedFromFlights(p.totalFlights || 0));
+  p.levelBests = p.levelBests || [];
+  migrateProgressFromFlights(p);
+  p.unlocked = Math.max(p.unlocked || 1, computeUnlockedFromLevelBests(p.levelBests));
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(p)); }catch(e){}
 }
 let progress = loadProgress();
@@ -520,6 +547,7 @@ function addScore(pts, label, x, y){
   const gain = Math.round(pts * mult);
   game.score += gain;
   progress.best = Math.max(progress.best, game.score);
+  if(state === STATE.PLAY && game.intro <= 0) tryUnlockFromRunScore();
   if(!game.hazardWasActive && game.score > 100){
     game.hazardWasActive = true;
     game.hazardBanner = { time: 2.8 };
@@ -770,22 +798,23 @@ function drawBirdSpeciesFx(c, spec, b, fat, time, bodyW, bodyH){
 
 /* ============================ DRAWING: BIRD =============================== */
 function wingBeatWave(cycle){
-  if(cycle < 0.3) return 1 - cycle / 0.3;
-  return (cycle - 0.3) / 0.7;
+  const t = cycle;
+  if(t < 0.27) return 1 - smoothstep(0, 1, t / 0.27);
+  return smoothstep(0, 1, (t - 0.27) / 0.73);
 }
 function wingFlapAmount(b, time){
   let cycle = b.wingCycle ?? 0;
-  if(state !== STATE.PLAY || game.intro > 0) cycle = (time * 8) % 1;
+  if(state !== STATE.PLAY || game.intro > 0) cycle = (time * 7.2) % 1;
   let amt = wingBeatWave(cycle);
   const boost = Math.max(b.wing || 0, b.flapBoost || 0);
-  if(boost > 0.08) amt = clamp(amt + boost * 0.22, 0, 1);
+  if(boost > 0.08) amt = lerp(amt, Math.min(amt + 0.18, 1), smoothstep(0, 1, boost));
   return amt;
 }
 function updateBirdWingCycle(b, dt){
-  let rate = pointer.down ? 6.5 : 9;
-  if((b.flapBoost || 0) > 0.15) rate = 12.5;
-  else if((b.wing || 0) > 0.2) rate = 10.5;
-  if(getBirdSpec().perk === 'classic') rate *= 1.1;
+  let rate = pointer.down ? 6.2 : 8.4;
+  if((b.flapBoost || 0) > 0.15) rate = 11.5;
+  else if((b.wing || 0) > 0.2) rate = 9.8;
+  if(getBirdSpec().perk === 'classic') rate *= 1.08;
   b.wingCycle = ((b.wingCycle || 0) + dt * rate) % 1;
 }
 function drawBird(c, b, fat, time){
@@ -797,7 +826,7 @@ function drawBird(c, b, fat, time){
   const fitStretch = 1 + (1 - fat) * 0.06;
   const squash = (b.bodySquash || 1) / fitStretch;
   c.save();
-  c.translate(b.x, b.y + (1 - flapAmt) * 3.5);
+  c.translate(b.x, b.y + Math.pow(1 - flapAmt, 1.35) * 2.8);
   c.rotate(clamp(b.tilt,-0.5,0.9));
   c.scale(eatScale/squash, squash/eatScale);
 
@@ -914,14 +943,15 @@ function drawBird(c, b, fat, time){
 }
 function drawWing(c, x, y, w, h, dir, flapAmt, color, wingAmp, isBack){
   wingAmp = wingAmp ?? 1;
-  const beat = 1 - flapAmt;
+  const smoothFlap = smoothstep(0, 1, flapAmt);
+  const beat = 1 - smoothFlap;
   c.save();
   c.translate(x, y);
   const downA = 0.68 * wingAmp;
   const upA = -1.25 * wingAmp;
-  const a = lerp(downA, upA, flapAmt) * dir;
+  const a = lerp(downA, upA, smoothFlap) * dir;
   c.rotate(a);
-  c.scale(1 + beat * 0.16 * wingAmp, 1 - beat * 0.22 * wingAmp);
+  c.scale(1 + beat * 0.12 * wingAmp, 1 - beat * 0.17 * wingAmp);
   const ew = w * (0.44 + beat * 0.06 + (wingAmp > 1 ? 0.05 : 0));
   const eh = h * (0.3 + beat * 0.08 + (wingAmp > 1 ? 0.1 : 0));
   c.globalAlpha = isBack ? 0.88 : 1;
@@ -1550,17 +1580,6 @@ function onObstaclePassed(o){
   const perfect = Math.abs(b.y - gapMid) < o.gapH*0.16;
   addScore(perfect ? 8 : 2, perfect ? 'Идеально!' : null, b.x, b.y-20);
   if(perfect){ burst(b.x, b.y, '#7ec4a0', 10, 100); haptic('light'); }
-  const prevUnlocked = progress.unlocked;
-  progress.unlocked = computeUnlockedFromFlights(progress.totalFlights);
-  if(progress.unlocked > prevUnlocked){
-    game.unlockBanner = { level: progress.unlocked, time: 3.2 };
-    SFX.level();
-    haptic('success');
-    confetti(W/2, H*0.35, 36);
-    addFloatText(W*0.5, H*0.28, 'Ур. '+progress.unlocked+' открыт!', '#7ec4a0', 1.1);
-  }
-  progress.best = Math.max(progress.best, game.score);
-  saveProgress(progress);
 }
 function debrisKindForTheme(theme){
   if(theme==='forest') return 'branch';
@@ -1612,7 +1631,16 @@ function spawnObstacle(){
     game.foods.push({ x:W+w*0.5 + rand(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: special?19:18, type, junk, power, taken:false, bob:rand(0,TAU) });
   }
   if(Math.random()<0.14) spawnThermal();
-  if(Math.random() < 0.38) spawnZoneHazard(W + w + rand(-8, 28), gapY, gapH, lv.theme);
+  const prev = game.obstacles.length >= 2 ? game.obstacles[game.obstacles.length - 2] : null;
+  if(prev && Math.random() < 0.085){
+    const gapLeft = prev.x + prev.w;
+    const gapRight = W + w;
+    const gapW = gapRight - gapLeft;
+    if(gapW > 110 && gapRight > W * 0.25){
+      const hx = gapLeft + gapW * rand(0.38, 0.62);
+      spawnZoneHazard(hx, gapY, gapH, lv.theme);
+    }
+  }
 }
 const ZONE_HAZARD_TYPES = {
   forest:     ['bear','hunter'],
@@ -2112,18 +2140,21 @@ function drawHUD(c){
     drawHeart(c, W-22 - i*30, pad+10, 11, i<game.lives ? '#ff5252':'rgba(255,255,255,0.25)');
   }
 
-  // progress bar — пролёты до следующего уровня
+  // progress bar — очки за этот забег до открытия следующего уровня
   const barW=Math.min(W-32, 360), barX=(W-barW)/2, barY=pad+34, barH=14;
-  const nextReq = flightsToUnlockNext(progress.unlocked);
-  const tierStart = cumulativeFlightsForLevel(progress.unlocked - 1);
-  const tierProg = clamp((progress.totalFlights - tierStart) / nextReq, 0, 1);
+  const runGoal = scoreGoalForLevel(game.level);
+  const runProg = clamp(game.score / runGoal, 0, 1);
+  const nextLevel = game.level + 2;
+  const alreadyUnlocked = nextLevel <= progress.unlocked;
   rr(c,barX,barY,barW,barH,7); c.fillStyle='rgba(0,0,0,0.3)'; c.fill();
-  rr(c,barX,barY, Math.max(8,barW*tierProg), barH,7);
+  rr(c,barX,barY, Math.max(8,barW*runProg), barH,7);
   const bg=c.createLinearGradient(barX,0,barX+barW,0); bg.addColorStop(0,'#9fd9b8'); bg.addColorStop(1,'#7ec4a0');
   c.fillStyle=bg; c.fill();
   c.fillStyle='#fff'; c.font=fontSans(11,'600'); c.textAlign='center'; c.textBaseline='middle';
-  const flightsInTier = progress.totalFlights - tierStart;
-  c.fillText('Пролёты: '+game.flightsPassed+' · '+flightsInTier+'/'+nextReq+' до ур. '+(progress.unlocked+1), barX+barW/2, barY+barH/2+1);
+  const goalLabel = alreadyUnlocked
+    ? game.score+' оч. · цель '+runGoal
+    : game.score+'/'+runGoal+' оч. до ур. '+nextLevel;
+  c.fillText(goalLabel, barX+barW/2, barY+barH/2+1);
 
   if(state===STATE.PLAY && game.runStartFat && game.displayFat < game.runStartFat - 0.02){
     const slimPct = Math.round((1 - game.displayFat) * 100);
@@ -2234,8 +2265,8 @@ function buildLevels(){
     const cx=gx + (i%cols)*cell + 6;
     const cy=gy + Math.floor(i/cols)*(size+14);
     const unlocked = i < progress.unlocked;
-    const need = cumulativeFlightsForLevel(i);
-    addButton({ x:cx, y:cy, w:size, h:size, label:'', idx:i, locked:!unlocked, needFlights:need,
+    const need = i > 0 ? scoreGoalForLevel(i - 1) : 0;
+    addButton({ x:cx, y:cy, w:size, h:size, label:'', idx:i, locked:!unlocked, needScore:need,
       onClick:()=>{ if(unlocked){ startLevel(i); } else { haptic('warning'); } }, id:'lvl'+i });
   }
   const bw=Math.min(W*0.6,260);
@@ -2263,7 +2294,7 @@ function drawLevels(c){
     if(b.locked){
       c.font=fontSans(Math.round(b.h*0.1),'500');
       c.fillStyle='rgba(255,255,255,0.75)';
-      c.fillText(b.needFlights+' пр.', b.x+b.w/2, b.y+b.h*0.86);
+      c.fillText(b.needScore+' оч.', b.x+b.w/2, b.y+b.h*0.86);
     }
   }
 }
@@ -2691,7 +2722,8 @@ function hitPlayer(){
 function gameOver(){
   progress.best = Math.max(progress.best, game.score);
   progress.totalFood += game.foodCollected;
-  progress.unlocked = Math.max(progress.unlocked, computeUnlockedFromFlights(progress.totalFlights || 0));
+  recordLevelBest(game.level, game.score);
+  progress.unlocked = Math.max(progress.unlocked || 1, computeUnlockedFromLevelBests(progress.levelBests || []));
   saveProgress(progress);
   notifyParent({
     event:'game_over',

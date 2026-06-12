@@ -22,9 +22,14 @@ const SPECS: Record<
   storm: { top: "#fff59d", bot: "#5e35b1", wing: "#ffee58", tail: "#4527a0", beak: "#ffca28", perk: "storm" },
 };
 
+function smoothstep(a: number, b: number, t: number) {
+  const x = Math.max(0, Math.min(1, (t - a) / (b - a)));
+  return x * x * (3 - 2 * x);
+}
+
 function wingBeatWave(cycle: number) {
-  if (cycle < 0.3) return 1 - cycle / 0.3;
-  return (cycle - 0.3) / 0.7;
+  if (cycle < 0.27) return 1 - smoothstep(0, 1, cycle / 0.27);
+  return smoothstep(0, 1, (cycle - 0.27) / 0.73);
 }
 
 function drawWing(
@@ -38,12 +43,13 @@ function drawWing(
   color: string,
   wingAmp = 1.12,
 ) {
-  const beat = 1 - flapAmt;
+  const smoothFlap = smoothstep(0, 1, flapAmt);
+  const beat = 1 - smoothFlap;
   c.save();
   c.translate(x, y);
-  const a = (0.68 * wingAmp + flapAmt * (-1.25 * wingAmp - 0.68 * wingAmp)) * dir;
+  const a = (0.68 * wingAmp + smoothFlap * (-1.25 * wingAmp - 0.68 * wingAmp)) * dir;
   c.rotate(a);
-  c.scale(1 + beat * 0.14 * wingAmp, 1 - beat * 0.2 * wingAmp);
+  c.scale(1 + beat * 0.12 * wingAmp, 1 - beat * 0.17 * wingAmp);
   c.fillStyle = color;
   c.beginPath();
   c.ellipse(dir * w * 0.1, h * 0.15, w * (0.44 + beat * 0.05), h * (0.3 + beat * 0.07), dir * 0.3, 0, TAU);
@@ -59,7 +65,7 @@ function drawBirdBody(
   cy: number,
   scale: number,
 ) {
-  const flapAmt = wingBeatWave((t * 8.5) % 1);
+  const flapAmt = wingBeatWave((t * 7.2) % 1);
   const wingAmp = spec.perk === "classic" ? 1.55 : 1.12;
   const r = 28 * scale;
   const bodyW = r * 1.15;
