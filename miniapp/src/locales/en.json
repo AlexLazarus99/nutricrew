@@ -74,6 +74,7 @@
     "goal_points": "Points",
     "goal_protein": "Protein",
     "goal_calories": "Calories",
+    "goal_steps": "Steps",
     "leagueTitle": "Weekly league",
     "leagueNext": "{{xp}} XP to next tier",
     "leagueMax": "Top tier this week!",
@@ -1401,6 +1402,14 @@
   "water": {
     "title": "Water today",
     "ml": "ml"
+  },
+  "steps": {
+    "title": "Steps today",
+    "unit": "steps",
+    "goal": "Goal",
+    "goalDone": "Daily step goal reached!",
+    "trackingOn": "Tracking while app is open",
+    "trackingOff": "Track steps with phone"
   },
   "trends": {
     "title": "Trends",

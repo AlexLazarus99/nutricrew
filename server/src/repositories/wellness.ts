@@ -65,3 +65,67 @@ export async function getWaterHistory(userId: number, days = 14) {
     ml: r._sum.ml ?? 0,
   }));
 }
+
+function dayStartUtc(logDate: Date) {
+  const day = new Date(logDate);
+  day.setUTCHours(0, 0, 0, 0);
+  return day;
+}
+
+export async function getStepsGoal(userId: number) {
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(userId) },
+    select: { stepsGoal: true },
+  });
+  return user?.stepsGoal ?? 8000;
+}
+
+export async function setStepsGoal(userId: number, goalSteps: number) {
+  await prisma.user.update({
+    where: { id: BigInt(userId) },
+    data: { stepsGoal: goalSteps },
+  });
+}
+
+export async function getStepsTotalForDay(userId: number, logDate: Date) {
+  const day = dayStartUtc(logDate);
+  const row = await prisma.dailyStepTotal.findUnique({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+  });
+  return row?.steps ?? 0;
+}
+
+export async function addSteps(userId: number, delta: number, logDate: Date) {
+  const day = dayStartUtc(logDate);
+  const row = await prisma.dailyStepTotal.upsert({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+    create: { userId: BigInt(userId), logDate: day, steps: Math.max(0, delta) },
+    update: { steps: { increment: Math.max(0, delta) } },
+  });
+  return row.steps;
+}
+
+export async function setStepsTotal(userId: number, total: number, logDate: Date) {
+  const day = dayStartUtc(logDate);
+  const safe = Math.max(0, Math.round(total));
+  const row = await prisma.dailyStepTotal.upsert({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+    create: { userId: BigInt(userId), logDate: day, steps: safe },
+    update: { steps: safe },
+  });
+  return row.steps;
+}
+
+export async function getStepsHistory(userId: number, days = 14) {
+  const since = new Date();
+  since.setUTCDate(since.getUTCDate() - days);
+  since.setUTCHours(0, 0, 0, 0);
+  const rows = await prisma.dailyStepTotal.findMany({
+    where: { userId: BigInt(userId), logDate: { gte: since } },
+    orderBy: { logDate: "asc" },
+  });
+  return rows.map((r) => ({
+    date: r.logDate.toISOString().slice(0, 10),
+    steps: r.steps,
+  }));
+}

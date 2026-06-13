@@ -1,4 +1,5 @@
 import { prisma } from "../db/client.js";
+import * as wellnessRepo from "../repositories/wellness.js";
 
 export async function importWearablePayload(
   userId: number,
@@ -13,11 +14,15 @@ export async function importWearablePayload(
     },
   });
   const data = payload as { steps?: number; activeCalories?: number; weightKg?: number };
+  let syncedSteps: number | null = null;
+  if (Number.isFinite(data.steps) && (data.steps ?? 0) > 0) {
+    syncedSteps = await wellnessRepo.setStepsTotal(userId, Number(data.steps), new Date());
+  }
   return {
     id: row.id,
     imported: true,
     summary: {
-      steps: data.steps ?? null,
+      steps: syncedSteps ?? data.steps ?? null,
       activeCalories: data.activeCalories ?? null,
       weightKg: data.weightKg ?? null,
     },

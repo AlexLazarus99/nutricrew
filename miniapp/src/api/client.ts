@@ -312,6 +312,13 @@ export interface WaterResponse {
   history: Array<{ date: string; ml: number }>;
 }
 
+export interface StepsResponse {
+  steps: number;
+  goalSteps: number;
+  done: boolean;
+  history: Array<{ date: string; steps: number }>;
+}
+
 export interface FoodSearchResult {
   id: string;
   name: string;
@@ -854,6 +861,20 @@ export const api = {
     request<{ ml: number; goalMl: number }>("/me/water", {
       method: "POST",
       body: JSON.stringify({ ml }),
+    }),
+  getSteps: (date?: string) =>
+    request<StepsResponse>(
+      date ? `/me/steps?date=${encodeURIComponent(date)}` : "/me/steps",
+    ),
+  addSteps: (steps: number) =>
+    request<StepsResponse>("/me/steps", {
+      method: "POST",
+      body: JSON.stringify({ steps }),
+    }),
+  setStepsGoal: (goalSteps: number) =>
+    request<StepsResponse>("/me/steps/goal", {
+      method: "PATCH",
+      body: JSON.stringify({ goalSteps }),
     }),
   getWeightLogs: () => request<{ logs: TrendsResponse["weightLogs"] }>("/me/weight"),
   addWeightLog: (kg: number) =>

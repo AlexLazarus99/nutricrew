@@ -104,7 +104,7 @@ function DailyGoalCard({
   run: (k: string, fn: () => Promise<unknown>) => void;
 }) {
   const { t } = useTranslation();
-  const types = ["meals", "points", "protein", "calories"] as const;
+  const types = ["meals", "points", "protein", "calories", "steps"] as const;
   return (
     <div className="card feature-card">
       <h3>{t("features.dailyGoalTitle")}</h3>
@@ -132,7 +132,9 @@ function DailyGoalCard({
                         ? 50
                         : type === "calories"
                           ? 2000
-                          : 3,
+                          : type === "steps"
+                            ? 8000
+                            : 3,
                 }),
               )
             }

@@ -82,6 +82,7 @@ model User {
   weeklyLeagueXp        Int      @default(0) @map("weekly_league_xp")
   dailyGoalType         String   @default("meals") @map("daily_goal_type") @db.VarChar(16)
   dailyGoalTarget       Int      @default(3) @map("daily_goal_target")
+  stepsGoal             Int      @default(8000) @map("steps_goal")
   photoPrivacy          String   @default("team") @map("photo_privacy") @db.VarChar(16)
   birdBoostUntil        DateTime? @map("bird_boost_until")
   selectedBirdId        String   @default("classic") @map("selected_bird_id") @db.VarChar(32)
@@ -119,6 +120,7 @@ model User {
   duelsAsOpponent   TeamDuel[] @relation("DuelOpponent")
   weightLogs        WeightLog[]
   waterLogs         WaterLog[]
+  dailyStepTotals   DailyStepTotal[]
   orgMemberships    OrgMember[]
   recipeVotes       TeamRecipeVote[]
   wearableImports   WearableImport[]
@@ -347,6 +349,19 @@ model WaterLog {
 
   @@index([userId, logDate])
   @@map("water_logs")
+}
+
+model DailyStepTotal {
+  userId    BigInt   @map("user_id")
+  logDate   DateTime @map("log_date") @db.Date
+  steps     Int      @default(0)
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, logDate])
+  @@index([userId, logDate])
+  @@map("daily_step_totals")
 }
 
 model FoodSearchCache {

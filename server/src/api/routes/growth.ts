@@ -11,6 +11,7 @@ import {
 import { getCurrentWeekKey } from "../../lib/week.js";
 import * as teamsRepo from "../../repositories/teams.js";
 import * as usersRepo from "../../repositories/users.js";
+import * as wellnessRepo from "../../repositories/wellness.js";
 
 export const growthRouter = Router();
 const authedProfile = [authInitData, ensureUser, requireProfile] as const;
@@ -23,14 +24,21 @@ growthRouter.get("/", ...authedProfile, async (req, res) => {
 growthRouter.patch("/settings", ...authedProfile, async (req, res) => {
   const { dailyGoalType, dailyGoalTarget, photoPrivacy, onboardingVariant } =
     req.body as Record<string, unknown>;
-  const allowedGoals = ["meals", "points", "protein", "calories"];
+  const allowedGoals = ["meals", "points", "protein", "calories", "steps"];
   const allowedPrivacy = ["team", "private", "hidden"];
   const data: Parameters<typeof growthRepo.updateUserSettings>[1] = {};
   if (typeof dailyGoalType === "string" && allowedGoals.includes(dailyGoalType)) {
     data.dailyGoalType = dailyGoalType;
   }
   if (Number.isFinite(Number(dailyGoalTarget))) {
-    data.dailyGoalTarget = Math.max(1, Math.min(500, Math.round(Number(dailyGoalTarget))));
+    const raw = Math.round(Number(dailyGoalTarget));
+    const cap =
+      typeof dailyGoalType === "string" && dailyGoalType === "steps"
+        ? 50000
+        : typeof data.dailyGoalType === "string" && data.dailyGoalType === "steps"
+          ? 50000
+          : 500;
+    data.dailyGoalTarget = Math.max(1, Math.min(cap, raw));
   }
   if (typeof photoPrivacy === "string" && allowedPrivacy.includes(photoPrivacy)) {
     data.photoPrivacy = photoPrivacy;
@@ -39,6 +47,9 @@ growthRouter.patch("/settings", ...authedProfile, async (req, res) => {
     data.onboardingVariant = onboardingVariant;
   }
   await growthRepo.updateUserSettings(req.dbUser!.id, data);
+  if (data.dailyGoalType === "steps" && data.dailyGoalTarget) {
+    await wellnessRepo.setStepsGoal(req.dbUser!.id, data.dailyGoalTarget);
+  }
   res.json({ ok: true, growth: await buildGrowthPayload(req.dbUser!) });
 });
 

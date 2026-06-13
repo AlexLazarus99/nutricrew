@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { WaterWidget } from "../wellness/WaterWidget";
+import { StepsWidget } from "../wellness/StepsWidget";
 import { FoodActionBadge } from "./FoodActionBadge";
 
 type Props = {
@@ -36,6 +37,7 @@ export function FoodDayActions({ onScan, onPhoto, scanning, photoOpen }: Props) 
         </button>
       </div>
       <WaterWidget />
+      <StepsWidget />
     </div>
   );
 }

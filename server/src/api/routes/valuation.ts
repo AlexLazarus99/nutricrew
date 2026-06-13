@@ -98,6 +98,49 @@ valuationRouter.post("/me/water", ...authed, async (req, res) => {
   res.json({ ml: total, goalMl: 2000 });
 });
 
+valuationRouter.get("/me/steps", ...authed, async (req, res) => {
+  const day = req.query.date ? new Date(String(req.query.date)) : new Date();
+  const [steps, goalSteps, history] = await Promise.all([
+    wellnessRepo.getStepsTotalForDay(req.dbUser!.id, day),
+    wellnessRepo.getStepsGoal(req.dbUser!.id),
+    wellnessRepo.getStepsHistory(req.dbUser!.id, 14),
+  ]);
+  res.json({ steps, goalSteps, history, done: steps >= goalSteps });
+});
+
+valuationRouter.post("/me/steps", ...authed, async (req, res) => {
+  const body = req.body as { steps?: number; total?: number; mode?: string };
+  const day = body.mode === "set" && body.total != null ? new Date() : new Date();
+  let steps: number;
+  if (body.mode === "set" && Number.isFinite(Number(body.total))) {
+    steps = await wellnessRepo.setStepsTotal(
+      req.dbUser!.id,
+      Number(body.total),
+      day,
+    );
+  } else {
+    const delta = Number(body.steps);
+    if (!Number.isFinite(delta) || delta < 1 || delta > 50000) {
+      res.status(400).json({ error: "INVALID_STEPS" });
+      return;
+    }
+    steps = await wellnessRepo.addSteps(req.dbUser!.id, delta, day);
+  }
+  const goalSteps = await wellnessRepo.getStepsGoal(req.dbUser!.id);
+  res.json({ steps, goalSteps, done: steps >= goalSteps });
+});
+
+valuationRouter.patch("/me/steps/goal", ...authed, async (req, res) => {
+  const goalSteps = Number((req.body as { goalSteps?: number }).goalSteps);
+  if (!Number.isFinite(goalSteps) || goalSteps < 1000 || goalSteps > 50000) {
+    res.status(400).json({ error: "INVALID_STEP_GOAL" });
+    return;
+  }
+  await wellnessRepo.setStepsGoal(req.dbUser!.id, Math.round(goalSteps));
+  const steps = await wellnessRepo.getStepsTotalForDay(req.dbUser!.id, new Date());
+  res.json({ steps, goalSteps, done: steps >= goalSteps });
+});
+
 valuationRouter.get("/meals/search", ...authed, async (req, res) => {
   const q = String(req.query.q ?? "").trim();
   if (q.length < 2) {

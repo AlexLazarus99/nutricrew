@@ -215,6 +215,152 @@
   }
 }
 
+/* ——— Steps pedometer widget ——— */
+
+.steps-widget {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--section-accent) 10%, var(--surface)) 0%,
+    var(--surface) 60%
+  );
+  border-radius: var(--radius-sm);
+}
+
+.steps-widget--done {
+  border-color: color-mix(in srgb, var(--section-accent) 35%, transparent);
+}
+
+.steps-widget__layout {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.steps-widget__ring-wrap {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  flex-shrink: 0;
+}
+
+.steps-widget__ring {
+  width: 100%;
+  height: 100%;
+}
+
+.steps-widget__ring-bg {
+  fill: none;
+  stroke: color-mix(in srgb, var(--muted) 18%, transparent);
+  stroke-width: 7;
+}
+
+.steps-widget__ring-fill {
+  fill: none;
+  stroke: var(--section-accent);
+  stroke-width: 7;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.45s ease;
+}
+
+.steps-widget__ring-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+}
+
+.steps-widget__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.steps-widget__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.steps-widget__head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.steps-widget__pct {
+  font-weight: 700;
+  color: var(--section-accent);
+  font-size: 0.92rem;
+}
+
+.steps-widget__amount {
+  margin: 4px 0 8px;
+  font-size: 0.92rem;
+}
+
+.steps-widget__amount strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+
+.steps-widget__done-badge {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--section-accent);
+}
+
+.steps-widget__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.steps-widget__btn {
+  min-width: 0;
+}
+
+.steps-widget__track {
+  width: 100%;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--muted);
+}
+
+.steps-widget__track--on {
+  border-color: color-mix(in srgb, var(--section-accent) 45%, transparent);
+  color: var(--section-accent);
+  background: var(--section-accent-soft);
+}
+
+.steps-widget__goals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.steps-widget--pulse .steps-widget__ring-wrap {
+  animation: steps-pulse 0.45s ease;
+}
+
+@keyframes steps-pulse {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.steps-widget--static .steps-widget__ring-wrap {
+  animation: none;
+}
+
 .meal-edit-modal {
   max-width: 420px;
   margin: auto;

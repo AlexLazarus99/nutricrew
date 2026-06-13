@@ -1,5 +1,6 @@
 import * as growthRepo from "../repositories/growth.js";
 import * as mealsRepo from "../repositories/meals.js";
+import * as wellnessRepo from "../repositories/wellness.js";
 import * as teamsRepo from "../repositories/teams.js";
 import { getCurrentWeekKey } from "../lib/week.js";
 import {
@@ -27,6 +28,7 @@ export async function buildGrowthSummary(user: DbUser, ctx: GrowthMeContext) {
   if (dailyGoalType === "points") dailyProgress = ctx.todayPoints;
   if (dailyGoalType === "protein") dailyProgress = await mealsRepo.sumProteinToday(user.id);
   if (dailyGoalType === "calories") dailyProgress = await mealsRepo.sumCaloriesToday(user.id);
+  if (dailyGoalType === "steps") dailyProgress = await wellnessRepo.getStepsTotalForDay(user.id, new Date());
 
   const leagueXp = fields?.weeklyLeagueXp ?? 0;
   const leagueTier = tierFromWeeklyXp(leagueXp);
@@ -94,6 +96,7 @@ export async function buildGrowthPayload(user: DbUser, ctx?: Partial<GrowthMeCon
   let dailyProgress = mealsToday;
   if (dailyGoalType === "points") dailyProgress = todayPoints;
   if (dailyGoalType === "protein" || dailyGoalType === "calories") dailyProgress = dailyMacro;
+  if (dailyGoalType === "steps") dailyProgress = await wellnessRepo.getStepsTotalForDay(user.id, new Date());
 
   const leagueXp = fields?.weeklyLeagueXp ?? 0;
   const leagueTier = tierFromWeeklyXp(leagueXp);
