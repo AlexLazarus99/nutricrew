@@ -19,7 +19,9 @@
     "privacy": "Privacy",
     "menu": "Menu",
     "collapseMenu": "Hide menu",
-    "expandMenu": "Show menu"
+    "expandMenu": "Show menu",
+    "more": "More",
+    "moreTitle": "More sections"
   },
   "chat": {
     "title": "Team chat",
@@ -452,6 +454,7 @@
     "mealsTitle": "Meals",
     "addMeal": "+ Log meal",
     "empty": "Nothing logged this day yet. Snap a meal in the Log tab.",
+    "emptyHint": "Open the Log tab to photograph or describe your first meal of the day.",
     "mealMacros": "P {{p}} · C {{c}} · F {{f}} g",
     "viewAfterLog": "View diary",
     "recDeficit": "About {{kcal}} kcal left toward your {{goal}} goal — room for a snack or main meal.",
@@ -590,7 +593,8 @@
     "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service.",
     "cancel": "Cancel",
     "save": "Save",
-    "backHome": "Back to home"
+    "backHome": "Back to home",
+    "close": "Close"
   },
   "registration": {
     "title": "Welcome, {{name}}!",
@@ -805,6 +809,13 @@
   "nutriRun": {
     "title": "NutriRun",
     "playHint": "Fly first — activities and aviary below.",
+    "shellHint": "Tap to flap · hold to glide. Progress syncs with your crew.",
+    "boost": {
+      "crewShield": "NutriCrew bonus · shield",
+      "dailyGoal": "Daily goal · +1 life",
+      "mealLog": "Food diary · wider gaps",
+      "streak": "{{days}}-day streak · boost"
+    },
     "activities": {
       "title": "NutriCrew activities",
       "heroHint": "Fly, collect healthy food, sync scores with your crew.",

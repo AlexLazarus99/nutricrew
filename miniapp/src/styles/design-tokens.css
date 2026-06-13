@@ -1,0 +1,139 @@
+/**
+ * NutriCrew design tokens — single source for spacing, surfaces, Telegram bridge.
+ */
+
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+
+  --border: color-mix(in srgb, var(--muted, #a8b8ae) 22%, transparent);
+  --border-strong: color-mix(in srgb, var(--section-accent, #7ec4a0) 28%, transparent);
+  --text-muted: var(--muted, #a8b8ae);
+  --surface-1: var(--surface, #1e2a24);
+  --surface-muted: color-mix(in srgb, var(--surface-2, #283530) 88%, var(--section-bg, #141a17));
+
+  --tg-bg: var(--section-bg, #141a17);
+  --tg-surface: var(--section-surface, #1e2a24);
+  --tg-text: var(--text, #eef5f0);
+  --tg-button: var(--section-accent, #7ec4a0);
+  --tg-button-text: #0f1a14;
+  --tg-secondary-bg: var(--section-surface-2, #283530);
+  --tg-hint: var(--muted, #a8b8ae);
+  --tg-link: var(--section-accent, #7ec4a0);
+}
+
+.app-shell {
+  --section-bg: var(--tg-bg, #141a17);
+  --section-surface: var(--tg-surface, #1e2a24);
+  --section-surface-2: var(--tg-secondary-bg, #283530);
+  --section-accent: var(--tg-button, #7ec4a0);
+  --bg: var(--section-bg);
+  --surface: var(--section-surface);
+  --surface-2: var(--section-surface-2);
+  --accent: var(--section-accent);
+  --text: var(--tg-text, #eef5f0);
+  --muted: var(--tg-hint, #a8b8ae);
+}
+
+.app-shell[data-color-scheme="light"] {
+  --text: #1a2420;
+  --muted: #5a6b62;
+  --heading: #0f1a14;
+  --heading-subtle: #4a5c52;
+  --heading-gradient-a: #0f1a14;
+  --heading-gradient-b: #2a4a38;
+  --heading-gradient-c: #3d7a5c;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-strong: color-mix(in srgb, var(--section-accent) 35%, transparent);
+  --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 12px 32px rgba(0, 0, 0, 0.12);
+  --shadow-nav: 0 -6px 24px rgba(0, 0, 0, 0.1);
+  --tg-button-text: #fff;
+}
+
+.app-shell[data-color-scheme="light"][data-section="home"] {
+  --section-bg: #eef6f1;
+  --section-bg-mid: #e4f0ea;
+  --section-bg-end: #d8ebe2;
+  --section-surface: #f8fcfa;
+  --section-surface-2: #edf5f0;
+  --section-accent: #3d9a72;
+  --section-accent-soft: rgba(61, 154, 114, 0.14);
+  --section-glow: rgba(61, 154, 114, 0.12);
+}
+
+.app-shell[data-color-scheme="light"][data-section="log"] {
+  --section-bg: #faf4ef;
+  --section-bg-mid: #f5ebe4;
+  --section-bg-end: #efe2d8;
+  --section-surface: #fffcf9;
+  --section-surface-2: #f5ebe4;
+  --section-accent: #c87850;
+  --section-accent-soft: rgba(200, 120, 80, 0.14);
+  --section-glow: rgba(200, 120, 80, 0.1);
+}
+
+.app-shell[data-color-scheme="light"][data-section="guide"] {
+  --section-bg: #edf6f5;
+  --section-bg-mid: #e2f0ee;
+  --section-bg-end: #d6eae7;
+  --section-surface: #f8fcfb;
+  --section-surface-2: #e8f2f0;
+  --section-accent: #3a9a90;
+  --section-accent-soft: rgba(58, 154, 144, 0.14);
+  --section-glow: rgba(58, 154, 144, 0.1);
+}
+
+.app-shell[data-color-scheme="light"][data-section="team"] {
+  --section-bg: #eef3fa;
+  --section-bg-mid: #e4ecf8;
+  --section-bg-end: #d8e4f4;
+  --section-surface: #f8fbff;
+  --section-surface-2: #e8f0fa;
+  --section-accent: #4a84c8;
+  --section-accent-soft: rgba(74, 132, 200, 0.14);
+  --section-glow: rgba(74, 132, 200, 0.1);
+}
+
+.app-shell[data-color-scheme="light"][data-section="game"] {
+  --section-bg: #eaf6ef;
+  --section-bg-mid: #dff0e8;
+  --section-bg-end: #d2eadf;
+  --section-surface: #f6fcf9;
+  --section-surface-2: #e6f4ec;
+  --section-accent: #38a872;
+  --section-accent-soft: rgba(56, 168, 114, 0.14);
+  --section-glow: rgba(56, 168, 114, 0.12);
+}
+
+.app-shell[data-color-scheme="light"][data-section="quiz"] {
+  --section-bg: #faf0ec;
+  --section-bg-mid: #f5e8e2;
+  --section-bg-end: #efe0d8;
+  --section-surface: #fffbfa;
+  --section-surface-2: #f5ebe6;
+  --section-accent: #c87058;
+  --section-accent-soft: rgba(200, 112, 88, 0.14);
+  --section-glow: rgba(200, 112, 88, 0.1);
+}
+
+.app-shell[data-color-scheme="light"] .card,
+.app-shell[data-color-scheme="light"] .wellness-card,
+.app-shell[data-color-scheme="light"] .feature-card {
+  border-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.app-shell[data-color-scheme="light"] .btn-primary {
+  color: var(--tg-button-text, #fff);
+}
+
+.app-shell[data-color-scheme="light"] .bottom-nav {
+  background: color-mix(in srgb, var(--section-surface) 92%, #fff);
+  border-color: var(--border);
+}

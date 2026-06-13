@@ -90,7 +90,8 @@ export function WellnessGuidePage() {
         <p className="muted">{t("wellness.subtitle")}</p>
       </div>
 
-      <div className="wellness-tabs wellness-tabs-4" role="tablist">
+      <div className="section-sticky-nav">
+        <div className="wellness-tabs wellness-tabs-4" role="tablist">
         {(["body", "diets", "exercises", "calc"] as Tab[]).map((key) => (
           <button
             key={key}
@@ -103,6 +104,7 @@ export function WellnessGuidePage() {
             {t(`wellness.tabs.${key}`)}
           </button>
         ))}
+        </div>
       </div>
 
       {tab === "body" && (

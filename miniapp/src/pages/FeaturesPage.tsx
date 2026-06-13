@@ -8,6 +8,7 @@ import { AchievementBadgeIcon } from "../components/AchievementBadgeIcon";
 import { ChallengeIcon } from "../components/QuestIcon";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { LeagueTierBadge } from "../components/LeagueTierBadge";
+import { SkeletonCard } from "../components/ui/Skeleton";
 
 export function FeaturesPage() {
   const { t } = useTranslation();
@@ -55,9 +56,8 @@ export function FeaturesPage() {
     return (
       <section className="stack features-page">
         <ProgressLevelCard progress={me.progress} compact />
-        <div className="card features-loading">
-          <p className="muted">{t("features.loading")}</p>
-        </div>
+        <SkeletonCard />
+        <SkeletonCard />
       </section>
     );
   }

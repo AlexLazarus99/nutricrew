@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { DiaryMealEntry } from "../../api/client";
+import { Modal } from "../ui/Modal";
 
 type Props = {
   meal: DiaryMealEntry;
@@ -59,9 +60,25 @@ export function MealEditModal({ meal, onClose, onSave, onDelete }: Props) {
   }
 
   return (
-    <div className="modal-backdrop" role="dialog" aria-modal="true">
-      <form className="card meal-edit-modal" onSubmit={(e) => void submit(e)}>
-        <h3>{t("diary.editMeal")}</h3>
+    <Modal
+      title={t("diary.editMeal")}
+      onClose={onClose}
+      className="meal-edit-modal"
+      footer={
+        <>
+          <button type="button" className="btn btn-ghost" onClick={onClose}>
+            {t("common.cancel")}
+          </button>
+          <button type="button" className="btn btn-danger" disabled={busy} onClick={() => void remove()}>
+            {t("diary.deleteMeal")}
+          </button>
+          <button type="submit" form="meal-edit-form" className="btn btn-primary" disabled={busy}>
+            {t("common.save")}
+          </button>
+        </>
+      }
+    >
+      <form id="meal-edit-form" className="stack gap-xs" onSubmit={(e) => void submit(e)}>
         <label className="stack gap-xs">
           <span>{t("log.description")}</span>
           <input value={description} onChange={(e) => setDescription(e.target.value)} required />
@@ -85,18 +102,7 @@ export function MealEditModal({ meal, onClose, onSave, onDelete }: Props) {
           </label>
         </div>
         {error && <p className="error">{error}</p>}
-        <div className="meal-edit-actions">
-          <button type="button" className="btn btn-ghost" onClick={onClose}>
-            {t("common.cancel")}
-          </button>
-          <button type="button" className="btn btn-ghost danger" disabled={busy} onClick={() => void remove()}>
-            {t("diary.deleteMeal")}
-          </button>
-          <button type="submit" className="btn btn-primary" disabled={busy}>
-            {t("common.save")}
-          </button>
-        </div>
       </form>
-    </div>
+    </Modal>
   );
 }

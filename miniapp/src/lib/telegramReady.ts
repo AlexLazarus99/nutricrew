@@ -82,21 +82,62 @@ export function waitForTelegramInitData(): Promise<string> {
   });
 }
 
+function setThemeVar(name: string, value?: string) {
+  if (value) {
+    document.documentElement.style.setProperty(name, value);
+  }
+}
+
+/** Map Telegram themeParams into CSS custom properties. */
+export function applyTelegramTheme(tg?: TelegramWebApp): void {
+  const webApp = tg ?? window.Telegram?.WebApp;
+  if (!webApp) return;
+
+  const scheme = webApp.colorScheme ?? "light";
+  document.documentElement.dataset.colorScheme = scheme;
+  document.documentElement.style.colorScheme = scheme;
+
+  const params = webApp.themeParams;
+  if (!params) return;
+
+  setThemeVar("--tg-bg", params.bg_color);
+  setThemeVar("--tg-text", params.text_color);
+  setThemeVar("--tg-hint", params.hint_color);
+  setThemeVar("--tg-link", params.link_color);
+  setThemeVar("--tg-button", params.button_color);
+  setThemeVar("--tg-button-text", params.button_text_color);
+  setThemeVar("--tg-secondary-bg", params.secondary_bg_color);
+
+  if (params.bg_color) {
+    setThemeVar("--section-bg", params.bg_color);
+    setThemeVar("--tg-bg", params.bg_color);
+  }
+  if (params.secondary_bg_color) {
+    setThemeVar("--section-surface", params.secondary_bg_color);
+    setThemeVar("--section-surface-2", params.secondary_bg_color);
+    setThemeVar("--tg-surface", params.secondary_bg_color);
+    setThemeVar("--tg-secondary-bg", params.secondary_bg_color);
+  }
+  if (params.button_color) {
+    setThemeVar("--section-accent", params.button_color);
+    setThemeVar("--tg-button", params.button_color);
+  }
+  if (params.text_color) {
+    setThemeVar("--tg-text", params.text_color);
+  }
+  if (params.hint_color) {
+    setThemeVar("--tg-hint", params.hint_color);
+  }
+}
+
 export function bootstrapTelegramWebApp(): void {
   const tg = window.Telegram?.WebApp;
   if (!tg) return;
   tg.ready();
   tg.expand();
+  applyTelegramTheme(tg);
 
-  const scheme = tg.colorScheme ?? "light";
-  document.documentElement.dataset.colorScheme = scheme;
-  document.documentElement.style.colorScheme = scheme;
-
-  const params = tg.themeParams;
-  if (params?.bg_color) {
-    document.documentElement.style.setProperty("--tg-bg", params.bg_color);
-  }
-  if (params?.button_color) {
-    document.documentElement.style.setProperty("--tg-button", params.button_color);
-  }
+  tg.onEvent?.("themeChanged", () => {
+    applyTelegramTheme(tg);
+  });
 }

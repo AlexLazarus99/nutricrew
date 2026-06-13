@@ -29,6 +29,8 @@ interface TelegramWebApp {
   colorScheme: "light" | "dark";
   platform?: string;
   version?: string;
+  onEvent?: (event: string, handler: () => void) => void;
+  offEvent?: (event: string, handler: () => void) => void;
 }
 
 interface Window {

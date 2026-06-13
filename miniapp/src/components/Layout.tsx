@@ -44,7 +44,6 @@ function LayoutShell() {
     !pathname.startsWith("/log");
   const displayName = me.user.firstName ?? user?.first_name;
   const section = resolveSection(mustCompleteProfile, showWellnessOffer, pathname);
-  const compactNav = !mustCompleteProfile && !me.teamId;
 
   useEffect(() => {
     if (!mustCompleteProfile && pathname === "/" && !profileComplete) {
@@ -105,7 +104,7 @@ function LayoutShell() {
 
       {!mustCompleteProfile &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
-          <BottomNav compactNav={compactNav} hasTeam={!!me.teamId} />
+          <BottomNav hasTeam={!!me.teamId} />
         )}
     </div>
   );

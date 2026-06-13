@@ -28,7 +28,7 @@ type NutriRunMessage = {
   marathon?: boolean;
 };
 
-function buildNutriBoostPayload(me: MeResponse | null | undefined, meta: BirdGameMetaResponse | null) {
+function buildNutriBoostPayload(me: MeResponse | null | undefined, meta: BirdGameMetaResponse | null, t: (key: string, opts?: Record<string, unknown>) => string) {
   const growth = me?.growth;
   const mealsDone = (me?.mealsToday ?? 0) >= (me?.mealsTodayTarget ?? 3);
   const wellnessDone = !!growth?.dailyGoal?.done;
@@ -38,16 +38,16 @@ function buildNutriBoostPayload(me: MeResponse | null | undefined, meta: BirdGam
   let label = "";
   if (birdBoost) {
     kind = "game";
-    label = "Бонус NutriCrew · щит";
+    label = t("nutriRun.boost.crewShield");
   } else if (wellnessDone) {
     kind = "wellness";
-    label = "Цель дня · +жизнь";
+    label = t("nutriRun.boost.dailyGoal");
   } else if (mealsDone) {
     kind = "meals";
-    label = "Дневник еды · шире зазоры";
+    label = t("nutriRun.boost.mealLog");
   } else if (streakDays >= 3) {
     kind = "streak";
-    label = "Серия "+streakDays+" дн. · буст";
+    label = t("nutriRun.boost.streak", { days: streakDays });
   }
   const appBirdUnlocks: string[] = [];
   if (streakDays >= 7) appBirdUnlocks.push("storm");
@@ -92,8 +92,8 @@ export function BirdGamePage() {
   }, []);
 
   const syncNutriBoostToGame = useCallback(() => {
-    iframeRef.current?.contentWindow?.postMessage(buildNutriBoostPayload(me, meta), "*");
-  }, [me, meta]);
+    iframeRef.current?.contentWindow?.postMessage(buildNutriBoostPayload(me, meta, t), "*");
+  }, [me, meta, t]);
 
   const syncGameContext = useCallback(() => {
     syncNutriBoostToGame();
@@ -180,7 +180,7 @@ export function BirdGamePage() {
     <section className="stack nutrirun-page" aria-label={t("nutriRun.title")}>
       <div className="card hero nutrirun-hero">
         <h1 className="nutrirun-hero__title">{t("nutriRun.title")}</h1>
-        <p className="muted small">{t("nutriRun.playHint")}</p>
+        <p className="muted small">{t("nutriRun.shellHint")}</p>
       </div>
 
       {toast && (
@@ -192,17 +192,25 @@ export function BirdGamePage() {
         </p>
       )}
 
-      <div className="bird-quest-page nutrirun-game-first">
-        <iframe
-          ref={iframeRef}
-          src="/bird-quest.html"
-          title={t("nutriRun.title")}
-          className="bird-quest-frame"
-          allow="autoplay"
-          onLoad={() => {
-            syncGameContext();
-          }}
-        />
+      <div className="bird-quest-chrome nutrirun-game-first">
+        <div className="bird-quest-chrome__bar">
+          <div>
+            <p className="bird-quest-chrome__title">{t("nutriRun.title")}</p>
+            <p className="bird-quest-chrome__hint">{t("nutriRun.playHint")}</p>
+          </div>
+        </div>
+        <div className="bird-quest-page">
+          <iframe
+            ref={iframeRef}
+            src="/bird-quest.html"
+            title={t("nutriRun.title")}
+            className="bird-quest-frame"
+            allow="autoplay"
+            onLoad={() => {
+              syncGameContext();
+            }}
+          />
+        </div>
       </div>
 
       <NutriRunActivities

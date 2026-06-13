@@ -1,18 +1,7 @@
 :root {
   --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   --font-display: "Fraunces", "Georgia", serif;
-  --bg: #141a17;
-  --surface: #1e2a24;
-  --surface-2: #283530;
-  --text: #eef5f0;
-  --muted: #a8b8ae;
-  --accent: #7ec4a0;
-  --accent-dim: #9fd9b8;
-  --warn: #e8c080;
-  --radius: 12px;
   font-family: var(--font-sans);
-  color: var(--text);
-  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -64,102 +53,8 @@ body {
   margin: 0 auto;
   position: relative;
   isolation: isolate;
-
-  --section-bg: #0f1419;
-  --section-surface: #1a2332;
-  --section-surface-2: #243044;
-  --section-accent: #22c55e;
-  --section-accent-soft: rgba(34, 197, 94, 0.14);
-  --section-glow: rgba(34, 197, 94, 0.07);
-
-  --bg: var(--section-bg);
-  --surface: var(--section-surface);
-  --surface-2: var(--section-surface-2);
-  --accent: var(--section-accent);
-
-  background: var(--bg);
+  /* Section palette: wellness-theme.css + design-tokens.css */
   transition: background 0.4s ease;
-}
-
-.app-shell[data-section="home"] {
-  --section-bg: #0f1612;
-  --section-surface: #1a2820;
-  --section-surface-2: #243528;
-  --section-accent: #22c55e;
-  --section-accent-soft: rgba(34, 197, 94, 0.16);
-  --section-glow: rgba(34, 197, 94, 0.1);
-}
-
-.app-shell[data-section="log"] {
-  --section-bg: #16120f;
-  --section-surface: #241e18;
-  --section-surface-2: #322a22;
-  --section-accent: #f59e0b;
-  --section-accent-soft: rgba(245, 158, 11, 0.16);
-  --section-glow: rgba(245, 158, 11, 0.09);
-}
-
-.app-shell[data-section="guide"] {
-  --section-bg: #0f1818;
-  --section-surface: #1a2828;
-  --section-surface-2: #243636;
-  --section-accent: #14b8a6;
-  --section-accent-soft: rgba(20, 184, 166, 0.16);
-  --section-glow: rgba(20, 184, 166, 0.09);
-}
-
-.app-shell[data-section="team"] {
-  --section-bg: #101418;
-  --section-surface: #1a2432;
-  --section-surface-2: #243044;
-  --section-accent: #60a5fa;
-  --section-accent-soft: rgba(96, 165, 250, 0.16);
-  --section-glow: rgba(96, 165, 250, 0.09);
-}
-
-.app-shell[data-section="chat"] {
-  --section-bg: #0f1412;
-  --section-surface: #1a2420;
-  --section-surface-2: #243830;
-  --section-accent: #4ade9a;
-  --section-accent-soft: rgba(74, 222, 154, 0.16);
-  --section-glow: rgba(74, 222, 154, 0.09);
-}
-
-.app-shell[data-section="leaderboard"] {
-  --section-bg: #141018;
-  --section-surface: #221a2e;
-  --section-surface-2: #2e2440;
-  --section-accent: #c084fc;
-  --section-accent-soft: rgba(192, 132, 252, 0.16);
-  --section-glow: rgba(192, 132, 252, 0.09);
-}
-
-.app-shell[data-section="prizes"] {
-  --section-bg: #181610;
-  --section-surface: #2a2618;
-  --section-surface-2: #3a3424;
-  --section-accent: #fbbf24;
-  --section-accent-soft: rgba(251, 191, 36, 0.16);
-  --section-glow: rgba(251, 191, 36, 0.09);
-}
-
-.app-shell[data-section="game"] {
-  --section-bg: #0f1a14;
-  --section-surface: #1a2e22;
-  --section-surface-2: #243b2c;
-  --section-accent: #4ade80;
-  --section-accent-soft: rgba(74, 222, 128, 0.16);
-  --section-glow: rgba(74, 222, 128, 0.1);
-}
-
-.app-shell[data-section="auth"] {
-  --section-bg: #12161c;
-  --section-surface: #1c2430;
-  --section-surface-2: #283040;
-  --section-accent: #94a3b8;
-  --section-accent-soft: rgba(148, 163, 184, 0.14);
-  --section-glow: rgba(148, 163, 184, 0.07);
 }
 
 .app-shell::before {
@@ -3652,7 +3547,7 @@ button {
 }
 
 .bird-game-music-btn {
-  font-family: "Manrope", system-ui, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   padding: 4px 10px;

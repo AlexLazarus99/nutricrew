@@ -13,6 +13,9 @@ import {
 } from "../lib/diaryTarget";
 import { FoodLogHero } from "../components/food/FoodLogHero";
 import { WaterWidget } from "../components/wellness/WaterWidget";
+import { Skeleton, SkeletonCard } from "../components/ui/Skeleton";
+import { EmptyState } from "../components/ui/EmptyState";
+import { NavBadgeIcon } from "../components/nav/NavBadgeIcon";
 
 function formatDayLabel(date: Date, locale: string): string {
   return date.toLocaleDateString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
@@ -195,11 +198,22 @@ export function FoodDiaryPage() {
           </Link>
         </div>
 
-        {loading && <p className="muted">{t("common.loading")}</p>}
+        {loading && (
+          <div className="stack">
+            <Skeleton lines={2} />
+            <SkeletonCard />
+          </div>
+        )}
         {error && <p className="error">{error}</p>}
 
         {!loading && !error && data?.meals.length === 0 && (
-          <p className="muted">{t("diary.empty")}</p>
+          <EmptyState
+            title={t("diary.empty")}
+            hint={t("diary.emptyHint")}
+            icon={<NavBadgeIcon kind="food" size={44} />}
+            actionLabel={t("diary.addMeal")}
+            actionTo="/log"
+          />
         )}
 
         {!loading && data && data.meals.length > 0 && (

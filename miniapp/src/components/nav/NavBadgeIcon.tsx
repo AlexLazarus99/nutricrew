@@ -12,7 +12,10 @@ export type NavBadgeKind =
   | "rank"
   | "game"
   | "prizes"
-  | "report";
+  | "report"
+  | "more"
+  | "features"
+  | "settings";
 
 type Props = {
   kind: NavBadgeKind;
@@ -130,6 +133,30 @@ function NavSvgBadge({
             <rect className="nav-badge__bar nav-badge__bar--2" x="22" y="22" width="4" height="14" rx="1" fill="#c9a227" />
             <rect className="nav-badge__bar nav-badge__bar--3" x="28" y="18" width="4" height="18" rx="1" fill="#5aa8d8" />
             <path d="M15 18 h18" stroke="#8b7355" strokeWidth="1.2" opacity="0.45" />
+          </>
+        );
+      case "more":
+        return (
+          <>
+            <rect x="12" y="14" width="24" height="20" rx="6" fill={g("card")} opacity="0.4" />
+            <circle cx="18" cy="24" r="2.5" fill="#8b9e94" />
+            <circle cx="24" cy="24" r="2.5" fill="#8b9e94" />
+            <circle cx="30" cy="24" r="2.5" fill="#8b9e94" />
+          </>
+        );
+      case "features":
+        return (
+          <>
+            <path d="M24 10 L28 20 L38 22 L30 30 L32 40 L24 34 L16 40 L18 30 L10 22 L20 20 Z" fill={g("gold")} />
+            <circle cx="24" cy="24" r="4" fill="#fff" opacity="0.45" />
+          </>
+        );
+      case "settings":
+        return (
+          <>
+            <circle cx="24" cy="24" r="10" fill={g("card")} />
+            <circle cx="24" cy="24" r="4" fill="#7ec4a0" />
+            <path d="M24 8 v4 M24 36 v4 M8 24 h4 M36 24 h4" stroke="#8b9e94" strokeWidth="2" strokeLinecap="round" />
           </>
         );
       default:

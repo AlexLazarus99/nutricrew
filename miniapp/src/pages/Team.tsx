@@ -7,6 +7,9 @@ import { InviteShareButton } from "../components/InviteShareButton";
 import { TeamActivityFeed } from "../components/TeamActivityFeed";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { useTutorialTour } from "../hooks/useTutorialTour";
+import { SkeletonCard } from "../components/ui/Skeleton";
+import { EmptyState } from "../components/ui/EmptyState";
+import { NavBadgeIcon } from "../components/nav/NavBadgeIcon";
 
 export function TeamPage() {
   const { t } = useTranslation();
@@ -34,14 +37,22 @@ export function TeamPage() {
 
   if (error) {
     return (
-      <section className="card">
-        <p>{error}</p>
-        <p className="muted">{t("team.needTeam")}</p>
-      </section>
+      <EmptyState
+        title={t("common.error")}
+        hint={error}
+        icon={<NavBadgeIcon kind="team" size={44} />}
+        actionLabel={t("common.backHome")}
+        actionTo="/"
+      />
     );
   }
   if (!team) {
-    return <p className="loading">{t("common.loading")}</p>;
+    return (
+      <section className="stack">
+        <SkeletonCard />
+        <SkeletonCard />
+      </section>
+    );
   }
 
   const goal = team.weeklyGoal;

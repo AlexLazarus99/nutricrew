@@ -18,6 +18,12 @@
   --danger: #e8a0a0;
   --success: #7ec4a0;
 
+  --border: color-mix(in srgb, var(--muted) 22%, transparent);
+  --border-strong: color-mix(in srgb, var(--section-accent, var(--accent)) 28%, transparent);
+  --text-muted: var(--muted);
+  --surface-1: var(--surface);
+  --surface-muted: color-mix(in srgb, var(--surface-2) 88%, var(--bg));
+
   --radius: 18px;
   --radius-sm: 12px;
   --radius-lg: 24px;

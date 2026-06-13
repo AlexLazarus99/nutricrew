@@ -8,6 +8,7 @@ import { InviteShareButton } from "../components/InviteShareButton";
 import { DailyMealsProgress } from "../components/DailyMealsProgress";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { TutorialCoach } from "../components/TutorialCoach";
+import { HomeActionGrid } from "../components/ui/HomeActionGrid";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
@@ -183,12 +184,8 @@ export function HomePage() {
           <p className="muted small">{t("growth.autoJoinPending", { code: me.startInviteCode })}</p>
         )}
 
-        <Link to="/game" className="btn btn-secondary btn-block">
-          🐦 {t("home.gameCta")}
-        </Link>
-        <Link to="/quiz" className="btn btn-secondary btn-block">
-          🔥 {t("home.quizCta")}
-        </Link>
+        <HomeActionGrid />
+
         <SocialLinks links={me.socialLinks ?? {}} variant="card" />
       </section>
     );
@@ -218,11 +215,11 @@ export function HomePage() {
       />
 
       <Link to="/trends" className="btn btn-secondary btn-block">
-        📈 {t("trends.title")}
+        {t("trends.title")}
       </Link>
       {me.pro?.isPro && (
         <Link to="/pro" className="btn btn-secondary btn-block">
-          ✨ {t("pro.title")}
+          {t("pro.title")}
         </Link>
       )}
 
@@ -281,21 +278,13 @@ export function HomePage() {
         />
       )}
 
-      <Link to="/log" className="btn btn-primary btn-block">
-        {t("home.logCta")}
-      </Link>
-      <Link to="/guide" className="btn btn-secondary btn-block">
-        🥗 {t("home.guideCta")}
-      </Link>
-      <Link to="/quiz" className="btn btn-secondary btn-block">
-        🔥 {t("home.quizCta")}
-      </Link>
-      <Link to="/game" className="btn btn-secondary btn-block">
-        🐦 {t("home.gameCta")}
-      </Link>
-      <Link to="/prizes" className="btn btn-secondary btn-block">
-        ⭐ {t("nav.prizes")} ({me.starBalance})
-      </Link>
+      <HomeActionGrid
+        showPrizes
+        starBalance={me.starBalance}
+        showTrends
+        showPro={!!me.pro?.isPro}
+      />
+
       <SocialLinks links={me.socialLinks ?? {}} variant="card" />
     </section>
   );
