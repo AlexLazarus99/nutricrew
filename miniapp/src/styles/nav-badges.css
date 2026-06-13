@@ -1,13 +1,14 @@
-/* Bottom nav animated badges */
+/* Side nav animated badges */
 .nav-badge {
-  --nav-badge-size: 34px;
+  --nav-badge-size: 46px;
   position: relative;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: var(--nav-badge-size);
   height: var(--nav-badge-size);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: visible;
 }
 
@@ -15,7 +16,7 @@
 .nav-badge__shine {
   position: absolute;
   inset: -2px;
-  border-radius: 14px;
+  border-radius: 16px;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
@@ -38,7 +39,7 @@
 .nav-badge__bird {
   width: 100% !important;
   height: 100% !important;
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .nav-badge--active .nav-badge__ring,
@@ -95,44 +96,8 @@
   animation: nav-badge-spark 2s ease-in-out infinite;
 }
 
-.bottom-nav__item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 3px;
-  min-height: 56px;
-  padding: 4px 2px 6px !important;
-}
-
-.bottom-nav__label {
-  font-size: 0.58rem;
-  line-height: 1.1;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bottom-nav-10 {
-  grid-template-columns: repeat(10, 1fr);
-}
-
-.bottom-nav-10 a,
-.bottom-nav-10 .bottom-nav__item {
-  font-size: 0.55rem;
-  padding: 6px 1px !important;
-}
-
-.bottom-nav-10 .bottom-nav__label {
-  font-size: 0.52rem;
-}
-
-.bottom-nav-6 .bottom-nav__item,
-.bottom-nav-8 .bottom-nav__item,
-.bottom-nav-9 .bottom-nav__item,
-.bottom-nav-10 .bottom-nav__item {
-  min-height: 54px;
+.side-nav__item .nav-badge {
+  flex-shrink: 0;
 }
 
 /* Food tab action badges */

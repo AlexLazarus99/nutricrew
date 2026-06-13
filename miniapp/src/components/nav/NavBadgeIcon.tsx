@@ -47,7 +47,7 @@ function BadgeShell({
 function NavSvgBadge({
   kind,
   active,
-  size = 34,
+  size = 46,
 }: {
   kind: Exclude<NavBadgeKind, "home" | "game">;
   active?: boolean;
@@ -180,7 +180,7 @@ function NavSvgBadge({
   );
 }
 
-export function NavBadgeIcon({ kind, active = false, size = 34 }: Props) {
+export function NavBadgeIcon({ kind, active = false, size = 46 }: Props) {
   if (kind === "home") {
     return (
       <BadgeShell active={active} size={size} className="nav-badge--home">

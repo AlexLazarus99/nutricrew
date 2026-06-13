@@ -61,52 +61,55 @@ function LayoutShell() {
       data-reduce-motion={prefs.reduceMotion ? "true" : undefined}
     >
       <WellnessBackground />
-      <header className="app-header">
-        <div className="app-header__brand">
-          <h1 className="app-title">
-            <span className="app-title__text">{t("app.name")}</span>
-            <BrandPeachIcon size={36} className="app-title__peach" animated />
-          </h1>
-          <p className="tagline">{t("app.tagline")}</p>
+      <div className="app-shell__frame">
+        {!mustCompleteProfile &&
+          (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
+            <BottomNav compactNav={compactNav} hasTeam={!!me.teamId} />
+          )}
+        <div className="app-shell__content">
+          <header className="app-header">
+            <div className="app-header__brand">
+              <h1 className="app-title">
+                <span className="app-title__text">{t("app.name")}</span>
+                <BrandPeachIcon size={36} className="app-title__peach" animated />
+              </h1>
+              <p className="tagline">{t("app.tagline")}</p>
+            </div>
+            <AppHeaderActions
+              displayName={displayName}
+              username={user?.username}
+              photoUrl={user?.photo_url}
+            />
+          </header>
+
+          <main className="app-main">
+            {mustCompleteProfile ? (
+              <RegistrationPage onComplete={refresh} displayName={displayName} gateMode />
+            ) : showWellnessOffer && !pathname.startsWith("/game") && !pathname.startsWith("/quiz") ? (
+              <PostRegistrationOffer
+                displayName={displayName}
+                onDismiss={() => setOfferDismissed(true)}
+              />
+            ) : (
+              <Suspense fallback={<PageLoader />}>
+                <Outlet key={pathname} />
+              </Suspense>
+            )}
+          </main>
+
+          {!mustCompleteProfile && !showWellnessOffer && (
+            <footer className="app-footer">
+              <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
+              <nav className="footer-legal">
+                <NavLink to="/report">{t("nav.report")}</NavLink>
+                <NavLink to="/settings">{t("nav.settings")}</NavLink>
+                <NavLink to="/privacy">{t("nav.privacy")}</NavLink>
+              </nav>
+              <p className="muted build-stamp">build {APP_BUILD}</p>
+            </footer>
+          )}
         </div>
-        <AppHeaderActions
-          displayName={displayName}
-          username={user?.username}
-          photoUrl={user?.photo_url}
-        />
-      </header>
-
-      <main className="app-main">
-        {mustCompleteProfile ? (
-          <RegistrationPage onComplete={refresh} displayName={displayName} gateMode />
-        ) : showWellnessOffer && !pathname.startsWith("/game") && !pathname.startsWith("/quiz") ? (
-          <PostRegistrationOffer
-            displayName={displayName}
-            onDismiss={() => setOfferDismissed(true)}
-          />
-        ) : (
-          <Suspense fallback={<PageLoader />}>
-            <Outlet key={pathname} />
-          </Suspense>
-        )}
-      </main>
-
-      {!mustCompleteProfile && !showWellnessOffer && (
-        <footer className="app-footer">
-          <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
-          <nav className="footer-legal">
-            <NavLink to="/report">{t("nav.report")}</NavLink>
-            <NavLink to="/settings">{t("nav.settings")}</NavLink>
-            <NavLink to="/privacy">{t("nav.privacy")}</NavLink>
-          </nav>
-          <p className="muted build-stamp">build {APP_BUILD}</p>
-        </footer>
-      )}
-
-      {!mustCompleteProfile &&
-        (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
-        <BottomNav compactNav={compactNav} hasTeam={!!me.teamId} />
-      )}
+      </div>
     </div>
   );
 }

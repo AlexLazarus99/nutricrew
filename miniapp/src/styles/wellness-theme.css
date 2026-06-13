@@ -346,47 +346,37 @@ body {
   padding: 12px 18px 16px;
 }
 
-/* ——— Bottom nav (floating wellness bar) ——— */
-.bottom-nav {
-  margin: 0 12px 14px;
-  width: calc(100% - 24px);
-  max-width: calc(480px - 24px);
-  padding: 8px 10px 10px;
-  gap: 2px;
-  border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
-  background: color-mix(in srgb, var(--section-surface) 75%, transparent);
+/* ——— Side nav (left rail) ——— */
+.side-nav {
+  margin: 0;
+  padding: 10px 8px 12px;
+  gap: 0;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid color-mix(in srgb, var(--section-accent) 22%, transparent);
+  background: color-mix(in srgb, var(--section-surface) 82%, transparent);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-nav);
-  border-top: none;
+  box-shadow: none;
 }
 
-.bottom-nav a {
-  font-size: 0.62rem;
+.side-nav__item {
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  padding: 10px 4px;
+  letter-spacing: 0.01em;
+  padding: 8px 8px !important;
   border-radius: var(--radius-sm);
   transition: background 0.2s ease, color 0.2s ease;
 }
 
-.bottom-nav a {
+.side-nav__item {
   color: var(--muted);
 }
 
-.bottom-nav a.active {
+.side-nav__item.active {
   color: var(--section-accent);
   background: var(--section-accent-soft);
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--section-accent) 32%, transparent);
-}
-
-.bottom-nav-5 a,
-.bottom-nav-6 a,
-.bottom-nav-7 a,
-.bottom-nav-8 a,
-.bottom-nav-9 a {
-  font-size: 0.58rem;
 }
 
 /* ——— Cards & hero ——— */
@@ -826,11 +816,6 @@ body {
   background: var(--surface-2);
   color: var(--text);
   border-color: #3a4540;
-}
-
-/* ——— Floating nav position ——— */
-.bottom-nav {
-  bottom: 12px;
 }
 
 /* ——— Background motion ——— */
