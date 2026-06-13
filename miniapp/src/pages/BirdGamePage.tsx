@@ -4,6 +4,7 @@ import {
   api,
   type BirdGameLeaderboardEntry,
   type BirdGameMetaResponse,
+  type MeResponse,
 } from "../api/client";
 import {
   NutriRunActivities,
@@ -22,7 +23,45 @@ type NutriRunMessage = {
   flights?: number;
   fruits?: number;
   best?: number;
+  artifactXp?: number;
+  stars?: number;
+  marathon?: boolean;
 };
+
+function buildNutriBoostPayload(me: MeResponse | null | undefined, meta: BirdGameMetaResponse | null) {
+  const growth = me?.growth;
+  const mealsDone = (me?.mealsToday ?? 0) >= (me?.mealsTodayTarget ?? 3);
+  const wellnessDone = !!growth?.dailyGoal?.done;
+  const birdBoost = !!(meta?.birdBoost?.active || growth?.birdBoost?.active);
+  const streakDays = me?.streak?.days ?? 0;
+  let kind: string | null = null;
+  let label = "";
+  if (birdBoost) {
+    kind = "game";
+    label = "Бонус NutriCrew · щит";
+  } else if (wellnessDone) {
+    kind = "wellness";
+    label = "Цель дня · +жизнь";
+  } else if (mealsDone) {
+    kind = "meals";
+    label = "Дневник еды · шире зазоры";
+  } else if (streakDays >= 3) {
+    kind = "streak";
+    label = "Серия "+streakDays+" дн. · буст";
+  }
+  const appBirdUnlocks: string[] = [];
+  if (streakDays >= 7) appBirdUnlocks.push("storm");
+  else if (streakDays >= 3) appBirdUnlocks.push("frost");
+  return {
+    source: "nutricrew" as const,
+    event: "nutriboost" as const,
+    active: !!(kind || birdBoost),
+    kind,
+    label,
+    streakDays,
+    appBirdUnlocks,
+  };
+}
 
 function scoreLevelForApi(score: number): number {
   return Math.max(1, Math.floor(score / 3) + 1);
@@ -52,6 +91,15 @@ export function BirdGamePage() {
     );
   }, []);
 
+  const syncNutriBoostToGame = useCallback(() => {
+    iframeRef.current?.contentWindow?.postMessage(buildNutriBoostPayload(me, meta), "*");
+  }, [me, meta]);
+
+  const syncGameContext = useCallback(() => {
+    syncNutriBoostToGame();
+    if (roster) syncRosterToGame(roster);
+  }, [roster, syncNutriBoostToGame, syncRosterToGame]);
+
   const loadSideData = useCallback(async () => {
     try {
       const [m, lb] = await Promise.all([api.getGameMeta(), api.getBirdLeaderboard()]);
@@ -65,6 +113,10 @@ export function BirdGamePage() {
   useEffect(() => {
     void loadSideData();
   }, [loadSideData]);
+
+  useEffect(() => {
+    syncNutriBoostToGame();
+  }, [syncNutriBoostToGame]);
 
   const handleGameOver = useCallback(
     async (msg: NutriRunMessage) => {
@@ -86,7 +138,10 @@ export function BirdGamePage() {
       await refresh();
 
       setLastRun({ score, flights, fruits, improved });
-      if (bonusPts) {
+      const artifactXp = Math.max(0, Math.round(Number(msg.artifactXp) || 0));
+      if (artifactXp > 0) {
+        setToast(`Артефакт забега: +${artifactXp} XP`);
+      } else if (bonusPts) {
         setToast(t("growth.dailyBonusClaimed", { points: bonusPts }));
       } else if (improved) {
         setToast(t("nutriRun.activities.syncedBest"));
@@ -145,7 +200,7 @@ export function BirdGamePage() {
           className="bird-quest-frame"
           allow="autoplay"
           onLoad={() => {
-            if (roster) syncRosterToGame(roster);
+            syncGameContext();
           }}
         />
       </div>
@@ -165,6 +220,7 @@ export function BirdGamePage() {
         onRosterChange={(r) => {
           setRoster(r);
           syncRosterToGame(r);
+          syncNutriBoostToGame();
         }}
         onToast={setToast}
       />

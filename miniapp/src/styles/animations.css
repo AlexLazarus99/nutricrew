@@ -224,20 +224,20 @@
   transform: translateX(100%);
 }
 
-/* Side nav */
-.side-nav__item {
+/* Bottom nav */
+.bottom-nav__item {
   transition:
     transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1),
     background 0.2s ease,
     color 0.2s ease;
 }
 
-.side-nav__item.active {
+.bottom-nav__item.active {
   animation: nc-nav-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 
-.side-nav__item:active {
-  transform: scale(0.97);
+.bottom-nav__item:active {
+  transform: scale(0.94);
 }
 
 /* Progress & stats */
@@ -746,13 +746,13 @@
   animation: nc-stars-twinkle 2.8s ease-in-out infinite;
 }
 
-/* Side nav entrance */
-.side-nav:not(.side-nav--collapsed) {
-  animation: nc-nav-slide-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+/* Bottom nav entrance */
+.bottom-nav:not(.bottom-nav--collapsed) {
+  animation: nc-nav-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.side-nav-peek {
-  animation: nc-nav-slide-in 0.35s ease both;
+.bottom-nav-peek {
+  animation: nc-nav-rise 0.35s ease both;
 }
 
 /* Buttons loading */

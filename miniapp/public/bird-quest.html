@@ -259,6 +259,8 @@ function loadProgress(){
     if(r && typeof r === 'object'){
       r.totalFlights = r.totalFlights || 0;
       r.levelBests = r.levelBests || [];
+      r.levelStars = r.levelStars || [];
+      r.marathonBest = r.marathonBest || 0;
       migrateProgressFromFlights(r);
       r.unlocked = Math.max(1, computeUnlockedFromLevelBests(r.levelBests));
       return r;
@@ -274,7 +276,7 @@ function loadProgress(){
       };
     }
   }catch(e){}
-  return { unlocked:1, best:0, totalFood:0, totalFlights:0, levelBests:[] };
+  return { unlocked:1, best:0, totalFood:0, totalFlights:0, levelBests:[], levelStars:[], marathonBest:0 };
 }
 function saveProgress(p){
   p.levelBests = p.levelBests || [];
@@ -283,6 +285,251 @@ function saveProgress(p){
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(p)); }catch(e){}
 }
 let progress = loadProgress();
+if(!progress.levelStars) progress.levelStars = [];
+if(progress.marathonBest == null) progress.marathonBest = 0;
+
+/* ============================ ADVANCED MECHANICS ========================= */
+let nutriBoost = { active:false, kind:null, label:'', streakDays:0 };
+function dailySeedNum(){
+  const d = new Date();
+  return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+}
+function makeRng(seed){
+  let s = (seed >>> 0) || 1;
+  return ()=>{ s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+}
+let _spawnRng = null;
+function setSpawnRng(seed){ _spawnRng = seed != null ? makeRng(seed) : null; }
+function srand(){ return _spawnRng ? _spawnRng() : Math.random(); }
+function srandf(a,b){ return a + srand()*(b-a); }
+function srandi(a,b){ return Math.floor(srandf(a, b+1)); }
+
+function runPhase(){
+  if(game.score >= 250) return 2;
+  if(game.score >= 100) return 1;
+  return 0;
+}
+function hazardActive(){ return runPhase() >= 1; }
+function stormActive(){ return runPhase() >= 2; }
+
+function effectiveGapMult(){
+  let m = 1;
+  if(nutriBoost.active && (nutriBoost.kind === 'meals' || nutriBoost.kind === 'wellness')) m += 0.065;
+  return m;
+}
+
+function initRunMechanics(mode){
+  game.runMode = mode || 'level';
+  game.marathon = mode === 'marathon';
+  game.runStats = { perfectGates:0, nearMisses:0, junkTaken:0, cleanStreak:0, cleanBest:0 };
+  game.metabolicBoost = 0;
+  game.stormWasActive = false;
+  game.stormBanner = null;
+  game.pipeSmashReady = 0;
+  game.runPowers = {};
+  game.weather = initWeatherForTheme(getLevel(game.level).theme);
+  game.marathonCp = 0;
+  game.marathonCpUsed = false;
+  const seed = dailySeedNum() + (game.marathon ? 7777 : game.level * 997);
+  setSpawnRng(seed);
+  applyNutriBoostStart();
+}
+
+function initWeatherForTheme(theme){
+  if(theme === 'desert') return { type:'wind', gust:0, gustVy:0 };
+  if(theme === 'antarctica') return { type:'ice', iceTime:0 };
+  if(theme === 'underwater') return { type:'buoy' };
+  return { type:null };
+}
+
+function applyNutriBoostStart(){
+  if(!nutriBoost.active) return;
+  if(nutriBoost.kind === 'game' || nutriBoost.kind === 'water'){
+    game.shieldTime = Math.max(game.shieldTime, 4.5);
+    game.pipeSmashReady = (game.pipeSmashReady||0) + 1;
+  }
+  if(nutriBoost.kind === 'wellness' && game.lives < MAX_LIVES){
+    game.lives++;
+  }
+  if(nutriBoost.kind === 'streak'){
+    game.metabolicBoost = Math.max(game.metabolicBoost, 6);
+  }
+  if(nutriBoost.label){
+    addFloatText(W/2, H*0.36, nutriBoost.label, '#7ec4a0', 0.92);
+  }
+}
+
+function updateRunPhases(){
+  const ph = runPhase();
+  if(ph >= 1 && !game.hazardWasActive){
+    game.hazardWasActive = true;
+    game.hazardBanner = { time: 2.8 };
+    addFloatText(W/2, H*0.26, '⚠ Движущиеся трубы!', '#fff59d', 1.05);
+    haptic('warning');
+  }
+  if(ph >= 2 && !game.stormWasActive){
+    game.stormWasActive = true;
+    game.stormBanner = { time: 2.5 };
+    addFloatText(W/2, H*0.32, '⛈ Шторм — ищи термики!', '#b39ddb', 1.05);
+    haptic('warning');
+  }
+  if(game.marathon){
+    const cp = Math.floor(game.score / 200) * 200;
+    if(cp >= 200 && cp > game.marathonCp){
+      game.marathonCp = cp;
+      SFX.level();
+      addFloatText(W/2, H*0.22, '🏁 Чекпоинт '+cp, '#ffd54f', 1.0);
+      haptic('success');
+    }
+  }
+}
+
+function updateWeather(dt, b){
+  const w = game.weather;
+  if(!w || !w.type) return;
+  if(w.type === 'wind'){
+    w.gust -= dt;
+    if(w.gust <= 0){ w.gust = srandf(2.5, 5.5); w.gustVy = srandf(120, 220); }
+    b.vy += w.gustVy * dt * 0.35;
+  } else if(w.type === 'ice'){
+    if(w.iceTime > 0) w.iceTime -= dt;
+    else if(srand() < 0.012) w.iceTime = srandf(0.8, 1.6);
+  } else if(w.type === 'buoy'){
+    b.vy -= 95 * dt;
+  }
+}
+function weatherFlapMult(){
+  const w = game.weather;
+  if(w && w.type === 'ice' && w.iceTime > 0) return 0.72;
+  return 1;
+}
+function drawWeatherFx(c){
+  const w = game.weather, lv = getLevel(game.level);
+  if(!w || !w.type) return;
+  c.save();
+  if(w.type === 'wind' && lv.theme === 'desert'){
+    c.globalAlpha = 0.12 + 0.06*Math.sin(game.t*3);
+    c.strokeStyle = '#ffe082'; c.lineWidth = 1.5;
+    for(let i=0;i<6;i++){
+      const y = H*0.15 + i*H*0.11 + (game.scrollX*0.2 + i*40)%(W+80) - 40;
+      c.beginPath(); c.moveTo(-20, y); c.lineTo(W*0.35, y+8); c.stroke();
+    }
+  } else if(w.type === 'ice' && w.iceTime > 0){
+    c.globalAlpha = 0.08 + 0.04*Math.sin(game.t*8);
+    c.fillStyle = '#e1f5fe'; c.fillRect(0,0,W,H);
+  } else if(w.type === 'buoy'){
+    c.globalAlpha = 0.06;
+    c.fillStyle = '#4dd0e1'; c.fillRect(0, H*0.55, W, H*0.25);
+  }
+  c.restore();
+}
+
+function spawnThermalChain(){
+  const baseX = W + srandf(50, 110), baseY = srandf(H*0.18, H*0.52);
+  for(let i=0;i<3;i++){
+    game.thermals.push({
+      x: baseX + i*srandf(58, 78), y: baseY + srandf(-18, 18),
+      w: srandf(68, 98), h: srandf(88, 130), phase: srandf(0, TAU), chain:true
+    });
+  }
+}
+
+function trackRunPower(kind){
+  if(!kind || kind === 'life') return;
+  game.runPowers[kind] = true;
+}
+function runArtifactBonus(){
+  const n = Object.keys(game.runPowers || {}).length;
+  if(n < 3) return 0;
+  return 15 + n * 5;
+}
+
+function trySmashPipe(b, o){
+  if(o.smashed || (o.materialize != null && o.materialize > 0)) return false;
+  if(game.pipeSmashReady <= 0) return false;
+  if(game.shieldTime <= 0 && game.nitroTime <= 0) return false;
+  const hitTop = circleRect(b.x,b.y,b.r*0.78, o.x,0,o.w,o.gapY);
+  const hitBot = circleRect(b.x,b.y,b.r*0.78, o.x,o.gapY+o.gapH,o.w,H-(o.gapY+o.gapH));
+  if(!hitTop && !hitBot) return false;
+  game.pipeSmashReady--;
+  o.smashed = true;
+  burst(b.x, b.y, game.nitroTime > 0 ? '#ff9800' : '#64b5f6', 22, 200);
+  addScore(12, 'Пробил!', b.x, b.y - 28);
+  SFX.level(); haptic('heavy');
+  return true;
+}
+
+function bumpCleanStreak(){
+  game.runStats.cleanStreak++;
+  game.runStats.cleanBest = Math.max(game.runStats.cleanBest, game.runStats.cleanStreak);
+  if(game.runStats.cleanStreak >= 3){
+    game.metabolicBoost = Math.max(game.metabolicBoost, 8);
+    if(game.runStats.cleanStreak === 3){
+      addFloatText(game.bird.x, game.bird.y - 42, '🔥 Чистая серия!', '#aeea00', 1.0);
+      SFX.eat();
+    }
+  }
+}
+function breakCleanStreak(){ game.runStats.cleanStreak = 0; }
+
+function computeRunStars(){
+  let stars = 0;
+  const goal = scoreGoalForLevel(game.level);
+  if(game.score >= goal) stars = 1;
+  if(game.runStats.junkTaken === 0 && game.foodCollected >= 2) stars = Math.max(stars, 2);
+  if(game.runStats.perfectGates >= 3 || game.runStats.nearMisses >= 5) stars = Math.max(stars, 3);
+  return stars;
+}
+function saveRunStars(){
+  if(game.marathon || game.runMode !== 'level') return;
+  const stars = computeRunStars();
+  const goal = scoreGoalForLevel(game.level);
+  if(game.score < goal) return;
+  progress.levelStars = progress.levelStars || [];
+  progress.levelStars[game.level] = Math.max(progress.levelStars[game.level] || 0, stars);
+}
+
+function applyNutriCrewMessage(d){
+  if(!d || d.source !== 'nutricrew') return;
+  if(d.event === 'roster'){
+    applyRosterMessage(d);
+    return;
+  }
+  if(d.event === 'nutriboost'){
+    nutriBoost = {
+      active: !!d.active,
+      kind: d.kind || null,
+      label: d.label || '',
+      streakDays: d.streakDays || 0
+    };
+    if(Array.isArray(d.appBirdUnlocks)){
+      for(const id of d.appBirdUnlocks){
+        if(BIRD_SPECIES[id] && !ownedBirdIds.includes(id)) ownedBirdIds.push(id);
+      }
+    }
+  }
+}
+window.addEventListener('message', e => applyNutriCrewMessage(e.data));
+
+function marathonRespawn(){
+  game.score = game.marathonCp;
+  game.invuln = 2.2;
+  game.obstacles.length = 0;
+  game.debris.length = 0;
+  game.zoneHazards.length = 0;
+  game.spawnTimer = 0.8;
+  resetCombo();
+  addFloatText(W/2, H*0.4, '↻ С '+game.marathonCp+' очков', '#ffd54f', 1.05);
+  SFX.level(); haptic('medium');
+}
+
+function drawStarRow(c, x, y, count, max, size){
+  for(let i=0;i<max;i++){
+    c.fillStyle = i < count ? '#ffd54f' : 'rgba(255,255,255,0.22)';
+    c.font = fontSans(size,'700'); c.textAlign='left'; c.textBaseline='middle';
+    c.fillText('★', x + i*(size+4), y);
+  }
+}
 
 /* ------------------------------- Particles ------------------------------- */
 const particles = [];
@@ -357,7 +604,7 @@ const FOOD_COLORS = {
   apple:'#e53935', banana:'#ffd54f', carrot:'#fb8c00', broccoli:'#43a047',
   strawberry:'#e53935', cherry:'#d32f2f', grapes:'#8e24aa', watermelon:'#e53935',
   pepper:'#43a047', kiwi:'#8bc34a',
-  alarmclock:'#90caf9', turboorange:'#ff9800'
+  alarmclock:'#90caf9', turboorange:'#ff9800', dragonfruit:'#ec407a'
 };
 function addFloatText(x,y,text,color,scale){
   floatTexts.push({x,y,text,color,life:1,vy:-95,scale:scale||1});
@@ -452,6 +699,7 @@ const game = {
   thermals:[], thermalTimer:8,
   nearMissCd:0, speedMult:1,
   hazardWasActive:false, hazardBanner:null,
+  nextObstacleId:0,
 };
 const POWER = {
   shield:{ label:'Щит', color:'#64b5f6', dur:5 },
@@ -459,9 +707,10 @@ const POWER = {
   slowmo:{ label:'Замедление', color:'#4dd0e1', dur:4 },
   chrono:{ label:'Стоп-время!', color:'#90caf9', dur:5 },
   nitro:{ label:'Нитро!', color:'#ff9800', dur:0 },
-  golden:{ label:'Золотой бонус', color:'#ffd54f', dur:0 }
+  golden:{ label:'Золотой бонус', color:'#ffd54f', dur:0 },
+  life:{ label:'+Жизнь', color:'#ec407a', dur:0 }
 };
-function hazardActive(){ return game.score > 100; }
+const MAX_LIVES = 5;
 function scrollSlowFactor(){
   if(game.chronoTime > 0) return 0.42;
   if(game.slowmoTime > 0) return 0.62;
@@ -517,7 +766,7 @@ function handleDown(px,py){
 function flap(){
   if(!game.bird) return;
   const b = game.bird;
-  b.vy = -420;
+  b.vy = -420 * weatherFlapMult();
   b.wing = 1;
   b.flapBoost = 1;
   b.wingCycle = 0.02;
@@ -542,23 +791,19 @@ window.addEventListener('keydown', e=>{
   }
 });
 
-function addScore(pts, label, x, y){
-  const mult = game.multiplier;
+function addScore(pts, label, x, y, extraMult){
+  const mult = game.multiplier * (extraMult || 1);
   const gain = Math.round(pts * mult);
   game.score += gain;
   progress.best = Math.max(progress.best, game.score);
   if(state === STATE.PLAY && game.intro <= 0) tryUnlockFromRunScore();
-  if(!game.hazardWasActive && game.score > 100){
-    game.hazardWasActive = true;
-    game.hazardBanner = { time: 2.8 };
-    addFloatText(W/2, H*0.26, '⚠ Движущиеся трубы!', '#fff59d', 1.05);
-    haptic('warning');
-  }
+  updateRunPhases();
   if(label) addFloatText(x||game.bird.x, y||game.bird.y-30, label+(mult>1?' x'+mult.toFixed(1):''), mult>1?'#ffd54f':'#eef5f0', mult>1?1.15:1);
 }
 function bumpCombo(){
   game.combo++;
-  game.comboTimer = 4;
+  const boost = game.metabolicBoost > 0 ? 5.5 : 4;
+  game.comboTimer = boost;
   game.multiplier = Math.min(maxComboMult(), 1 + Math.floor(game.combo / 4) * 0.5);
 }
 function resetCombo(){
@@ -569,6 +814,7 @@ function resetCombo(){
 function activatePower(kind){
   const p = POWER[kind];
   if(!p) return;
+  trackRunPower(kind);
   if(kind==='golden'){
     addScore(50, '+50★', game.bird.x, game.bird.y-40);
     game.magnetTime = Math.max(game.magnetTime, 4);
@@ -577,7 +823,7 @@ function activatePower(kind){
     SFX.level();
     return;
   }
-  if(kind==='shield') game.shieldTime = p.dur + (getBirdSpec().perk === 'frost' ? 1.5 : 0);
+  if(kind==='shield'){ game.shieldTime = p.dur + (getBirdSpec().perk === 'frost' ? 1.5 : 0); game.pipeSmashReady = (game.pipeSmashReady||0) + 1; }
   if(kind==='magnet') game.magnetTime = p.dur;
   if(kind==='slowmo') game.slowmoTime = p.dur;
   if(kind==='chrono'){
@@ -588,6 +834,7 @@ function activatePower(kind){
   }
   if(kind==='nitro'){
     game.nitroTime = 4.6;
+    game.pipeSmashReady = (game.pipeSmashReady||0) + 1;
     burst(game.bird.x, game.bird.y, '#ff9800', 32, 280);
     for(let i=0;i<20;i++){
       spawnParticle(game.bird.x - game.bird.r, game.bird.y+rand(-10,14), {
@@ -666,6 +913,7 @@ function drawPowerIcons(c){
   if(game.chronoTime>0) icons.push({t:game.chronoTime, icon:'⏰', col:'#90caf9'});
   else if(game.slowmoTime>0) icons.push({t:game.slowmoTime, icon:'⏱', col:'#4dd0e1'});
   if(game.nitroTime>0) icons.push({t:game.nitroTime, icon:'🔥', col:'#ff9800'});
+  if(game.pipeSmashReady>0) icons.push({t:game.pipeSmashReady, icon:'💥', col:'#ffd54f', isCount:true});
   let x = W - 18;
   const y = H*0.80 - 42 - safeBottom();
   for(const ic of icons){
@@ -673,7 +921,7 @@ function drawPowerIcons(c){
     c.textAlign='right'; c.textBaseline='middle';
     c.font = fontSans(11,'600');
     c.fillStyle = ic.col;
-    c.fillText(ic.icon+' '+Math.ceil(ic.t)+'с', x, y);
+    c.fillText(ic.icon+(ic.isCount ? ' x'+ic.t : ' '+Math.ceil(ic.t)+'с'), x, y);
     x -= 72;
     c.restore();
   }
@@ -688,6 +936,7 @@ function checkNearMiss(b, o){
   const nearBot = by+br > gapBot-margin && by-br < gapBot+margin && bx > o.x-10 && bx < o.x+o.w+10;
   if(nearTop || nearBot){
     game.nearMissCd = 1.2;
+    if(game.runStats) game.runStats.nearMisses++;
     const riskPts = getBirdSpec().perk === 'storm' ? 8 : 5;
     addScore(riskPts, 'Риск!', bx, by-24);
     haptic('light');
@@ -719,7 +968,10 @@ try{
   const saved = localStorage.getItem('nutrirun_bird');
   if(saved && BIRD_SPECIES[saved]) selectedBirdId = saved;
 }catch(e){}
-window.addEventListener('message', e => applyRosterMessage(e.data));
+
+function startMarathon(){
+  startLevel(Math.max(0, progress.unlocked - 1), { marathon: true });
+}
 
 function drawBirdSpeciesFx(c, spec, b, fat, time, bodyW, bodyH){
   const perk = spec.perk;
@@ -1224,6 +1476,39 @@ function drawFood(c, type, x, y, r, t, bob, isJunkFood){
       c.strokeStyle='#e65100'; c.lineWidth=r*0.1; c.beginPath(); c.moveTo(0,-r*0.5); c.lineTo(r*0.08,-r*0.85); c.stroke();
       c.restore();
       break; }
+    case 'dragonfruit': {
+      const pulse = 0.92 + 0.08 * Math.sin(t * 5.5 + bobA);
+      c.save(); c.scale(pulse, pulse);
+      c.globalAlpha = 0.35 + 0.2 * Math.sin(t * 6 + bobA);
+      c.fillStyle = '#f48fb1';
+      c.beginPath(); c.arc(0, 0, r * 1.12, 0, TAU); c.fill();
+      c.globalAlpha = 1;
+      const skin = c.createLinearGradient(-r * 0.5, -r, r * 0.5, r);
+      skin.addColorStop(0, '#f06292'); skin.addColorStop(0.55, '#ec407a'); skin.addColorStop(1, '#ad1457');
+      c.fillStyle = skin;
+      c.beginPath(); c.ellipse(0, 0, r * 0.72, r * 0.88, 0, 0, TAU); c.fill();
+      c.fillStyle = '#558b2f';
+      for(let i = 0; i < 7; i++){
+        const a = -Math.PI * 0.72 + i / 6 * Math.PI * 1.44;
+        c.beginPath();
+        c.moveTo(Math.cos(a) * r * 0.34, -r * 0.78);
+        c.lineTo(Math.cos(a) * r * 0.58, -r * 0.98);
+        c.lineTo(Math.cos(a + 0.08) * r * 0.34, -r * 0.78);
+        c.fill();
+      }
+      c.fillStyle = '#fafafa';
+      c.beginPath(); c.ellipse(0, r * 0.08, r * 0.48, r * 0.58, 0, 0, TAU); c.fill();
+      c.fillStyle = '#212121';
+      for(let i = 0; i < 16; i++){
+        const a = i / 16 * TAU;
+        c.beginPath(); c.arc(Math.cos(a) * r * 0.28, r * 0.08 + Math.sin(a) * r * 0.34, r * 0.045, 0, TAU); c.fill();
+      }
+      c.fillStyle = '#ff5252';
+      c.font = fontSans(r * 0.34, '800');
+      c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText('♥', r * 0.42, -r * 0.42);
+      c.restore();
+      break; }
     /* ---- JUNK ---- */
     case 'donut': {
       c.fillStyle='#d7ccc8'; c.beginPath(); c.arc(0,0,r*0.82,0,TAU); c.fill();
@@ -1639,9 +1924,16 @@ function onObstaclePassed(o){
   progress.totalFlights = (progress.totalFlights || 0) + 1;
   bumpCombo();
   const gapMid = o.gapY + o.gapH*0.5;
-  const perfect = Math.abs(b.y - gapMid) < o.gapH*0.16;
-  addScore(perfect ? 8 : 2, perfect ? 'Идеально!' : null, b.x, b.y-20);
-  if(perfect){ burst(b.x, b.y, '#7ec4a0', 10, 100); haptic('light'); }
+  const perfect = Math.abs(b.y - gapMid) < o.gapH*0.12;
+  if(perfect){
+    if(game.runStats) game.runStats.perfectGates++;
+    addScore(15, 'Perfect!', b.x, b.y-24, 2);
+    game.invuln = Math.max(game.invuln, 0.45);
+    burst(b.x, b.y, '#7ec4a0', 14, 120);
+    haptic('medium');
+  } else {
+    addScore(2, null, b.x, b.y-20);
+  }
 }
 function debrisKindForTheme(theme){
   if(theme==='forest') return 'branch';
@@ -1664,42 +1956,66 @@ function spawnDebrisFromPipe(o){
 function spawnObstacle(){
   const p=game.params;
   const lv=getLevel(game.level);
-  const gapH = H*p.gap;
-  const minTop = H*0.10, maxTop = H*0.80 - gapH;
-  const gapY = rand(minTop, Math.max(minTop+10,maxTop));
-  const w = clamp(W*0.13, 56, 92);
   const hazard = hazardActive();
+  const treasure = !hazard && srand() < 0.085;
+  let gapH = H * p.gap * effectiveGapMult();
+  if(treasure) gapH *= 0.72;
+  const minTop = H*0.10, maxTop = H*0.80 - gapH;
+  const w = clamp(W*0.13, 56, 92);
   const moveChance = hazard ? clamp(0.45 + (game.score-100)/350, 0.45, 0.88) : 0.12;
-  const moving = Math.random() < moveChance;
-  const gapVy = moving ? rand(-48, 48) * (hazard ? 1 + clamp((game.score-100)/250, 0, 0.6) : 0.7) : 0;
+  const moving = srand() < moveChance;
+  const gapTravel = Math.max(16, (maxTop - minTop) * (hazard ? 0.38 : 0.28));
+  const gapCenter = (minTop + maxTop - gapH) * 0.5;
+  const startNorm = moving ? srandf(-0.92, 0.92) : srandf(-0.35, 0.35);
+  const gapY = gapCenter + startNorm * (moving ? gapTravel : gapTravel * 0.35);
+  const movingSpeed = moving ? srandf(0.7, 1.25) * (hazard ? 1 + clamp((game.score-100)/400, 0, 0.45) : 1) : 0;
+  const obsId = ++game.nextObstacleId;
   game.obstacles.push({
-    x:W+w, w, gapY, gapH, gapVy, gapYMin:minTop, gapYMax:maxTop,
-    moving, passed:false, kind:lv.theme,
-    debrisTimer: hazard ? rand(2.2, 4.2) : 999
+    id: obsId, x:W+w, w, gapY, gapH, gapYMin:minTop, gapYMax:maxTop,
+    gapCenter, movingAmp: gapTravel, movingPhase: Math.asin(clamp(startNorm, -1, 1)), movingSpeed,
+    moving, passed:false, kind:lv.theme, treasure,
+    materialize: 0.55, smashed:false,
+    debrisTimer: hazard ? srandf(2.2, 4.2) : 999
   });
+  let treasureSpawned = false;
   const n = randi(2, 4);
   for(let i=0;i<n;i++){
-    const junk = i>0 && Math.random() < p.junkChance;
+    const junk = i>0 && srand() < p.junkChance;
     const list = junk?JUNK:HEALTHY;
-    let type = list[randi(0,list.length-1)];
+    let type = list[srandi(0,list.length-1)];
     let power = junk ? null : powerFromFood(type);
-    if(!junk && Math.random()<0.045){ type='golden'; power='golden'; }
-    if(!junk && Math.random()<0.05){ type='alarmclock'; power='chrono'; }
-    if(!junk && Math.random()<0.045){ type='turboorange'; power='nitro'; }
+    let energyJunk = false;
+    if(!junk && srand()<0.045){ type='golden'; power='golden'; }
+    if(!junk && srand()<0.05){ type='alarmclock'; power='chrono'; }
+    if(!junk && srand()<0.045){ type='turboorange'; power='nitro'; }
+    if(!junk && srand()<0.012){ type='dragonfruit'; power='life'; }
+    if(junk && srand() < 0.11){ energyJunk = true; type = 'soda'; }
+    if(treasure && !junk && !treasureSpawned && i === 0){
+      type = srand() < 0.55 ? 'dragonfruit' : 'golden';
+      power = type === 'dragonfruit' ? 'life' : 'golden';
+      treasureSpawned = true;
+    }
     const fy = junk
-      ? (Math.random()<0.5 ? gapY - rand(20,60) : gapY+gapH + rand(20,60))
-      : gapY + rand(gapH*0.15, gapH*0.85);
-    const special = type==='alarmclock' || type==='turboorange';
-    game.foods.push({ x:W+w*0.5 + rand(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: special?19:18, type, junk, power, taken:false, bob:rand(0,TAU) });
+      ? (srand()<0.5 ? gapY - srandf(20,60) : gapY+gapH + srandf(20,60))
+      : gapY + srandf(gapH*0.15, gapH*0.85);
+    const special = type==='alarmclock' || type==='turboorange' || type==='dragonfruit';
+    const syncGap = moving && !junk && fy >= gapY && fy <= gapY + gapH;
+    game.foods.push({
+      x:W+w*0.5 + srandf(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: special?19:18,
+      type, junk, power, energyJunk, taken:false, bob:srandf(0,TAU),
+      pipeId: syncGap ? obsId : null, gapRelY: syncGap ? fy - gapY : 0
+    });
   }
-  if(Math.random()<0.14) spawnThermal();
+  if(srand()<0.14) spawnThermal();
+  if(stormActive() && srand() < 0.22) spawnThermalChain();
+  else if(srand() < 0.07) spawnThermalChain();
   const prev = game.obstacles.length >= 2 ? game.obstacles[game.obstacles.length - 2] : null;
-  if(prev && Math.random() < 0.085){
+  if(prev && srand() < 0.085){
     const gapLeft = prev.x + prev.w;
     const gapRight = W + w;
     const gapW = gapRight - gapLeft;
     if(gapW > 110 && gapRight > W * 0.25){
-      const hx = gapLeft + gapW * rand(0.38, 0.62);
+      const hx = gapLeft + gapW * srandf(0.38, 0.62);
       spawnZoneHazard(hx, gapY, gapH, lv.theme);
     }
   }
@@ -2115,9 +2431,18 @@ function drawNitroFlames(c, b){
   c.restore();
 }
 function drawObstacle(c, o, lv){
+  if(o.smashed) return;
   const col=obstacleColor(lv);
   const topH=o.gapY, botY=o.gapY+o.gapH;
-  if(o.moving){
+  const ghost = o.materialize != null && o.materialize > 0;
+  c.save();
+  if(ghost){
+    c.globalAlpha = 0.28 + 0.12*Math.sin(game.t*8);
+    c.setLineDash([6, 8]);
+  } else if(o.treasure){
+    c.shadowColor = '#ffd54f'; c.shadowBlur = 12;
+  }
+  if(o.moving && !ghost){
     c.save();
     c.globalAlpha = 0.35 + 0.2*Math.sin(game.t*6 + o.x*0.02);
     c.fillStyle = '#fff59d';
@@ -2142,6 +2467,11 @@ function drawObstacle(c, o, lv){
     pillar(c,o.x,0,o.w,topH,true,col);
     pillar(c,o.x,botY,o.w,H-botY,false,col);
   }
+  if(o.treasure && !ghost){
+    c.fillStyle = '#ffd54f'; c.font = fontSans(11,'700'); c.textAlign='center';
+    c.fillText('💎', o.x + o.w*0.5, o.gapY + o.gapH*0.5);
+  }
+  c.restore();
 }
 function pillar(c,x,y,w,h,top,col){
   const g=c.createLinearGradient(x,0,x+w,0);
@@ -2194,12 +2524,34 @@ function drawHUD(c){
   const pad = 14 + safeTop();
   // Level name
   c.fillStyle='#fff'; c.font=fontSans(18,'700'); c.textAlign='left'; c.textBaseline='top';
-  c.fillText('Ур. '+(game.level+1)+' · '+levelLabel(game.level), 16, pad);
+  c.fillText('Ур. '+(game.level+1)+' · '+levelLabel(game.level)+(game.marathon?' · Марафон':''), 16, pad);
 
   // Hearts
   c.textAlign='right';
-  for(let i=0;i<3;i++){
-    drawHeart(c, W-22 - i*30, pad+10, 11, i<game.lives ? '#ff5252':'rgba(255,255,255,0.25)');
+  if(game.marathon){
+    c.fillStyle='#ffd54f'; c.font=fontSans(14,'700');
+    c.fillText('∞ · CP '+game.marathonCp, W-16, pad+10);
+  } else {
+  const heartCount = Math.min(MAX_LIVES, Math.max(3, game.lives));
+  const heartStep = heartCount > 3 ? 24 : 30;
+  const heartSize = heartCount > 3 ? 9 : 11;
+  for(let i=0;i<heartCount;i++){
+    drawHeart(c, W-22 - i*heartStep, pad+10, heartSize, i<game.lives ? '#ff5252':'rgba(255,255,255,0.25)');
+  }
+  }
+
+  const ph = runPhase();
+  if(ph > 0 && state===STATE.PLAY){
+    c.textAlign='left'; c.fillStyle='rgba(255,245,157,0.85)'; c.font=fontSans(10,'600');
+    c.fillText(ph>=2 ? '⛈ Шторм' : '⚠ Hazard', 16, pad+52);
+  }
+  if(game.metabolicBoost > 0){
+    c.fillStyle='#aeea00'; c.font=fontSans(10,'600');
+    c.fillText('🔥 Серия '+ (game.runStats?.cleanStreak||0), 16, pad+(ph>0?66:52));
+  }
+  if(nutriBoost.active && game.intro <= 0){
+    c.textAlign='right'; c.fillStyle='rgba(126,196,160,0.9)'; c.font=fontSans(10,'600');
+    c.fillText('NutriCrew ✓', W-16, pad+52);
   }
 
   // progress bar — очки за этот забег до открытия следующего уровня
@@ -2238,6 +2590,13 @@ function drawHUD(c){
     c.save(); c.globalAlpha = a * (0.75 + 0.25*Math.sin(game.t*5));
     c.textAlign='center'; c.font=fontSans(13,'700'); c.fillStyle='#fff59d';
     c.fillText('🌿 Ветки и лёд падают с труб!', W/2, pad + 58);
+    c.restore();
+  }
+  if(game.stormBanner && game.stormBanner.time > 0){
+    const a = clamp(game.stormBanner.time / 2.5, 0, 1);
+    c.save(); c.globalAlpha = a * 0.85;
+    c.textAlign='center'; c.font=fontSans(13,'700'); c.fillStyle='#b39ddb';
+    c.fillText('⛈ Шторм — термики спасают!', W/2, pad + 72);
     c.restore();
   }
   if(pointer.down && state===STATE.PLAY && game.intro<=0){
@@ -2291,8 +2650,9 @@ function bigButton(c,b, primary=true){
 function buildMenu(){
   clearButtons();
   const bw=Math.min(W*0.7,300), bx=(W-bw)/2;
-  addButton({ x:bx, y:H*0.60, w:bw, h:58, label:'▶  Играть', onClick:()=>{ startLevel(Math.max(0, progress.unlocked - 1)); }, id:'play' });
-  addButton({ x:bx, y:H*0.60+72, w:bw, h:52, label:'🗺  Выбор уровня', onClick:()=>{ state=STATE.LEVELS; buildLevels(); }, id:'levels' });
+  addButton({ x:bx, y:H*0.56, w:bw, h:58, label:'▶  Играть', onClick:()=>{ startLevel(Math.max(0, progress.unlocked - 1)); }, id:'play' });
+  addButton({ x:bx, y:H*0.56+68, w:bw, h:50, label:'🏃 Марафон (daily seed)', onClick:()=>{ startMarathon(); }, id:'marathon' });
+  addButton({ x:bx, y:H*0.56+130, w:bw, h:52, label:'🗺  Выбор уровня', onClick:()=>{ state=STATE.LEVELS; buildLevels(); }, id:'levels' });
 }
 function drawMenu(c){
   drawBackground(c, LEVELS[Math.floor(game.t*0.2)%LEVELS.length], game.t*40, game.t);
@@ -2308,12 +2668,18 @@ function drawMenu(c){
   c.font=fontDisplay(Math.round(clamp(W*0.085,26,46)),'700');
   c.fillText('NutriRun', W/2, H*0.50);
   c.fillStyle='rgba(238,245,240,0.85)'; c.font=fontSans(15,'500');
-  c.fillText('Комбо · идеальные пролёты · бонусы из еды', W/2, H*0.50+34);
+  c.fillText('Комбо · perfect gate · NutriCrew бонусы', W/2, H*0.50+34);
+  if(nutriBoost.active){
+    c.fillStyle='#7ec4a0'; c.font=fontSans(13,'600');
+    c.fillText('✓ '+ (nutriBoost.label || 'Бонус из дневника'), W/2, H*0.50+54);
+  }
+  c.fillStyle='rgba(238,245,240,0.55)'; c.font=fontSans(11,'500');
+  c.fillText('Daily seed: '+dailySeedNum()+' · Марафон рекорд: '+(progress.marathonBest||0), W/2, H*0.56+188);
 
   for(const b2 of buttons){ bigButton(c,b2, b2.id==='play'); }
 
   c.fillStyle='rgba(238,245,240,0.6)'; c.font=fontSans(12,'500');
-  c.fillText('Рекорд: '+progress.best+' · Пролётов: '+progress.totalFlights+' · Ур. '+progress.unlocked, W/2, H*0.60+150);
+  c.fillText('Рекорд: '+progress.best+' · Пролётов: '+progress.totalFlights+' · Ур. '+progress.unlocked, W/2, H*0.56+210);
 }
 
 function buildLevels(){
@@ -2353,6 +2719,8 @@ function drawLevels(c){
     c.fillText(b.locked?'🔒':(i+1), b.x+b.w/2, b.y+b.h*0.38);
     c.font=fontSans(Math.round(b.h*0.12),'600');
     c.fillText(label.length>11?label.slice(0,10)+'…':label, b.x+b.w/2, b.y+b.h*0.66);
+    const stars = (progress.levelStars && progress.levelStars[i]) || 0;
+    if(unlocked && stars > 0) drawStarRow(c, b.x+b.w*0.22, b.y+b.h*0.82, stars, 3, 9);
     if(b.locked){
       c.font=fontSans(Math.round(b.h*0.1),'500');
       c.fillStyle='rgba(255,255,255,0.75)';
@@ -2361,13 +2729,15 @@ function drawLevels(c){
   }
 }
 
-function startLevel(idx){
+function startLevel(idx, opts){
+  opts = opts || {};
   audio(); if(AC && AC.state==='suspended') AC.resume();
   game.level=idx;
   game.params=levelParams(idx);
   game.scrollX=0; game.spawnTimer=0.6; game.distance=0;
   game.obstacles.length=0; game.foods.length=0; game.debris.length=0; game.zoneHazards.length=0; particles.length=0; floatTexts.length=0; eatRings.length=0;
-  game.foodCollected=0; game.flightsPassed=0; game.score=0; game.lives=3; game.invuln=0;
+  game.nextObstacleId=0;
+  game.foodCollected=0; game.flightsPassed=0; game.score=0; game.lives= opts.marathon ? 1 : 3; game.invuln=0;
   game.unlockBanner=null; game.hazardWasActive=false; game.hazardBanner=null;
   game.combo=0; game.comboTimer=0; game.multiplier=1;
   game.shieldTime=0; game.magnetTime=0; game.slowmoTime=0; game.chronoTime=0; game.nitroTime=0; game.speedMult=1;
@@ -2381,10 +2751,13 @@ function startLevel(idx){
   game.displayFat = baseFat;
   game.intro=1.6;
   game.shake=0; game.flashTime=0;
+  initRunMechanics(opts.marathon ? 'marathon' : 'level');
+  if(opts.marathon) game.marathon = true;
   state=STATE.PLAY;
   clearButtons();
   SFX.start();
   haptic('medium');
+  if(opts.marathon) addFloatText(W/2, H*0.38, '🏃 Марафон · seed '+dailySeedNum(), '#ffd54f', 0.88);
 }
 
 function buildComplete(){
@@ -2439,8 +2812,22 @@ function drawOver(c){
   c.fillText('Попробуй снова — здоровье важнее!', W/2, py+62);
   c.fillStyle='#e8c080'; c.font=fontSans(18,'700');
   c.fillText('Очки: '+game.score+' · Пролётов: '+game.flightsPassed, W/2, py+92);
+  const stars = computeRunStars();
+  if(stars > 0 && !game.marathon){
+    c.fillStyle='#ffd54f'; c.font=fontSans(14,'700');
+    c.fillText('★'.repeat(stars)+' · '+stars+'/3 звёзд', W/2, py+112);
+  }
+  const ax = runArtifactBonus();
+  if(ax > 0){
+    c.fillStyle='#ba68c8'; c.font=fontSans(13,'600');
+    c.fillText('Артефакт забега: +'+ax+' XP', W/2, py+(stars>0&&!game.marathon?132:112));
+  }
+  if(game.marathon){
+    c.fillStyle='rgba(238,245,240,0.75)'; c.font=fontSans(13,'500');
+    c.fillText('Марафон · CP '+game.marathonCp+' · Рекорд '+(progress.marathonBest||0), W/2, py+118);
+  }
   c.fillStyle='rgba(238,245,240,0.75)'; c.font=fontSans(13,'500');
-  c.fillText('Всего пролётов: '+progress.totalFlights, W/2, py+118);
+  c.fillText('Perfect: '+(game.runStats?.perfectGates||0)+' · Near miss: '+(game.runStats?.nearMisses||0), W/2, py+138);
   for(const b of buttons){ bigButton(c,b, b.id==='retry'); }
 }
 
@@ -2477,6 +2864,7 @@ function renderWorld(c, frozen){
   c.save();
   if(game.shake>0){ const s=game.shake; c.translate(rand(-s,s),rand(-s,s)); }
   drawBackground(c, lv, game.scrollX, game.t);
+  drawWeatherFx(c);
   // ground strip
   const gy=H*0.80;
   c.fillStyle=lv.ground; c.fillRect(0,gy,W,H-gy);
@@ -2494,9 +2882,17 @@ function renderWorld(c, frozen){
     const pulse = 1 + 0.04*Math.sin(game.t*4.5+f.bob);
     if(!f.junk){
       c.save(); c.globalAlpha=0.28+0.12*Math.sin(game.t*5+f.bob);
-      const glowCol = f.type==='alarmclock' ? '#90caf9' : f.type==='turboorange' ? '#ff9800' : f.power==='golden' ? '#ffd54f' : (f.power ? POWER[f.power].color : '#fff59d');
+      const glowCol = f.energyJunk ? '#ff9800'
+        : f.type==='alarmclock' ? '#90caf9'
+        : f.type==='turboorange' ? '#ff9800'
+        : f.type==='dragonfruit' ? '#ec407a'
+        : f.power==='golden' ? '#ffd54f'
+        : (f.power ? POWER[f.power].color : '#fff59d');
       c.fillStyle = glowCol;
       c.beginPath(); c.arc(f.x,by,f.r*1.55*pulse,0,TAU); c.fill(); c.restore();
+    } else if(f.energyJunk){
+      c.save(); c.globalAlpha=0.35+0.15*Math.sin(game.t*7+f.bob);
+      c.fillStyle='#ff9800'; c.beginPath(); c.arc(f.x,by,f.r*1.5*pulse,0,TAU); c.fill(); c.restore();
     }
     drawFood(c, f.type, f.x, by, f.r*pulse, game.t, f.bob, f.junk);
   }
@@ -2576,7 +2972,8 @@ function updatePlay(dt){
 
   const slow = scrollSlowFactor();
   const scrollDt = dt * slow;
-  const speed = p.speed * slow * nitroSpeedMult();
+  const stormMult = stormActive() ? 1.12 : 1;
+  const speed = p.speed * slow * nitroSpeedMult() * stormMult;
   game.scrollX += speed*scrollDt;
   game.distance += speed*scrollDt;
 
@@ -2593,6 +2990,7 @@ function updatePlay(dt){
   else b.vy = clamp(b.vy, -520, 760);
   b.y += b.vy*dt;
   b.tilt = gliding ? clamp(b.vy/500, -0.35, 0.55) : clamp(b.vy/700, -0.5, 0.9);
+  updateWeather(dt, b);
   updateBirdWingCycle(b, dt);
   if(gliding && b.wing<0.6) b.wing = 0.35;
   b.wing = Math.max(0, b.wing - dt*2.2);
@@ -2614,6 +3012,11 @@ function updatePlay(dt){
     game.hazardBanner.time -= dt;
     if(game.hazardBanner.time <= 0) game.hazardBanner = null;
   }
+  if(game.stormBanner){
+    game.stormBanner.time -= dt;
+    if(game.stormBanner.time <= 0) game.stormBanner = null;
+  }
+  if(game.metabolicBoost > 0) game.metabolicBoost -= dt;
 
   // ground / ceiling collision
   const gy=H*0.80;
@@ -2639,10 +3042,11 @@ function updatePlay(dt){
   for(let i=game.obstacles.length-1;i>=0;i--){
     const o=game.obstacles[i];
     o.x -= speed*scrollDt;
+    if(o.materialize != null && o.materialize > 0) o.materialize -= dt;
+    if(o.smashed){ if(o.x + o.w < -20) game.obstacles.splice(i,1); continue; }
     if(o.moving){
-      o.gapY += o.gapVy * dt;
-      if(o.gapY < o.gapYMin){ o.gapY = o.gapYMin; o.gapVy = Math.abs(o.gapVy); }
-      if(o.gapY + o.gapH > o.gapYMax){ o.gapY = o.gapYMax; o.gapVy = -Math.abs(o.gapVy); }
+      o.movingPhase += o.movingSpeed * dt;
+      o.gapY = o.gapCenter + Math.sin(o.movingPhase) * o.movingAmp;
     }
     if(hazardActive() && !o.passed && o.x < W && o.x > -o.w){
       o.debrisTimer -= dt;
@@ -2654,6 +3058,8 @@ function updatePlay(dt){
     checkNearMiss(b, o);
     if(!o.passed && o.x+o.w < b.x){ o.passed=true; onObstaclePassed(o); }
     if(o.x+o.w < -20) game.obstacles.splice(i,1);
+    else if(trySmashPipe(b, o)){ game.obstacles.splice(i,1); continue; }
+    else if(o.materialize != null && o.materialize > 0){ /* ghost — no hit */ }
     else if(game.invuln<=0 && !shielded){
       if(circleRect(b.x,b.y,b.r*0.78, o.x,0,o.w,o.gapY) ||
          circleRect(b.x,b.y,b.r*0.78, o.x,o.gapY+o.gapH,o.w,H-(o.gapY+o.gapH))){
@@ -2707,6 +3113,11 @@ function updatePlay(dt){
   for(let i=game.foods.length-1;i>=0;i--){
     const f=game.foods[i]; if(f.taken){ continue; }
     f.x -= speed*scrollDt;
+    if(f.pipeId != null){
+      const po = game.obstacles.find(o => o.id === f.pipeId);
+      if(po) f.y = po.gapY + f.gapRelY;
+      else f.pipeId = null;
+    }
     const bobY = Math.sin(game.t*3+f.bob)*4;
     if(magnetR>0 && !f.junk){
       const fy = f.y + bobY;
@@ -2723,14 +3134,42 @@ function updatePlay(dt){
       if(f.junk){
         SFX.bad(); haptic('warning');
         burst(f.x,by,'#ff7043',16);
-        game.score=Math.max(0, game.score-3);
+        game.runStats && game.runStats.junkTaken++;
+        breakCleanStreak();
+        if(f.energyJunk){
+          game.nitroTime = Math.max(game.nitroTime, 2.2);
+          game.pipeSmashReady = (game.pipeSmashReady||0) + 1;
+          addFloatText(f.x, by-28, '⚡ Энергетик', '#ff9800', 0.95);
+          game.score = Math.max(0, game.score - 5);
+        } else {
+          game.score=Math.max(0, game.score-3);
+        }
         resetCombo();
         game.flashColor='#ff5252'; game.flashTime=0.5; game.shake=8;
-        applyJunkWeight();
+        if(game.metabolicBoost <= 0) applyJunkWeight();
         b.bodySquash=1.28; b.eat=0.8;
-        addFloatText(f.x, by-18, '+вес', '#ff7043', 0.95);
+        addFloatText(f.x, by-18, f.energyJunk ? '-5 · +вес' : '+вес', '#ff7043', 0.95);
+      } else if(f.type==='dragonfruit'){
+        game.foodCollected++;
+        bumpCleanStreak();
+        b.eat=1; b.eatPop=1.2; b.happy=1; b.bodySquash=1.1;
+        SFX.level(); haptic('success');
+        burst(f.x, by, '#ec407a', 26, 220);
+        eatRings.push({x:f.x,y:by,r:12,life:1,color:'#f48fb1'});
+        for(let j=0;j<10;j++){
+          spawnParticle(f.x, by, {vx:rand(-120,120), vy:rand(-160,-40), color:['#ec407a','#f48fb1','#ff5252'][randi(0,2)], size:rand(3,7), decay:rand(1.4,2.2), shape:'star', g:140});
+        }
+        if(game.lives < MAX_LIVES){
+          game.lives++;
+          addFloatText(f.x, by-24, '+❤', '#ff5252', 1.35);
+          addFloatText(f.x, by+4, 'Питахайя', '#f48fb1', 0.82);
+        } else {
+          addScore(25, '+25', f.x, by);
+          addFloatText(f.x, by-18, 'MAX ❤', '#f48fb1', 0.95);
+        }
       } else if(f.type==='alarmclock' || f.type==='turboorange'){
         game.foodCollected++;
+        bumpCleanStreak();
         bumpCombo();
         b.eat=1; b.eatPop=1.2; b.happy=1;
         if(f.type==='alarmclock'){
@@ -2745,6 +3184,7 @@ function updatePlay(dt){
         SFX.eat(); haptic('light');
         spawnEatBurst(f.x, by, f.type==='golden'?'apple':f.type);
         game.foodCollected++;
+        bumpCleanStreak();
         bumpCombo();
         b.eat=1; b.eatPop=1; b.happy=1; b.bodySquash=1.14;
         game.targetFat = clamp(game.targetFat - 0.01, game.runMinFat, 1);
@@ -2773,6 +3213,11 @@ function circleRect(cx,cy,r, rx,ry,rw,rh){
 }
 function hitPlayer(){
   if(game.invuln>0 || game.shieldTime>0) return;
+  if(game.marathon && game.marathonCp >= 200 && !game.marathonCpUsed){
+    game.marathonCpUsed = true;
+    marathonRespawn();
+    return;
+  }
   resetCombo();
   game.lives--; game.invuln=1.3;
   SFX.hit(); haptic('error');
@@ -2783,9 +3228,12 @@ function hitPlayer(){
 function gameOver(){
   progress.best = Math.max(progress.best, game.score);
   progress.totalFood += game.foodCollected;
+  if(game.marathon) progress.marathonBest = Math.max(progress.marathonBest || 0, game.score);
+  saveRunStars();
   recordLevelBest(game.level, game.score);
   progress.unlocked = Math.max(progress.unlocked || 1, computeUnlockedFromLevelBests(progress.levelBests || []));
   saveProgress(progress);
+  const artifactXp = runArtifactBonus();
   notifyParent({
     event:'game_over',
     score: game.score,
@@ -2793,7 +3241,13 @@ function gameOver(){
     flights: game.flightsPassed,
     fruits: game.foodCollected,
     best: progress.best,
-    totalFlights: progress.totalFlights
+    totalFlights: progress.totalFlights,
+    marathon: !!game.marathon,
+    marathonBest: progress.marathonBest,
+    stars: computeRunStars(),
+    artifactXp,
+    runPowers: Object.keys(game.runPowers || {}),
+    dailySeed: dailySeedNum()
   });
   state=STATE.OVER; buildOver();
   haptic('error');
