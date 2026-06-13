@@ -522,6 +522,8 @@
     "dataTitle": "Your data",
     "exportBtn": "Download my data (JSON)",
     "exportDone": "Export downloaded.",
+    "exportFailed": "Could not export your data. Try again later.",
+    "exportServerBusy": "Server is waking up — wait a moment and try again.",
     "deleteBtn": "Delete my account",
     "deleteConfirm": "Delete all your NutriCrew data permanently?",
     "legalTitle": "Legal",

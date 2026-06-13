@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { api } from "../api/client";
+import { api, API_ERROR } from "../api/client";
 import { trackEvent } from "../lib/analytics";
+import { waitForServerReady, wakeApi } from "../lib/apiWarmup";
 import { useTelegram } from "../hooks/useTelegram";
 import { useMe } from "../hooks/useMe";
 import { useAppPreferences } from "../hooks/useAppPreferences";
@@ -91,18 +92,44 @@ export function SettingsPage() {
     setError(null);
     setMessage(null);
     try {
+      wakeApi();
+      const ready = await waitForServerReady();
+      if (!ready) {
+        setError(t("settings.exportServerBusy"));
+        return;
+      }
       trackEvent("settings_export");
       const data = await api.exportMyData();
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `nutricrew-export-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const filename = `nutricrew-export-${Date.now()}.json`;
+      const file = new File([blob], filename, { type: "application/json" });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: filename });
+      } else {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.rel = "noopener";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
       setMessage(t("settings.exportDone"));
     } catch (e) {
-      setError((e as Error).message);
+      const code = (e as Error).message;
+      if (
+        code === API_ERROR.UNREACHABLE ||
+        code === API_ERROR.TIMEOUT ||
+        code === API_ERROR.STARTING
+      ) {
+        setError(t("settings.exportServerBusy"));
+      } else if (code === "EXPORT_FAILED") {
+        setError(t("settings.exportFailed"));
+      } else {
+        setError(code);
+      }
     } finally {
       setBusy(null);
     }

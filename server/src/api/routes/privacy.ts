@@ -6,12 +6,18 @@ import { exportUserData, deleteUserAccount } from "../../services/accountPrivacy
 import { trackEvents } from "../../services/analytics.js";
 
 export const privacyRouter = Router();
-const authedProfile = [authInitData, ensureUser, requireProfile] as const;
+const authed = [authInitData, ensureUser] as const;
+const authedProfile = [...authed, requireProfile] as const;
 
-privacyRouter.get("/export", ...authedProfile, async (req, res) => {
-  await trackEvents(req.dbUser!.id, [{ name: "settings_export" }]);
-  const data = await exportUserData(req.dbUser!);
-  res.json(data);
+privacyRouter.get("/export", ...authed, async (req, res) => {
+  try {
+    await trackEvents(req.dbUser!.id, [{ name: "settings_export" }]);
+    const data = await exportUserData(req.dbUser!);
+    res.json(data);
+  } catch (err) {
+    console.error("[privacy/export]", err);
+    res.status(500).json({ error: "EXPORT_FAILED", message: "Could not export user data" });
+  }
 });
 
 privacyRouter.delete("/account", ...authedProfile, async (req, res) => {

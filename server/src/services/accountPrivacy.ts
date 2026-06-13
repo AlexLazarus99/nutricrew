@@ -1,6 +1,13 @@
 import { prisma } from "../db/client.js";
 import type { DbUser } from "../types.js";
 
+/** Express res.json cannot serialize Prisma BigInt fields. */
+export function jsonSafe<T>(value: T): T {
+  return JSON.parse(
+    JSON.stringify(value, (_key, v) => (typeof v === "bigint" ? v.toString() : v)),
+  ) as T;
+}
+
 export async function exportUserData(user: DbUser) {
   const uid = BigInt(user.id);
   const [meals, favorites, payments, achievements, starTx] = await Promise.all([
@@ -19,7 +26,7 @@ export async function exportUserData(user: DbUser) {
     }),
   ]);
 
-  return {
+  return jsonSafe({
     exportedAt: new Date().toISOString(),
     profile: {
       telegramId: user.telegram_id,
@@ -46,11 +53,37 @@ export async function exportUserData(user: DbUser) {
       mealSlot: m.mealSlot,
       createdAt: m.createdAt,
     })),
-    favorites,
-    payments,
-    achievements,
-    starTransactions: starTx,
-  };
+    favorites: favorites.map((f) => ({
+      id: f.id,
+      description: f.description,
+      calories: f.calories,
+      protein: f.protein,
+      carbs: f.carbs,
+      fat: f.fat,
+      useCount: f.useCount,
+      createdAt: f.createdAt,
+    })),
+    payments: payments.map((p) => ({
+      id: p.id,
+      teamId: p.teamId,
+      paymentType: p.paymentType,
+      starsAmount: p.starsAmount,
+      status: p.status,
+      createdAt: p.createdAt,
+      completedAt: p.completedAt,
+    })),
+    achievements: achievements.map((a) => ({
+      achievementId: a.achievementId,
+      unlockedAt: a.unlockedAt,
+    })),
+    starTransactions: starTx.map((s) => ({
+      id: s.id,
+      amount: s.amount,
+      type: s.type,
+      referenceId: s.referenceId,
+      createdAt: s.createdAt,
+    })),
+  });
 }
 
 export async function deleteUserAccount(userId: number): Promise<void> {
