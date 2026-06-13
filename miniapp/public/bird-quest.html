@@ -48,7 +48,7 @@
    ПТИЧКА-ЧЕМПИОН · HEALTHY BIRD QUEST
    Прогрессивная мини-игра для Telegram Mini App.
    Толстенькая птичка постепенно становится стройной, питаясь здоровой едой.
-   Бесконечный полёт; новые локации открываются за пролёты (125, 175, 225…).
+   Бесконечный полёт; новые локации открываются за пролёты (625, 875, 1125…).
    Всё рисуется процедурно через Canvas API. Никаких внешних картинок.
    ========================================================================== */
 
@@ -208,9 +208,77 @@ const LEVELS = [
   { name:'Дубай',              theme:'dubai',      sky:['#ffaa66','#ffd9a8','#fff0d9'], ground:'#d4a05a', accent:'#8d6e3f', landmark:'burj', deco:'#ffcc80' },
 ];
 
-/* Очки за один забег на уровне N, чтобы открыть уровень N+1: 125, 175, 225 … */
+/* Очки за один забег на уровне N, чтобы открыть уровень N+1: 625, 875, 1125 … */
 function scoreGoalForLevel(levelIdx){
-  return 125 + Math.max(0, levelIdx) * 50;
+  return (125 + Math.max(0, levelIdx) * 50) * 5;
+}
+/* Сложность препятствий: 0 на ранних уровнях → 1 на высоких */
+function obstacleFairness(){
+  const lv = game.level || 0;
+  const cycle = Math.floor(lv / LEVELS.length);
+  return clamp(lv / 16 + cycle * 0.12, 0, 1);
+}
+function minPassageForBird(){
+  const r = game.bird ? game.bird.r : 30;
+  const fat = game.displayFat || 0;
+  return r * (1.52 + fat * 0.1) + lerp(24, 8, obstacleFairness());
+}
+function largestClearSpan(y0, y1, blocks){
+  const clipped = blocks
+    .map(([a,b]) => [clamp(a, y0, y1), clamp(b, y0, y1)])
+    .filter(([a,b]) => b > a)
+    .sort((a,b) => a[0] - b[0]);
+  let best = 0, cursor = y0;
+  for(const [a,b] of clipped){
+    best = Math.max(best, a - cursor);
+    cursor = Math.max(cursor, b);
+  }
+  return Math.max(best, y1 - cursor);
+}
+function pipeBlockedIntervals(pipe){
+  const blocks = [];
+  for(const gh of game.gapHazards){
+    if(gh.pipeId !== pipe.id) continue;
+    if(gh.kind === 'bar'){
+      blocks.push([pipe.gapY + gh.relY, pipe.gapY + gh.relY + gh.h]);
+    } else if(gh.kind === 'spike'){
+      const y0 = pipe.gapY + (gh.fromTop ? 0 : pipe.gapH - gh.len);
+      blocks.push([y0, y0 + gh.len]);
+    } else if(gh.kind === 'orb'){
+      const oy = pipe.gapY + gh.relY;
+      const swing = gh.amp || 0;
+      blocks.push([oy - gh.r - swing, oy + gh.r + swing]);
+    }
+  }
+  return blocks;
+}
+function pipeHasSafePassage(pipe){
+  return largestClearSpan(pipe.gapY, pipe.gapY + pipe.gapH, pipeBlockedIntervals(pipe)) >= minPassageForBird();
+}
+function trimGapHazardsUntilSafe(pipe){
+  let guard = 0;
+  while(!pipeHasSafePassage(pipe) && guard++ < 8){
+    const idx = game.gapHazards.findIndex(g => g.pipeId === pipe.id);
+    if(idx < 0) break;
+    game.gapHazards.splice(idx, 1);
+  }
+}
+function pickFairGapY(gapH, minTop, maxTop, prevPipe, moving, gapTravel, startNorm){
+  const fair = obstacleFairness();
+  const gapCenterLine = (minTop + maxTop + gapH) * 0.5;
+  let targetCenter = gapCenterLine;
+  if(prevPipe){
+    const prevCenter = prevPipe.gapY + prevPipe.gapH * 0.5;
+    const maxShift = lerp(H * 0.18, H * 0.1, fair);
+    targetCenter = clamp(prevCenter + srandf(-maxShift, maxShift), minTop + gapH * 0.5, maxTop + gapH * 0.5);
+  } else {
+    targetCenter += srandf(-H * 0.06, H * 0.06);
+  }
+  let gapY = targetCenter - gapH * 0.5;
+  if(moving){
+    gapY += startNorm * gapTravel * lerp(0.2, 1, fair);
+  }
+  return clamp(gapY, minTop, maxTop);
 }
 function computeUnlockedFromLevelBests(levelBests){
   let unlocked = 1;
@@ -258,9 +326,9 @@ function levelParams(idx){
   const t = 1 - Math.exp(-idx / 14);
   return {
     speed:   lerp(190, 385, t),
-    gap:     lerp(0.40, 0.24, t),
-    spacing: lerp(2.35, 1.5, t),
-    junkChance: lerp(0.12, 0.36, t),
+    gap:     lerp(0.46, 0.28, t),
+    spacing: lerp(2.45, 1.55, t),
+    junkChance: lerp(0.10, 0.34, t),
     fat:     clamp(1 - t, 0.05, 1)
   };
 }
@@ -754,8 +822,24 @@ function makeBird(){
     x: W*0.30, y: H*0.45, vy:0,
     r: 30, wing:0, flapBoost:0, wingCycle:0, bodySquash:1,
     blink:0, blinkTimer:rand(1.5,4),
-    tilt:0, eat:0, eatPop:0, happy:0
+    tilt:0, eat:0, eatPop:0, happy:0,
+    flapCooldown:0, flapQueued:false, airtime:0
   };
+}
+
+function applyFlapImpulse(b){
+  const fatMul = 1 - clamp(game.displayFat, 0, 1) * 0.09;
+  const base = -355 * fatMul * weatherFlapMult();
+  if(b.vy > 90) b.vy = b.vy * 0.22 + base;
+  else if(b.vy > 0) b.vy = b.vy * 0.42 + base;
+  else if(b.vy < -230) b.vy = b.vy * 0.68 + base * 0.58;
+  else b.vy = b.vy * 0.38 + base;
+  b.vy = clamp(b.vy, -400, 130);
+  b.airtime = 0.28;
+  b.wing = 1;
+  b.flapBoost = 1;
+  b.wingCycle = 0.02;
+  b.bodySquash = 0.84;
 }
 
 /* ------------------------------ Buttons (UI) ----------------------------- */
@@ -782,11 +866,12 @@ function handleDown(px,py){
 function flap(){
   if(!game.bird) return;
   const b = game.bird;
-  b.vy = -370 * weatherFlapMult();
-  b.wing = 1;
-  b.flapBoost = 1;
-  b.wingCycle = 0.02;
-  b.bodySquash = 0.82;
+  if(b.flapCooldown > 0){
+    b.flapQueued = true;
+    return;
+  }
+  applyFlapImpulse(b);
+  b.flapCooldown = 0.13;
   SFX.flap();
   haptic('light');
   spawnFlapBurst(b);
@@ -1746,34 +1831,55 @@ function drawFishSchool(c, scroll, t){
 
 /* ---- Gap / floating hazards ---- */
 function spawnGapHazards(pipe){
-  if(pipe.gapH < 88) return;
+  const minPass = minPassageForBird();
+  if(pipe.gapH < minPass + 18) return;
+  const fair = obstacleFairness();
   const ph = runPhase();
-  const chance = ph >= 2 ? 0.4 : ph >= 1 ? 0.26 : 0.16;
+  let chance = lerp(0.03, ph >= 2 ? 0.32 : ph >= 1 ? 0.18 : 0.1, fair);
+  if(fair < 0.22) chance *= 0.45;
   if(srand() > chance) return;
+  const maxHazards = fair < 0.28 ? 1 : fair < 0.58 ? 2 : 3;
+  if(game.gapHazards.filter(g => g.pipeId === pipe.id).length >= maxHazards) return;
+
   const roll = srand();
-  if(roll < 0.38 && pipe.gapH > 108){
+  if(roll < 0.42 && pipe.gapH > minPass * 1.75){
+    const barH = clamp(pipe.gapH * lerp(0.07, 0.12, fair), 9, 15);
+    const relY = fair < 0.38
+      ? (srand() < 0.5 ? pipe.gapH * 0.06 : pipe.gapH * 0.82 - barH)
+      : pipe.gapH * srandf(0.28, 0.52);
     game.gapHazards.push({
-      pipeId:pipe.id, kind:'bar', x:pipe.x, w:pipe.w,
-      relY:pipe.gapH*srandf(0.35,0.55), h:clamp(pipe.gapH*0.13,12,20),
+      pipeId:pipe.id, kind:'bar', x:pipe.x, w:pipe.w, relY, h:barH,
       materialize:pipe.materialize, theme:pipe.kind
     });
-  } else if(roll < 0.72){
+  } else if(roll < 0.78 || fair < 0.42){
+    const maxLen = pipe.gapH * lerp(0.14, 0.3, fair);
     game.gapHazards.push({
       pipeId:pipe.id, kind:'spike', x:pipe.x, w:pipe.w,
-      fromTop:srand()<0.5, len:srandf(pipe.gapH*0.2,pipe.gapH*0.36),
+      fromTop: fair < 0.35 ? srand() < 0.5 : srand() < 0.5,
+      len: srandf(pipe.gapH * 0.12, maxLen),
       materialize:pipe.materialize, theme:pipe.kind
     });
-  } else {
+  } else if(fair >= 0.42){
     game.gapHazards.push({
       pipeId:pipe.id, kind:'orb', x:pipe.x+pipe.w*0.5, w:pipe.w,
-      relY:pipe.gapH*0.5, r:srandf(11,17), phase:srandf(0,TAU),
-      amp:srandf(pipe.gapH*0.14,pipe.gapH*0.26), materialize:pipe.materialize, theme:pipe.kind
+      relY:pipe.gapH*0.5, r:srandf(10,15), phase:srandf(0,TAU),
+      amp:srandf(pipe.gapH*0.1,pipe.gapH*0.2) * lerp(0.5, 1, fair),
+      materialize:pipe.materialize, theme:pipe.kind
     });
   }
+  trimGapHazardsUntilSafe(pipe);
 }
 function spawnFloatMine(){
+  const fair = obstacleFairness();
+  if(fair < 0.38) return;
+  const prev = game.obstacles.length ? game.obstacles[game.obstacles.length - 1] : null;
+  let y = H * 0.38, tries = 0;
+  while(tries++ < 10){
+    y = srandf(H * 0.12, H * 0.58);
+    if(!prev || y < prev.gapY - 28 || y > prev.gapY + prev.gapH + 28) break;
+  }
   game.floatMines.push({
-    x:W+srandf(60,160), y:srandf(H*0.14,H*0.62), r:srandf(13,20),
+    x:W+srandf(60,160), y, r:srandf(12,18) * lerp(0.85, 1, fair),
     phase:srandf(0,TAU), spin:srandf(-3,3), materialize:0.45
   });
 }
@@ -2100,7 +2206,7 @@ function debrisKindForTheme(theme){
 }
 function spawnDebrisFromPipe(o){
   const fromTop = Math.random()<0.5;
-  const y = fromTop ? o.gapY - 6 : o.gapY + o.gapH + 6;
+  const y = fromTop ? o.gapY - rand(24, 58) : o.gapY + o.gapH + rand(24, 58);
   game.debris.push({
     x: o.x + o.w*0.45 + rand(-8, 8),
     y, vy: rand(95, 185), vx: rand(-35, 35),
@@ -2112,29 +2218,36 @@ function spawnDebrisFromPipe(o){
 function spawnObstacle(){
   const p=game.params;
   const lv=getLevel(game.level);
+  const fair = obstacleFairness();
   const hazard = hazardActive();
-  const treasure = !hazard && srand() < 0.085;
-  let gapH = H * p.gap * effectiveGapMult();
-  if(treasure) gapH *= 0.72;
+  const treasure = !hazard && fair > 0.28 && srand() < 0.07;
+  const minPass = minPassageForBird();
+  let gapH = Math.max(H * p.gap * effectiveGapMult(), minPass + lerp(28, 10, fair));
+  if(treasure) gapH = Math.max(gapH * 0.82, minPass + 14);
   const minTop = H*0.10, maxTop = H*0.80 - gapH;
   const w = clamp(W*0.13, 56, 92);
-  const moveChance = hazard ? clamp(0.45 + (game.score-100)/350, 0.45, 0.88) : 0.12;
+  const baseMove = hazard ? clamp(0.45 + (game.score-100)/350, 0.45, 0.88) : 0.12;
+  const moveChance = lerp(0.05, baseMove, fair);
   const moving = srand() < moveChance;
-  const gapTravel = Math.max(16, (maxTop - minTop) * (hazard ? 0.38 : 0.28));
-  const gapCenter = (minTop + maxTop - gapH) * 0.5;
+  const gapTravel = Math.max(14, (maxTop - minTop) * (hazard ? lerp(0.22, 0.38, fair) : lerp(0.12, 0.28, fair)));
   const startNorm = moving ? srandf(-0.92, 0.92) : srandf(-0.35, 0.35);
-  const gapY = gapCenter + startNorm * (moving ? gapTravel : gapTravel * 0.35);
-  const movingSpeed = moving ? srandf(0.7, 1.25) * (hazard ? 1 + clamp((game.score-100)/400, 0, 0.45) : 1) : 0;
+  const prevPipe = game.obstacles.length ? game.obstacles[game.obstacles.length - 1] : null;
+  const gapY = pickFairGapY(gapH, minTop, maxTop, prevPipe, moving, gapTravel, startNorm);
+  const movingPhase = Math.asin(clamp(startNorm, -1, 1));
+  const movingSpeed = moving ? srandf(0.55, 1.05) * (hazard ? 1 + clamp((game.score-100)/400, 0, 0.4) * fair : 1) : 0;
+  const gapCenter = moving ? gapY - Math.sin(movingPhase) * gapTravel : gapY;
   const obsId = ++game.nextObstacleId;
-  game.obstacles.push({
+  const pipe = {
     id: obsId, x:W+w, w, gapY, gapH, gapYMin:minTop, gapYMax:maxTop,
-    gapCenter, movingAmp: gapTravel, movingPhase: Math.asin(clamp(startNorm, -1, 1)), movingSpeed,
+    gapCenter, movingAmp: gapTravel, movingPhase, movingSpeed,
     moving, passed:false, kind:lv.theme, treasure,
-    materialize: 0.55, smashed:false,
-    debrisTimer: hazard ? srandf(2.2, 4.2) : 999
-  });
-  spawnGapHazards(game.obstacles[game.obstacles.length-1]);
-  if(srand() < 0.09) spawnFloatMine();
+    materialize: lerp(0.72, 0.48, fair), smashed:false,
+    debrisTimer: hazard && fair > 0.2 ? srandf(2.8, 5) : 999
+  };
+  game.obstacles.push(pipe);
+  spawnGapHazards(pipe);
+  trimGapHazardsUntilSafe(pipe);
+  if(fair > 0.35 && srand() < lerp(0.02, 0.08, fair)) spawnFloatMine();
   let treasureSpawned = false;
   const n = randi(2, 4);
   for(let i=0;i<n;i++){
@@ -2168,7 +2281,7 @@ function spawnObstacle(){
   if(stormActive() && srand() < 0.22) spawnThermalChain();
   else if(srand() < 0.07) spawnThermalChain();
   const prev = game.obstacles.length >= 2 ? game.obstacles[game.obstacles.length - 2] : null;
-  if(prev && srand() < 0.085){
+  if(prev && srand() < lerp(0.02, 0.085, fair)){
     const gapLeft = prev.x + prev.w;
     const gapRight = W + w;
     const gapW = gapRight - gapLeft;
@@ -3149,12 +3262,34 @@ function updatePlay(dt){
 
   const gliding = pointer.down;
   const nitro = game.nitroTime > 0;
-  const grav = gliding ? (nitro ? 380 : 640) : (nitro ? 700 : 1350);
-  b.vy += grav*dt;
-  if(gliding) b.vy = clamp(b.vy, -260, 390);
-  else b.vy = clamp(b.vy, -480, 700);
+
+  if(b.flapCooldown > 0) b.flapCooldown -= dt;
+  if(b.flapQueued && b.flapCooldown <= 0){
+    b.flapQueued = false;
+    applyFlapImpulse(b);
+    b.flapCooldown = 0.13;
+    SFX.flap();
+    spawnFlapBurst(b);
+  }
+
+  const gravFall = nitro ? 1180 : 1050;
+  const gravGlide = nitro ? 620 : 520;
+  if(gliding){
+    const planFactor = smoothstep(0, 1, clamp((b.vy + 140) / 300, 0, 1));
+    let grav = lerp(gravGlide, gravFall * 0.72, planFactor);
+    b.vy += grav * dt;
+    if(b.vy > -50 && b.vy < 110) b.vy -= 52 * dt;
+    b.vy = clamp(b.vy, -270, 340);
+  } else {
+    b.vy += gravFall * dt;
+    b.vy = clamp(b.vy, -440, 640);
+  }
+  b.vy *= (1 - dt * (gliding ? 1.15 : 0.42));
+  if(b.airtime > 0) b.airtime -= dt;
   b.y += b.vy*dt;
-  b.tilt = gliding ? clamp(b.vy/500, -0.35, 0.55) : clamp(b.vy/700, -0.5, 0.9);
+  b.tilt = gliding
+    ? clamp(b.vy / 480, -0.32, 0.48) + (b.airtime > 0 ? -0.06 : 0)
+    : clamp(b.vy / 680, -0.48, 0.88);
   updateWeather(dt, b);
   updateBirdWingCycle(b, dt);
   if(gliding && b.wing<0.6) b.wing = 0.35;
