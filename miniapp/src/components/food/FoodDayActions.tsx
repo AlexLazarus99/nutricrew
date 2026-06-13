@@ -1,13 +1,15 @@
 import { useTranslation } from "react-i18next";
 import { WaterWidget } from "../wellness/WaterWidget";
+import { FoodActionBadge } from "./FoodActionBadge";
 
 type Props = {
   onScan: () => void;
   onPhoto: () => void;
   scanning?: boolean;
+  photoOpen?: boolean;
 };
 
-export function FoodDayActions({ onScan, onPhoto, scanning }: Props) {
+export function FoodDayActions({ onScan, onPhoto, scanning, photoOpen }: Props) {
   const { t } = useTranslation();
 
   return (
@@ -20,9 +22,7 @@ export function FoodDayActions({ onScan, onPhoto, scanning }: Props) {
           onClick={onScan}
           disabled={scanning}
         >
-          <span className="food-day-actions__icon" aria-hidden>
-            📷
-          </span>
+          <FoodActionBadge kind="scan" active={scanning} />
           <span>{t("log.barcodeScan")}</span>
         </button>
         <button
@@ -31,9 +31,7 @@ export function FoodDayActions({ onScan, onPhoto, scanning }: Props) {
           onClick={onPhoto}
           disabled={scanning}
         >
-          <span className="food-day-actions__icon" aria-hidden>
-            🍽
-          </span>
+          <FoodActionBadge kind="photo" active={photoOpen} />
           <span>{t("log.takePhoto")}</span>
         </button>
       </div>

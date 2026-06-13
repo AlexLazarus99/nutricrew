@@ -14,6 +14,7 @@ import "./styles/quest-icons.css";
 import "./styles/level-badges.css";
 import "./styles/achievement-badges.css";
 import "./styles/valuation.css";
+import "./styles/nav-badges.css";
 
 bootstrapTelegramWebApp();
 wakeApi();

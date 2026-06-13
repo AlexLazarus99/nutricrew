@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { NavBadgeIcon, type NavBadgeKind } from "./nav/NavBadgeIcon";
 
 const STORAGE_KEY = "nutricrew_nav_collapsed";
 
@@ -8,6 +9,50 @@ type Props = {
   compactNav: boolean;
   hasTeam: boolean;
 };
+
+function NavItem({
+  to,
+  end,
+  kind,
+  label,
+  className,
+  isActiveFn,
+  tutorial,
+}: {
+  to: string;
+  end?: boolean;
+  kind: NavBadgeKind;
+  label: string;
+  className?: string;
+  isActiveFn?: (args: { isActive: boolean; pathname: string }) => boolean;
+  tutorial?: string;
+}) {
+  const { pathname } = useLocation();
+
+  return (
+    <NavLink
+      to={to}
+      end={end}
+      data-tutorial={tutorial}
+      className={({ isActive }) => {
+        const active = isActiveFn ? isActiveFn({ isActive, pathname }) : isActive;
+        return ["bottom-nav__item", active ? "active" : undefined, className]
+          .filter(Boolean)
+          .join(" ");
+      }}
+    >
+      {({ isActive }) => {
+        const active = isActiveFn ? isActiveFn({ isActive, pathname }) : isActive;
+        return (
+          <>
+            <NavBadgeIcon kind={kind} active={active} />
+            <span className="bottom-nav__label">{label}</span>
+          </>
+        );
+      }}
+    </NavLink>
+  );
+}
 
 export function BottomNav({ compactNav, hasTeam }: Props) {
   const { t } = useTranslation();
@@ -49,10 +94,13 @@ export function BottomNav({ compactNav, hasTeam }: Props) {
   }
 
   const gridClass = compactNav
-    ? "bottom-nav-5"
+    ? "bottom-nav-6"
     : hasTeam
-      ? "bottom-nav-9"
-      : "bottom-nav-8";
+      ? "bottom-nav-10"
+      : "bottom-nav-9";
+
+  const foodActive = ({ isActive }: { isActive: boolean }) =>
+    isActive || pathname.startsWith("/diary");
 
   return (
     <>
@@ -80,39 +128,25 @@ export function BottomNav({ compactNav, hasTeam }: Props) {
         >
           <span className="bottom-nav-handle__bar" />
         </button>
-        <NavLink to="/" end>
-          {t("nav.home")}
-        </NavLink>
-        <NavLink
-          to="/log"
-          data-tutorial="nav-log"
-          className={({ isActive }) =>
-            isActive || pathname.startsWith("/diary") ? "active" : undefined
-          }
-        >
-          {t("nav.log")}
-        </NavLink>
+        <NavItem to="/" end kind="home" label={t("nav.home")} />
+        <NavItem to="/log" kind="food" label={t("nav.log")} isActiveFn={foodActive} tutorial="nav-log" />
         {compactNav ? (
           <>
-            <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
-            <NavLink to="/guide">{t("nav.guide")}</NavLink>
-            <NavLink to="/game" data-tutorial="nav-game">
-              {t("nav.game")}
-            </NavLink>
+            <NavItem to="/quiz" kind="quiz" label={t("nav.quiz")} />
+            <NavItem to="/guide" kind="guide" label={t("nav.guide")} />
+            <NavItem to="/report" kind="report" label={t("nav.report")} />
+            <NavItem to="/game" kind="game" label={t("nav.game")} tutorial="nav-game" />
           </>
         ) : (
           <>
-            <NavLink to="/guide">{t("nav.guide")}</NavLink>
-            <NavLink to="/quiz">{t("nav.quiz")}</NavLink>
-            <NavLink to="/team" data-tutorial="nav-team">
-              {t("nav.team")}
-            </NavLink>
-            {hasTeam ? <NavLink to="/chat">{t("nav.chat")}</NavLink> : null}
-            <NavLink to="/leaderboard">{t("nav.rank")}</NavLink>
-            <NavLink to="/game" data-tutorial="nav-game">
-              {t("nav.game")}
-            </NavLink>
-            <NavLink to="/prizes">{t("nav.prizes")}</NavLink>
+            <NavItem to="/guide" kind="guide" label={t("nav.guide")} />
+            <NavItem to="/quiz" kind="quiz" label={t("nav.quiz")} />
+            <NavItem to="/team" kind="team" label={t("nav.team")} tutorial="nav-team" />
+            {hasTeam ? <NavItem to="/chat" kind="chat" label={t("nav.chat")} /> : null}
+            <NavItem to="/leaderboard" kind="rank" label={t("nav.rank")} />
+            <NavItem to="/game" kind="game" label={t("nav.game")} tutorial="nav-game" />
+            <NavItem to="/report" kind="report" label={t("nav.report")} />
+            <NavItem to="/prizes" kind="prizes" label={t("nav.prizes")} />
           </>
         )}
       </nav>

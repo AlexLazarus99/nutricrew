@@ -348,6 +348,7 @@ export function LogMealPage() {
 
       <FoodDayActions
         scanning={barcodeOpen || analyzing}
+        photoOpen={showPhotoCapture || !!preview || analyzing}
         onScan={() => {
           setCatalogOpen(false);
           setBarcodeOpen(true);

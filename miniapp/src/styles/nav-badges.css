@@ -1,0 +1,324 @@
+/* Bottom nav animated badges */
+.nav-badge {
+  --nav-badge-size: 34px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--nav-badge-size);
+  height: var(--nav-badge-size);
+  border-radius: 12px;
+  overflow: visible;
+}
+
+.nav-badge__ring,
+.nav-badge__shine {
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.nav-badge__ring {
+  border: 1.5px solid color-mix(in srgb, var(--accent, #c9a227) 55%, transparent);
+}
+
+.nav-badge__shine {
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.55), transparent 62%);
+}
+
+.nav-badge__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.nav-badge__bird {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 10px;
+}
+
+.nav-badge--active .nav-badge__ring,
+.nav-badge--active .nav-badge__shine {
+  opacity: 1;
+}
+
+.nav-badge--active {
+  animation: nav-badge-bob 2.8s ease-in-out infinite;
+}
+
+.nav-badge--active .nav-badge__svg {
+  animation: nav-badge-drift 3.2s ease-in-out infinite;
+}
+
+.nav-badge--active .nav-badge__star {
+  animation: nav-badge-star-spin 4s linear infinite;
+  transform-origin: 24px 20px;
+}
+
+.nav-badge--active .nav-badge__steam {
+  animation: nav-badge-steam 2.2s ease-in-out infinite;
+}
+
+.nav-badge--active .nav-badge__steam--2 {
+  animation-delay: 0.55s;
+}
+
+.nav-badge--active .nav-badge__dot {
+  animation: nav-badge-dot 1.4s ease-in-out infinite;
+}
+
+.nav-badge--active .nav-badge__dot--2 {
+  animation-delay: 0.2s;
+}
+
+.nav-badge--active .nav-badge__dot--3 {
+  animation-delay: 0.4s;
+}
+
+.nav-badge--active .nav-badge__bar--1 {
+  animation: nav-badge-bar 1.8s ease-in-out infinite;
+}
+
+.nav-badge--active .nav-badge__bar--2 {
+  animation: nav-badge-bar 1.8s ease-in-out 0.15s infinite;
+}
+
+.nav-badge--active .nav-badge__bar--3 {
+  animation: nav-badge-bar 1.8s ease-in-out 0.3s infinite;
+}
+
+.nav-badge--active .nav-badge__spark {
+  animation: nav-badge-spark 2s ease-in-out infinite;
+}
+
+.bottom-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  min-height: 56px;
+  padding: 4px 2px 6px !important;
+}
+
+.bottom-nav__label {
+  font-size: 0.58rem;
+  line-height: 1.1;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bottom-nav-10 {
+  grid-template-columns: repeat(10, 1fr);
+}
+
+.bottom-nav-10 a,
+.bottom-nav-10 .bottom-nav__item {
+  font-size: 0.55rem;
+  padding: 6px 1px !important;
+}
+
+.bottom-nav-10 .bottom-nav__label {
+  font-size: 0.52rem;
+}
+
+.bottom-nav-6 .bottom-nav__item,
+.bottom-nav-8 .bottom-nav__item,
+.bottom-nav-9 .bottom-nav__item,
+.bottom-nav-10 .bottom-nav__item {
+  min-height: 54px;
+}
+
+/* Food tab action badges */
+.food-action-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.food-action-badge__ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 18px;
+  border: 2px solid color-mix(in srgb, var(--accent, #c9a227) 35%, transparent);
+  opacity: 0.65;
+  animation: food-badge-ring-pulse 2.4s ease-in-out infinite;
+}
+
+.food-action-badge__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.food-action-badge--scan .food-action-badge__scanline {
+  animation: food-badge-scan 1.6s ease-in-out infinite;
+}
+
+.food-action-badge--photo .food-action-badge__flash {
+  animation: food-badge-flash 2.2s ease-in-out infinite;
+}
+
+.food-action-badge--photo .food-action-badge__glint {
+  animation: food-badge-glint 2.8s ease-in-out infinite;
+}
+
+.food-day-actions__btn:hover:not(:disabled) .food-action-badge,
+.food-day-actions__btn:focus-visible:not(:disabled) .food-action-badge {
+  animation: nav-badge-bob 1.2s ease-in-out infinite;
+}
+
+.food-day-actions__btn {
+  gap: 8px;
+}
+
+.food-day-actions__btn span:last-child {
+  text-align: center;
+}
+
+@keyframes nav-badge-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+@keyframes nav-badge-drift {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes nav-badge-star-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes nav-badge-steam {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.35;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 0.85;
+  }
+}
+
+@keyframes nav-badge-dot {
+  0%,
+  100% {
+    opacity: 0.45;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes nav-badge-bar {
+  0%,
+  100% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+  50% {
+    transform: scaleY(1.18);
+  }
+}
+
+@keyframes nav-badge-spark {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes food-badge-scan {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translateY(18px);
+    opacity: 1;
+  }
+}
+
+@keyframes food-badge-flash {
+  0%,
+  70%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  78% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes food-badge-glint {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  40% {
+    opacity: 0.95;
+  }
+}
+
+@keyframes food-badge-ring-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+
+html[data-reduce-motion="true"] .nav-badge--active,
+html[data-reduce-motion="true"] .food-action-badge__ring,
+html[data-reduce-motion="true"] .food-action-badge__scanline,
+html[data-reduce-motion="true"] .food-action-badge__flash,
+html[data-reduce-motion="true"] .food-action-badge__glint,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__svg,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__star,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__steam,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__dot,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__bar--1,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__bar--2,
+html[data-reduce-motion="true"] .nav-badge--active .nav-badge__bar--3,
+html[data-reduce-motion="true"] .food-day-actions__btn:hover .food-action-badge {
+  animation: none !important;
+}

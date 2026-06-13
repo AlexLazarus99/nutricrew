@@ -725,7 +725,13 @@ html[data-nav-collapsed="1"] .app-shell {
 .bottom-nav-6 a,
 .bottom-nav-7 a,
 .bottom-nav-8 a,
-.bottom-nav-9 a {
+.bottom-nav-9 a,
+.bottom-nav-10 a,
+.bottom-nav-6 .bottom-nav__item,
+.bottom-nav-7 .bottom-nav__item,
+.bottom-nav-8 .bottom-nav__item,
+.bottom-nav-9 .bottom-nav__item,
+.bottom-nav-10 .bottom-nav__item {
   font-size: 0.62rem;
   padding: 8px 2px;
 }
@@ -807,7 +813,8 @@ html[data-nav-collapsed="1"] .app-shell {
   text-decoration: none;
 }
 
-.bottom-nav a.active {
+.bottom-nav a.active,
+.bottom-nav .bottom-nav__item.active {
   color: var(--accent);
   background: var(--section-accent-soft);
 }
@@ -1120,8 +1127,8 @@ html[data-nav-collapsed="1"] .app-shell {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  min-height: 88px;
+  gap: 8px;
+  min-height: 108px;
   padding: 14px 10px;
   border-radius: var(--radius);
   border: 1px solid var(--surface-2);
@@ -1144,11 +1151,6 @@ html[data-nav-collapsed="1"] .app-shell {
 .food-day-actions__btn--photo {
   border-color: color-mix(in srgb, var(--primary, #4a7c59) 35%, transparent);
   background: color-mix(in srgb, var(--primary, #4a7c59) 8%, var(--surface));
-}
-
-.food-day-actions__icon {
-  font-size: 1.6rem;
-  line-height: 1;
 }
 
 .guest-mode-banner {
