@@ -28,8 +28,8 @@
   #loader .dot{width:64px;height:64px;border-radius:50%;
     background:radial-gradient(circle at 35% 30%,#ffe082,#ffb300);
     box-shadow:0 8px 30px rgba(0,0,0,.35);animation:bob 1s ease-in-out infinite;}
-  #loader h1{font-family:"Fraunces",Georgia,serif;font-size:22px;font-weight:700;letter-spacing:.02em;text-shadow:0 2px 8px rgba(0,0,0,.3);}
-  #loader p{font-size:13px;opacity:.85;font-weight:500;}
+  #loader h1{font-family:"Fraunces",Georgia,serif;font-size:1.55rem;font-weight:600;letter-spacing:.02em;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.3);}
+  #loader p{font-size:0.82rem;opacity:.85;font-weight:500;letter-spacing:.01em;color:#a8b8ae;}
   @keyframes bob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.05)}}
   .hidden{display:none !important;}
 </style>
@@ -121,8 +121,22 @@ const easeInOut = t=> t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
 /* Typography — match NutriCrew miniapp */
 const FONT_SANS = '"Plus Jakarta Sans", system-ui, -apple-system, sans-serif';
 const FONT_DISPLAY = '"Fraunces", Georgia, serif';
-function fontSans(px, weight){ return weight+' '+px+'px '+FONT_SANS; }
-function fontDisplay(px, weight){ return weight+' '+px+'px '+FONT_DISPLAY; }
+const TYPE = {
+  text:'#eef5f0', muted:'#a8b8ae', soft:'rgba(238,245,240,0.78)',
+  accent:'#7ec4a0', accentDim:'#9fd9b8', gold:'#e8c080', warn:'#fff59d', danger:'#ff6b6b'
+};
+function fontSans(px, weight){ return (weight||'500')+' '+px+'px '+FONT_SANS; }
+function fontDisplay(px, weight){ return (weight||'600')+' '+px+'px '+FONT_DISPLAY; }
+function typeDisplay(px){ return fontDisplay(px,'600'); }
+function typeTitle(px){ return fontDisplay(px,'700'); }
+function typeUI(px, w){ return fontSans(px, w||'600'); }
+function typeBody(px){ return fontSans(px,'500'); }
+function typeCaption(px){ return fontSans(px,'500'); }
+function drawTextLine(c, text, x, y, font, color, align, baseline){
+  c.font = font; c.fillStyle = color;
+  c.textAlign = align || 'center'; c.textBaseline = baseline || 'top';
+  c.fillText(text, x, y);
+}
 
 function rr(c,x,y,w,h,r){ // rounded rect path
   r = Math.min(r, w/2, h/2);
@@ -177,21 +191,21 @@ const SFX = {
 /* ----------------------------- Level configs ----------------------------- */
 /* Themes cycle forever; difficulty scales with level index. */
 const LEVELS = [
-  { name:'Зелёный Лес',        theme:'forest',     sky:['#9be7ff','#cdf6c9'], ground:'#4caf50', accent:'#2e7d32' },
-  { name:'Жаркая Пустыня',     theme:'desert',     sky:['#ffd27f','#ffe6a0'], ground:'#e0a458', accent:'#c97b3a' },
-  { name:'Ледяная Антарктика', theme:'antarctica', sky:['#bcdcff','#eaf6ff'], ground:'#dff1ff', accent:'#9cc6ee' },
-  { name:'Подводный Мир',      theme:'underwater', sky:['#1b6ca8','#37b6c9'], ground:'#0a4f6b', accent:'#14d6c4' },
-  { name:'Париж',              theme:'paris',      sky:['#ffd9e8','#ffeede'], ground:'#caa07a', accent:'#7a5a44', landmark:'eiffel' },
-  { name:'Лондон',             theme:'london',     sky:['#9fb4c7','#d7e2ea'], ground:'#8a8f97', accent:'#5a5f66', landmark:'bigben' },
-  { name:'Москва',             theme:'moscow',     sky:['#a6c8ff','#ffe1ec'], ground:'#b7a99a', accent:'#7c5e8c', landmark:'kremlin' },
-  { name:'Рим',                theme:'rome',       sky:['#ffe0a3','#ffd0a0'], ground:'#c79a6b', accent:'#9c6b3c', landmark:'colosseum' },
-  { name:'Нью-Йорк',           theme:'newyork',    sky:['#ffd9a0','#ffb3c6'], ground:'#7d8794', accent:'#3f4753', landmark:'liberty' },
-  { name:'Токио',              theme:'tokyo',      sky:['#ffd0e4','#cfe9ff'], ground:'#c5b6c9', accent:'#d05a7a', landmark:'fuji' },
-  { name:'Каир',               theme:'cairo',      sky:['#ffcf7a','#ffe7b0'], ground:'#e3b774', accent:'#b88a3e', landmark:'pyramids' },
-  { name:'Сидней',             theme:'sydney',     sky:['#8fd3ff','#d9f4ff'], ground:'#6fa9c4', accent:'#3d7fa0', landmark:'opera' },
-  { name:'Пекин',              theme:'beijing',    sky:['#ffd5a8','#ffe9c9'], ground:'#a98c6a', accent:'#a83232', landmark:'greatwall' },
-  { name:'Рио-де-Жанейро',     theme:'rio',        sky:['#3fa9e0','#9be3c9'], ground:'#3f9e6a', accent:'#2e7d52', landmark:'rio' },
-  { name:'Дубай',              theme:'dubai',      sky:['#ffba8a','#ffd9b0'], ground:'#d9b483', accent:'#9c7a4a', landmark:'burj' },
+  { name:'Зелёный Лес',        theme:'forest',     sky:['#7ed0ff','#b8f5c4','#e8ffe8'], ground:'#43a047', accent:'#1b5e20', deco:'#66bb6a' },
+  { name:'Жаркая Пустыня',     theme:'desert',     sky:['#ffbe5c','#ffe08a','#fff3c4'], ground:'#d68910', accent:'#b86b00', deco:'#f9a825' },
+  { name:'Ледяная Антарктика', theme:'antarctica', sky:['#9ecfff','#d4f0ff','#f5fbff'], ground:'#c5e5ff', accent:'#5dade2', deco:'#aed6f1' },
+  { name:'Подводный Мир',      theme:'underwater', sky:['#0d5a8a','#1a8fc4','#3ec9e0'], ground:'#06425c', accent:'#00e5c8', deco:'#26a69a' },
+  { name:'Париж',              theme:'paris',      sky:['#ffc8e0','#ffe8f2','#fff5f8'], ground:'#c48b5c', accent:'#6d4c41', landmark:'eiffel', deco:'#f48fb1' },
+  { name:'Лондон',             theme:'london',     sky:['#8aa8c0','#c5d8e8','#e8f0f6'], ground:'#6d7a86', accent:'#455a64', landmark:'bigben', deco:'#90a4ae' },
+  { name:'Москва',             theme:'moscow',     sky:['#8ab4ff','#ffd4e8','#fff0f5'], ground:'#b8957a', accent:'#6a1b9a', landmark:'kremlin', deco:'#ce93d8' },
+  { name:'Рим',                theme:'rome',       sky:['#ffcc66','#ffe0a8','#fff3d6'], ground:'#c17f3a', accent:'#8d4e1f', landmark:'colosseum', deco:'#ffb74d' },
+  { name:'Нью-Йорк',           theme:'newyork',    sky:['#ffcc80','#ffb3d9','#ffe4f0'], ground:'#5c6b7a', accent:'#263238', landmark:'liberty', deco:'#ff8a65' },
+  { name:'Токио',              theme:'tokyo',      sky:['#ffb8d9','#b8e0ff','#f0f8ff'], ground:'#b39ddb', accent:'#c2185b', landmark:'fuji', deco:'#f06292' },
+  { name:'Каир',               theme:'cairo',      sky:['#ffb84d','#ffe08a','#fff5cc'], ground:'#d4a017', accent:'#a67c00', landmark:'pyramids', deco:'#ffd54f' },
+  { name:'Сидней',             theme:'sydney',     sky:['#6ec6ff','#b8ecff','#e8f9ff'], ground:'#4a9ec4', accent:'#0277bd', landmark:'opera', deco:'#4fc3f7' },
+  { name:'Пекин',              theme:'beijing',    sky:['#ffc878','#ffe8c0','#fff5e0'], ground:'#a67c52', accent:'#c62828', landmark:'greatwall', deco:'#ef5350' },
+  { name:'Рио-де-Жанейро',     theme:'rio',        sky:['#2e9fd4','#7ee8c0','#d4fff0'], ground:'#2e9e5e', accent:'#1b7943', landmark:'rio', deco:'#ffca28' },
+  { name:'Дубай',              theme:'dubai',      sky:['#ffaa66','#ffd9a8','#fff0d9'], ground:'#d4a05a', accent:'#8d6e3f', landmark:'burj', deco:'#ffcc80' },
 ];
 
 /* Очки за один забег на уровне N, чтобы открыть уровень N+1: 125, 175, 225 … */
@@ -243,9 +257,9 @@ function levelLabel(idx){
 function levelParams(idx){
   const t = 1 - Math.exp(-idx / 14);
   return {
-    speed:   lerp(225, 450, t),
+    speed:   lerp(190, 385, t),
     gap:     lerp(0.40, 0.24, t),
-    spacing: lerp(2.4, 1.55, t),
+    spacing: lerp(2.35, 1.5, t),
     junkChance: lerp(0.12, 0.36, t),
     fat:     clamp(1 - t, 0.05, 1)
   };
@@ -517,6 +531,8 @@ function marathonRespawn(){
   game.obstacles.length = 0;
   game.debris.length = 0;
   game.zoneHazards.length = 0;
+  game.gapHazards.length = 0;
+  game.floatMines.length = 0;
   game.spawnTimer = 0.8;
   resetCombo();
   addFloatText(W/2, H*0.4, '↻ С '+game.marathonCp+' очков', '#ffd54f', 1.05);
@@ -687,7 +703,7 @@ const game = {
   level:0, params:null,
   scrollX:0, t:0,
   bird:null,
-  obstacles:[], foods:[], debris:[], zoneHazards:[],
+  obstacles:[], foods:[], debris:[], zoneHazards:[], gapHazards:[], floatMines:[],
   spawnTimer:0, distance:0,
   foodCollected:0, flightsPassed:0, score:0, lives:3, invuln:0,
   displayFat:1, targetFat:1, runStartFat:1, runMinFat:0.86,
@@ -766,7 +782,7 @@ function handleDown(px,py){
 function flap(){
   if(!game.bird) return;
   const b = game.bird;
-  b.vy = -420 * weatherFlapMult();
+  b.vy = -370 * weatherFlapMult();
   b.wing = 1;
   b.flapBoost = 1;
   b.wingCycle = 0.02;
@@ -1574,8 +1590,17 @@ function isJunk(type){ return JUNK.includes(type); }
 /* ====================== DRAWING: BACKGROUNDS / THEMES ===================== */
 function drawSky(c, lv){
   const g=c.createLinearGradient(0,0,0,H);
-  g.addColorStop(0, lv.sky[0]); g.addColorStop(1, lv.sky[1]);
+  const sky = lv.sky || ['#9be7ff','#cdf6c9'];
+  g.addColorStop(0, sky[0]);
+  g.addColorStop(0.55, sky[1] || sky[0]);
+  g.addColorStop(1, sky[2] || sky[1] || sky[0]);
   c.fillStyle=g; c.fillRect(0,0,W,H);
+  if(lv.deco){
+    c.save(); c.globalAlpha=0.07;
+    const rg=c.createRadialGradient(W*0.5,H*0.35,20,W*0.5,H*0.35,W*0.85);
+    rg.addColorStop(0, lv.deco); rg.addColorStop(1,'rgba(0,0,0,0)');
+    c.fillStyle=rg; c.fillRect(0,0,W,H); c.restore();
+  }
 }
 function hill(c, baseY, amp, col, scroll, step, seedOffset){
   c.fillStyle=col;
@@ -1607,28 +1632,34 @@ function drawBackground(c, lv, scroll, t){
 
   switch(lv.theme){
     case 'forest':
-      sun(c, W*0.78, H*0.2, 34, '#fff59d');
-      cloud(c,(W*0.3 - s1*0.3)%(W+200),H*0.18,28,0.85);
-      cloud(c,(W*0.8 - s1*0.3+300)%(W+200),H*0.12,22,0.7);
-      hill(c, gy, H*0.18, '#2e7d32', s1, 40, 0);
-      hill(c, gy+10, H*0.12, '#388e3c', s2, 36, 120);
-      drawTrees(c, gy, s2, '#1b5e20', 0.7);
+      sun(c, W*0.78, H*0.2, 38, '#fff176');
+      cloud(c,(W*0.3 - s1*0.3)%(W+200),H*0.18,32,0.9);
+      cloud(c,(W*0.8 - s1*0.3+300)%(W+200),H*0.12,26,0.75);
+      cloud(c,(W*0.55 - s1*0.2+140)%(W+200),H*0.24,18,0.55);
+      hill(c, gy, H*0.22, '#2e7d32', s1, 40, 0);
+      hill(c, gy+10, H*0.15, '#43a047', s2, 36, 120);
+      hill(c, gy+18, H*0.08, '#66bb6a', s3, 28, 240);
+      drawTrees(c, gy, s2, '#1b5e20', 0.85);
+      drawForestDeco(c, s2, t);
       break;
     case 'desert':
-      sun(c, W*0.7, H*0.22, 40, '#ffd54f');
-      hill(c, gy, H*0.10, '#caa05a', s1, 60, 0);
-      hill(c, gy+20, H*0.08, '#d9b277', s2, 70, 80);
+      sun(c, W*0.7, H*0.22, 46, '#ffca28');
+      hill(c, gy, H*0.12, '#bf7b1a', s1, 60, 0);
+      hill(c, gy+20, H*0.09, '#e6a020', s2, 70, 80);
+      hill(c, gy+28, H*0.05, '#f4c04d', s3, 50, 200);
       drawCacti(c, gy, s2);
+      drawDesertDeco(c, s1, t);
       break;
     case 'antarctica':
-      for(let i=0;i<40;i++){ const x=(i*97 - s2*0.5)%(W+40); const y=(i*53)%H; c.fillStyle='rgba(255,255,255,'+(0.5+0.5*((i%5)/5))+')'; c.beginPath(); c.arc(x,y,2+ (i%3),0,TAU); c.fill(); }
-      hill(c, gy, H*0.16, '#cfe8ff', s1, 50, 0);
-      hill(c, gy+10, H*0.12, '#e8f4ff', s2, 44, 90);
+      for(let i=0;i<55;i++){ const x=(i*97 - s2*0.5)%(W+40); const y=(i*53)%H; c.fillStyle='rgba(255,255,255,'+(0.55+0.45*((i%5)/5))+')'; c.beginPath(); c.arc(x,y,2+ (i%3),0,TAU); c.fill(); }
+      hill(c, gy, H*0.18, '#b8dcff', s1, 50, 0);
+      hill(c, gy+10, H*0.14, '#d8eeff', s2, 44, 90);
       drawIcebergs(c, gy, s2);
       break;
     case 'underwater':
       drawBubbles(c, t, s2);
       drawSeaweed(c, gy, s2);
+      drawFishSchool(c, s2, t);
       // light rays
       c.save(); c.globalAlpha=0.12; c.fillStyle='#bfffe8';
       for(let i=0;i<4;i++){ const x=(i*W*0.3 - s1*0.2)%(W+200); c.beginPath(); c.moveTo(x,0); c.lineTo(x+60,0); c.lineTo(x+140,H); c.lineTo(x+40,H); c.fill(); }
@@ -1641,7 +1672,7 @@ function drawBackground(c, lv, scroll, t){
 }
 
 function drawTrees(c, gy, scroll, col, scale){
-  for(let i=0;i<8;i++){
+  for(let i=0;i<11;i++){
     const x = ((i*180) - scroll) % (W+260); const xx = x<-120?x+W+260:x;
     const h = 90*scale + (i%3)*22;
     c.fillStyle=shade(col,-10); c.fillRect(xx-6, gy-h*0.4, 12, h*0.4);
@@ -1679,11 +1710,136 @@ function drawSeaweed(c, gy, scroll){
   }
 }
 function drawBubbles(c, t, scroll){
-  for(let i=0;i<26;i++){
+  for(let i=0;i<36;i++){
     const x=(i*73 + Math.sin(t+i)*20)%W;
     const y=H - ((t*40 + i*60)%(H+40));
-    c.save(); c.globalAlpha=0.25; c.strokeStyle='#cffaf0'; c.lineWidth=2; c.beginPath(); c.arc(x,y,2+(i%4),0,TAU); c.stroke(); c.restore();
+    c.save(); c.globalAlpha=0.3; c.strokeStyle='#a8fff0'; c.lineWidth=2; c.beginPath(); c.arc(x,y,2+(i%4),0,TAU); c.stroke(); c.restore();
   }
+}
+function drawForestDeco(c, scroll, t){
+  for(let i=0;i<5;i++){
+    const x=((i*210)-scroll*0.4)%(W+180); const xx=x<-90?x+W+180:x;
+    c.save(); c.globalAlpha=0.55;
+    c.fillStyle='#ffca28';
+    c.beginPath(); c.ellipse(xx, H*0.22+Math.sin(t*2+i)*8, 5, 3, 0.4, 0, TAU); c.fill();
+    c.restore();
+  }
+}
+function drawDesertDeco(c, scroll, t){
+  c.save(); c.globalAlpha=0.18; c.strokeStyle='#ffe082'; c.lineWidth=2;
+  for(let i=0;i<4;i++){
+    const y=H*0.55+i*H*0.08;
+    c.beginPath(); c.moveTo(-20, y); c.lineTo(W*0.4, y+6); c.stroke();
+  }
+  c.restore();
+}
+function drawFishSchool(c, scroll, t){
+  for(let i=0;i<8;i++){
+    const x=((i*130)-scroll*0.6)%(W+120); const xx=x<-60?x+W+120:x;
+    const y=H*0.28+Math.sin(t*1.8+i)*H*0.08;
+    c.save(); c.globalAlpha=0.45; c.fillStyle=['#ff8a65','#ffd54f','#4dd0e1'][i%3];
+    c.beginPath(); c.ellipse(xx,y,8,4,0,0,TAU); c.fill();
+    c.beginPath(); c.moveTo(xx-8,y); c.lineTo(xx-14,y-3); c.lineTo(xx-14,y+3); c.fill();
+    c.restore();
+  }
+}
+
+/* ---- Gap / floating hazards ---- */
+function spawnGapHazards(pipe){
+  if(pipe.gapH < 88) return;
+  const ph = runPhase();
+  const chance = ph >= 2 ? 0.4 : ph >= 1 ? 0.26 : 0.16;
+  if(srand() > chance) return;
+  const roll = srand();
+  if(roll < 0.38 && pipe.gapH > 108){
+    game.gapHazards.push({
+      pipeId:pipe.id, kind:'bar', x:pipe.x, w:pipe.w,
+      relY:pipe.gapH*srandf(0.35,0.55), h:clamp(pipe.gapH*0.13,12,20),
+      materialize:pipe.materialize, theme:pipe.kind
+    });
+  } else if(roll < 0.72){
+    game.gapHazards.push({
+      pipeId:pipe.id, kind:'spike', x:pipe.x, w:pipe.w,
+      fromTop:srand()<0.5, len:srandf(pipe.gapH*0.2,pipe.gapH*0.36),
+      materialize:pipe.materialize, theme:pipe.kind
+    });
+  } else {
+    game.gapHazards.push({
+      pipeId:pipe.id, kind:'orb', x:pipe.x+pipe.w*0.5, w:pipe.w,
+      relY:pipe.gapH*0.5, r:srandf(11,17), phase:srandf(0,TAU),
+      amp:srandf(pipe.gapH*0.14,pipe.gapH*0.26), materialize:pipe.materialize, theme:pipe.kind
+    });
+  }
+}
+function spawnFloatMine(){
+  game.floatMines.push({
+    x:W+srandf(60,160), y:srandf(H*0.14,H*0.62), r:srandf(13,20),
+    phase:srandf(0,TAU), spin:srandf(-3,3), materialize:0.45
+  });
+}
+function gapHazardWorldY(gh, pipe){
+  if(gh.kind === 'orb'){
+    return pipe.gapY + gh.relY + Math.sin(game.t*2.8+gh.phase)*gh.amp;
+  }
+  if(gh.kind === 'bar') return pipe.gapY + gh.relY;
+  return pipe.gapY + (gh.fromTop ? gh.len*0.5 : pipe.gapH - gh.len*0.5);
+}
+function drawGapHazard(c, gh, pipe, lv){
+  if(gh.materialize > 0){ c.save(); c.globalAlpha=0.3+0.15*Math.sin(game.t*7); }
+  const col = obstacleColor(lv);
+  if(gh.kind === 'bar'){
+    const y = pipe.gapY + gh.relY;
+    c.fillStyle = shade(col.main,-8);
+    rr(c, pipe.x+4, y, pipe.w-8, gh.h, 5); c.fill();
+    c.fillStyle = col.cap; c.fillRect(pipe.x+2, y, pipe.w-4, 4);
+  } else if(gh.kind === 'spike'){
+    const y0 = pipe.gapY + (gh.fromTop ? 0 : pipe.gapH - gh.len);
+    c.fillStyle = gh.theme==='antarctica' ? '#b3e5fc' : shade(col.main,12);
+    c.beginPath();
+    if(gh.fromTop){ c.moveTo(pipe.x, y0); c.lineTo(pipe.x+pipe.w, y0); c.lineTo(pipe.x+pipe.w*0.5, y0+gh.len); }
+    else { c.moveTo(pipe.x, y0+gh.len); c.lineTo(pipe.x+pipe.w, y0+gh.len); c.lineTo(pipe.x+pipe.w*0.5, y0); }
+    c.closePath(); c.fill();
+  } else if(gh.kind === 'orb'){
+    const ox = pipe.x+pipe.w*0.5, oy = gapHazardWorldY(gh, pipe);
+    const g=c.createRadialGradient(ox-gh.r*0.3,oy-gh.r*0.3,2,ox,oy,gh.r);
+    g.addColorStop(0,'#ff8a65'); g.addColorStop(1,'#d84315');
+    c.fillStyle=g; c.beginPath(); c.arc(ox,oy,gh.r,0,TAU); c.fill();
+    c.strokeStyle='rgba(255,255,255,0.45)'; c.lineWidth=2; c.stroke();
+  }
+  if(gh.materialize > 0) c.restore();
+}
+function drawFloatMine(c, m, t){
+  c.save(); c.translate(m.x,m.y); c.rotate(m.rot||0);
+  if(m.materialize > 0) c.globalAlpha = 0.35+0.2*Math.sin(t*8);
+  const g=c.createRadialGradient(-m.r*0.2,-m.r*0.2,1,0,0,m.r);
+  g.addColorStop(0,'#ffab91'); g.addColorStop(1,'#bf360c');
+  c.fillStyle=g; c.beginPath(); c.arc(0,0,m.r,0,TAU); c.fill();
+  for(let i=0;i<8;i++){
+    const a=i/8*TAU;
+    c.fillStyle='#5d4037';
+    c.beginPath(); c.moveTo(Math.cos(a)*m.r*0.55,Math.sin(a)*m.r*0.55);
+    c.lineTo(Math.cos(a)*m.r*1.15,Math.sin(a)*m.r*1.15); c.lineTo(Math.cos(a+0.2)*m.r*0.55,Math.sin(a+0.2)*m.r*0.55); c.fill();
+  }
+  c.restore();
+}
+function gapHazardHit(b, gh, pipe){
+  if(gh.materialize > 0) return false;
+  if(gh.kind === 'bar'){
+    const y = pipe.gapY + gh.relY;
+    return circleRect(b.x,b.y,b.r*0.76, pipe.x+2, y, pipe.w-4, gh.h);
+  }
+  if(gh.kind === 'spike'){
+    const cx = pipe.x+pipe.w*0.5;
+    const cy = pipe.gapY + (gh.fromTop ? gh.len*0.55 : pipe.gapH - gh.len*0.55);
+    const dx=b.x-cx, dy=b.y-cy;
+    return dx*dx+dy*dy < (b.r*0.7+gh.len*0.22)*(b.r*0.7+gh.len*0.22);
+  }
+  if(gh.kind === 'orb'){
+    const ox = pipe.x+pipe.w*0.5, oy = gapHazardWorldY(gh, pipe);
+    const dx=b.x-ox, dy=b.y-oy;
+    return dx*dx+dy*dy < (b.r*0.76+gh.r)*(b.r*0.76+gh.r);
+  }
+  return false;
 }
 
 /* ---- City background + landmark ---- */
@@ -1977,6 +2133,8 @@ function spawnObstacle(){
     materialize: 0.55, smashed:false,
     debrisTimer: hazard ? srandf(2.2, 4.2) : 999
   });
+  spawnGapHazards(game.obstacles[game.obstacles.length-1]);
+  if(srand() < 0.09) spawnFloatMine();
   let treasureSpawned = false;
   const n = randi(2, 4);
   for(let i=0;i<n;i++){
@@ -2523,7 +2681,7 @@ function drawHUD(c){
 
   const pad = 14 + safeTop();
   // Level name
-  c.fillStyle='#fff'; c.font=fontSans(18,'700'); c.textAlign='left'; c.textBaseline='top';
+  c.fillStyle=TYPE.text; c.font=typeUI(17,'700'); c.textAlign='left'; c.textBaseline='top';
   c.fillText('Ур. '+(game.level+1)+' · '+levelLabel(game.level)+(game.marathon?' · Марафон':''), 16, pad);
 
   // Hearts
@@ -2564,7 +2722,7 @@ function drawHUD(c){
   rr(c,barX,barY, Math.max(8,barW*runProg), barH,7);
   const bg=c.createLinearGradient(barX,0,barX+barW,0); bg.addColorStop(0,'#9fd9b8'); bg.addColorStop(1,'#7ec4a0');
   c.fillStyle=bg; c.fill();
-  c.fillStyle='#fff'; c.font=fontSans(11,'600'); c.textAlign='center'; c.textBaseline='middle';
+  c.fillStyle=TYPE.gold; c.font=typeUI(12,'600'); c.textAlign='center'; c.textBaseline='middle';
   const goalLabel = alreadyUnlocked
     ? game.score+' оч. · цель '+runGoal
     : game.score+'/'+runGoal+' оч. до ур. '+nextLevel;
@@ -2577,7 +2735,7 @@ function drawHUD(c){
   }
 
   // score bottom-left
-  c.textAlign='left'; c.textBaseline='bottom'; c.font=fontSans(16,'700'); c.fillStyle='#fff';
+  c.fillStyle=TYPE.text; c.textAlign='left'; c.textBaseline='bottom'; c.font=typeUI(15,'700');
   c.fillText('Очки: '+game.score+(game.multiplier>1?'  x'+game.multiplier.toFixed(1):''), 16, H-14-safeBottom());
 
   if(game.combo>1){
@@ -2642,7 +2800,7 @@ function bigButton(c,b, primary=true){
   else { grad.addColorStop(0,'#4a6079'); grad.addColorStop(1,'#33455c'); }
   rr(c,b.x,b.y,b.w,b.h,b.h/2); c.fillStyle=grad; c.fill();
   rr(c,b.x,b.y,b.w,b.h,b.h/2); c.strokeStyle='rgba(255,255,255,0.25)'; c.lineWidth=1.5; c.stroke();
-  c.fillStyle='#fff'; c.font=fontSans(Math.round(b.h*0.4),'700'); c.textAlign='center'; c.textBaseline='middle';
+  c.fillStyle='#fff'; c.font=typeUI(Math.round(b.h*0.38),'700'); c.textAlign='center'; c.textBaseline='middle';
   c.fillText(b.label, b.x+b.w/2, b.y+b.h/2+1);
 }
 
@@ -2664,22 +2822,19 @@ function drawMenu(c){
   drawBird(c,b, 0.5+0.5*Math.sin(game.t*0.6), game.t);
 
   c.textAlign='center'; c.textBaseline='middle';
-  c.fillStyle='#eef5f0';
-  c.font=fontDisplay(Math.round(clamp(W*0.085,26,46)),'700');
+  c.textAlign='center'; c.textBaseline='middle';
+  c.fillStyle=TYPE.text;
+  c.font=typeTitle(Math.round(clamp(W*0.085,26,44)));
   c.fillText('NutriRun', W/2, H*0.50);
-  c.fillStyle='rgba(238,245,240,0.85)'; c.font=fontSans(15,'500');
-  c.fillText('Комбо · perfect gate · NutriCrew бонусы', W/2, H*0.50+34);
+  drawTextLine(c, 'Комбо · perfect gate · NutriCrew бонусы', W/2, H*0.50+32, typeBody(14), TYPE.soft);
   if(nutriBoost.active){
-    c.fillStyle='#7ec4a0'; c.font=fontSans(13,'600');
-    c.fillText('✓ '+ (nutriBoost.label || 'Бонус из дневника'), W/2, H*0.50+54);
+    drawTextLine(c, '✓ '+ (nutriBoost.label || 'Бонус из дневника'), W/2, H*0.50+52, typeUI(13,'600'), TYPE.accent);
   }
-  c.fillStyle='rgba(238,245,240,0.55)'; c.font=fontSans(11,'500');
-  c.fillText('Daily seed: '+dailySeedNum()+' · Марафон рекорд: '+(progress.marathonBest||0), W/2, H*0.56+188);
+  drawTextLine(c, 'Daily seed: '+dailySeedNum()+' · Марафон рекорд: '+(progress.marathonBest||0), W/2, H*0.56+188, typeCaption(11), TYPE.muted);
 
   for(const b2 of buttons){ bigButton(c,b2, b2.id==='play'); }
 
-  c.fillStyle='rgba(238,245,240,0.6)'; c.font=fontSans(12,'500');
-  c.fillText('Рекорд: '+progress.best+' · Пролётов: '+progress.totalFlights+' · Ур. '+progress.unlocked, W/2, H*0.56+210);
+  drawTextLine(c, 'Рекорд: '+progress.best+' · Пролётов: '+progress.totalFlights+' · Ур. '+progress.unlocked, W/2, H*0.56+210, typeCaption(12), 'rgba(238,245,240,0.6)');
 }
 
 function buildLevels(){
@@ -2703,7 +2858,7 @@ function buildLevels(){
 function drawLevels(c){
   drawBackground(c, LEVELS[0], game.t*30, game.t);
   c.fillStyle='rgba(8,16,30,0.6)'; c.fillRect(0,0,W,H);
-  c.fillStyle='#eef5f0'; c.textAlign='center'; c.textBaseline='top'; c.font=fontDisplay(24,'700');
+  c.fillStyle=TYPE.text; c.textAlign='center'; c.textBaseline='top'; c.font=typeTitle(22);
   c.fillText('Выбор уровня', W/2, H*0.07+safeTop());
   for(const b of buttons){
     if(b.id==='back'){ bigButton(c,b,false); continue; }
@@ -2711,16 +2866,16 @@ function drawLevels(c){
     const label = levelLabel(i);
     rr(c,b.x,b.y,b.w,b.h,14);
     const g=c.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
-    g.addColorStop(0,lv.sky[0]); g.addColorStop(1,lv.sky[1]); c.fillStyle=g; c.fill();
+    g.addColorStop(0,lv.sky[0]); g.addColorStop(0.5,lv.sky[1]); g.addColorStop(1,lv.sky[2]||lv.sky[1]); c.fillStyle=g; c.fill();
     rr(c,b.x,b.y,b.w,b.h,14); c.strokeStyle='rgba(255,255,255,0.3)'; c.lineWidth=1.5; c.stroke();
     c.fillStyle=b.locked?'rgba(0,0,0,0.45)':'rgba(0,0,0,0.18)';
     if(b.locked){ rr(c,b.x,b.y,b.w,b.h,14); c.fill(); }
-    c.fillStyle='#fff'; c.font=fontDisplay(Math.round(b.h*0.34),'700'); c.textAlign='center'; c.textBaseline='middle';
+    c.fillStyle='#fff'; c.font=typeTitle(Math.round(b.h*0.34)); c.textAlign='center'; c.textBaseline='middle';
     c.fillText(b.locked?'🔒':(i+1), b.x+b.w/2, b.y+b.h*0.38);
-    c.font=fontSans(Math.round(b.h*0.12),'600');
+    c.globalAlpha=1; c.font=typeUI(Math.round(b.h*0.12),'600');
     c.fillText(label.length>11?label.slice(0,10)+'…':label, b.x+b.w/2, b.y+b.h*0.66);
     const stars = (progress.levelStars && progress.levelStars[i]) || 0;
-    if(unlocked && stars > 0) drawStarRow(c, b.x+b.w*0.22, b.y+b.h*0.82, stars, 3, 9);
+    if(!b.locked && stars > 0) drawStarRow(c, b.x+b.w*0.22, b.y+b.h*0.82, stars, 3, 9);
     if(b.locked){
       c.font=fontSans(Math.round(b.h*0.1),'500');
       c.fillStyle='rgba(255,255,255,0.75)';
@@ -2735,7 +2890,8 @@ function startLevel(idx, opts){
   game.level=idx;
   game.params=levelParams(idx);
   game.scrollX=0; game.spawnTimer=0.6; game.distance=0;
-  game.obstacles.length=0; game.foods.length=0; game.debris.length=0; game.zoneHazards.length=0; particles.length=0; floatTexts.length=0; eatRings.length=0;
+  game.obstacles.length=0; game.foods.length=0; game.debris.length=0; game.zoneHazards.length=0;
+  game.gapHazards.length=0; game.floatMines.length=0; particles.length=0; floatTexts.length=0; eatRings.length=0;
   game.nextObstacleId=0;
   game.foodCollected=0; game.flightsPassed=0; game.score=0; game.lives= opts.marathon ? 1 : 3; game.invuln=0;
   game.unlockBanner=null; game.hazardWasActive=false; game.hazardBanner=null;
@@ -2798,36 +2954,38 @@ function drawComplete(c){
 function buildOver(){
   clearButtons();
   const bw=Math.min(W*0.7,300), bx=(W-bw)/2;
-  addButton({x:bx,y:H*0.6,w:bw,h:56,label:'↻ Ещё раз',onClick:()=>{ startLevel(game.level); }, id:'retry'});
-  addButton({x:bx,y:H*0.6+70,w:bw,h:48,label:'🗺 Карта уровней',onClick:()=>{ state=STATE.LEVELS; buildLevels(); }, id:'map'});
+  const btnY = Math.min(H*0.72, H*0.22 + safeTop() + 300);
+  addButton({x:bx,y:btnY,w:bw,h:56,label:'↻ Ещё раз',onClick:()=>{ startLevel(game.level); }, id:'retry'});
+  addButton({x:bx,y:btnY+70,w:bw,h:48,label:'🗺 Карта уровней',onClick:()=>{ state=STATE.LEVELS; buildLevels(); }, id:'map'});
 }
 function drawOver(c){
   renderWorld(c, true);
   c.fillStyle='rgba(40,8,12,0.55)'; c.fillRect(0,0,W,H);
-  const pw=Math.min(W*0.86,420), ph=H*0.42, px=(W-pw)/2, py=H*0.22+safeTop();
-  panel(c,px,py,pw,ph,'rgba(48,20,28,0.9)');
-  c.textAlign='center'; c.textBaseline='top';
-  c.fillStyle='#ff6b6b'; c.font=fontDisplay(28,'700'); c.fillText('Упс!', W/2, py+24);
-  c.fillStyle='#eef5f0'; c.font=fontSans(15,'600');
-  c.fillText('Попробуй снова — здоровье важнее!', W/2, py+62);
-  c.fillStyle='#e8c080'; c.font=fontSans(18,'700');
-  c.fillText('Очки: '+game.score+' · Пролётов: '+game.flightsPassed, W/2, py+92);
   const stars = computeRunStars();
-  if(stars > 0 && !game.marathon){
-    c.fillStyle='#ffd54f'; c.font=fontSans(14,'700');
-    c.fillText('★'.repeat(stars)+' · '+stars+'/3 звёзд', W/2, py+112);
-  }
   const ax = runArtifactBonus();
+  let rows = 3;
+  if(stars > 0 && !game.marathon) rows++;
+  if(ax > 0) rows++;
+  if(game.marathon) rows++;
+  rows++;
+  const ph = 36 + rows * 26 + 28;
+  const pw=Math.min(W*0.86,420), px=(W-pw)/2, py=H*0.18+safeTop();
+  panel(c,px,py,pw,ph,'rgba(48,20,28,0.9)');
+  let y = py + 22;
+  const step = 26;
+  drawTextLine(c, 'Упс!', W/2, y, typeTitle(26), TYPE.danger); y += step + 4;
+  drawTextLine(c, 'Попробуй снова — здоровье важнее!', W/2, y, typeBody(14), TYPE.soft); y += step;
+  drawTextLine(c, 'Очки: '+game.score+' · Пролётов: '+game.flightsPassed, W/2, y, typeUI(16,'700'), TYPE.gold); y += step;
+  if(stars > 0 && !game.marathon){
+    drawTextLine(c, '★'.repeat(stars)+' · '+stars+'/3 звёзд', W/2, y, typeUI(14,'700'), '#ffd54f'); y += step;
+  }
   if(ax > 0){
-    c.fillStyle='#ba68c8'; c.font=fontSans(13,'600');
-    c.fillText('Артефакт забега: +'+ax+' XP', W/2, py+(stars>0&&!game.marathon?132:112));
+    drawTextLine(c, 'Артефакт: +'+ax+' XP', W/2, y, typeUI(13,'600'), '#ba68c8'); y += step;
   }
   if(game.marathon){
-    c.fillStyle='rgba(238,245,240,0.75)'; c.font=fontSans(13,'500');
-    c.fillText('Марафон · CP '+game.marathonCp+' · Рекорд '+(progress.marathonBest||0), W/2, py+118);
+    drawTextLine(c, 'Марафон · CP '+game.marathonCp+' · Рекорд '+(progress.marathonBest||0), W/2, y, typeBody(13), TYPE.soft); y += step;
   }
-  c.fillStyle='rgba(238,245,240,0.75)'; c.font=fontSans(13,'500');
-  c.fillText('Perfect: '+(game.runStats?.perfectGates||0)+' · Near miss: '+(game.runStats?.nearMisses||0), W/2, py+138);
+  drawTextLine(c, 'Perfect: '+(game.runStats?.perfectGates||0)+' · Near miss: '+(game.runStats?.nearMisses||0), W/2, y, typeCaption(12), TYPE.muted);
   for(const b of buttons){ bigButton(c,b, b.id==='retry'); }
 }
 
@@ -2867,13 +3025,20 @@ function renderWorld(c, frozen){
   drawWeatherFx(c);
   // ground strip
   const gy=H*0.80;
-  c.fillStyle=lv.ground; c.fillRect(0,gy,W,H-gy);
+  const gg=c.createLinearGradient(0,gy,0,H);
+  gg.addColorStop(0, lv.ground); gg.addColorStop(1, shade(lv.ground,-28));
+  c.fillStyle=gg; c.fillRect(0,gy,W,H-gy);
   c.fillStyle=shade(lv.ground,-18);
   for(let x=-( (game.scrollX*0.6)%40);x<W;x+=40){ c.fillRect(x,gy,20,6); }
 
   drawThermals(c);
   for(const d of game.debris){ drawDebris(c, d, game.t); }
   for(const o of game.obstacles){ drawObstacle(c, o, lv); }
+  for(const gh of game.gapHazards){
+    const pipe = game.obstacles.find(o => o.id === gh.pipeId);
+    if(pipe && !pipe.smashed) drawGapHazard(c, gh, pipe, lv);
+  }
+  for(const m of game.floatMines){ drawFloatMine(c, m, game.t); }
   for(const zh of game.zoneHazards){ drawZoneHazard(c, zh, game.t); }
   // foods
   for(const f of game.foods){ if(f.taken) continue;
@@ -2984,10 +3149,10 @@ function updatePlay(dt){
 
   const gliding = pointer.down;
   const nitro = game.nitroTime > 0;
-  const grav = gliding ? (nitro ? 420 : 720) : (nitro ? 780 : 1500);
+  const grav = gliding ? (nitro ? 380 : 640) : (nitro ? 700 : 1350);
   b.vy += grav*dt;
-  if(gliding) b.vy = clamp(b.vy, -280, 420);
-  else b.vy = clamp(b.vy, -520, 760);
+  if(gliding) b.vy = clamp(b.vy, -260, 390);
+  else b.vy = clamp(b.vy, -480, 700);
   b.y += b.vy*dt;
   b.tilt = gliding ? clamp(b.vy/500, -0.35, 0.55) : clamp(b.vy/700, -0.5, 0.9);
   updateWeather(dt, b);
@@ -3065,6 +3230,27 @@ function updatePlay(dt){
          circleRect(b.x,b.y,b.r*0.78, o.x,o.gapY+o.gapH,o.w,H-(o.gapY+o.gapH))){
         hitPlayer();
       }
+    }
+  }
+  for(let i=game.gapHazards.length-1;i>=0;i--){
+    const gh = game.gapHazards[i];
+    const pipe = game.obstacles.find(o => o.id === gh.pipeId);
+    if(!pipe || pipe.smashed || pipe.x+pipe.w < -50){
+      game.gapHazards.splice(i,1); continue;
+    }
+    if(gh.materialize != null) gh.materialize = pipe.materialize;
+    if(game.invuln<=0 && !shielded && gapHazardHit(b, gh, pipe)) hitPlayer();
+  }
+  for(let i=game.floatMines.length-1;i>=0;i--){
+    const m = game.floatMines[i];
+    m.x -= speed*scrollDt;
+    m.y += Math.sin(game.t*2.4+m.phase)*20*dt;
+    m.rot = (m.rot||0) + m.spin*dt;
+    if(m.materialize > 0) m.materialize -= dt;
+    if(m.x < -60){ game.floatMines.splice(i,1); continue; }
+    if(game.invuln<=0 && !shielded && m.materialize <= 0){
+      const dx=b.x-m.x, dy=b.y-m.y;
+      if(dx*dx+dy*dy < (b.r*0.76+m.r)*(b.r*0.76+m.r)) hitPlayer();
     }
   }
   for(let i=game.zoneHazards.length-1;i>=0;i--){
