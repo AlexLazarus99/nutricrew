@@ -28,8 +28,8 @@ function smoothstep(a: number, b: number, t: number) {
 }
 
 function wingBeatWave(cycle: number) {
-  if (cycle < 0.27) return 1 - smoothstep(0, 1, cycle / 0.27);
-  return smoothstep(0, 1, (cycle - 0.27) / 0.73);
+  if (cycle < 0.27) return smoothstep(0, 1, cycle / 0.27);
+  return 1 - smoothstep(0, 1, (cycle - 0.27) / 0.73);
 }
 
 function shade(hex: string, amt: number) {
@@ -57,22 +57,31 @@ function drawWingFeather(
   c.translate(ox, oy);
   c.rotate(angle);
   c.globalAlpha *= alpha;
-  const tipW = width * 0.22;
-  const rootW = width * 0.42;
+  const rootW = width * 0.34;
+  const midW = width * 0.44;
+  const tipW = width * 0.05;
   c.fillStyle = color;
   c.beginPath();
-  c.moveTo(0, -rootW * 0.45);
-  c.quadraticCurveTo(length * 0.42, -width * 0.62, length, -tipW);
-  c.quadraticCurveTo(length * 0.88, width * 0.12, length, tipW * 1.1);
-  c.quadraticCurveTo(length * 0.38, width * 0.58, 0, rootW * 0.5);
+  c.moveTo(0, 0);
+  c.lineTo(length * 0.12, -rootW * 0.55);
+  c.quadraticCurveTo(length * 0.48, -midW, length * 0.94, -tipW);
+  c.lineTo(length, tipW * 0.65);
+  c.quadraticCurveTo(length * 0.52, midW * 0.78, length * 0.16, rootW * 0.48);
+  c.quadraticCurveTo(length * 0.05, rootW * 0.22, 0, 0);
   c.closePath();
   c.fill();
-  c.strokeStyle = shade(color, -28);
-  c.lineWidth = Math.max(0.6, width * 0.07);
+  c.strokeStyle = shade(color, -32);
+  c.lineWidth = Math.max(0.45, width * 0.055);
   c.lineCap = "round";
   c.beginPath();
   c.moveTo(0, 0);
-  c.lineTo(length * 0.9, tipW * 0.15);
+  c.lineTo(length * 0.97, tipW * 0.12);
+  c.stroke();
+  c.strokeStyle = "rgba(255,255,255,0.2)";
+  c.lineWidth = Math.max(0.35, width * 0.04);
+  c.beginPath();
+  c.moveTo(length * 0.18, -rootW * 0.18);
+  c.quadraticCurveTo(length * 0.62, -midW * 0.52, length * 0.9, -tipW * 0.45);
   c.stroke();
   c.restore();
 }
@@ -84,18 +93,35 @@ function drawBirdTail(
   color: string,
   flapAmt: number,
 ) {
-  const count = 7;
+  const count = 9;
   const mid = (count - 1) / 2;
-  const rootX = -bodyW * 0.54;
-  const rootY = bodyH * 0.03;
-  const fan = 0.52 + (1 - flapAmt) * 0.1;
+  const rootX = -bodyW * 0.56;
+  const rootY = bodyH * 0.04;
+  const fanOpen = 0.38 + (1 - flapAmt) * 0.16;
+  c.fillStyle = shade(color, 10);
+  c.beginPath();
+  c.moveTo(rootX + bodyW * 0.06, rootY - bodyH * 0.06);
+  c.quadraticCurveTo(rootX - bodyW * 0.28, rootY - bodyH * 0.12, rootX - bodyW * 0.42, rootY);
+  c.quadraticCurveTo(rootX - bodyW * 0.28, rootY + bodyH * 0.12, rootX + bodyW * 0.06, rootY + bodyH * 0.08);
+  c.closePath();
+  c.fill();
   for (let i = 0; i < count; i++) {
     const off = i - mid;
     const norm = off / mid;
-    const len = bodyW * (0.76 - Math.abs(norm) * 0.13);
-    const ang = Math.PI + norm * fan;
-    const fw = bodyH * (0.15 + (1 - Math.abs(norm) * 0.45) * 0.12);
-    drawWingFeather(c, rootX + norm * bodyW * 0.04, rootY + Math.abs(norm) * bodyH * 0.025, ang, len, fw, shade(color, -14 + Math.abs(off) * 5), 0.96);
+    const centerBoost = 1 - Math.abs(norm) * 0.28;
+    const len = bodyW * (0.62 + centerBoost * 0.32);
+    const ang = Math.PI + norm * fanOpen + 0.06;
+    const fw = bodyH * (0.09 + centerBoost * 0.08);
+    drawWingFeather(
+      c,
+      rootX + norm * bodyW * 0.035,
+      rootY + Math.abs(norm) * bodyH * 0.02,
+      ang,
+      len,
+      fw,
+      shade(color, -10 + Math.abs(off) * 4),
+      0.95,
+    );
   }
 }
 
@@ -115,33 +141,48 @@ function drawWing(
   const beat = 1 - smoothFlap;
   c.save();
   c.translate(x, y);
-  const a = (0.48 * wingAmp + smoothFlap * (-0.88 * wingAmp - 0.48 * wingAmp)) * dir;
+  const downA = 0.52 * wingAmp;
+  const upA = -0.92 * wingAmp;
+  const a = -((1 - smoothFlap) * downA + smoothFlap * upA) * dir;
   c.rotate(a);
-  const spread = 0.68 + beat * 0.32;
+  const spread = 0.62 + beat * 0.38;
   const span = w * spread;
-  const depth = h * (0.5 + beat * 0.14);
-  c.globalAlpha = isBack ? 0.84 : 1;
-  const secCount = isBack ? 4 : 5;
-  const primCount = isBack ? 5 : 7;
-  for (let i = 0; i < secCount; i++) {
-    const t = secCount > 1 ? i / (secCount - 1) : 0;
-    const ang = dir * (0.28 + t * 0.67) * (0.82 + beat * 0.14);
-    const len = span * (0.38 + t * 0.24);
-    const fw = depth * (0.58 - t * 0.18);
-    drawWingFeather(c, dir * w * 0.02, h * 0.1 + t * h * 0.05, ang, len, fw, shade(color, -10), 0.88);
+  const depth = h * (0.48 + beat * 0.16);
+  c.globalAlpha = isBack ? 0.82 : 1;
+  c.fillStyle = shade(color, 8);
+  c.beginPath();
+  c.ellipse(dir * w * 0.06, h * 0.02, w * 0.14, h * 0.12, dir * 0.3, 0, TAU);
+  c.fill();
+  const covertCount = isBack ? 4 : 5;
+  for (let i = 0; i < covertCount; i++) {
+    const t = covertCount > 1 ? i / (covertCount - 1) : 0;
+    const ang = dir * (0.08 + t * 0.34) + dir * beat * 0.08;
+    const len = span * (0.32 + t * 0.2);
+    const fw = depth * (0.62 - t * 0.18);
+    drawWingFeather(c, dir * w * 0.01, h * 0.08 + t * h * 0.04, ang, len, fw, shade(color, -8), 0.9);
   }
+  const primCount = isBack ? 6 : 8;
   for (let i = 0; i < primCount; i++) {
     const t = primCount > 1 ? i / (primCount - 1) : 0;
-    const ang = dir * (0.5 + t * 0.78) * (0.86 + beat * 0.18);
-    const len = span * (0.58 + t * 0.44);
-    const fw = depth * (0.5 - t * 0.24);
-    drawWingFeather(c, dir * w * 0.04, h * 0.04 + t * h * 0.08, ang, len, fw, i % 2 ? color : shade(color, -14), 1);
+    const ang = dir * (0.38 + t * 0.74) + dir * (0.12 + beat * 0.1);
+    const len = span * (0.55 + t * 0.53);
+    const fw = depth * (0.48 - t * 0.26);
+    drawWingFeather(
+      c,
+      dir * w * 0.03,
+      h * 0.02 + t * h * 0.07,
+      ang,
+      len,
+      fw,
+      i % 2 ? color : shade(color, -12),
+      isBack ? 0.92 : 1,
+    );
   }
-  c.fillStyle = shade(color, 16);
+  c.fillStyle = shade(color, 12);
   c.beginPath();
-  c.moveTo(0, 0);
-  c.quadraticCurveTo(dir * w * 0.16, -h * 0.14, dir * w * 0.26, h * 0.06);
-  c.quadraticCurveTo(dir * w * 0.08, h * 0.2, 0, h * 0.14);
+  c.moveTo(0, h * 0.02);
+  c.quadraticCurveTo(dir * w * 0.18, -h * 0.12, dir * w * 0.28, h * 0.04);
+  c.quadraticCurveTo(dir * w * 0.1, h * 0.18, 0, h * 0.12);
   c.closePath();
   c.fill();
   c.restore();
