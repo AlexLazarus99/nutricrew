@@ -821,9 +821,9 @@ function makeBird(){
   return {
     x: W*0.30, y: H*0.45, vy:0,
     r: 30, wing:0, flapBoost:0, wingCycle:0, bodySquash:1,
-    blink:0, blinkTimer:rand(1.5,4),
     tilt:0, eat:0, eatPop:0, happy:0,
-    flapCooldown:0, flapQueued:false, airtime:0
+    flapCooldown:0, flapQueued:false, airtime:0,
+    stagger:0, moodKind:null, moodPhase:0, moodTime:0.8, moodTimer:rand(2.5, 5)
   };
 }
 
@@ -1169,16 +1169,124 @@ function updateBirdWingCycle(b, dt){
   if(getBirdSpec().perk === 'classic') rate *= 1.04;
   b.wingCycle = ((b.wingCycle || 0) + dt * rate) % 1;
 }
+const BIRD_MOODS = ['stretch', 'preen', 'bob', 'peek'];
+function pickBirdMood(b){
+  b.moodKind = BIRD_MOODS[randi(0, BIRD_MOODS.length - 1)];
+  b.moodPhase = 0;
+  b.moodTime = b.moodKind === 'preen' ? 1.05 : b.moodKind === 'stretch' ? 0.9 : 0.65;
+}
+function updateBirdAnimations(b, dt){
+  if(b.stagger > 0) b.stagger = Math.max(0, b.stagger - dt * 2.4);
+  if(state !== STATE.PLAY || game.intro > 0) return;
+  const busy = b.stagger > 0.08 || (b.flapBoost || 0) > 0.18 || Math.abs(b.vy) > 200 || game.invuln > 0;
+  if(b.moodKind){
+    if(busy){ b.moodKind = null; b.moodTimer = rand(2.5, 5); return; }
+    b.moodPhase += dt / b.moodTime;
+    if(b.moodPhase >= 1){ b.moodKind = null; b.moodTimer = rand(3.5, 7); }
+    return;
+  }
+  if(busy) return;
+  b.moodTimer -= dt;
+  if(b.moodTimer <= 0 && pointer.down) pickBirdMood(b);
+}
+function birdEyeExpression(b){
+  if((b.stagger || 0) > 0.35) return 'hurt';
+  if(b.vy > 220) return 'squint';
+  if(b.vy < -185 || (b.flapBoost || 0) > 0.45) return 'wide';
+  if(b.moodKind === 'peek') return 'peek';
+  if((b.happy || 0) > 0.2) return 'happy';
+  return 'normal';
+}
+function drawBirdEye(c, eyeX, eyeY, eyeR, spec, expr, eat){
+  c.fillStyle = '#fff';
+  c.beginPath(); c.arc(eyeX, eyeY, eyeR, 0, TAU); c.fill();
+  if(expr === 'hurt'){
+    c.strokeStyle = '#4e342e'; c.lineWidth = 2.4; c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(eyeX - eyeR * 0.55, eyeY - eyeR * 0.2); c.lineTo(eyeX - eyeR * 0.1, eyeY + eyeR * 0.15);
+    c.moveTo(eyeX + eyeR * 0.1, eyeY - eyeR * 0.15); c.lineTo(eyeX + eyeR * 0.55, eyeY + eyeR * 0.2);
+    c.stroke();
+    return;
+  }
+  if(expr === 'squint'){
+    c.strokeStyle = spec.eye; c.lineWidth = 2.8; c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(eyeX - eyeR * 0.75, eyeY + eyeR * 0.05); c.quadraticCurveTo(eyeX, eyeY - eyeR * 0.12, eyeX + eyeR * 0.75, eyeY + eyeR * 0.05);
+    c.stroke();
+    return;
+  }
+  const pupilR = expr === 'wide' ? eyeR * 0.62 : eyeR * 0.55;
+  const pupilY = eyeY + (expr === 'peek' ? -eyeR * 0.22 : eat > 0 ? eyeR * 0.1 : 0);
+  const pupilX = eyeX + eyeR * 0.18 + (expr === 'peek' ? eyeR * 0.08 : 0);
+  c.fillStyle = spec.eye;
+  c.beginPath(); c.arc(pupilX, pupilY, pupilR, 0, TAU); c.fill();
+  if(expr === 'happy'){
+    c.strokeStyle = spec.eye; c.lineWidth = 2;
+    c.beginPath(); c.arc(eyeX, eyeY + eyeR * 0.42, eyeR * 0.42, 0.18, Math.PI - 0.18); c.stroke();
+  }
+  c.fillStyle = '#fff';
+  c.beginPath(); c.arc(eyeX + eyeR * 0.05, eyeY - eyeR * 0.18, eyeR * (expr === 'wide' ? 0.24 : 0.18), 0, TAU); c.fill();
+}
+function drawBirdRecoverFx(c, b, invuln){
+  const t = game.t;
+  const fade = clamp(invuln / 1.3, 0, 1);
+  const pulse = 0.5 + 0.5 * Math.sin(t * 11);
+  const rr = b.r * (1.22 + game.displayFat * 0.22);
+  c.save();
+  c.translate(b.x, b.y);
+  c.globalAlpha = (0.28 + pulse * 0.22) * fade;
+  c.strokeStyle = '#fff59d';
+  c.lineWidth = 2.5;
+  c.setLineDash([7, 9]);
+  c.lineDashOffset = -t * 36;
+  c.beginPath(); c.arc(0, 0, rr + pulse * 5, 0, TAU); c.stroke();
+  c.setLineDash([]);
+  for(let i = 0; i < 5; i++){
+    const a = t * 3.2 + i * TAU / 5;
+    c.globalAlpha = (0.45 + 0.25 * Math.sin(t * 7 + i)) * fade;
+    c.fillStyle = ['#fff59d', '#7ec4a0', '#90caf9'][i % 3];
+    c.beginPath(); c.arc(Math.cos(a) * rr * 1.08, Math.sin(a) * rr * 0.92, 3.2, 0, TAU); c.fill();
+  }
+  c.restore();
+}
+function drawBirdGlideTrail(c, b, time){
+  if(!pointer.down || state !== STATE.PLAY || game.intro > 0) return;
+  if(Math.abs(b.vy) < 40) return;
+  c.save();
+  c.translate(b.x, b.y);
+  for(let i = 1; i <= 3; i++){
+    const alpha = 0.08 + 0.04 * (3 - i);
+    c.globalAlpha = alpha;
+    c.fillStyle = getBirdSpec().wing;
+    c.beginPath();
+    c.ellipse(-b.r * (0.55 + i * 0.18), i * 4, b.r * 0.22, b.r * 0.08, -0.2, 0, TAU);
+    c.fill();
+  }
+  c.restore();
+}
 function drawBird(c, b, fat, time){
   const spec = getBirdSpec();
   const isClassic = spec.perk === 'classic';
-  const flapAmt = wingFlapAmount(b, time);
-  const wingAmp = isClassic ? 1.55 : 1.12;
+  let flapAmt = wingFlapAmount(b, time);
+  let wingAmp = isClassic ? 1.55 : 1.12;
   const eatScale = 1 + (b.eatPop||0)*0.12;
   const fitStretch = 1 + (1 - fat) * 0.06;
   const squash = (b.bodySquash || 1) / fitStretch;
+  const stagger = b.stagger || 0;
+  const mood = b.moodKind;
+  const moodT = smoothstep(0, 1, b.moodPhase || 0);
+
+  if(mood === 'stretch') wingAmp *= 1 + Math.sin(moodT * Math.PI) * 0.22;
+  if(mood === 'preen') flapAmt = lerp(flapAmt, 0.12, moodT * 0.65);
+
   c.save();
   c.translate(b.x, b.y + Math.pow(1 - flapAmt, 1.35) * 2.8);
+  if(stagger > 0.01){
+    c.translate(Math.sin(time * 38) * stagger * 9, Math.sin(time * 24) * stagger * 5);
+    c.rotate(Math.sin(time * 18) * 0.14 * stagger);
+  }
+  if(mood === 'bob') c.translate(0, -Math.sin(moodT * Math.PI) * 7);
+  if(mood === 'peek') c.rotate(-0.08 * Math.sin(moodT * Math.PI));
   c.rotate(clamp(b.tilt,-0.5,0.9));
   c.scale(eatScale/squash, squash/eatScale);
 
@@ -1245,17 +1353,14 @@ function drawBird(c, b, fat, time){
 
   // Eye
   const eyeX=bodyW*0.5, eyeY=-bodyH*0.18, eyeR=b.r*0.26;
-  c.fillStyle='#fff';
-  c.beginPath(); c.arc(eyeX,eyeY,eyeR,0,TAU); c.fill();
-  const blink = b.blink;
-  if(blink>0.5){
-    c.strokeStyle='#1a1a1a'; c.lineWidth=2.5; c.beginPath();
-    c.moveTo(eyeX-eyeR*0.8,eyeY); c.lineTo(eyeX+eyeR*0.8,eyeY); c.stroke();
+  if(mood === 'preen'){
+    c.save();
+    c.translate(bodyW * 0.08, -bodyH * 0.05);
+    c.rotate(0.42 * Math.sin(moodT * Math.PI));
+    drawBirdEye(c, eyeX - bodyW * 0.08, eyeY + bodyH * 0.05, eyeR * 0.92, spec, birdEyeExpression(b), b.eat || 0);
+    c.restore();
   } else {
-    c.fillStyle = spec.eye;
-    c.beginPath(); c.arc(eyeX+eyeR*0.18,eyeY+ (b.eat>0?eyeR*0.1:0), eyeR*0.55,0,TAU); c.fill();
-    c.fillStyle='#fff';
-    c.beginPath(); c.arc(eyeX+eyeR*0.05,eyeY-eyeR*0.18, eyeR*0.18,0,TAU); c.fill();
+    drawBirdEye(c, eyeX, eyeY, eyeR, spec, birdEyeExpression(b), b.eat || 0);
   }
 
   drawBirdSpeciesFx(c, spec, b, fat, time, bodyW, bodyH);
@@ -1277,10 +1382,11 @@ function drawBird(c, b, fat, time){
   // Little legs (more visible when slim)
   c.strokeStyle='#ff9800'; c.lineWidth=3;
   const legSpread = lerp(0.15,0.05,fat);
+  const legTuck = pointer.down && state === STATE.PLAY ? lerp(0, 0.18, smoothstep(0, 1, clamp((b.vy + 80) / 220, 0, 1))) : 0;
   for(const s of [-1,1]){
     c.beginPath();
     c.moveTo(bodyW*0.05+s*bodyW*legSpread, bodyH*0.85);
-    c.lineTo(bodyW*0.05+s*bodyW*legSpread, bodyH*1.05);
+    c.lineTo(bodyW*0.05+s*bodyW*(legSpread - legTuck*0.4), bodyH*(1.05 - legTuck));
     c.stroke();
   }
 
@@ -2931,7 +3037,7 @@ function drawMenu(c){
   c.fillStyle='rgba(8,16,30,0.45)'; c.fillRect(0,0,W,H);
 
   // floating demo bird
-  const b={x:W*0.5, y:H*0.34+Math.sin(game.t*1.6)*16, r:42, wing:0.5+0.5*Math.sin(game.t*8), flapBoost:0, bodySquash:1, blink:0, tilt:Math.sin(game.t*1.2)*0.12, eat:0, eatPop:0, happy:0};
+  const b={x:W*0.5, y:H*0.34+Math.sin(game.t*1.6)*16, r:42, wing:0.5+0.5*Math.sin(game.t*8), flapBoost:0, bodySquash:1, tilt:Math.sin(game.t*1.2)*0.12, eat:0, eatPop:0, happy:0, moodKind:'bob', moodPhase:(game.t*0.35)%1, moodTime:0.8};
   drawBird(c,b, 0.5+0.5*Math.sin(game.t*0.6), game.t);
 
   c.textAlign='center'; c.textBaseline='middle';
@@ -3052,7 +3158,7 @@ function drawComplete(c){
   c.fillText(LEVELS[game.level].name, W/2, py+58);
 
   // transforming bird preview
-  const b={x:W/2, y:py+ph*0.5, r:44, wing:0.5+0.5*Math.sin(game.t*9), flapBoost:0, bodySquash:1, blink:0, tilt:0, eat:0, eatPop:0, happy:1};
+  const b={x:W/2, y:py+ph*0.5, r:44, wing:0.5+0.5*Math.sin(game.t*9), flapBoost:0, bodySquash:1, tilt:0, eat:0, eatPop:0, happy:1};
   drawBird(c,b, game.displayFat, game.t);
   // arrow / fitness note
   c.fillStyle='rgba(238,245,240,0.9)'; c.font=fontSans(14,'600');
@@ -3118,7 +3224,7 @@ function drawWin(c){
   if(Math.random()<0.5) confetti(rand(0,W), -10, 4);
   updateParticles(1/60); drawParticles(c);
 
-  const b={x:W/2, y:H*0.34+Math.sin(winT*2)*10, r:52, wing:0.5+0.5*Math.sin(winT*10), flapBoost:0, bodySquash:1, blink:0, tilt:Math.sin(winT)*0.1, eat:0, eatPop:0, happy:1};
+  const b={x:W/2, y:H*0.34+Math.sin(winT*2)*10, r:52, wing:0.5+0.5*Math.sin(winT*10), flapBoost:0, bodySquash:1, tilt:Math.sin(winT)*0.1, eat:0, eatPop:0, happy:1, moodKind:'stretch', moodPhase:(winT*0.4)%1, moodTime:0.9};
   drawBird(c,b, 0, winT); // fully slim & fit!
   c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#eef5f0';
   c.font=fontDisplay(30,'700'); c.fillText('Ты — Чемпион! 🏆', W/2, H*0.52);
@@ -3190,8 +3296,9 @@ function renderWorld(c, frozen){
   }
   // bird
   if(game.bird){
-    const flash = game.invuln>0 && Math.floor(game.invuln*12)%2===0;
-    if(!flash) drawBird(c, game.bird, game.displayFat, game.t);
+    drawBirdGlideTrail(c, game.bird, game.t);
+    drawBird(c, game.bird, game.displayFat, game.t);
+    if(game.invuln > 0) drawBirdRecoverFx(c, game.bird, game.invuln);
   }
   drawEatRings(c);
   drawParticles(c);
@@ -3292,12 +3399,11 @@ function updatePlay(dt){
     : clamp(b.vy / 680, -0.48, 0.88);
   updateWeather(dt, b);
   updateBirdWingCycle(b, dt);
+  updateBirdAnimations(b, dt);
   if(gliding && b.wing<0.6) b.wing = 0.35;
   b.wing = Math.max(0, b.wing - dt*2.2);
   b.flapBoost = Math.max(0, b.flapBoost - dt*3.5);
   b.bodySquash = lerp(b.bodySquash, 1, 1-Math.pow(0.001, dt));
-  b.blinkTimer-=dt; if(b.blinkTimer<=0){ b.blink=1; if(b.blinkTimer<-0.12){ b.blink=0; b.blinkTimer=rand(1.8,4.5);} }
-  if(b.blink>0 && b.blinkTimer>-0.12) {}
   b.eat=Math.max(0,b.eat-dt*3);
   b.eatPop=Math.max(0,b.eatPop-dt*2.5);
   b.happy=Math.max(0,b.happy-dt*1.8);
@@ -3541,6 +3647,7 @@ function hitPlayer(){
   }
   resetCombo();
   game.lives--; game.invuln=1.3;
+  if(game.bird) game.bird.stagger = 1;
   SFX.hit(); haptic('error');
   game.shake=14; game.flashColor='#ff3b3b'; game.flashTime=0.6;
   burst(game.bird.x,game.bird.y,'#ff5252',20);
