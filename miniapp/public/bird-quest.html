@@ -302,6 +302,7 @@ const SFX = {
       golden: () => { beep(784, 0.1, 'sine', 0.14); setTimeout(() => beep(988, 0.12, 'sine', 0.14), 60); noiseBurst(0.08, 0.09, 500, 1800); },
       firePineapple: () => { beep(320, 0.14, 'sawtooth', 0.1, 880); noiseBurst(0.12, 0.11, 300, 1200); },
       iceMango: () => { beep(740, 0.1, 'sine', 0.12, 1180); beep(980, 0.07, 'triangle', 0.1, 1540); noiseBurst(0.1, 0.09, 700, 2600); },
+      glowCoconut: () => { beep(320, 0.12, 'sine', 0.11, 660); beep(520, 0.1, 'triangle', 0.1, 990); beep(880, 0.08, 'sine', 0.09, 1320); noiseBurst(0.14, 0.1, 400, 2200); },
       dragonfruit: () => { beep(660, 0.1, 'sine', 0.13, 1180); beep(880, 0.08, 'triangle', 0.1, 1320); },
       alarmclock: () => { beep(880, 0.06, 'square', 0.1, 660); beep(1100, 0.05, 'sine', 0.08, 880); },
       turboorange: () => { beep(440, 0.08, 'sawtooth', 0.12, 880); noiseBurst(0.06, 0.08, 400, 1400); },
@@ -377,6 +378,27 @@ const SFX = {
     noiseBurst(0.4, 0.12, 400, 1800);
     setTimeout(() => beep(880, 0.2, 'sine', 0.09, 1760), 120);
     setTimeout(() => noiseBurst(0.25, 0.1, 600, 2400), 180);
+  },
+  coconutCharge(){
+    if(muted) return;
+    beep(280, 0.25, 'sine', 0.09, 560);
+    beep(420, 0.3, 'triangle', 0.08, 880);
+    setTimeout(() => beep(660, 0.22, 'sine', 0.1, 1320), 100);
+    setTimeout(() => noiseBurst(0.2, 0.08, 500, 2000), 60);
+  },
+  coconutChargePulse(){
+    if(muted) return;
+    beep(520 + Math.random() * 120, 0.08, 'sine', 0.06, 880);
+    beep(880, 0.05, 'triangle', 0.05, 1320);
+  },
+  coconutBlast(){
+    if(muted) return;
+    beep(55, 0.75, 'sawtooth', 0.28, 28);
+    beep(90, 0.55, 'square', 0.2, 42);
+    noiseBurst(0.55, 0.24, 30, 380);
+    setTimeout(() => beep(110, 0.4, 'sawtooth', 0.18, 55), 80);
+    setTimeout(() => noiseBurst(0.35, 0.16, 200, 1200), 50);
+    setTimeout(() => beep(880, 0.25, 'sine', 0.14, 220), 160);
   },
   startDragonFlame: startDragonFlame,
   stopDragonFlame: stopDragonFlame,
@@ -893,6 +915,7 @@ function drawStarRow(c, x, y, count, max, size){
 
 /* ------------------------------- Particles ------------------------------- */
 const particles = [];
+const coconutRays = [];
 function spawnParticle(x,y,opts={}){
   particles.push(Object.assign({
     x,y, vx:rand(-60,60), vy:rand(-120,-20),
@@ -965,7 +988,7 @@ const FOOD_COLORS = {
   strawberry:'#e53935', cherry:'#d32f2f', grapes:'#8e24aa', watermelon:'#e53935',
   pepper:'#43a047', kiwi:'#8bc34a',
   alarmclock:'#90caf9', turboorange:'#ff9800', dragonfruit:'#ec407a',
-  firePineapple:'#ff5722', iceMango:'#81d4fa'
+  firePineapple:'#ff5722', iceMango:'#81d4fa', glowCoconut:'#fff59d'
 };
 function addFloatText(x,y,text,color,scale){
   floatTexts.push({x,y,text,color,life:1,vy:-95,scale:scale||1});
@@ -1059,6 +1082,7 @@ const game = {
   shieldTime:0, magnetTime:0, slowmoTime:0, chronoTime:0, nitroTime:0,
   freezeTime:0,
   dragonMode:null,
+  coconutBlast:null,
   thermals:[], thermalTimer:8,
   nearMissCd:0, speedMult:1,
   hazardWasActive:false, hazardBanner:null,
@@ -1075,6 +1099,8 @@ const POWER = {
 };
 const MAX_LIVES = 5;
 function scrollSlowFactor(){
+  if(isCoconutCharging()) return 0.32;
+  if(isCoconutBursting()) return 0.22;
   if(game.chronoTime > 0) return 0.42;
   if(game.slowmoTime > 0) return 0.62;
   return 1;
@@ -1100,6 +1126,249 @@ function scrollSpeedMult(){
   return nitroSpeedMult();
 }
 function dragonMagnetRadius(){ return isDragonActive() ? Math.max(W, H) * 1.2 : 0; }
+function isCoconutCharging(){ return !!(game.coconutBlast && game.coconutBlast.phase === 'charge'); }
+function isCoconutBursting(){ return !!(game.coconutBlast && game.coconutBlast.phase === 'burst'); }
+function isCoconutActive(){ return isCoconutCharging() || isCoconutBursting(); }
+function coconutEnergy(){ return game.coconutBlast ? (game.coconutBlast.energy || 0) : 0; }
+function spawnCoconutRay(fromEdge){
+  const b = game.bird;
+  if(!b) return;
+  let x, y;
+  if(fromEdge){
+    const edge = randi(0, 3);
+    if(edge === 0){ x = rand(-50, W + 50); y = -40; }
+    else if(edge === 1){ x = rand(-50, W + 50); y = H + 40; }
+    else if(edge === 2){ x = -50; y = rand(0, H); }
+    else { x = W + 50; y = rand(0, H); }
+  } else {
+    const a = rand(0, TAU);
+    const d = rand(Math.max(W, H) * 0.42, Math.max(W, H) * 0.98);
+    x = b.x + Math.cos(a) * d;
+    y = b.y + Math.sin(a) * d;
+  }
+  coconutRays.push({
+    x, y, width: rand(1.8, 5.2), speed: rand(340, 760), life: 1,
+  });
+}
+function startCoconutCharge(){
+  if(game.coconutBlast || isMutating() || isDragonActive()) return;
+  game.coconutBlast = {
+    phase: 'charge',
+    chargeTime: 2,
+    chargeDur: 2,
+    burstTime: 0,
+    burstDur: 0.58,
+    energy: 0,
+    _pulse: -1,
+  };
+  coconutRays.length = 0;
+  for(let i = 0; i < 56; i++) spawnCoconutRay(i % 3 === 0);
+  const b = game.bird;
+  if(b){
+    b.vy = 0;
+    b._coconutSavedR = b.r;
+    addFloatText(b.x, b.y - 52, '🥥 ЭНЕРГИЯ', '#fff59d', 1.28);
+    addFloatText(b.x, b.y - 24, 'Поглощение...', '#ffeb3b', 0.82);
+  }
+  game.invuln = 999;
+  game.shake = 4;
+  SFX.coconutCharge();
+  haptic('heavy');
+}
+function coconutDestroyPipe(o, b){
+  if(o.scattered || o.smashed) return;
+  const col = obstacleColor(getLevel(game.level));
+  o.scattered = true;
+  o.smashed = true;
+  o.scatterT = 0;
+  const cx = o.x + o.w * 0.5, cy = o.gapY + o.gapH * 0.5;
+  const dx = cx - b.x, dy = cy - b.y;
+  const d = Math.hypot(dx, dy) || 1;
+  const push = rand(220, 420);
+  o.scatter = {
+    top: { x: o.x, y: 0, w: o.w, h: Math.max(8, o.gapY), vy: rand(-620, -320), vx: dx / d * push + rand(-120, 120), rot: 0, vr: rand(-9, 9), col },
+    bot: { x: o.x, y: o.gapY + o.gapH, w: o.w, h: Math.max(8, H - (o.gapY + o.gapH)), vy: rand(320, 620), vx: dx / d * push + rand(-120, 120), rot: 0, vr: rand(-9, 9), col },
+  };
+  for(let i = 0; i < 18; i++){
+    spawnParticle(cx, cy, {
+      vx: rand(-360, 360), vy: rand(-360, 360),
+      color: ['#fff59d', '#ffeb3b', '#ff9800', '#fff', '#ffd54f'][randi(0, 4)],
+      size: rand(4, 12), decay: rand(0.6, 1.5), shape: i % 3 ? 'star' : 'circle', g: 100,
+    });
+  }
+}
+function triggerCoconutExplosion(){
+  const cb = game.coconutBlast;
+  const b = game.bird;
+  if(!cb || !b) return;
+  cb.phase = 'burst';
+  cb.burstTime = 0;
+  cb.energy = 1;
+  const radius = Math.max(W, H) * 1.2;
+  let destroyed = 0;
+  for(const o of game.obstacles){
+    if(o.smashed || o.scattered) continue;
+    const cx = o.x + o.w * 0.5, cy = o.gapY + o.gapH * 0.5;
+    if(o.x < W + 120 && o.x + o.w > -80 && Math.hypot(cx - b.x, cy - b.y) < radius){
+      coconutDestroyPipe(o, b);
+      destroyed++;
+    }
+  }
+  game.gapHazards.length = 0;
+  game.zoneHazards.length = 0;
+  game.floatMines.length = 0;
+  game.debris.length = 0;
+  for(let i = game.foods.length - 1; i >= 0; i--){
+    const f = game.foods[i];
+    if(f.taken) continue;
+    if(Math.hypot(f.x - b.x, f.y - b.y) < radius * 0.85){
+      spawnParticle(f.x, f.y, { vx: rand(-200, 200), vy: rand(-200, 200), color: '#fff59d', size: rand(3, 7), decay: 1.2, shape: 'star', g: 80 });
+      game.foods.splice(i, 1);
+    }
+  }
+  for(let i = 0; i < 140; i++){
+    const a = rand(0, TAU), s = rand(240, 980);
+    spawnParticle(b.x, b.y, {
+      vx: Math.cos(a) * s, vy: Math.sin(a) * s,
+      color: ['#fff59d', '#ffeb3b', '#ff9800', '#fff', '#ffd54f', '#fff176'][randi(0, 5)],
+      size: rand(5, 20), decay: rand(0.45, 1.3), shape: i % 4 ? 'star' : 'circle', g: 35,
+    });
+  }
+  burst(b.x, b.y, '#fff59d', 48, 520);
+  burst(b.x, b.y, '#ffeb3b', 36, 420);
+  burst(b.x, b.y, '#fff', 28, 340);
+  game.shake = 32;
+  game.flashColor = '#fffde7';
+  game.flashTime = 1.35;
+  addScore(destroyed * 14 + 90, '💥', b.x, b.y - 44);
+  addFloatText(b.x, b.y - 72, 'СВЕРХНОВАЯ!', '#ffeb3b', 1.4);
+  coconutRays.length = 0;
+  SFX.coconutBlast();
+  haptic('heavy');
+}
+function updateCoconutBlast(dt){
+  const cb = game.coconutBlast;
+  if(!cb) return;
+  const b = game.bird;
+  if(!b) return;
+  if(cb.phase === 'charge'){
+    cb.chargeTime -= dt;
+    cb.energy = clamp(1 - cb.chargeTime / cb.chargeDur, 0, 1);
+    b.vy = 0;
+    b.y = H * 0.45 + Math.sin(game.t * 5.2) * 8;
+    b.tilt = Math.sin(game.t * 6.5) * 0.05;
+    b.wing = 0.18 + Math.sin(game.t * 10) * 0.12;
+    b.bodySquash = 1 + cb.energy * 0.12;
+    const baseR = b._coconutSavedR || b.r;
+    b.r = baseR * (1 + cb.energy * 0.62);
+    game.invuln = 999;
+    const pulse = Math.floor(cb.chargeTime * 5);
+    if(pulse !== cb._pulse){
+      cb._pulse = pulse;
+      if(cb.chargeTime > 0.05) SFX.coconutChargePulse();
+    }
+    for(let i = coconutRays.length - 1; i >= 0; i--){
+      const ray = coconutRays[i];
+      const dx = b.x - ray.x, dy = b.y - ray.y;
+      const d = Math.hypot(dx, dy) || 1;
+      const spd = ray.speed * (1 + cb.energy * 2.2);
+      ray.x += dx / d * spd * dt;
+      ray.y += dy / d * spd * dt;
+      if(d < b.r * 0.75){
+        ray.life -= dt * 5;
+        if(Math.random() < 0.7){
+          spawnParticle(ray.x, ray.y, { vx: rand(-30, 30), vy: rand(-30, 30), g: 0, color: '#fffde7', size: rand(2, 5), decay: 2.2, shape: 'star' });
+        }
+        if(ray.life <= 0) coconutRays.splice(i, 1);
+      }
+    }
+    if(coconutRays.length < 90 && Math.random() < 0.72) spawnCoconutRay(Math.random() < 0.28);
+    if(cb.chargeTime <= 0) triggerCoconutExplosion();
+  } else if(cb.phase === 'burst'){
+    cb.burstTime += dt;
+    b.vy = 0;
+    b.y = H * 0.45;
+    game.invuln = 999;
+    if(cb.burstTime >= cb.burstDur){
+      if(b._coconutSavedR) b.r = b._coconutSavedR;
+      game.coconutBlast = null;
+      game.invuln = Math.max(game.invuln, 1.8);
+    }
+  }
+}
+function drawCoconutAbsorbRays(c, b, energy){
+  for(const ray of coconutRays){
+    const dx = b.x - ray.x, dy = b.y - ray.y;
+    const d = Math.hypot(dx, dy) || 1;
+    const tail = Math.min(d, 90 + energy * 60);
+    c.save();
+    c.globalAlpha = clamp(ray.life, 0, 1) * (0.55 + energy * 0.4);
+    const g = c.createLinearGradient(ray.x, ray.y, ray.x + dx / d * tail, ray.y + dy / d * tail);
+    g.addColorStop(0, 'rgba(255,235,59,0)');
+    g.addColorStop(0.25, 'rgba(255,241,118,0.45)');
+    g.addColorStop(0.7, 'rgba(255,255,255,0.92)');
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    c.strokeStyle = g;
+    c.lineWidth = ray.width * (0.65 + energy * 1.1);
+    c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(ray.x, ray.y);
+    c.lineTo(ray.x + dx / d * tail, ray.y + dy / d * tail);
+    c.stroke();
+    c.fillStyle = 'rgba(255,255,255,' + (0.35 + energy * 0.45) + ')';
+    c.beginPath();
+    c.arc(ray.x + dx / d * tail * 0.92, ray.y + dy / d * tail * 0.92, ray.width * 0.55, 0, TAU);
+    c.fill();
+    c.restore();
+  }
+}
+function drawCoconutBirdAura(c, b, energy){
+  c.save();
+  c.translate(b.x, b.y);
+  for(let i = 0; i < 6; i++){
+    const p = energy * (1 - i * 0.12);
+    c.globalAlpha = (0.55 - i * 0.07) * p;
+    c.strokeStyle = i % 2 ? '#fff59d' : '#ff9800';
+    c.lineWidth = 2 + energy * 5;
+    c.beginPath();
+    c.arc(0, 0, b.r * (1.05 + p * 2.4 + i * 0.28), game.t * (2.8 + i * 0.4), game.t * (2.8 + i * 0.4) + Math.PI * 1.15);
+    c.stroke();
+  }
+  c.globalAlpha = 0.35 + energy * 0.45;
+  const rg = c.createRadialGradient(0, 0, b.r * 0.08, 0, 0, b.r * (1.6 + energy * 2.8));
+  rg.addColorStop(0, 'rgba(255,255,255,' + (0.65 + energy * 0.3) + ')');
+  rg.addColorStop(0.35, 'rgba(255,235,59,' + (0.45 + energy * 0.35) + ')');
+  rg.addColorStop(0.72, 'rgba(255,152,0,' + (0.2 + energy * 0.25) + ')');
+  rg.addColorStop(1, 'rgba(255,152,0,0)');
+  c.fillStyle = rg;
+  c.beginPath(); c.arc(0, 0, b.r * (1.9 + energy * 2.6), 0, TAU); c.fill();
+  c.restore();
+}
+function drawCoconutBurstFx(c, b){
+  const cb = game.coconutBlast;
+  if(!cb || cb.phase !== 'burst') return;
+  const prog = cb.burstTime / cb.burstDur;
+  c.save();
+  c.translate(b.x, b.y);
+  for(let i = 0; i < 7; i++){
+    const p = clamp(prog * 1.5 - i * 0.07, 0, 1);
+    c.globalAlpha = (1 - p) * 0.7;
+    c.strokeStyle = i % 2 ? '#fff59d' : '#ffeb3b';
+    c.lineWidth = 10 - i;
+    c.beginPath();
+    c.arc(0, 0, Math.max(W, H) * 0.15 + p * Math.max(W, H), 0, TAU);
+    c.stroke();
+  }
+  c.globalAlpha = clamp(1 - prog * 0.85, 0, 1) * 0.45;
+  const g = c.createRadialGradient(0, 0, 0, 0, 0, Math.max(W, H) * 0.95);
+  g.addColorStop(0, '#fff');
+  g.addColorStop(0.2, '#fff59d');
+  g.addColorStop(0.55, 'rgba(255,193,7,0.55)');
+  g.addColorStop(1, 'rgba(255,152,0,0)');
+  c.fillStyle = g;
+  c.beginPath(); c.arc(0, 0, Math.max(W, H) * 0.95, 0, TAU); c.fill();
+  c.restore();
+}
 function startDragonMutation(){
   if(game.dragonMode) return;
   game.dragonMode = {
@@ -1289,7 +1558,7 @@ function handleDown(px,py){
 }
 function flap(){
   if(!game.bird) return;
-  if(isMutating() || isDragonActive()) return;
+  if(isMutating() || isDragonActive() || isCoconutActive()) return;
   const b = game.bird;
   if(b.flapCooldown > 0){
     b.flapQueued = true;
@@ -1442,6 +1711,7 @@ function drawPowerIcons(c){
   if(isDragonActive()) icons.push({t:game.dragonMode.activeTime, icon:'🐉', col:'#ff5252'});
   if(isMutating()) icons.push({t:game.dragonMode.mutateTime, icon:'🧬', col:'#ff9800'});
   if(isFreezeActive()) icons.push({t:game.freezeTime, icon:'❄', col:'#81d4fa'});
+  if(isCoconutCharging()) icons.push({t:game.coconutBlast.chargeTime, icon:'🥥', col:'#fff59d'});
   if(game.pipeSmashReady>0) icons.push({t:game.pipeSmashReady, icon:'💥', col:'#ffd54f', isCount:true});
   let x = W - 18;
   const y = H*0.80 - 42 - safeBottom();
@@ -2261,6 +2531,47 @@ function drawFood(c, type, x, y, r, t, bob, isJunkFood, spin){
         c.beginPath(); c.ellipse(Math.cos(a) * r * 0.44, Math.sin(a) * r * 0.46, r * 0.032, r * 0.08, a, 0, TAU); c.fill();
       }
       break; }
+    case 'glowCoconut': {
+      const pulse = 0.86 + 0.14 * Math.sin(t * 8 + bobA);
+      const glow = 0.45 + 0.35 * Math.sin(t * 6 + bobA);
+      c.save();
+      c.globalAlpha = glow;
+      c.fillStyle = '#fff59d';
+      c.beginPath(); c.arc(0, 0, r * 1.55 * pulse, 0, TAU); c.fill();
+      c.globalAlpha = glow * 0.65;
+      for(let i = 0; i < 8; i++){
+        const a = i / 8 * TAU + t * 2.2;
+        c.strokeStyle = 'rgba(255,255,255,' + (0.35 + 0.25 * Math.sin(t * 9 + i)) + ')';
+        c.lineWidth = r * 0.05;
+        c.beginPath();
+        c.moveTo(Math.cos(a) * r * 0.55, Math.sin(a) * r * 0.55);
+        c.lineTo(Math.cos(a) * r * (1.25 + Math.sin(t * 7 + i) * 0.12), Math.sin(a) * r * (1.25 + Math.cos(t * 6 + i) * 0.12));
+        c.stroke();
+      }
+      c.restore();
+      foodRadial(c, r * 0.82, [[0,'#8d6e63'],[0.45,'#6d4c41'],[0.78,'#5d4037'],[1,'#4e342e']], 0, 0);
+      c.beginPath(); c.arc(0, 0, r * 0.82, 0, TAU); c.fill();
+      c.strokeStyle = '#3e2723'; c.lineWidth = r * 0.04;
+      c.beginPath(); c.arc(0, 0, r * 0.82, 0, TAU); c.stroke();
+      c.strokeStyle = 'rgba(62,39,35,0.55)'; c.lineWidth = r * 0.035;
+      for(let i = -2; i <= 2; i++){
+        c.beginPath();
+        c.moveTo(i * r * 0.14, -r * 0.78);
+        c.quadraticCurveTo(i * r * 0.2, 0, i * r * 0.14, r * 0.78);
+        c.stroke();
+      }
+      c.fillStyle = 'rgba(255,235,59,0.55)';
+      c.beginPath();
+      c.ellipse(0, -r * 0.12, r * 0.22, r * 0.14, 0, 0, TAU);
+      c.fill();
+      c.fillStyle = '#33691e';
+      c.beginPath();
+      c.moveTo(-r * 0.06, -r * 0.72);
+      c.quadraticCurveTo(r * 0.02, -r * 1.05, r * 0.1, -r * 0.78);
+      c.quadraticCurveTo(r * 0.14, -r * 0.58, -r * 0.02, -r * 0.68);
+      c.fill();
+      foodSpecular(c, r, -0.28, -0.22, 0.3, 0.42);
+      break; }
     case 'iceMango': {
       const chill = 0.88 + 0.12 * Math.sin(t * 7 + bobA);
       c.save();
@@ -2487,7 +2798,7 @@ function drawFood(c, type, x, y, r, t, bob, isJunkFood, spin){
       foodSpecular(c, r, -0.2, 0.12, 0.26, 0.22);
       break; }
   }
-  if(!isJunkFood && type !== 'golden' && type !== 'alarmclock' && type !== 'turboorange' && type !== 'dragonfruit' && type !== 'firePineapple' && type !== 'iceMango'){
+  if(!isJunkFood && type !== 'golden' && type !== 'alarmclock' && type !== 'turboorange' && type !== 'dragonfruit' && type !== 'firePineapple' && type !== 'iceMango' && type !== 'glowCoconut'){
     foodShimmerDot(c, r, t, bobA);
   }
   c.restore();
@@ -3094,7 +3405,10 @@ function spawnObstacle(){
     }
     let power = junk ? null : powerFromFood(type);
     let energyJunk = false;
-    if(!junk && srand() < 0.008){
+    if(!junk && srand() < 0.004){
+      type = 'glowCoconut';
+      power = null;
+    } else if(!junk && srand() < 0.008){
       type = 'iceMango';
       power = null;
     } else if(!junk && srand() < 0.011){
@@ -3113,10 +3427,10 @@ function spawnObstacle(){
     const fy = junk
       ? (srand()<0.5 ? gapY - srandf(20,60) : gapY+gapH + srandf(20,60))
       : gapY + srandf(gapH*0.15, gapH*0.85);
-    const special = type==='alarmclock' || type==='turboorange' || type==='dragonfruit' || type==='firePineapple' || type==='iceMango';
+    const special = type==='alarmclock' || type==='turboorange' || type==='dragonfruit' || type==='firePineapple' || type==='iceMango' || type==='glowCoconut';
     const syncGap = !junk && fy >= gapY && fy <= gapY + gapH;
     game.foods.push({
-      x:W+w*0.5 + srandf(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: type==='firePineapple' ? 36 : (type==='iceMango' ? 34 : (special?19:18)),
+      x:W+w*0.5 + srandf(-10,30) + i*36, y:clamp(fy,H*0.08,H*0.86), r: type==='firePineapple' ? 36 : (type==='glowCoconut' ? 38 : (type==='iceMango' ? 34 : (special?19:18))),
       type, junk, power, energyJunk, taken:false, bob:srandf(0,TAU), spinRate:srandf(0.85,1.15),
       pipeId: syncGap ? obsId : null, gapRelY: syncGap ? fy - gapY : 0
     });
@@ -4377,6 +4691,8 @@ function startLevel(idx, opts){
   game.shieldTime=0; game.magnetTime=0; game.slowmoTime=0; game.chronoTime=0; game.nitroTime=0; game.speedMult=1;
   game.freezeTime=0;
   game.dragonMode=null;
+  game.coconutBlast=null;
+  coconutRays.length = 0;
   SFX.stopDragonFlame();
   game.thermals.length=0; game.thermalTimer=6; game.nearMissCd=0;
   game.bird=makeBird();
@@ -4537,6 +4853,7 @@ function renderWorld(c, frozen){
         : f.type==='dragonfruit' ? '#ec407a'
         : f.type==='firePineapple' ? '#ff5722'
         : f.type==='iceMango' ? '#81d4fa'
+        : f.type==='glowCoconut' ? '#fff59d'
         : f.power==='golden' ? '#ffd54f'
         : (f.power ? POWER[f.power].color : '#fff59d');
       drawFoodAura(c, bx, by, f.r, pulse, game.t, anim.bobA, glowCol);
@@ -4557,6 +4874,8 @@ function renderWorld(c, frozen){
     c.save(); c.globalAlpha=0.1+0.05*Math.sin(game.t*4); c.fillStyle='#90caf9'; c.fillRect(0,0,W,H); c.restore();
   } else if(isFreezeActive()){
     c.save(); c.globalAlpha=0.06+0.04*Math.sin(game.t*3); c.fillStyle='#b3e5fc'; c.fillRect(0,0,W,H); c.restore();
+  } else if(isCoconutActive()){
+    c.save(); c.globalAlpha=0.05+0.04*Math.sin(game.t*5); c.fillStyle='#fff9c4'; c.fillRect(0,0,W,H); c.restore();
   } else if(game.slowmoTime>0){
     c.save(); c.globalAlpha=0.08; c.fillStyle='#4dd0e1'; c.fillRect(0,0,W,H); c.restore();
   }
@@ -4565,6 +4884,10 @@ function renderWorld(c, frozen){
   }
   if(isDragonActive() && game.bird){
     drawDragonFireBreath(c, game.bird, game.t);
+  }
+  if(isCoconutCharging() && game.bird){
+    drawCoconutAbsorbRays(c, game.bird, coconutEnergy());
+    drawCoconutBirdAura(c, game.bird, coconutEnergy());
   }
   // bird / dragon
   if(game.bird){
@@ -4582,6 +4905,9 @@ function renderWorld(c, frozen){
       drawBirdGlideTrail(c, game.bird, game.t);
       drawBird(c, game.bird, game.displayFat, game.t);
       if(game.invuln > 0) drawBirdRecoverFx(c, game.bird, game.invuln);
+    }
+    if(isCoconutBursting()){
+      drawCoconutBurstFx(c, game.bird);
     }
   }
   drawEatRings(c);
@@ -4641,6 +4967,7 @@ function updatePlay(dt){
     }
   }
   updateDragonMode(dt);
+  updateCoconutBlast(dt);
   if(game.comboTimer>0){
     game.comboTimer -= dt;
     if(game.comboTimer<=0) resetCombo();
@@ -4676,6 +5003,54 @@ function updatePlay(dt){
       game.foods[i].x -= speed * scrollDt;
     }
     if(game.invuln > 0) game.invuln -= dt;
+    if(game.shake > 0) game.shake = Math.max(0, game.shake - dt * 30);
+    if(game.flashTime > 0) game.flashTime -= dt * 2;
+    return;
+  }
+
+  if(isCoconutCharging()){
+    b.vy = 0;
+    b.y = H * 0.45 + Math.sin(game.t * 5.2) * 8;
+    b.tilt = Math.sin(game.t * 6.5) * 0.05;
+    b.wing = 0.18 + Math.sin(game.t * 10) * 0.12;
+    game.invuln = 999;
+    updateScatteredPipes(dt);
+    game.spawnTimer -= scrollDt;
+    if(game.spawnTimer <= 0){ spawnObstacle(); game.spawnTimer = p.spacing * rand(0.78, 0.98); }
+    for(let i = game.obstacles.length - 1; i >= 0; i--){
+      game.obstacles[i].x -= speed * scrollDt;
+      if(game.obstacles[i].moving){
+        const o = game.obstacles[i];
+        o.movingPhase += o.movingSpeed * dt;
+        o.gapY = clamp(o.gapCenter + Math.sin(o.movingPhase) * o.movingAmp, o.gapYMin, o.gapYMax);
+      }
+    }
+    for(let i = game.foods.length - 1; i >= 0; i--){
+      game.foods[i].x -= speed * scrollDt;
+    }
+    if(game.shake > 0) game.shake = Math.max(0, game.shake - dt * 30);
+    if(game.flashTime > 0) game.flashTime -= dt * 2;
+    return;
+  }
+
+  if(isCoconutBursting()){
+    b.vy = 0;
+    b.y = H * 0.45;
+    game.invuln = 999;
+    updateScatteredPipes(dt);
+    game.spawnTimer -= scrollDt;
+    if(game.spawnTimer <= 0){ spawnObstacle(); game.spawnTimer = p.spacing * rand(0.78, 0.98); }
+    for(let i = game.obstacles.length - 1; i >= 0; i--){
+      game.obstacles[i].x -= speed * scrollDt;
+      if(game.obstacles[i].moving){
+        const o = game.obstacles[i];
+        o.movingPhase += o.movingSpeed * dt;
+        o.gapY = clamp(o.gapCenter + Math.sin(o.movingPhase) * o.movingAmp, o.gapYMin, o.gapYMax);
+      }
+    }
+    for(let i = game.foods.length - 1; i >= 0; i--){
+      game.foods[i].x -= speed * scrollDt;
+    }
     if(game.shake > 0) game.shake = Math.max(0, game.shake - dt * 30);
     if(game.flashTime > 0) game.flashTime -= dt * 2;
     return;
@@ -4752,10 +5127,10 @@ function updatePlay(dt){
 
   // ground / ceiling collision
   const gy=H*0.80;
-  if(!isDragonActive()){
+  if(!isDragonActive() && !isCoconutActive()){
     if(b.y + b.r*0.8 > gy){ b.y=gy-b.r*0.8; if(game.invuln<=0){ hitPlayer(); } b.vy=-300; }
     if(b.y - b.r < 0){ b.y=b.r; b.vy=0; }
-  } else {
+  } else if(isDragonActive()){
     b.y = clamp(b.y, b.r * 0.5, gy - b.r * 0.5);
   }
 
@@ -4776,7 +5151,7 @@ function updatePlay(dt){
 
   updateScatteredPipes(dt);
 
-  const shielded = game.shieldTime>0 || isDragonActive();
+  const shielded = game.shieldTime>0 || isDragonActive() || isCoconutActive();
   for(let i=game.obstacles.length-1;i>=0;i--){
     const o=game.obstacles[i];
     o.x -= speed*scrollDt;
@@ -4939,6 +5314,16 @@ function updatePlay(dt){
         bumpCleanStreak();
         b.eat = 1; b.eatPop = 1.15; b.happy = 1;
         startIceFreeze();
+      } else if(f.type==='glowCoconut'){
+        if(!game.coconutBlast){
+          SFX.eatFruit('glowCoconut'); haptic('heavy');
+          spawnEatBurst(bx, by, 'glowCoconut');
+          burst(bx, by, '#fff59d', 32, 260);
+          game.foodCollected++;
+          bumpCleanStreak();
+          b.eat = 1; b.eatPop = 1.3; b.happy = 1;
+          startCoconutCharge();
+        }
       } else if(f.type==='dragonfruit'){
         game.foodCollected++;
         bumpCleanStreak();
@@ -5019,6 +5404,8 @@ function hitPlayer(){
 }
 function gameOver(){
   SFX.stopDragonFlame();
+  game.coconutBlast = null;
+  coconutRays.length = 0;
   progress.best = Math.max(progress.best, game.score);
   progress.totalFood += game.foodCollected;
   if(game.marathon) progress.marathonBest = Math.max(progress.marathonBest || 0, game.score);
