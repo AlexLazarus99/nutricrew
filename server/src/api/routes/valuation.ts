@@ -28,6 +28,7 @@ import {
 } from "../../services/recipes.js";
 import { importWearablePayload, listWearableImports } from "../../services/wearables.js";
 import { buildWeeklyReport } from "../../services/weeklyReport.js";
+import { buildStepsResponse, syncHealthStepsForUser, grantStepsXpForDay } from "../../services/stepsRewards.js";
 
 const authed = [authInitData, ensureUser] as const;
 const authedProfile = [...authed, requireProfile] as const;
@@ -100,12 +101,25 @@ valuationRouter.post("/me/water", ...authed, async (req, res) => {
 
 valuationRouter.get("/me/steps", ...authed, async (req, res) => {
   const day = req.query.date ? new Date(String(req.query.date)) : new Date();
-  const [steps, goalSteps, history] = await Promise.all([
-    wellnessRepo.getStepsTotalForDay(req.dbUser!.id, day),
-    wellnessRepo.getStepsGoal(req.dbUser!.id),
-    wellnessRepo.getStepsHistory(req.dbUser!.id, 14),
-  ]);
-  res.json({ steps, goalSteps, history, done: steps >= goalSteps });
+  res.json(await buildStepsResponse(req.dbUser!.id, day));
+});
+
+valuationRouter.post("/me/steps/sync-health", ...authed, async (req, res) => {
+  const body = req.body as { steps?: number; source?: string; date?: string };
+  const steps = Number(body.steps);
+  const source = String(body.source ?? "").trim().slice(0, 32);
+  const allowed = ["apple_health", "health_connect", "google_fit", "samsung_health"];
+  if (!Number.isFinite(steps) || steps < 0 || steps > 200000) {
+    res.status(400).json({ error: "INVALID_STEPS" });
+    return;
+  }
+  if (!source || !allowed.includes(source)) {
+    res.status(400).json({ error: "INVALID_HEALTH_SOURCE" });
+    return;
+  }
+  const day = body.date ? new Date(body.date) : new Date();
+  const result = await syncHealthStepsForUser(req.dbUser!.id, steps, source, day);
+  res.json(result);
 });
 
 valuationRouter.post("/me/steps", ...authed, async (req, res) => {
@@ -126,8 +140,11 @@ valuationRouter.post("/me/steps", ...authed, async (req, res) => {
     }
     steps = await wellnessRepo.addSteps(req.dbUser!.id, delta, day);
   }
-  const goalSteps = await wellnessRepo.getStepsGoal(req.dbUser!.id);
-  res.json({ steps, goalSteps, done: steps >= goalSteps });
+  const xp = await grantStepsXpForDay(req.dbUser!.id, day);
+  res.json({
+    ...(await buildStepsResponse(req.dbUser!.id, day)),
+    stepsXpGrantedNow: xp.stepsXpGrantedNow,
+  });
 });
 
 valuationRouter.patch("/me/steps/goal", ...authed, async (req, res) => {
@@ -137,8 +154,7 @@ valuationRouter.patch("/me/steps/goal", ...authed, async (req, res) => {
     return;
   }
   await wellnessRepo.setStepsGoal(req.dbUser!.id, Math.round(goalSteps));
-  const steps = await wellnessRepo.getStepsTotalForDay(req.dbUser!.id, new Date());
-  res.json({ steps, goalSteps, done: steps >= goalSteps });
+  res.json(await buildStepsResponse(req.dbUser!.id, new Date()));
 });
 
 valuationRouter.get("/meals/search", ...authed, async (req, res) => {

@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { initI18n } from "./i18n";
 import { bootstrapTelegramWebApp } from "./lib/telegramReady";
+import { installDevHealthBridge } from "./lib/health/devHealthBridge";
 import { wakeApi } from "./lib/apiWarmup";
 import "./styles/design-tokens.css";
 import "./styles/index.css";
@@ -17,8 +18,12 @@ import "./styles/level-badges.css";
 import "./styles/achievement-badges.css";
 import "./styles/valuation.css";
 import "./styles/nav-badges.css";
+import "./styles/motion-badges.css";
 
 bootstrapTelegramWebApp();
+if (import.meta.env.VITE_MOCK_HEALTH_BRIDGE === "1") {
+  installDevHealthBridge();
+}
 wakeApi();
 
 void initI18n().then(() => {

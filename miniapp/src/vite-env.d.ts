@@ -1,5 +1,16 @@
 /// <reference types="vite/client" />
 
+interface ImportMetaEnv {
+  readonly VITE_GOOGLE_FIT_CLIENT_ID?: string;
+  readonly VITE_MOCK_HEALTH_BRIDGE?: string;
+  readonly VITE_MOCK_HEALTH_STEPS?: string;
+  readonly VITE_MOCK_HEALTH_SOURCE?: "apple_health" | "health_connect";
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 interface TelegramWebApp {
   initData: string;
   initDataUnsafe: {

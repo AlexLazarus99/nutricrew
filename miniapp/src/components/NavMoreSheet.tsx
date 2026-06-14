@@ -62,8 +62,12 @@ export function NavMoreSheet({ open, onClose, hasTeam }: Props) {
               }
               onClick={onClose}
             >
-              <NavBadgeIcon kind={item.kind} size={38} />
-              <span>{t(item.labelKey)}</span>
+              {({ isActive }) => (
+                <>
+                  <NavBadgeIcon kind={item.kind} size={38} active={isActive} animated={!isActive} />
+                  <span>{t(item.labelKey)}</span>
+                </>
+              )}
             </NavLink>
           ))}
         </div>

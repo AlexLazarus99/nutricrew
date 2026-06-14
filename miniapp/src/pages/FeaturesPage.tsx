@@ -8,6 +8,8 @@ import { AchievementBadgeIcon } from "../components/AchievementBadgeIcon";
 import { ChallengeIcon } from "../components/QuestIcon";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { LeagueTierBadge } from "../components/LeagueTierBadge";
+import { BattlePassBadgeIcon } from "../components/BattlePassBadgeIcon";
+import { NavBadgeIcon } from "../components/nav/NavBadgeIcon";
 import { SkeletonCard } from "../components/ui/Skeleton";
 
 export function FeaturesPage() {
@@ -231,13 +233,18 @@ function DoublePointsCard({
 function BirdBoostCard({ growth }: { growth: GrowthPayload }) {
   const { t } = useTranslation();
   return (
-    <div className="card feature-card">
-      <h3>{t("features.birdBoostTitle")}</h3>
-      <p className="muted small">
-        {growth.birdBoost.active
-          ? t("features.birdBoostActive")
-          : t("features.birdBoostHint")}
-      </p>
+    <div className="card feature-card feature-card--boost">
+      <div className="feature-card-head">
+        <NavBadgeIcon kind="game" size={44} animated />
+        <div>
+          <h3>{t("features.birdBoostTitle")}</h3>
+          <p className="muted small">
+            {growth.birdBoost.active
+              ? t("features.birdBoostActive")
+              : t("features.birdBoostHint")}
+          </p>
+        </div>
+      </div>
       <Link to="/game" className="btn btn-secondary btn-block">
         {t("nav.game")}
       </Link>
@@ -319,11 +326,16 @@ function BattlePassCard({ growth }: { growth: GrowthPayload }) {
   const bp = growth.battlePass;
   const pct = Math.min(100, (bp.xp / bp.xpPerTier) * 100);
   return (
-    <div className="card feature-card">
-      <h3>{t("features.passTitle")}</h3>
-      <p className="muted small">
-        {t("features.passTier", { tier: bp.tier, max: bp.maxTier })}
-      </p>
+    <div className="card feature-card feature-card--pass">
+      <div className="battle-pass-head">
+        <BattlePassBadgeIcon tier={bp.tier} size={58} />
+        <div className="battle-pass-head__meta">
+          <h3>{t("features.passTitle")}</h3>
+          <p className="muted small">
+            {t("features.passTier", { tier: bp.tier, max: bp.maxTier })}
+          </p>
+        </div>
+      </div>
       <div className="battle-pass-bar">
         <div className="battle-pass-fill" style={{ width: `${pct}%` }} />
       </div>
@@ -411,12 +423,16 @@ function ToolsCard() {
     <div className="card feature-card">
       <h3>{t("features.toolsTitle")}</h3>
       <p className="muted small">{t("features.toolsHint")}</p>
-      <Link to="/log" className="btn btn-secondary btn-block">
-        {t("features.toolsLog")}
-      </Link>
-      <Link to="/quiz" className="btn btn-secondary btn-block">
-        {t("nav.quiz")}
-      </Link>
+      <div className="feature-tools-grid">
+        <Link to="/log" className="feature-tools-tile">
+          <NavBadgeIcon kind="food" size={36} animated />
+          <span>{t("features.toolsLog")}</span>
+        </Link>
+        <Link to="/quiz" className="feature-tools-tile">
+          <NavBadgeIcon kind="quiz" size={36} animated />
+          <span>{t("nav.quiz")}</span>
+        </Link>
+      </div>
     </div>
   );
 }

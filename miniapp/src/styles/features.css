@@ -114,16 +114,70 @@
   animation: nc-glow-ring 2.4s ease-in-out infinite;
 }
 
-.league-tier-badge__emoji {
-  position: relative;
-  z-index: 1;
-  font-size: 2rem;
-  line-height: 1;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+.league-tier-badge--sm .tier-badge {
+  --tier-badge-size: 48px;
 }
 
-.league-tier-badge--sm .league-tier-badge__emoji {
-  font-size: 1.5rem;
+.league-tier-badge .tier-badge {
+  position: relative;
+  z-index: 1;
+}
+
+.battle-pass-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.battle-pass-head__meta h3 {
+  margin: 0 0 4px;
+}
+
+.battle-pass-head__meta p {
+  margin: 0;
+}
+
+.feature-card--pass .battle-pass-bar {
+  margin-top: 4px;
+}
+
+.feature-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.feature-card-head h3 {
+  margin: 0 0 4px;
+}
+
+.feature-card-head p {
+  margin: 0;
+}
+
+.feature-tools-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.feature-tools-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--section-surface-2);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
 }
 
 .league-tier-badge__meta {
@@ -198,4 +252,4 @@
   color: var(--text);
   font-family: var(--font-sans);
 }
-
+

@@ -1,0 +1,237 @@
+/* Shared animated badge shell — league, battle pass, idle nav */
+
+.tier-badge,
+.pass-badge {
+  --badge-motion-size: var(--tier-badge-size, var(--pass-badge-size, 56px));
+  position: relative;
+  width: var(--badge-motion-size);
+  height: var(--badge-motion-size);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 22%;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.2) 0%, transparent 52%),
+    linear-gradient(
+      165deg,
+      color-mix(in srgb, var(--section-surface) 88%, #fff) 0%,
+      color-mix(in srgb, var(--section-surface-2) 92%, #000) 100%
+    );
+  box-shadow:
+    0 0 0 1.5px color-mix(in srgb, var(--section-accent) 24%, transparent),
+    0 6px 18px color-mix(in srgb, var(--section-accent) 14%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.tier-badge__svg,
+.pass-badge__svg {
+  width: 88%;
+  height: 88%;
+  display: block;
+  overflow: visible;
+}
+
+.tier-badge__ring,
+.pass-badge__ring,
+.tier-badge__shine,
+.pass-badge__shine,
+.tier-badge__aura,
+.pass-badge__aura,
+.tier-badge__particles,
+.pass-badge__particles {
+  position: absolute;
+  pointer-events: none;
+}
+
+.tier-badge__ring,
+.pass-badge__ring {
+  inset: -2px;
+  border-radius: 24%;
+  padding: 2px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--section-accent) 70%, #fff) 55deg,
+    transparent 115deg,
+    color-mix(in srgb, #f5c842 50%, transparent) 210deg,
+    transparent 360deg
+  );
+  opacity: 0;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+}
+
+.tier-badge__shine,
+.pass-badge__shine {
+  inset: 8%;
+  border-radius: 20%;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.tier-badge__shine::after,
+.pass-badge__shine::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -65%;
+  width: 45%;
+  height: 180%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-18deg);
+}
+
+.tier-badge__aura,
+.pass-badge__aura {
+  inset: 4%;
+  border-radius: 20%;
+  background: radial-gradient(
+    circle at 50% 42%,
+    color-mix(in srgb, var(--section-accent) 22%, transparent) 0%,
+    transparent 68%
+  );
+  opacity: 0;
+}
+
+.tier-badge__particles,
+.pass-badge__particles {
+  inset: 0;
+  opacity: 0;
+}
+
+.tier-badge__particles::before,
+.tier-badge__particles::after,
+.pass-badge__particles::before,
+.pass-badge__particles::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff6a8;
+}
+
+.tier-badge__particles::before,
+.pass-badge__particles::before {
+  top: 10%;
+  right: 12%;
+}
+
+.tier-badge__particles::after,
+.pass-badge__particles::after {
+  bottom: 12%;
+  left: 10%;
+  width: 4px;
+  height: 4px;
+}
+
+.tier-badge--live .tier-badge__ring,
+.pass-badge--live .pass-badge__ring {
+  opacity: 1;
+  animation: badge-motion-ring 7s linear infinite;
+}
+
+.tier-badge--live .tier-badge__shine,
+.pass-badge--live .pass-badge__shine {
+  opacity: 1;
+}
+
+.tier-badge--live .tier-badge__shine::after,
+.pass-badge--live .pass-badge__shine::after {
+  animation: badge-motion-shine 4.2s ease-in-out infinite;
+}
+
+.tier-badge--live .tier-badge__aura,
+.pass-badge--live .pass-badge__aura {
+  opacity: 1;
+  animation: badge-motion-aura 3.6s ease-in-out infinite;
+}
+
+.tier-badge--live .tier-badge__particles,
+.pass-badge--live .pass-badge__particles {
+  opacity: 1;
+}
+
+.tier-badge--live .tier-badge__particles::before,
+.pass-badge--live .pass-badge__particles::before {
+  animation: badge-motion-spark 3s ease-in-out infinite;
+}
+
+.tier-badge--live .tier-badge__particles::after,
+.pass-badge--live .pass-badge__particles::after {
+  animation: badge-motion-spark 3s ease-in-out 1s infinite;
+}
+
+.tier-badge--live,
+.pass-badge--live {
+  animation: badge-motion-float 4s ease-in-out infinite;
+}
+
+.tier-badge--live .tier-badge__svg,
+.pass-badge--live .pass-badge__svg {
+  animation: badge-motion-drift 3.8s ease-in-out infinite;
+}
+
+.tier-badge--gold .tier-badge__spark,
+.tier-badge--diamond .tier-badge__spark,
+.pass-badge__star {
+  animation: nav-badge-spark 2.2s ease-in-out infinite;
+}
+
+.tier-badge--diamond .tier-badge__gem--d {
+  animation: badge-motion-gem 3.2s ease-in-out infinite;
+}
+
+.pass-badge__stripe {
+  animation: pass-badge-stripe 2.4s ease-in-out infinite;
+}
+
+@keyframes badge-motion-ring {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes badge-motion-shine {
+  0%, 100% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  45%, 55% { opacity: 1; }
+  100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+}
+
+@keyframes badge-motion-aura {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes badge-motion-spark {
+  0%, 100% { opacity: 0.35; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+@keyframes badge-motion-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes badge-motion-drift {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2.5deg); }
+}
+
+@keyframes badge-motion-gem {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+}
+
+@keyframes pass-badge-stripe {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.75; }
+}
+
+html[data-reduce-motion="true"] .tier-badge--live,
+html[data-reduce-motion="true"] .pass-badge--live,
+html[data-reduce-motion="true"] .tier-badge--live *,
+html[data-reduce-motion="true"] .pass-badge--live * {
+  animation: none !important;
+}

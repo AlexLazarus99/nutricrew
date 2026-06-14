@@ -129,3 +129,47 @@ export async function getStepsHistory(userId: number, days = 14) {
     steps: r.steps,
   }));
 }
+
+export async function getStepsDayRow(userId: number, logDate: Date) {
+  const day = dayStartUtc(logDate);
+  return prisma.dailyStepTotal.findUnique({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+  });
+}
+
+export async function setStepsXpGranted(userId: number, logDate: Date, xpGranted: number) {
+  const day = dayStartUtc(logDate);
+  await prisma.dailyStepTotal.update({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+    data: { stepsXpGranted: xpGranted },
+  });
+}
+
+export async function mergeHealthSteps(
+  userId: number,
+  steps: number,
+  source: string,
+  logDate: Date,
+) {
+  const day = dayStartUtc(logDate);
+  const safe = Math.max(0, Math.round(steps));
+  const existing = await prisma.dailyStepTotal.findUnique({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+  });
+  const merged = Math.max(existing?.steps ?? 0, safe);
+  return prisma.dailyStepTotal.upsert({
+    where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+    create: {
+      userId: BigInt(userId),
+      logDate: day,
+      steps: merged,
+      healthSource: source,
+      lastHealthSyncAt: new Date(),
+    },
+    update: {
+      steps: merged,
+      healthSource: source,
+      lastHealthSyncAt: new Date(),
+    },
+  });
+}

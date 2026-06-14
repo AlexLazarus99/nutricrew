@@ -1464,7 +1464,18 @@
     "goal": "Цель",
     "goalDone": "Дневная цель по шагам выполнена!",
     "trackingOn": "Считаем, пока приложение открыто",
-    "trackingOff": "Считать шаги с телефона"
+    "trackingOff": "Считать шаги с телефона",
+    "healthSync": "Синхронизировать с Health Connect",
+    "healthSyncApple": "Синхронизировать с Apple Health",
+    "healthResync": "Обновить из Здоровья",
+    "healthSyncing": "Синхронизация…",
+    "healthSyncError": "Не удалось получить данные. Попробуйте ещё раз.",
+    "healthIosHint": "Разрешите доступ к «Здоровью». На iPhone шаги подтягиваются из Apple Health.",
+    "syncedFrom": "Источник: {{source}}",
+    "sourceApple": "Apple Health",
+    "sourceHealthConnect": "Health Connect",
+    "sourceGoogleFit": "Google Fit",
+    "xpProgress": "XP сегодня: {{earned}} / {{max}}"
   },
   "trends": {
     "title": "Тренды",

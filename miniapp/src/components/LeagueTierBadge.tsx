@@ -1,15 +1,8 @@
 import { useTranslation } from "react-i18next";
+import { LeagueTierBadgeIcon } from "./LeagueTierBadgeIcon";
 
 const TIERS = ["bronze", "silver", "gold", "platinum", "diamond"] as const;
 export type LeagueTier = (typeof TIERS)[number];
-
-const TIER_EMOJI: Record<LeagueTier, string> = {
-  bronze: "🥉",
-  silver: "🥈",
-  gold: "🥇",
-  platinum: "💠",
-  diamond: "💎",
-};
 
 type Props = {
   tier: string;
@@ -26,11 +19,12 @@ function normalizeTier(tier: string): LeagueTier {
 export function LeagueTierBadge({ tier, weeklyXp, xpToNext, size = "md" }: Props) {
   const { t } = useTranslation();
   const normalized = normalizeTier(tier);
+  const iconSize = size === "sm" ? 48 : 56;
 
   return (
     <div className={`league-tier-badge league-tier-badge--${normalized} league-tier-badge--${size}`}>
       <span className="league-tier-badge__ring" aria-hidden />
-      <span className="league-tier-badge__emoji">{TIER_EMOJI[normalized]}</span>
+      <LeagueTierBadgeIcon tier={normalized} size={iconSize} />
       <div className="league-tier-badge__meta">
         <strong className="league-tier-badge__name">
           {t(`features.leagueTiers.${normalized}`)}

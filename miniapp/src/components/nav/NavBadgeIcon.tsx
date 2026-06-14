@@ -20,21 +20,30 @@ export type NavBadgeKind =
 type Props = {
   kind: NavBadgeKind;
   active?: boolean;
+  /** Idle motion (home grid, more sheet) even when not the active route */
+  animated?: boolean;
   size?: number;
 };
 
 function BadgeShell({
   active,
+  animated,
   size,
   children,
   className = "",
 }: {
   active?: boolean;
+  animated?: boolean;
   size: number;
   children: ReactNode;
   className?: string;
 }) {
-  const rootClass = ["nav-badge", active ? "nav-badge--active" : "", className]
+  const rootClass = [
+    "nav-badge",
+    active ? "nav-badge--active" : "",
+    animated && !active ? "nav-badge--live" : "",
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
 
@@ -50,10 +59,12 @@ function BadgeShell({
 function NavSvgBadge({
   kind,
   active,
+  animated,
   size = 46,
 }: {
   kind: Exclude<NavBadgeKind, "home" | "game">;
   active?: boolean;
+  animated?: boolean;
   size?: number;
 }) {
   const uid = useId().replace(/:/g, "");
@@ -165,7 +176,7 @@ function NavSvgBadge({
   }
 
   return (
-    <BadgeShell active={active} size={size}>
+    <BadgeShell active={active} animated={animated} size={size}>
       <svg className="nav-badge__svg" viewBox="0 0 48 48" aria-hidden>
         <defs>
           <linearGradient id={`${uid}-plate`} x1="0%" y1="0%" x2="0%" y2="100%">
@@ -207,22 +218,22 @@ function NavSvgBadge({
   );
 }
 
-export function NavBadgeIcon({ kind, active = false, size = 46 }: Props) {
+export function NavBadgeIcon({ kind, active = false, animated = false, size = 46 }: Props) {
   if (kind === "home") {
     return (
-      <BadgeShell active={active} size={size} className="nav-badge--home">
-        <BrandPeachIcon size={Math.round(size * 0.82)} animated={active} />
+      <BadgeShell active={active} animated={animated} size={size} className="nav-badge--home">
+        <BrandPeachIcon size={Math.round(size * 0.82)} animated={active || animated} />
       </BadgeShell>
     );
   }
 
   if (kind === "game") {
     return (
-      <BadgeShell active={active} size={size} className="nav-badge--game">
+      <BadgeShell active={active} animated={animated} size={size} className="nav-badge--game">
         <BirdBadge birdId="classic" size={size} className="nav-badge__bird" />
       </BadgeShell>
     );
   }
 
-  return <NavSvgBadge kind={kind} active={active} size={size} />;
+  return <NavSvgBadge kind={kind} active={active} animated={animated} size={size} />;
 }

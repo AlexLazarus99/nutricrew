@@ -352,10 +352,13 @@ model WaterLog {
 }
 
 model DailyStepTotal {
-  userId    BigInt   @map("user_id")
-  logDate   DateTime @map("log_date") @db.Date
-  steps     Int      @default(0)
-  updatedAt DateTime @updatedAt @map("updated_at")
+  userId           BigInt    @map("user_id")
+  logDate          DateTime  @map("log_date") @db.Date
+  steps            Int       @default(0)
+  stepsXpGranted   Int       @default(0) @map("steps_xp_granted")
+  healthSource     String?   @map("health_source") @db.VarChar(32)
+  lastHealthSyncAt DateTime? @map("last_health_sync_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -1409,7 +1409,18 @@
     "goal": "Goal",
     "goalDone": "Daily step goal reached!",
     "trackingOn": "Tracking while app is open",
-    "trackingOff": "Track steps with phone"
+    "trackingOff": "Track steps with phone",
+    "healthSync": "Sync from Health Connect",
+    "healthSyncApple": "Sync from Apple Health",
+    "healthResync": "Refresh from Health",
+    "healthSyncing": "Syncing…",
+    "healthSyncError": "Could not sync health data. Try again.",
+    "healthIosHint": "Allow Health access when prompted. On iPhone, steps sync via Apple Health in the NutriCrew app shell.",
+    "syncedFrom": "Source: {{source}}",
+    "sourceApple": "Apple Health",
+    "sourceHealthConnect": "Health Connect",
+    "sourceGoogleFit": "Google Fit",
+    "xpProgress": "XP today: {{earned}} / {{max}}"
   },
   "trends": {
     "title": "Trends",

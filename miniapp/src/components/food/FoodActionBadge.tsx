@@ -12,6 +12,7 @@ export function FoodActionBadge({ kind, active = false, size = 52 }: Props) {
   const rootClass = [
     "food-action-badge",
     `food-action-badge--${kind}`,
+    "food-action-badge--live",
     active ? "food-action-badge--active" : "",
   ]
     .filter(Boolean)

@@ -7,6 +7,7 @@ type Action = {
   kind: NavBadgeKind;
   labelKey: string;
   primary?: boolean;
+  params?: Record<string, string | number>;
 };
 
 type Props = {
@@ -26,17 +27,25 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
     { to: "/game", kind: "game", labelKey: "home.gameCta" },
   ];
 
-  const secondary: { to: string; labelKey: string; params?: Record<string, string | number> }[] = [];
-  if (showTrends) secondary.push({ to: "/trends", labelKey: "trends.title" });
-  if (showPro) secondary.push({ to: "/pro", labelKey: "pro.title" });
+  const secondary: Action[] = [];
+  if (showTrends) secondary.push({ to: "/trends", kind: "report", labelKey: "trends.title" });
+  if (showPro) secondary.push({ to: "/pro", kind: "features", labelKey: "pro.title" });
   if (showPrizes) {
     secondary.push({
       to: "/prizes",
+      kind: "prizes",
       labelKey: "nav.prizes",
       params: { count: starBalance ?? 0 },
     });
   }
-  secondary.push({ to: "/features", labelKey: "nav.features" });
+  secondary.push({ to: "/features", kind: "features", labelKey: "nav.features" });
+
+  function label(action: Action) {
+    if (action.params) {
+      return `${t(action.labelKey)} (${action.params.count})`;
+    }
+    return t(action.labelKey);
+  }
 
   return (
     <>
@@ -47,18 +56,17 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
             to={action.to}
             className={`home-action-grid__item${action.primary ? " home-action-grid__item--primary" : ""}`}
           >
-            <NavBadgeIcon kind={action.kind} size={40} />
-            <span className="home-action-grid__label">{t(action.labelKey)}</span>
+            <NavBadgeIcon kind={action.kind} size={40} animated />
+            <span className="home-action-grid__label">{label(action)}</span>
           </Link>
         ))}
       </div>
       {secondary.length > 0 ? (
-        <div className="home-action-links">
+        <div className="home-action-grid home-action-grid--secondary">
           {secondary.map((item) => (
-            <Link key={item.to} to={item.to} className="btn btn-ghost btn-sm">
-              {item.params
-                ? `${t(item.labelKey)} (${item.params.count})`
-                : t(item.labelKey)}
+            <Link key={item.to} to={item.to} className="home-action-grid__item home-action-grid__item--compact">
+              <NavBadgeIcon kind={item.kind} size={36} animated />
+              <span className="home-action-grid__label">{label(item)}</span>
             </Link>
           ))}
         </div>

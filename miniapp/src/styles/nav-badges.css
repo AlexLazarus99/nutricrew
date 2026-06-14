@@ -43,12 +43,71 @@
 }
 
 .nav-badge--active .nav-badge__ring,
-.nav-badge--active .nav-badge__shine {
+.nav-badge--active .nav-badge__shine,
+.nav-badge--live .nav-badge__ring,
+.nav-badge--live .nav-badge__shine {
   opacity: 1;
+}
+
+.nav-badge--live .nav-badge__ring {
+  opacity: 0.55;
+}
+
+.nav-badge--live .nav-badge__shine {
+  opacity: 0.45;
 }
 
 .nav-badge--active {
   animation: nav-badge-bob 2.8s ease-in-out infinite;
+}
+
+.nav-badge--live {
+  animation: nav-badge-bob 3.6s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__svg {
+  animation: nav-badge-drift 4s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__star {
+  animation: nav-badge-star-spin 5.5s linear infinite;
+  transform-origin: 24px 20px;
+}
+
+.nav-badge--live .nav-badge__steam {
+  animation: nav-badge-steam 2.8s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__steam--2 {
+  animation-delay: 0.55s;
+}
+
+.nav-badge--live .nav-badge__dot {
+  animation: nav-badge-dot 1.8s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__dot--2 {
+  animation-delay: 0.2s;
+}
+
+.nav-badge--live .nav-badge__dot--3 {
+  animation-delay: 0.4s;
+}
+
+.nav-badge--live .nav-badge__bar--1 {
+  animation: nav-badge-bar 2.2s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__bar--2 {
+  animation: nav-badge-bar 2.2s ease-in-out 0.15s infinite;
+}
+
+.nav-badge--live .nav-badge__bar--3 {
+  animation: nav-badge-bar 2.2s ease-in-out 0.3s infinite;
+}
+
+.nav-badge--live .nav-badge__spark {
+  animation: nav-badge-spark 2.4s ease-in-out infinite;
 }
 
 .nav-badge--active .nav-badge__svg {
@@ -94,6 +153,11 @@
 
 .nav-badge--active .nav-badge__spark {
   animation: nav-badge-spark 2s ease-in-out infinite;
+}
+
+.nav-badge--live.nav-badge--game .nav-badge__bird,
+.nav-badge--active.nav-badge--game .nav-badge__bird {
+  animation: nav-badge-drift 3.6s ease-in-out infinite;
 }
 
 .bottom-nav__item {
@@ -145,6 +209,10 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+.food-action-badge--live {
+  animation: nav-badge-bob 3.2s ease-in-out infinite;
 }
 
 .food-action-badge--scan .food-action-badge__scanline {
@@ -296,6 +364,15 @@
 }
 
 html[data-reduce-motion="true"] .nav-badge--active,
+html[data-reduce-motion="true"] .nav-badge--live,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__svg,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__star,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__steam,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__dot,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__bar--1,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__bar--2,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__bar--3,
+html[data-reduce-motion="true"] .food-action-badge--live,
 html[data-reduce-motion="true"] .food-action-badge__ring,
 html[data-reduce-motion="true"] .food-action-badge__scanline,
 html[data-reduce-motion="true"] .food-action-badge__flash,

@@ -317,6 +317,24 @@ export interface StepsResponse {
   goalSteps: number;
   done: boolean;
   history: Array<{ date: string; steps: number }>;
+  healthSource?: string | null;
+  lastHealthSyncAt?: string | null;
+  stepsXpEarnedToday?: number;
+  stepsXpGrantedToday?: number;
+  stepsPerXpUnit?: number;
+  xpPerStepUnit?: number;
+  maxStepsXpToday?: number;
+  stepsXpGrantedNow?: number;
+}
+
+export interface StepsHealthSyncResponse {
+  steps: number;
+  goalSteps: number;
+  done: boolean;
+  healthSource: string | null;
+  lastHealthSyncAt: string | null;
+  stepsXpEarnedToday: number;
+  stepsXpGrantedNow: number;
 }
 
 export interface FoodSearchResult {
@@ -875,6 +893,11 @@ export const api = {
     request<StepsResponse>("/me/steps/goal", {
       method: "PATCH",
       body: JSON.stringify({ goalSteps }),
+    }),
+  syncHealthSteps: (steps: number, source: string, date?: string) =>
+    request<StepsHealthSyncResponse>("/me/steps/sync-health", {
+      method: "POST",
+      body: JSON.stringify({ steps, source, date }),
     }),
   getWeightLogs: () => request<{ logs: TrendsResponse["weightLogs"] }>("/me/weight"),
   addWeightLog: (kg: number) =>
