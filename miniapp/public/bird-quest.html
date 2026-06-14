@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0d1b2a">
+<meta name="theme-color" content="#1a2a24">
 <title>NutriRun · Healthy Bird Quest</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -14,7 +14,7 @@
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{
     width:100%;height:100%;overflow:hidden;
-    background:#141a17;
+    background:#1a2a24;
     font-family:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
     touch-action:none;user-select:none;-webkit-user-select:none;
     overscroll-behavior:none;
@@ -23,11 +23,11 @@
   #game{display:block;width:100vw;height:100vh;touch-action:none;}
   #loader{
     position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
-    background:linear-gradient(160deg,#1e2a24,#283530,#7ec4a0);color:#eef5f0;z-index:50;gap:18px;
+    background:linear-gradient(165deg,#1a2a24 0%,#243830 45%,#3d6b5c 100%);color:#eef5f0;z-index:50;gap:18px;
   }
   #loader .dot{width:64px;height:64px;border-radius:50%;
-    background:radial-gradient(circle at 35% 30%,#ffe082,#ffb300);
-    box-shadow:0 8px 30px rgba(0,0,0,.35);animation:bob 1s ease-in-out infinite;}
+    background:radial-gradient(circle at 38% 32%,#c8f0e4,#4a8f7f 58%,#2d5a4f);
+    box-shadow:0 8px 30px rgba(0,0,0,.35), inset -6px -8px 16px rgba(0,0,0,.12);animation:bob 1s ease-in-out infinite;}
   #loader h1{font-family:"Fraunces",Georgia,serif;font-size:1.55rem;font-weight:600;letter-spacing:.02em;line-height:1.2;text-shadow:0 2px 8px rgba(0,0,0,.3);}
   #loader p{font-size:0.82rem;opacity:.85;font-weight:500;letter-spacing:.01em;color:#a8b8ae;}
   @keyframes bob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-14px) scale(1.05)}}
@@ -60,8 +60,8 @@ function initTelegram(){
   try{
     TG.ready();
     TG.expand();
-    if(TG.setHeaderColor) TG.setHeaderColor('#0d1b2a');
-    if(TG.setBackgroundColor) TG.setBackgroundColor('#0d1b2a');
+    if(TG.setHeaderColor) TG.setHeaderColor('#1a2a24');
+    if(TG.setBackgroundColor) TG.setBackgroundColor('#1a2a24');
     if(TG.enableClosingConfirmation) TG.enableClosingConfirmation();
     if(TG.disableVerticalSwipes) TG.disableVerticalSwipes();
     tgReady = true;
@@ -191,7 +191,7 @@ const SFX = {
 /* ----------------------------- Level configs ----------------------------- */
 /* Themes cycle forever; difficulty scales with level index. */
 const LEVELS = [
-  { name:'Зелёный Лес',        theme:'forest',     sky:['#7ed0ff','#b8f5c4','#e8ffe8'], ground:'#43a047', accent:'#1b5e20', deco:'#66bb6a' },
+  { name:'Зелёный Лес',        theme:'forest',     sky:['#b8cfc8','#d4e8df','#eaf4ef'], ground:'#3d7a5c', accent:'#2d5a48', deco:'#5a9e82' },
   { name:'Жаркая Пустыня',     theme:'desert',     sky:['#ffbe5c','#ffe08a','#fff3c4'], ground:'#d68910', accent:'#b86b00', deco:'#f9a825' },
   { name:'Ледяная Антарктика', theme:'antarctica', sky:['#9ecfff','#d4f0ff','#f5fbff'], ground:'#c5e5ff', accent:'#5dade2', deco:'#aed6f1' },
   { name:'Подводный Мир',      theme:'underwater', sky:['#0d5a8a','#1a8fc4','#3ec9e0'], ground:'#06425c', accent:'#00e5c8', deco:'#26a69a' },
@@ -1049,8 +1049,8 @@ function checkNearMiss(b, o){
 let selectedBirdId = 'classic';
 let ownedBirdIds = ['classic'];
 const BIRD_SPECIES = {
-  classic: { perk:'classic', top:'#ffd4b8', bot:'#ffab91', wing:'#ff8a65', tail:'#ff7043', beak:'#ffeb3b', beakLower:'#ffc107', cheek:'rgba(255,138,101,0.42)', eye:'#4e342e' },
-  ember:   { perk:'ember',   top:'#ffccbc', bot:'#e64a19', wing:'#ff7043', tail:'#bf360c', beak:'#ffca28', cheek:'rgba(255,87,34,0.55)', eye:'#4e342e' },
+  classic: { perk:'classic', top:'#4a8f7f', bot:'#3d6b5f', wing:'#2d5a4f', tail:'#234a40', beak:'#e8955a', beakLower:'#d47840', cheek:'rgba(74,143,127,0.28)', eye:'#1a3d35', belly:'#c8f0e4' },
+  ember:   { perk:'ember',   top:'#5a9e8a', bot:'#3d6b5f', wing:'#2d5a4f', tail:'#234a40', beak:'#e8955a', beakLower:'#d47840', cheek:'rgba(232,149,90,0.35)', eye:'#1a3d35', belly:'#d4f0e8' },
   frost:   { perk:'frost',   top:'#e1f5fe', bot:'#4fc3f7', wing:'#81d4fa', tail:'#0288d1', beak:'#ffd54f', cheek:'rgba(129,212,250,0.65)', eye:'#01579b' },
   neon:    { perk:'neon',    top:'#f8bbd0', bot:'#26c6da', wing:'#ea80fc', tail:'#00bcd4', beak:'#ffeb3b', cheek:'rgba(234,128,252,0.5)', eye:'#311b92' },
   royal:   { perk:'royal',   top:'#fff9c4', bot:'#9575cd', wing:'#ffd54f', tail:'#7e57c2', beak:'#ffb300', cheek:'rgba(255,213,79,0.55)', eye:'#4a148c' },
@@ -1120,14 +1120,14 @@ function drawBirdSpeciesFx(c, spec, b, fat, time, bodyW, bodyH){
     c.restore();
   } else if(perk === 'classic'){
     c.save();
-    c.globalAlpha = 0.22 + 0.14*Math.sin(time*8);
+    c.globalAlpha = 0.2 + 0.12*Math.sin(time*8);
     const g = c.createRadialGradient(bodyW*0.1, -bodyH*0.2, 4, 0, 0, bodyW*1.05);
-    g.addColorStop(0,'#ffe0b2'); g.addColorStop(1,'rgba(255,171,145,0)');
+    g.addColorStop(0,'#c8f0e4'); g.addColorStop(1,'rgba(74,143,127,0)');
     c.fillStyle = g; c.beginPath(); c.ellipse(0, 0, bodyW*1.02, bodyH*1.0, 0, 0, TAU); c.fill();
     const wingPulse = Math.max(b.wing, b.flapBoost, 1 - wingFlapAmount(b, time));
     if(wingPulse > 0.35){
-      c.globalAlpha = wingPulse * 0.28;
-      c.strokeStyle = '#ffb74d'; c.lineWidth = 2.5; c.lineCap = 'round';
+      c.globalAlpha = wingPulse * 0.22;
+      c.strokeStyle = '#7ec4a0'; c.lineWidth = 2.5; c.lineCap = 'round';
       for(const side of [-1, 1]){
         const arc = 0.4 - wingPulse * 0.9;
         c.beginPath();
@@ -1200,6 +1200,11 @@ function birdEyeExpression(b){
 function drawBirdEye(c, eyeX, eyeY, eyeR, spec, expr, eat){
   c.fillStyle = '#fff';
   c.beginPath(); c.arc(eyeX, eyeY, eyeR, 0, TAU); c.fill();
+  if(expr !== 'hurt' && expr !== 'squint'){
+    c.globalAlpha = 0.35;
+    c.beginPath(); c.arc(eyeX - eyeR * 0.55, eyeY + eyeR * 0.08, eyeR * 0.72, 0, TAU); c.fill();
+    c.globalAlpha = 1;
+  }
   if(expr === 'hurt'){
     c.strokeStyle = '#4e342e'; c.lineWidth = 2.4; c.lineCap = 'round';
     c.beginPath();
@@ -1225,7 +1230,8 @@ function drawBirdEye(c, eyeX, eyeY, eyeR, spec, expr, eat){
     c.beginPath(); c.arc(eyeX, eyeY + eyeR * 0.42, eyeR * 0.42, 0.18, Math.PI - 0.18); c.stroke();
   }
   c.fillStyle = '#fff';
-  c.beginPath(); c.arc(eyeX + eyeR * 0.05, eyeY - eyeR * 0.18, eyeR * (expr === 'wide' ? 0.24 : 0.18), 0, TAU); c.fill();
+  c.beginPath(); c.arc(eyeX + eyeR * 0.08, eyeY - eyeR * 0.22, eyeR * (expr === 'wide' ? 0.28 : 0.22), 0, TAU); c.fill();
+  c.beginPath(); c.arc(eyeX - eyeR * 0.12, eyeY - eyeR * 0.05, eyeR * 0.1, 0, TAU); c.fill();
 }
 function drawBirdRecoverFx(c, b, invuln){
   const t = game.t;
@@ -1290,8 +1296,8 @@ function drawBird(c, b, fat, time){
   c.rotate(clamp(b.tilt,-0.5,0.9));
   c.scale(eatScale/squash, squash/eatScale);
 
-  const bodyW = b.r*(1.05 + 0.55*fat);
-  const bodyH = b.r*(1.0 + 0.32*fat);
+  const bodyW = b.r*(1.02 + 0.48*fat);
+  const bodyH = b.r*(0.98 + 0.28*fat);
 
   // Shadow under bird
   c.save();
@@ -1314,10 +1320,20 @@ function drawBird(c, b, fat, time){
   c.ellipse(0,0, bodyW, bodyH, 0, 0, TAU);
   c.fill();
 
-  // Belly highlight (bigger when fat)
-  c.fillStyle = 'rgba(255,255,255,'+(0.55)+')';
+  // Mint/cream belly (poster NutriCrew style)
+  const bellyCol = spec.belly || '#c8f0e4';
+  const bellyG = c.createRadialGradient(bodyW*0.12, bodyH*0.28, bodyW*0.08, bodyW*0.22, bodyH*0.42, bodyW*0.72);
+  bellyG.addColorStop(0, shade(bellyCol, 18));
+  bellyG.addColorStop(0.55, bellyCol);
+  bellyG.addColorStop(1, 'rgba(200,240,228,0)');
+  c.fillStyle = bellyG;
   c.beginPath();
-  c.ellipse(bodyW*0.12, bodyH*0.28, bodyW*0.62, bodyH*0.6*(0.7+0.4*fat), 0,0,TAU);
+  c.ellipse(bodyW*0.16, bodyH*0.3, bodyW*0.58, bodyH*0.58*(0.75+0.35*fat), 0.08, 0, TAU);
+  c.fill();
+  // Soft highlight
+  c.fillStyle = 'rgba(255,255,255,'+(0.22)+')';
+  c.beginPath();
+  c.ellipse(bodyW*0.22, bodyH*0.18, bodyW*0.38, bodyH*0.28, -0.2, 0, TAU);
   c.fill();
   // Cheek blush
   c.fillStyle = spec.cheek;
@@ -1351,8 +1367,8 @@ function drawBird(c, b, fat, time){
     c.restore();
   }
 
-  // Eye
-  const eyeX=bodyW*0.5, eyeY=-bodyH*0.18, eyeR=b.r*0.26;
+  // Eye — large expressive (poster style)
+  const eyeX=bodyW*0.48, eyeY=-bodyH*0.22, eyeR=b.r*0.30;
   if(mood === 'preen'){
     c.save();
     c.translate(bodyW * 0.08, -bodyH * 0.05);
@@ -1379,14 +1395,20 @@ function drawBird(c, b, fat, time){
   c.lineTo(bodyW*0.86, bodyH*0.18);
   c.closePath(); c.fill();
 
-  // Little legs (more visible when slim)
-  c.strokeStyle='#ff9800'; c.lineWidth=3;
+  // Orange feet (poster)
   const legSpread = lerp(0.15,0.05,fat);
   const legTuck = pointer.down && state === STATE.PLAY ? lerp(0, 0.18, smoothstep(0, 1, clamp((b.vy + 80) / 220, 0, 1))) : 0;
+  c.strokeStyle='#e8955a'; c.lineWidth=3; c.lineCap='round';
   for(const s of [-1,1]){
     c.beginPath();
     c.moveTo(bodyW*0.05+s*bodyW*legSpread, bodyH*0.85);
     c.lineTo(bodyW*0.05+s*bodyW*(legSpread - legTuck*0.4), bodyH*(1.05 - legTuck));
+    c.stroke();
+    c.beginPath();
+    c.moveTo(bodyW*0.05+s*bodyW*(legSpread - legTuck*0.4), bodyH*(1.05 - legTuck));
+    c.lineTo(bodyW*0.05+s*bodyW*(legSpread - legTuck*0.4) - s*4, bodyH*(1.1 - legTuck));
+    c.moveTo(bodyW*0.05+s*bodyW*(legSpread - legTuck*0.4), bodyH*(1.05 - legTuck));
+    c.lineTo(bodyW*0.05+s*bodyW*(legSpread - legTuck*0.4) + s*5, bodyH*(1.08 - legTuck));
     c.stroke();
   }
 
@@ -1512,7 +1534,7 @@ function mixColor(h1,h2,t){
 }
 
 /* ============================ DRAWING: FOOD ============================== */
-const HEALTHY = ['apple','banana','carrot','broccoli','strawberry','cherry','grapes','watermelon','pepper','kiwi'];
+const HEALTHY = ['strawberry','leaf','almond','apple','broccoli','carrot','banana','cherry','grapes','watermelon','pepper','kiwi'];
 const JUNK    = ['donut','burger','fries','soda','candy','cake'];
 function foodRadial(c, r, stops, ox, oy){
   const g = c.createRadialGradient((ox??-0.28)*r, (oy??-0.32)*r, r*0.08, 0, 0, r);
@@ -1585,19 +1607,50 @@ function drawFood(c, type, x, y, r, t, bob, isJunkFood){
       break; }
     case 'strawberry': {
       const sg = c.createLinearGradient(0,-r*0.6,0,r);
-      sg.addColorStop(0,'#ff5252'); sg.addColorStop(1,'#c62828');
+      sg.addColorStop(0,'#ff6b6b'); sg.addColorStop(0.5,'#e53935'); sg.addColorStop(1,'#c62828');
       c.fillStyle=sg;
       c.beginPath();
       c.moveTo(0,r*0.88); c.bezierCurveTo(-r*0.72,r*0.2,-r*0.62,-r*0.35,0,-r*0.62);
       c.bezierCurveTo(r*0.62,-r*0.35,r*0.72,r*0.2,0,r*0.88); c.fill();
       c.fillStyle='#2e7d32';
       for(let i=-2;i<=2;i++){ c.beginPath(); c.ellipse(i*r*0.18,-r*0.52,r*0.17,r*0.09,i*0.25,0,TAU); c.fill(); }
+      c.fillStyle='#43a047';
+      c.beginPath(); c.ellipse(0,-r*0.58,r*0.12,r*0.22,0,0,TAU); c.fill();
       c.fillStyle='#f9fbe7';
-      for(let i=0;i<14;i++){
-        const a=i/14*TAU*1.4-0.4, dist=0.12+(i%4)*0.14;
-        c.beginPath(); c.arc(Math.cos(a)*r*dist,Math.sin(a)*r*dist+0.1*r,r*0.045,0,TAU); c.fill();
+      for(let i=0;i<12;i++){
+        const a=i/12*TAU*1.4-0.4, dist=0.14+(i%4)*0.13;
+        c.beginPath(); c.arc(Math.cos(a)*r*dist,Math.sin(a)*r*dist+0.1*r,r*0.04,0,TAU); c.fill();
       }
-      foodSpecular(c, r, -0.25, -0.15, 0.18, 0.28);
+      foodSpecular(c, r, -0.28, -0.18, 0.22, 0.32);
+      break; }
+    case 'almond': {
+      c.rotate(-0.25);
+      const ag = c.createLinearGradient(-r*0.4,0,r*0.4,0);
+      ag.addColorStop(0,'#a1887f'); ag.addColorStop(0.45,'#d7ccc8'); ag.addColorStop(1,'#8d6e63');
+      c.fillStyle=ag;
+      c.beginPath();
+      c.moveTo(0,-r*0.72);
+      c.bezierCurveTo(r*0.55,-r*0.55,r*0.62,r*0.35,0,r*0.78);
+      c.bezierCurveTo(-r*0.62,r*0.35,-r*0.55,-r*0.55,0,-r*0.72);
+      c.fill();
+      c.strokeStyle='rgba(93,64,55,0.35)'; c.lineWidth=r*0.06;
+      c.beginPath(); c.moveTo(0,-r*0.55); c.quadraticCurveTo(r*0.08,r*0.1,0,r*0.55); c.stroke();
+      foodSpecular(c, r, -0.15, -0.35, 0.18, 0.28, -0.1);
+      break; }
+    case 'leaf': {
+      const lg = c.createLinearGradient(-r*0.5,0,r*0.5,0);
+      lg.addColorStop(0,'#2e7d32'); lg.addColorStop(0.5,'#66bb6a'); lg.addColorStop(1,'#43a047');
+      c.fillStyle=lg;
+      c.beginPath();
+      c.moveTo(0,-r*0.85);
+      c.quadraticCurveTo(r*0.72,-r*0.15,r*0.55,r*0.72);
+      c.quadraticCurveTo(0,r*0.35,-r*0.55,r*0.72);
+      c.quadraticCurveTo(-r*0.72,-r*0.15,0,-r*0.85);
+      c.fill();
+      c.strokeStyle='#1b5e20'; c.lineWidth=r*0.07; c.lineCap='round';
+      c.beginPath(); c.moveTo(0,-r*0.75); c.quadraticCurveTo(r*0.05,r*0.1,0,r*0.65); c.stroke();
+      c.fillStyle='rgba(255,255,255,0.35)';
+      c.beginPath(); c.ellipse(-r*0.12,-r*0.2,r*0.14,r*0.35,-0.35,0,TAU); c.fill();
       break; }
     case 'cherry': {
       c.strokeStyle='#5d4037'; c.lineWidth=r*0.09; c.lineCap='round';
@@ -1823,14 +1876,16 @@ function drawBackground(c, lv, scroll, t){
 
   switch(lv.theme){
     case 'forest':
-      sun(c, W*0.78, H*0.2, 38, '#fff176');
-      cloud(c,(W*0.3 - s1*0.3)%(W+200),H*0.18,32,0.9);
-      cloud(c,(W*0.8 - s1*0.3+300)%(W+200),H*0.12,26,0.75);
-      cloud(c,(W*0.55 - s1*0.2+140)%(W+200),H*0.24,18,0.55);
-      hill(c, gy, H*0.22, '#2e7d32', s1, 40, 0);
-      hill(c, gy+10, H*0.15, '#43a047', s2, 36, 120);
-      hill(c, gy+18, H*0.08, '#66bb6a', s3, 28, 240);
-      drawTrees(c, gy, s2, '#1b5e20', 0.85);
+      cloud(c,(W*0.25 - s1*0.25)%(W+220),H*0.14,38,0.82);
+      cloud(c,(W*0.72 - s1*0.22+280)%(W+220),H*0.09,30,0.7);
+      cloud(c,(W*0.5 - s1*0.18+120)%(W+220),H*0.2,22,0.5);
+      cloud(c,(W*0.88 - s1*0.15+60)%(W+220),H*0.16,16,0.38);
+      hill(c, gy, H*0.28, '#2d5a48', s1, 48, 0);
+      hill(c, gy+8, H*0.2, '#3d6b5c', s2, 42, 140);
+      hill(c, gy+16, H*0.12, '#4a8f7f', s3, 34, 260);
+      hill(c, gy+22, H*0.06, '#5a9e82', s3*1.1, 28, 380);
+      drawForestMist(c, t);
+      drawTrees(c, gy, s2, '#234a40', 0.72);
       drawForestDeco(c, s2, t);
       break;
     case 'desert':
@@ -1907,12 +1962,25 @@ function drawBubbles(c, t, scroll){
     c.save(); c.globalAlpha=0.3; c.strokeStyle='#a8fff0'; c.lineWidth=2; c.beginPath(); c.arc(x,y,2+(i%4),0,TAU); c.stroke(); c.restore();
   }
 }
+function drawForestMist(c, t){
+  c.save();
+  for(let i=0;i<3;i++){
+    const y = H*0.32 + i*H*0.14 + Math.sin(t*0.4+i)*6;
+    const mg = c.createLinearGradient(0, y-H*0.08, 0, y+H*0.08);
+    mg.addColorStop(0,'rgba(255,255,255,0)');
+    mg.addColorStop(0.5,'rgba(232,244,239,'+(0.22-i*0.05)+')');
+    mg.addColorStop(1,'rgba(255,255,255,0)');
+    c.fillStyle = mg;
+    c.fillRect(0, y-H*0.08, W, H*0.16);
+  }
+  c.restore();
+}
 function drawForestDeco(c, scroll, t){
-  for(let i=0;i<5;i++){
-    const x=((i*210)-scroll*0.4)%(W+180); const xx=x<-90?x+W+180:x;
-    c.save(); c.globalAlpha=0.55;
-    c.fillStyle='#ffca28';
-    c.beginPath(); c.ellipse(xx, H*0.22+Math.sin(t*2+i)*8, 5, 3, 0.4, 0, TAU); c.fill();
+  for(let i=0;i<6;i++){
+    const x=((i*190)-scroll*0.35)%(W+200); const xx=x<-100?x+W+200:x;
+    c.save(); c.globalAlpha=0.45;
+    c.fillStyle='#7ec4a0';
+    c.beginPath(); c.ellipse(xx, H*0.24+Math.sin(t*1.8+i)*6, 6, 3.5, 0.3, 0, TAU); c.fill();
     c.restore();
   }
 }
@@ -2279,7 +2347,7 @@ function landmarkBurj(c){
 /* ============================ OBSTACLES / FOOD =========================== */
 function obstacleColor(lv){
   switch(lv.theme){
-    case 'forest': return {main:'#5d4037', cap:'#2e7d32'};
+    case 'forest': return {main:'#5a4f45', cap:'#43a047'};
     case 'desert': return {main:'#43a047', cap:'#2e7d32'};
     case 'antarctica': return {main:'#cdeefe', cap:'#9ad1f0'};
     case 'underwater': return {main:'#15a37a', cap:'#0e7d5e'};
@@ -2360,6 +2428,9 @@ function spawnObstacle(){
     const junk = i>0 && srand() < p.junkChance;
     const list = junk?JUNK:HEALTHY;
     let type = list[srandi(0,list.length-1)];
+    if(!junk && lv.theme==='forest' && srand()<0.58){
+      type = ['strawberry','leaf','almond'][srandi(0,2)];
+    }
     let power = junk ? null : powerFromFood(type);
     let energyJunk = false;
     if(!junk && srand()<0.045){ type='golden'; power='golden'; }
@@ -2830,9 +2901,8 @@ function drawObstacle(c, o, lv){
   }
   // style per theme
   if(o.kind==='forest'){
-    // tree trunks
-    drawTrunk(c,o.x,0,o.w,topH,true,col);
-    drawTrunk(c,o.x,botY,o.w,H-botY,false,col);
+    drawForestObstacle(c,o.x,0,o.w,topH,true,col);
+    drawForestObstacle(c,o.x,botY,o.w,H-botY,false,col);
   } else if(o.kind==='underwater'){
     drawCoral(c,o.x,0,o.w,topH,true);
     drawCoral(c,o.x,botY,o.w,H-botY,false);
@@ -2857,6 +2927,79 @@ function pillar(c,x,y,w,h,top,col){
   c.fillStyle=col.cap;
   const capY = top? y+h-18 : y;
   rr(c,x-6,capY,w+12,18,6); c.fill();
+}
+function drawMossyIsland(c, x, y, w, h, top){
+  const rockG = c.createLinearGradient(x, y, x+w, y+h);
+  rockG.addColorStop(0,'#5a4f45'); rockG.addColorStop(0.45,'#6d6258'); rockG.addColorStop(1,'#4a4038');
+  c.fillStyle = rockG;
+  c.beginPath();
+  if(top){
+    c.moveTo(x, y);
+    c.lineTo(x+w, y);
+    c.lineTo(x+w*0.94, y+h*0.42);
+    c.lineTo(x+w*0.68, y+h);
+    c.lineTo(x+w*0.32, y+h*0.95);
+    c.lineTo(x+w*0.06, y+h*0.48);
+    c.closePath();
+  } else {
+    c.moveTo(x+w*0.06, y+h*0.52);
+    c.lineTo(x+w*0.32, y);
+    c.lineTo(x+w*0.68, y+h*0.05);
+    c.lineTo(x+w*0.94, y+h*0.58);
+    c.lineTo(x+w, y+h);
+    c.lineTo(x, y+h);
+    c.closePath();
+  }
+  c.fill();
+  c.strokeStyle='rgba(0,0,0,0.12)'; c.lineWidth=1.5;
+  c.stroke();
+  const grassY = top ? y - 2 : y + h - 2;
+  const grassH = Math.min(14, h*0.22);
+  const gg = c.createLinearGradient(x, grassY, x, grassY + (top ? -grassH : grassH));
+  gg.addColorStop(0,'#66bb6a'); gg.addColorStop(0.5,'#43a047'); gg.addColorStop(1,'#2e7d32');
+  c.fillStyle = gg;
+  c.beginPath();
+  if(top){
+    c.moveTo(x-4, y+2);
+    for(let i=0;i<=8;i++){
+      const px = x + (w+8)*i/8;
+      const py = y - grassH + Math.sin(i*1.2)*3;
+      c.lineTo(px, py);
+    }
+    c.lineTo(x+w+4, y+2); c.closePath();
+  } else {
+    c.moveTo(x-4, y+h-2);
+    for(let i=0;i<=8;i++){
+      const px = x + (w+8)*i/8;
+      const py = y+h + grassH - Math.sin(i*1.1)*3;
+      c.lineTo(px, py);
+    }
+    c.lineTo(x+w+4, y+h-2); c.closePath();
+  }
+  c.fill();
+  c.fillStyle='rgba(126,196,160,0.35)';
+  for(let i=0;i<5;i++){
+    const bx = x + w*(0.15+i*0.17);
+    const by = top ? y + h*0.35 : y + h*0.55;
+    c.beginPath(); c.arc(bx, by, 2.5, 0, TAU); c.fill();
+  }
+}
+function drawForestObstacle(c,x,y,w,h,top,col){
+  const atm = c.createLinearGradient(x, y, x+w, y+h);
+  atm.addColorStop(0,'rgba(35,74,64,0.08)'); atm.addColorStop(0.5,'rgba(61,122,93,0.14)'); atm.addColorStop(1,'rgba(35,74,64,0.08)');
+  c.fillStyle = atm; c.fillRect(x,y,w,h);
+  const islandH = Math.min(78, Math.max(48, h*0.32), w*1.35);
+  const islandW = w * 1.18;
+  const ix = x - (islandW - w) * 0.5;
+  const iy = top ? y + h - islandH : y;
+  drawMossyIsland(c, ix, iy, islandW, islandH, top);
+  if(h > islandH + 40){
+    c.save(); c.globalAlpha = 0.35;
+    const vineY = top ? y + 8 : y + h - islandH - 20;
+    c.strokeStyle = '#3d6b5c'; c.lineWidth = 2; c.lineCap = 'round';
+    c.beginPath(); c.moveTo(x+w*0.5, vineY); c.quadraticCurveTo(x+w*0.3, vineY+18, x+w*0.45, vineY+36); c.stroke();
+    c.restore();
+  }
 }
 function drawTrunk(c,x,y,w,h,top,col){
   const g=c.createLinearGradient(x,0,x+w,0);
@@ -2892,47 +3035,60 @@ function drawIceCol(c,x,y,w,h,top){
 
 /* ============================ HUD / OVERLAYS ============================= */
 let muteHotspot=null;
+function drawHudPill(c, x, y, w, h, opts){
+  c.save();
+  rr(c, x, y, w, h, h*0.5);
+  c.fillStyle = opts.bg || 'rgba(26,42,36,0.78)';
+  c.fill();
+  c.strokeStyle = opts.border || 'rgba(126,196,160,0.32)';
+  c.lineWidth = 1.2;
+  c.stroke();
+  if(opts.icon){
+    c.font = fontSans(h*0.52,'600');
+    c.textAlign = 'left'; c.textBaseline = 'middle';
+    c.fillStyle = opts.iconColor || '#7ec4a0';
+    c.fillText(opts.icon, x + h*0.28, y + h*0.52);
+  }
+  c.font = opts.small ? fontSans(h*0.38,'600') : fontSans(h*0.44,'700');
+  c.textAlign = 'left'; c.textBaseline = 'middle';
+  c.fillStyle = opts.color || TYPE.text;
+  const tx = x + (opts.icon ? h*0.88 : h*0.42);
+  c.fillText(opts.label, tx, y + h*0.52);
+  c.restore();
+}
 function drawHUD(c){
   const p=game.params;
-  // top gradient
-  const g=c.createLinearGradient(0,0,0,80); g.addColorStop(0,'rgba(0,0,0,0.32)'); g.addColorStop(1,'rgba(0,0,0,0)');
-  c.fillStyle=g; c.fillRect(0,0, W, 90);
+  const pad = 12 + safeTop();
+  const pillH = 34;
+  const gap = 8;
 
-  const pad = 14 + safeTop();
-  // Level name
-  c.fillStyle=TYPE.text; c.font=typeUI(17,'700'); c.textAlign='left'; c.textBaseline='top';
-  c.fillText('Ур. '+(game.level+1)+' · '+levelLabel(game.level)+(game.marathon?' · Марафон':''), 16, pad);
-
-  // Hearts
-  c.textAlign='right';
-  if(game.marathon){
-    c.fillStyle='#ffd54f'; c.font=fontSans(14,'700');
-    c.fillText('∞ · CP '+game.marathonCp, W-16, pad+10);
+  // Poster-style top pills
+  const scoreW = Math.min(128, W*0.34);
+  drawHudPill(c, 14, pad, scoreW, pillH, {
+    icon:'🍃', label: game.score.toLocaleString(), iconColor:'#7ec4a0'
+  });
+  const lvlW = Math.min(108, W*0.3);
+  drawHudPill(c, W - 14 - lvlW, pad, lvlW, pillH, {
+    label:'Ур. '+(game.level+1), color: TYPE.accentDim
+  });
+  if(!game.marathon){
+    const heartCount = Math.min(MAX_LIVES, Math.max(3, game.lives));
+    const heartsW = Math.min(88, 28 + heartCount*18);
+    const heartsX = (W - heartsW) / 2;
+    c.save();
+    rr(c, heartsX, pad, heartsW, pillH, pillH*0.5);
+    c.fillStyle = 'rgba(26,42,36,0.72)'; c.fill();
+    c.strokeStyle = 'rgba(126,196,160,0.28)'; c.lineWidth = 1.2; c.stroke();
+    const heartSize = heartCount > 3 ? 8 : 9;
+    for(let i=0;i<heartCount;i++){
+      drawHeart(c, heartsX + heartsW*0.5 - (heartCount-1)*9 + i*18, pad + pillH*0.52, heartSize, i<game.lives ? '#ff6b6b':'rgba(255,255,255,0.22)');
+    }
+    c.restore();
   } else {
-  const heartCount = Math.min(MAX_LIVES, Math.max(3, game.lives));
-  const heartStep = heartCount > 3 ? 24 : 30;
-  const heartSize = heartCount > 3 ? 9 : 11;
-  for(let i=0;i<heartCount;i++){
-    drawHeart(c, W-22 - i*heartStep, pad+10, heartSize, i<game.lives ? '#ff5252':'rgba(255,255,255,0.25)');
-  }
+    drawHudPill(c, (W-120)/2, pad, 120, pillH, { icon:'∞', label:' CP '+game.marathonCp, iconColor:'#ffd54f' });
   }
 
-  const ph = runPhase();
-  if(ph > 0 && state===STATE.PLAY){
-    c.textAlign='left'; c.fillStyle='rgba(255,245,157,0.85)'; c.font=fontSans(10,'600');
-    c.fillText(ph>=2 ? '⛈ Шторм' : '⚠ Hazard', 16, pad+52);
-  }
-  if(game.metabolicBoost > 0){
-    c.fillStyle='#aeea00'; c.font=fontSans(10,'600');
-    c.fillText('🔥 Серия '+ (game.runStats?.cleanStreak||0), 16, pad+(ph>0?66:52));
-  }
-  if(nutriBoost.active && game.intro <= 0){
-    c.textAlign='right'; c.fillStyle='rgba(126,196,160,0.9)'; c.font=fontSans(10,'600');
-    c.fillText('NutriCrew ✓', W-16, pad+52);
-  }
-
-  // progress bar — очки за этот забег до открытия следующего уровня
-  const barW=Math.min(W-32, 360), barX=(W-barW)/2, barY=pad+34, barH=14;
+  const barW=Math.min(W-28, 360), barX=(W-barW)/2, barY=pad+pillH+gap, barH=12;
   const runGoal = scoreGoalForLevel(game.level);
   const runProg = clamp(game.score / runGoal, 0, 1);
   const nextLevel = game.level + 2;
@@ -2947,15 +3103,30 @@ function drawHUD(c){
     : game.score+'/'+runGoal+' оч. до ур. '+nextLevel;
   c.fillText(goalLabel, barX+barW/2, barY+barH/2+1);
 
+  // Level theme subtitle
+  c.fillStyle='rgba(168,184,174,0.85)'; c.font=fontSans(10,'600'); c.textAlign='center'; c.textBaseline='top';
+  c.fillText(levelLabel(game.level)+(game.marathon?' · Марафон':''), W/2, barY+barH+5);
+
+  const ph = runPhase();
+  let statusY = barY + barH + 20;
+  if(ph > 0 && state===STATE.PLAY){
+    c.textAlign='center'; c.fillStyle='rgba(255,245,157,0.85)'; c.font=fontSans(10,'600');
+    c.fillText(ph>=2 ? '⛈ Шторм' : '⚠ Hazard', W/2, statusY); statusY += 14;
+  }
+  if(game.metabolicBoost > 0){
+    c.fillStyle='#aeea00'; c.font=fontSans(10,'600');
+    c.fillText('🔥 Серия '+ (game.runStats?.cleanStreak||0), W/2, statusY); statusY += 14;
+  }
+  if(nutriBoost.active && game.intro <= 0){
+    c.fillStyle='rgba(126,196,160,0.9)'; c.font=fontSans(10,'600');
+    c.fillText('NutriCrew ✓', W/2, statusY);
+  }
+
   if(state===STATE.PLAY && game.runStartFat && game.displayFat < game.runStartFat - 0.02){
     const slimPct = Math.round((1 - game.displayFat) * 100);
     c.textAlign='center'; c.font=fontSans(11,'600'); c.fillStyle='rgba(174,234,0,0.85)';
-    c.fillText('Стройность '+slimPct+'%', W/2, barY+barH+16);
+    c.fillText('Стройность '+slimPct+'%', W/2, barY+barH+34);
   }
-
-  // score bottom-left
-  c.fillStyle=TYPE.text; c.textAlign='left'; c.textBaseline='bottom'; c.font=typeUI(15,'700');
-  c.fillText('Очки: '+game.score+(game.multiplier>1?'  x'+game.multiplier.toFixed(1):''), 16, H-14-safeBottom());
 
   if(game.combo>1){
     c.textAlign='center'; c.fillStyle='#ffd54f'; c.font=fontSans(13,'700');
@@ -2965,15 +3136,15 @@ function drawHUD(c){
   if(game.hazardBanner && game.hazardBanner.time > 0){
     const a = clamp(game.hazardBanner.time / 2.8, 0, 1);
     c.save(); c.globalAlpha = a * (0.75 + 0.25*Math.sin(game.t*5));
-    c.textAlign='center'; c.font=fontSans(13,'700'); c.fillStyle='#fff59d';
-    c.fillText('🌿 Ветки и лёд падают с труб!', W/2, pad + 58);
+    c.textAlign='center'; c.font=fontSans(12,'700'); c.fillStyle='#fff59d';
+    c.fillText('🌿 Ветки и лёд падают с труб!', W/2, statusY);
     c.restore();
   }
   if(game.stormBanner && game.stormBanner.time > 0){
     const a = clamp(game.stormBanner.time / 2.5, 0, 1);
     c.save(); c.globalAlpha = a * 0.85;
-    c.textAlign='center'; c.font=fontSans(13,'700'); c.fillStyle='#b39ddb';
-    c.fillText('⛈ Шторм — термики спасают!', W/2, pad + 72);
+    c.textAlign='center'; c.font=fontSans(12,'700'); c.fillStyle='#b39ddb';
+    c.fillText('⛈ Шторм — термики спасают!', W/2, statusY + 14);
     c.restore();
   }
   if(pointer.down && state===STATE.PLAY && game.intro<=0){
@@ -3032,9 +3203,8 @@ function buildMenu(){
   addButton({ x:bx, y:H*0.56+130, w:bw, h:52, label:'🗺  Выбор уровня', onClick:()=>{ state=STATE.LEVELS; buildLevels(); }, id:'levels' });
 }
 function drawMenu(c){
-  drawBackground(c, LEVELS[Math.floor(game.t*0.2)%LEVELS.length], game.t*40, game.t);
-  // dark veil
-  c.fillStyle='rgba(8,16,30,0.45)'; c.fillRect(0,0,W,H);
+  drawBackground(c, LEVELS[0], game.t*40, game.t);
+  c.fillStyle='rgba(26,42,36,0.38)'; c.fillRect(0,0,W,H);
 
   // floating demo bird
   const b={x:W*0.5, y:H*0.34+Math.sin(game.t*1.6)*16, r:42, wing:0.5+0.5*Math.sin(game.t*8), flapBoost:0, bodySquash:1, tilt:Math.sin(game.t*1.2)*0.12, eat:0, eatPop:0, happy:0, moodKind:'bob', moodPhase:(game.t*0.35)%1, moodTime:0.8};
@@ -3267,6 +3437,9 @@ function renderWorld(c, frozen){
     if(!f.junk){
       c.save(); c.globalAlpha=0.28+0.12*Math.sin(game.t*5+f.bob);
       const glowCol = f.energyJunk ? '#ff9800'
+        : f.type==='strawberry' ? '#ff6b6b'
+        : f.type==='leaf' ? '#7ec4a0'
+        : f.type==='almond' ? '#bcaaa4'
         : f.type==='alarmclock' ? '#90caf9'
         : f.type==='turboorange' ? '#ff9800'
         : f.type==='dragonfruit' ? '#ec407a'
