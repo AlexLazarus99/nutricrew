@@ -387,6 +387,10 @@
   margin: 0 0 6px;
 }
 
+.steps-widget__error {
+  color: var(--danger, #c0392b);
+}
+
 .steps-widget__xp-toast {
   margin: 0 0 8px;
   padding: 6px 10px;
@@ -416,6 +420,128 @@
 
 .steps-widget--static .steps-widget__ring-wrap {
   animation: none;
+}
+
+.workouts-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.workouts-panel__head h3 {
+  margin: 0 0 4px;
+}
+
+.workouts-panel__head p {
+  margin: 0;
+}
+
+.workouts-panel__types {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.workouts-panel__type {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.workouts-panel__type.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color: var(--accent);
+}
+
+.workouts-panel__type-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.workouts-panel__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.workouts-panel__form-label {
+  margin: 0;
+}
+
+.workouts-panel__durations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.workouts-panel__distance {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 8px;
+  align-items: center;
+}
+
+.workouts-panel__distance span:first-child {
+  grid-column: 1 / -1;
+}
+
+.workouts-panel__distance input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+}
+
+.workouts-panel__preview {
+  margin: 0;
+}
+
+.workouts-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.workouts-panel__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--surface-2);
+}
+
+.workouts-panel__item:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.workouts-panel__item-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.workouts-panel__item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.workouts-panel__empty {
+  margin: 0;
 }
 
 .meal-edit-modal {

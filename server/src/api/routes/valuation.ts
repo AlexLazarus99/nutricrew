@@ -29,6 +29,7 @@ import {
 import { importWearablePayload, listWearableImports } from "../../services/wearables.js";
 import { buildWeeklyReport } from "../../services/weeklyReport.js";
 import { buildStepsResponse, syncHealthStepsForUser, grantStepsXpForDay } from "../../services/stepsRewards.js";
+import { estimateWorkoutSteps, isWorkoutType } from "../../lib/workoutTypes.js";
 
 const authed = [authInitData, ensureUser] as const;
 const authedProfile = [...authed, requireProfile] as const;
@@ -143,6 +144,51 @@ valuationRouter.post("/me/steps", ...authed, async (req, res) => {
   const xp = await grantStepsXpForDay(req.dbUser!.id, day);
   res.json({
     ...(await buildStepsResponse(req.dbUser!.id, day)),
+    stepsXpGrantedNow: xp.stepsXpGrantedNow,
+  });
+});
+
+valuationRouter.post("/me/steps/workout", ...authed, async (req, res) => {
+  const body = req.body as {
+    type?: string;
+    durationMinutes?: number;
+    distanceKm?: number;
+    date?: string;
+  };
+  const type = String(body.type ?? "").trim();
+  const durationMinutes = Number(body.durationMinutes);
+  const distanceKm =
+    body.distanceKm != null && Number.isFinite(Number(body.distanceKm))
+      ? Number(body.distanceKm)
+      : undefined;
+
+  if (!isWorkoutType(type)) {
+    res.status(400).json({ error: "INVALID_WORKOUT_TYPE" });
+    return;
+  }
+  if (!Number.isFinite(durationMinutes) || durationMinutes < 1 || durationMinutes > 600) {
+    res.status(400).json({ error: "INVALID_DURATION" });
+    return;
+  }
+  if (distanceKm != null && (distanceKm <= 0 || distanceKm > 200)) {
+    res.status(400).json({ error: "INVALID_DISTANCE" });
+    return;
+  }
+
+  const day = body.date ? new Date(body.date) : new Date();
+  const steps = estimateWorkoutSteps(type, durationMinutes, distanceKm);
+  const result = await wellnessRepo.addWorkoutLog(
+    req.dbUser!.id,
+    day,
+    type,
+    Math.round(durationMinutes),
+    steps,
+    distanceKm,
+  );
+  const xp = await grantStepsXpForDay(req.dbUser!.id, day);
+  res.json({
+    ...(await buildStepsResponse(req.dbUser!.id, day)),
+    workout: result.workout,
     stepsXpGrantedNow: xp.stepsXpGrantedNow,
   });
 });

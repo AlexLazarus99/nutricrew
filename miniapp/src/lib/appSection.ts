@@ -12,7 +12,9 @@ export type AppSection =
   | "auth";
 
 export function sectionFromPath(pathname: string): AppSection {
-  if (pathname.startsWith("/log") || pathname.startsWith("/diary")) return "log";
+  if (pathname.startsWith("/log") || pathname.startsWith("/diary") || pathname.startsWith("/steps")) {
+    return "log";
+  }
   if (pathname.startsWith("/guide")) return "guide";
   if (pathname.startsWith("/chat")) return "chat";
   if (pathname.startsWith("/team")) return "team";

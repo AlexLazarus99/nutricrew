@@ -312,6 +312,15 @@ export interface WaterResponse {
   history: Array<{ date: string; ml: number }>;
 }
 
+export interface WorkoutLogEntry {
+  id: string;
+  type: string;
+  durationMinutes: number;
+  distanceKm?: number | null;
+  steps: number;
+  createdAt: string;
+}
+
 export interface StepsResponse {
   steps: number;
   goalSteps: number;
@@ -325,6 +334,7 @@ export interface StepsResponse {
   xpPerStepUnit?: number;
   maxStepsXpToday?: number;
   stepsXpGrantedNow?: number;
+  workouts?: WorkoutLogEntry[];
 }
 
 export interface StepsHealthSyncResponse {
@@ -898,6 +908,16 @@ export const api = {
     request<StepsHealthSyncResponse>("/me/steps/sync-health", {
       method: "POST",
       body: JSON.stringify({ steps, source, date }),
+    }),
+  logWorkout: (payload: {
+    type: string;
+    durationMinutes: number;
+    distanceKm?: number;
+    date?: string;
+  }) =>
+    request<StepsResponse>("/me/steps/workout", {
+      method: "POST",
+      body: JSON.stringify(payload),
     }),
   getWeightLogs: () => request<{ logs: TrendsResponse["weightLogs"] }>("/me/weight"),
   addWeightLog: (kg: number) =>

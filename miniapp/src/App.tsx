@@ -9,6 +9,9 @@ const LogMealPage = lazy(() =>
 const FoodDiaryPage = lazy(() =>
   import("./pages/FoodDiary").then((m) => ({ default: m.FoodDiaryPage })),
 );
+const StepsPage = lazy(() =>
+  import("./pages/StepsPage").then((m) => ({ default: m.StepsPage })),
+);
 const TeamPage = lazy(() =>
   import("./pages/Team").then((m) => ({ default: m.TeamPage })),
 );
@@ -68,6 +71,7 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="log" element={<LogMealPage />} />
         <Route path="diary" element={<FoodDiaryPage />} />
+        <Route path="steps" element={<StepsPage />} />
         <Route path="team" element={<TeamPage />} />
         <Route path="chat" element={<ChatPage />} />
         <Route path="features" element={<FeaturesPage />} />

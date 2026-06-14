@@ -121,6 +121,7 @@ model User {
   weightLogs        WeightLog[]
   waterLogs         WaterLog[]
   dailyStepTotals   DailyStepTotal[]
+  workoutLogs       WorkoutLog[]
   orgMemberships    OrgMember[]
   recipeVotes       TeamRecipeVote[]
   wearableImports   WearableImport[]
@@ -365,6 +366,22 @@ model DailyStepTotal {
   @@id([userId, logDate])
   @@index([userId, logDate])
   @@map("daily_step_totals")
+}
+
+model WorkoutLog {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId          BigInt   @map("user_id")
+  logDate         DateTime @map("log_date") @db.Date
+  workoutType     String   @map("workout_type") @db.VarChar(24)
+  durationMinutes Int      @map("duration_minutes")
+  distanceKm      Float?   @map("distance_km")
+  steps           Int      @default(0)
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, logDate])
+  @@map("workout_logs")
 }
 
 model FoodSearchCache {

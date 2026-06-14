@@ -61,11 +61,12 @@ async function grantStepsXpDelta(
 }
 
 export async function buildStepsResponse(userId: number, logDate: Date) {
-  const [steps, goalSteps, history, row] = await Promise.all([
+  const [steps, goalSteps, history, row, workouts] = await Promise.all([
     wellnessRepo.getStepsTotalForDay(userId, logDate),
     wellnessRepo.getStepsGoal(userId),
     wellnessRepo.getStepsHistory(userId, 14),
     wellnessRepo.getStepsDayRow(userId, logDate),
+    wellnessRepo.getWorkoutsForDay(userId, logDate),
   ]);
   const stepsXpEarnedToday = eligibleStepsXp(steps, goalSteps);
   return {
@@ -80,5 +81,6 @@ export async function buildStepsResponse(userId: number, logDate: Date) {
     stepsPerXpUnit: 1000,
     xpPerStepUnit: 10,
     maxStepsXpToday: eligibleStepsXp(goalSteps, goalSteps),
+    workouts,
   };
 }

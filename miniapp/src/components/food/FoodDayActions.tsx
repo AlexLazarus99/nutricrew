@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { WaterWidget } from "../wellness/WaterWidget";
-import { StepsWidget } from "../wellness/StepsWidget";
 import { FoodActionBadge } from "./FoodActionBadge";
 
 type Props = {
@@ -37,7 +37,9 @@ export function FoodDayActions({ onScan, onPhoto, scanning, photoOpen }: Props) 
         </button>
       </div>
       <WaterWidget />
-      <StepsWidget />
+      <Link to="/steps" className="btn btn-secondary btn-sm btn-block food-day-actions__steps-link">
+        {t("diary.openSteps")}
+      </Link>
     </div>
   );
 }

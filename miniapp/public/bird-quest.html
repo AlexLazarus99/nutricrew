@@ -655,7 +655,7 @@ function initWeatherForTheme(theme){
 function applyNutriBoostStart(){
   if(!nutriBoost.active) return;
   if(nutriBoost.kind === 'game' || nutriBoost.kind === 'water'){
-    game.shieldTime = Math.max(game.shieldTime, 4.5);
+    grantShieldTime(2);
     game.pipeSmashReady = (game.pipeSmashReady||0) + 1;
   }
   if(nutriBoost.kind === 'wellness' && game.lives < MAX_LIVES){
@@ -1088,8 +1088,12 @@ const game = {
   hazardWasActive:false, hazardBanner:null,
   nextObstacleId:0,
 };
+const MAX_SHIELD_TIME = 2;
+function grantShieldTime(sec){
+  game.shieldTime = Math.min(MAX_SHIELD_TIME, Math.max(game.shieldTime, sec));
+}
 const POWER = {
-  shield:{ label:'Щит', color:'#64b5f6', dur:5 },
+  shield:{ label:'Щит', color:'#64b5f6', dur:2 },
   magnet:{ label:'Магнит', color:'#ba68c8', dur:6 },
   slowmo:{ label:'Замедление', color:'#4dd0e1', dur:4 },
   chrono:{ label:'Стоп-время!', color:'#90caf9', dur:5 },
@@ -1613,12 +1617,12 @@ function activatePower(kind){
   if(kind==='golden'){
     addScore(50, '+50★', game.bird.x, game.bird.y-40);
     game.magnetTime = Math.max(game.magnetTime, 4);
-    game.shieldTime = Math.max(game.shieldTime, 3);
+    grantShieldTime(2);
     burst(game.bird.x, game.bird.y, '#ffd54f', 28, 240);
     SFX.level();
     return;
   }
-  if(kind==='shield'){ game.shieldTime = p.dur + (getBirdSpec().perk === 'frost' ? 1.5 : 0); game.pipeSmashReady = (game.pipeSmashReady||0) + 1; }
+  if(kind==='shield'){ grantShieldTime(p.dur); game.pipeSmashReady = (game.pipeSmashReady||0) + 1; if(getBirdSpec().perk === 'frost') game.pipeSmashReady = (game.pipeSmashReady||0) + 1; }
   if(kind==='magnet') game.magnetTime = p.dur;
   if(kind==='slowmo') game.slowmoTime = p.dur;
   if(kind==='chrono'){
@@ -3889,28 +3893,73 @@ function drawDragonFireBreath(c, b, time){
   }
   c.restore();
 }
+function drawDragonScales(c, r, ox, oy, cols, rows, scaleR){
+  c.save();
+  c.translate(ox, oy);
+  for(let row = 0; row < rows; row++){
+    for(let col = 0; col < cols; col++){
+      const sx = (col - (cols - 1) * 0.5) * scaleR * 1.65;
+      const sy = row * scaleR * 1.35;
+      const tone = row % 2 ? '#f06292' : '#ec407a';
+      c.fillStyle = tone;
+      c.strokeStyle = '#6a1b9a';
+      c.lineWidth = Math.max(0.8, r * 0.018);
+      c.beginPath();
+      c.ellipse(sx, sy, scaleR * 0.92, scaleR * 0.72, 0, 0, TAU);
+      c.fill();
+      c.stroke();
+      c.fillStyle = 'rgba(252,228,236,0.45)';
+      c.beginPath();
+      c.ellipse(sx - scaleR * 0.18, sy - scaleR * 0.12, scaleR * 0.22, scaleR * 0.14, -0.4, 0, TAU);
+      c.fill();
+    }
+  }
+  c.restore();
+}
+function drawDragonManeWisps(c, r, time){
+  c.save();
+  c.strokeStyle = 'rgba(106,27,158,0.55)';
+  c.lineWidth = Math.max(1.2, r * 0.03);
+  c.lineCap = 'round';
+  for(let i = 0; i < 9; i++){
+    const phase = time * 3.2 + i * 0.7;
+    const baseX = -r * (0.35 + i * 0.08);
+    const baseY = -r * (0.08 + (i % 3) * 0.06);
+    c.strokeStyle = i % 2 ? 'rgba(236,64,122,0.65)' : 'rgba(123,31,162,0.55)';
+    c.beginPath();
+    c.moveTo(baseX, baseY);
+    c.bezierCurveTo(
+      baseX - r * (0.35 + Math.sin(phase) * 0.08), baseY - r * (0.18 + i * 0.03),
+      baseX - r * (0.75 + Math.sin(phase * 1.2) * 0.1), baseY - r * (0.08 - Math.cos(phase) * 0.05),
+      baseX - r * (1.05 + i * 0.05), baseY + r * (0.04 + Math.sin(phase * 0.8) * 0.08)
+    );
+    c.stroke();
+  }
+  c.restore();
+}
 function drawDragon(c, b, time, morph){
   morph = clamp(morph ?? 1, 0.15, 1);
   const r = b.r * morph;
-  const wingFlap = Math.sin(time * 6.5) * 0.42;
+  const wingFlap = Math.sin(time * 6.5) * 0.38;
   const bodyBob = Math.sin(time * 3.1) * r * 0.04;
+  const jaw = 0.72 + Math.sin(time * 7.2) * 0.08;
+  const roar = isDragonActive() ? 1 : 0.55 + morph * 0.35;
   c.save();
   c.translate(b.x, b.y + bodyBob);
   c.rotate(b.tilt * 0.45);
 
-  // --- wings (behind body) ---
+  // wings — magenta membranes
   c.save();
   c.translate(-r * 0.08, r * 0.02);
   for(const side of [-1, 1]){
     c.save();
     c.scale(side, 1);
-    const flap = wingFlap * side;
-    c.rotate(-0.55 + flap);
+    c.rotate(-0.55 + wingFlap * side);
     const wingG = c.createLinearGradient(-r * 2.4, -r * 0.5, r * 0.2, r * 0.8);
-    wingG.addColorStop(0, '#6a1b9a');
-    wingG.addColorStop(0.35, '#c2185b');
-    wingG.addColorStop(0.72, '#e53935');
-    wingG.addColorStop(1, '#ff8a80');
+    wingG.addColorStop(0, '#4a148c');
+    wingG.addColorStop(0.35, '#7b1fa2');
+    wingG.addColorStop(0.68, '#c2185b');
+    wingG.addColorStop(1, '#f48fb1');
     c.fillStyle = wingG;
     c.beginPath();
     c.moveTo(r * 0.05, -r * 0.08);
@@ -3919,31 +3968,29 @@ function drawDragon(c, b, time, morph){
     c.quadraticCurveTo(-r * 1.85, r * 0.42, -r * 1.05, r * 0.28);
     c.quadraticCurveTo(-r * 0.42, r * 0.12, r * 0.05, -r * 0.08);
     c.fill();
-    c.strokeStyle = 'rgba(74,20,140,0.55)';
-    c.lineWidth = Math.max(1.5, r * 0.05);
+    c.strokeStyle = 'rgba(74,20,140,0.65)';
+    c.lineWidth = Math.max(1.5, r * 0.045);
     c.beginPath();
     c.moveTo(r * 0.02, -r * 0.04);
     c.lineTo(-r * 1.35, -r * 0.58);
     c.moveTo(r * 0.02, r * 0.02);
     c.lineTo(-r * 1.85, r * 0.08);
-    c.moveTo(-r * 0.35, r * 0.08);
-    c.lineTo(-r * 2.05, r * 0.22);
     c.stroke();
     c.restore();
   }
   c.restore();
 
-  // --- tail (single smooth curve) ---
+  drawDragonManeWisps(c, r, time);
+
+  // tail — smooth tapered magenta body
   const tailWave = Math.sin(time * 2.8) * r * 0.22;
   const tailG = c.createLinearGradient(-r * 4.8, 0, -r * 0.5, 0);
   tailG.addColorStop(0, '#4a148c');
-  tailG.addColorStop(0.45, '#b71c1c');
-  tailG.addColorStop(1, '#e53935');
+  tailG.addColorStop(0.5, '#ad1457');
+  tailG.addColorStop(1, '#ec407a');
   c.fillStyle = tailG;
   c.strokeStyle = '#6a1b9a';
   c.lineWidth = Math.max(1.2, r * 0.04);
-  c.lineCap = 'round';
-  c.lineJoin = 'round';
   c.beginPath();
   c.moveTo(-r * 0.72, r * 0.06);
   c.bezierCurveTo(-r * 1.55, r * 0.18 + tailWave * 0.3, -r * 2.45, tailWave, -r * 3.35, tailWave * 0.65);
@@ -3952,152 +3999,153 @@ function drawDragon(c, b, time, morph){
   c.closePath();
   c.fill();
   c.stroke();
-  c.fillStyle = '#ad1457';
-  c.beginPath();
-  c.moveTo(-r * 4.88, -r * 0.12);
-  c.lineTo(-r * 5.18, -r * 0.42);
-  c.lineTo(-r * 4.72, -r * 0.22);
-  c.lineTo(-r * 5.05, r * 0.08);
-  c.lineTo(-r * 4.82, -r * 0.02);
-  c.fill();
+  drawDragonScales(c, r, -r * 2.1, r * 0.02, 4, 3, r * 0.11);
 
-  // --- unified torso + neck (one continuous silhouette) ---
+  // neck + torso — single magenta silhouette
   const bodyG = c.createLinearGradient(-r * 0.8, -r * 0.9, r * 1.1, r * 0.85);
-  bodyG.addColorStop(0, '#7b1fa2');
-  bodyG.addColorStop(0.28, '#c62828');
-  bodyG.addColorStop(0.55, '#e53935');
-  bodyG.addColorStop(0.82, '#ff6090');
-  bodyG.addColorStop(1, '#ad1457');
+  bodyG.addColorStop(0, '#6a1b9a');
+  bodyG.addColorStop(0.3, '#ad1457');
+  bodyG.addColorStop(0.58, '#e91e63');
+  bodyG.addColorStop(0.82, '#f06292');
+  bodyG.addColorStop(1, '#f8bbd0');
   c.fillStyle = bodyG;
+  c.strokeStyle = '#4a148c';
+  c.lineWidth = Math.max(1.5, r * 0.035);
   c.beginPath();
   c.moveTo(-r * 0.82, r * 0.22);
   c.bezierCurveTo(-r * 0.95, -r * 0.08, -r * 0.42, -r * 0.52, r * 0.08, -r * 0.48);
   c.bezierCurveTo(r * 0.52, -r * 0.44, r * 0.78, -r * 0.18, r * 0.92, r * 0.08);
   c.bezierCurveTo(r * 1.02, r * 0.28, r * 0.88, r * 0.48, r * 0.58, r * 0.52);
   c.bezierCurveTo(r * 0.18, r * 0.58, -r * 0.35, r * 0.55, -r * 0.68, r * 0.42);
-  c.bezierCurveTo(-r * 0.92, r * 0.32, -r * 0.88, r * 0.26, -r * 0.82, r * 0.22);
   c.closePath();
   c.fill();
+  c.stroke();
+  drawDragonScales(c, r, -r * 0.42, -r * 0.08, 5, 4, r * 0.085);
 
-  // belly highlight
-  const bellyG = c.createRadialGradient(r * 0.12, r * 0.18, r * 0.05, r * 0.12, r * 0.18, r * 0.62);
-  bellyG.addColorStop(0, 'rgba(255,205,210,0.85)');
-  bellyG.addColorStop(0.55, 'rgba(255,138,128,0.35)');
-  bellyG.addColorStop(1, 'rgba(229,57,53,0)');
-  c.fillStyle = bellyG;
+  // skull — reference-like profile with open roar
+  const headG = c.createLinearGradient(r * 0.15, -r * 0.62, r * 1.2, r * 0.42);
+  headG.addColorStop(0, '#f8bbd0');
+  headG.addColorStop(0.35, '#f06292');
+  headG.addColorStop(0.7, '#e91e63');
+  headG.addColorStop(1, '#7b1fa2');
+  c.fillStyle = headG;
   c.beginPath();
-  c.ellipse(r * 0.05, r * 0.14, r * 0.52, r * 0.38, -0.08, 0, TAU);
+  c.moveTo(r * 0.28, -r * 0.2);
+  c.bezierCurveTo(r * 0.48, -r * 0.58, r * 0.82, -r * 0.56, r * 1.08, -r * 0.28);
+  c.bezierCurveTo(r * 1.28, -r * 0.08, r * 1.24, r * 0.12, r * 0.98, r * 0.22);
+  c.bezierCurveTo(r * 0.62, r * 0.34, r * 0.22, r * 0.28, r * 0.12, r * 0.08);
+  c.bezierCurveTo(r * 0.08, -r * 0.04, r * 0.14, -r * 0.12, r * 0.28, -r * 0.2);
+  c.closePath();
   c.fill();
+  c.stroke();
 
-  // back spines
+  // crown horns — swept back like reference
   c.fillStyle = '#4a148c';
-  const spines = [-0.35, -0.05, 0.28, 0.58];
-  for(let i = 0; i < spines.length; i++){
-    const sx = r * spines[i];
-    const h = r * (0.14 + (i % 2) * 0.04);
+  const crownHorns = [
+    [0.52, -0.56, 0.1, -1.05], [0.68, -0.62, 0.12, -1.15], [0.84, -0.58, 0.11, -1.08],
+    [0.96, -0.48, 0.1, -0.95], [0.42, -0.64, 0.09, -1.02], [0.58, -0.72, 0.13, -1.22],
+    [0.76, -0.7, 0.12, -1.18], [0.9, -0.66, 0.1, -1.1],
+  ];
+  for(const [hx, hy, hw, back] of crownHorns){
     c.beginPath();
-    c.moveTo(sx - r * 0.05, -r * 0.38);
-    c.lineTo(sx, -r * 0.38 - h);
-    c.lineTo(sx + r * 0.05, -r * 0.36);
+    c.moveTo(r * hx, r * hy);
+    c.lineTo(r * (hx + hw * 0.15), r * (hy + back * 0.35));
+    c.lineTo(r * (hx + hw * 0.55), r * (hy + back * 0.82));
+    c.lineTo(r * (hx + hw * 0.42), r * (hy + back * 0.55));
+    c.closePath();
+    c.fill();
+    c.fillStyle = '#7b1fa2';
+    c.beginPath();
+    c.moveTo(r * (hx + hw * 0.08), r * (hy + back * 0.12));
+    c.lineTo(r * (hx + hw * 0.42), r * (hy + back * 0.62));
+    c.lineTo(r * (hx + hw * 0.3), r * (hy + back * 0.42));
+    c.closePath();
+    c.fill();
+    c.fillStyle = '#4a148c';
+  }
+
+  // jaw spikes along cheek
+  for(let i = 0; i < 5; i++){
+    const jx = r * (0.34 + i * 0.1);
+    c.beginPath();
+    c.moveTo(jx, r * 0.02);
+    c.lineTo(jx + r * 0.04, r * 0.14);
+    c.lineTo(jx - r * 0.02, r * 0.08);
     c.closePath();
     c.fill();
   }
 
-  // --- head (smooth extension of neck, not segmented) ---
-  const jaw = 0.38 + Math.sin(time * 7.2) * 0.16;
-  const headG = c.createLinearGradient(r * 0.2, -r * 0.55, r * 1.15, r * 0.35);
-  headG.addColorStop(0, '#ff8a80');
-  headG.addColorStop(0.4, '#e53935');
-  headG.addColorStop(1, '#7b1fa2');
-  c.fillStyle = headG;
+  // open roaring mouth
+  c.fillStyle = '#311b92';
   c.beginPath();
-  c.moveTo(r * 0.42, -r * 0.18);
-  c.bezierCurveTo(r * 0.62, -r * 0.52, r * 0.95, -r * 0.48, r * 1.12, -r * 0.22);
-  c.bezierCurveTo(r * 1.28, -r * 0.02, r * 1.22, r * 0.22, r * 0.92, r * 0.34);
-  c.bezierCurveTo(r * 0.62, r * 0.46, r * 0.28, r * 0.38, r * 0.18, r * 0.18);
-  c.bezierCurveTo(r * 0.12, r * 0.02, r * 0.22, -r * 0.1, r * 0.42, -r * 0.18);
+  c.moveTo(r * 0.62, r * 0.02);
+  c.bezierCurveTo(r * 0.92, r * (0.08 + jaw * 0.08 * roar), r * 1.22, r * (0.22 + jaw * 0.18 * roar), r * 1.28, r * (0.34 + jaw * 0.28 * roar));
+  c.bezierCurveTo(r * 1.18, r * (0.42 + jaw * 0.32 * roar), r * 0.82, r * (0.36 + jaw * 0.22 * roar), r * 0.58, r * (0.24 + jaw * 0.12 * roar));
   c.closePath();
   c.fill();
 
-  // snout / jaw
-  c.fillStyle = '#c62828';
-  c.beginPath();
-  c.moveTo(r * 0.72, r * 0.06);
-  c.bezierCurveTo(r * 0.98, r * (0.1 + jaw * 0.12), r * 1.18, r * (0.18 + jaw * 0.22), r * 1.24, r * (0.26 + jaw * 0.28));
-  c.lineTo(r * 1.14, r * (0.32 + jaw * 0.32));
-  c.bezierCurveTo(r * 0.82, r * (0.24 + jaw * 0.18), r * 0.52, r * 0.14, r * 0.38, r * 0.1);
-  c.closePath();
-  c.fill();
-
-  // horns
-  c.fillStyle = '#4a148c';
-  const hornSet = [[0.78, -0.42, 0.14], [0.95, -0.52, 0.18], [0.62, -0.58, 0.12]];
-  for(const [hx, hy, hr] of hornSet){
-    c.beginPath();
-    c.moveTo(r * hx, r * hy);
-    c.quadraticCurveTo(r * (hx + hr * 0.2), r * (hy - hr * 0.9), r * (hx + hr * 0.45), r * (hy - hr * 0.35));
-    c.quadraticCurveTo(r * (hx + hr * 0.08), r * (hy - hr * 0.15), r * hx, r * hy);
-    c.fill();
-  }
-
-  // eye
-  c.fillStyle = '#fffde7';
-  c.beginPath();
-  c.ellipse(r * 0.88, -r * 0.16, r * 0.1, r * 0.13, -0.12, 0, TAU);
-  c.fill();
-  c.fillStyle = '#ffeb3b';
-  c.beginPath();
-  c.ellipse(r * 0.9, -r * 0.15, r * 0.055, r * 0.09, -0.12, 0, TAU);
-  c.fill();
-  c.fillStyle = '#1a1a1a';
-  c.beginPath();
-  c.ellipse(r * 0.92, -r * 0.14, r * 0.022, r * 0.065, -0.1, 0, TAU);
-  c.fill();
-  c.fillStyle = 'rgba(255,255,255,0.9)';
-  c.beginPath();
-  c.arc(r * 0.875, -r * 0.19, r * 0.028, 0, TAU);
-  c.fill();
-
-  // teeth
+  // upper teeth row
   c.fillStyle = '#fff8e1';
-  for(let i = 0; i < 6; i++){
-    const tx = r * (0.82 + i * 0.055);
+  for(let i = 0; i < 9; i++){
+    const tx = r * (0.72 + i * 0.052);
+    const ty = r * (0.06 + (i % 2) * 0.02);
     c.beginPath();
-    c.moveTo(tx, r * 0.1);
-    c.lineTo(tx + r * 0.028, r * (0.17 + jaw * 0.1));
-    c.lineTo(tx - r * 0.018, r * 0.12);
+    c.moveTo(tx, ty);
+    c.lineTo(tx + r * 0.024, ty + r * (0.1 + jaw * 0.08 * roar));
+    c.lineTo(tx - r * 0.016, ty + r * 0.04);
+    c.closePath();
+    c.fill();
+  }
+  // lower teeth row
+  for(let i = 0; i < 8; i++){
+    const tx = r * (0.76 + i * 0.05);
+    const ty = r * (0.22 + jaw * 0.2 * roar);
+    c.beginPath();
+    c.moveTo(tx, ty);
+    c.lineTo(tx + r * 0.02, ty + r * (0.08 + jaw * 0.06 * roar));
+    c.lineTo(tx - r * 0.014, ty + r * 0.03);
+    c.closePath();
     c.fill();
   }
 
-  // nostril + cheek scale accents
-  c.fillStyle = 'rgba(183,28,28,0.65)';
+  // glowing slit eye — reference style
+  c.save();
+  c.shadowColor = '#fce4ec';
+  c.shadowBlur = r * 0.22;
+  c.fillStyle = '#fff';
   c.beginPath();
-  c.ellipse(r * 1.08, -r * 0.04, r * 0.035, r * 0.025, 0, 0, TAU);
+  c.ellipse(r * 0.86, -r * 0.18, r * 0.11, r * 0.055, -0.18, 0, TAU);
   c.fill();
-  c.strokeStyle = 'rgba(106,27,158,0.45)';
-  c.lineWidth = r * 0.035;
-  for(let i = 0; i < 3; i++){
-    c.beginPath();
-    c.arc(r * (0.48 + i * 0.12), -r * (0.28 - i * 0.04), r * 0.055, 0.5, 2.2);
-    c.stroke();
-  }
+  c.shadowBlur = 0;
+  c.fillStyle = 'rgba(252,228,236,0.85)';
+  c.beginPath();
+  c.ellipse(r * 0.87, -r * 0.18, r * 0.055, r * 0.028, -0.18, 0, TAU);
+  c.fill();
+  c.restore();
 
-  // small hind claws
-  c.strokeStyle = '#6a1b9a';
-  c.lineWidth = r * 0.07;
+  // snout scales + nostril
+  drawDragonScales(c, r, r * 0.72, -r * 0.08, 3, 2, r * 0.045);
+  c.fillStyle = '#4a148c';
+  c.beginPath();
+  c.ellipse(r * 1.12, -r * 0.06, r * 0.03, r * 0.02, 0, 0, TAU);
+  c.fill();
+
+  // jaw mane wisps
+  c.save();
+  c.strokeStyle = 'rgba(233,30,99,0.6)';
+  c.lineWidth = Math.max(1.1, r * 0.028);
   c.lineCap = 'round';
-  for(const side of [-1, 1]){
-    const step = Math.sin(time * 9 + side * 2) * 0.25;
-    c.save();
-    c.translate(side * r * 0.22, r * 0.38);
-    c.rotate(side * (0.35 + step));
+  for(let i = 0; i < 6; i++){
+    const phase = time * 4 + i;
     c.beginPath();
-    c.moveTo(0, 0);
-    c.lineTo(side * r * 0.12, r * 0.16);
-    c.lineTo(side * r * 0.2, r * 0.28);
+    c.moveTo(r * 0.48, r * (0.12 + i * 0.03));
+    c.quadraticCurveTo(
+      r * (0.22 + Math.sin(phase) * 0.04), r * (0.2 + jaw * 0.15),
+      r * (0.02 + i * 0.02), r * (0.28 + Math.sin(phase * 0.7) * 0.06)
+    );
     c.stroke();
-    c.restore();
   }
+  c.restore();
 
   c.restore();
 }
@@ -4957,7 +5005,7 @@ function updatePlay(dt){
   if(game.chronoTime>0) game.chronoTime -= dt;
   if(game.slowmoTime>0) game.slowmoTime -= dt;
   if(game.nitroTime>0) game.nitroTime -= dt;
-  if(game.shieldTime>0) game.shieldTime -= dt;
+  if(game.shieldTime>0) game.shieldTime = Math.min(MAX_SHIELD_TIME, game.shieldTime - dt);
   if(game.magnetTime>0) game.magnetTime -= dt;
   const freezeWas = game.freezeTime > 0;
   if(game.freezeTime>0) game.freezeTime -= dt;

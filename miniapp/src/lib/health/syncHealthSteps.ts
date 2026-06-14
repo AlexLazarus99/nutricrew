@@ -46,6 +46,20 @@ export async function syncStepsFromHealthApps(): Promise<HealthSyncOutcome> {
   }
 
   if (platform === "ios") {
+    if (window.NutriCrewHealth?.readTodaySteps) {
+      const native = await readNativeHealthSteps();
+      if (native) {
+        const res = await api.syncHealthSteps(native.steps, native.source);
+        return {
+          ok: true,
+          steps: res.steps,
+          source: res.healthSource ?? native.source,
+          xpGrantedNow: res.stepsXpGrantedNow,
+          method: "native",
+        };
+      }
+      return { ok: false, error: "HEALTH_PERMISSION_DENIED" };
+    }
     const native = await readNativeHealthSteps();
     if (native) {
       const res = await api.syncHealthSteps(native.steps, native.source);

@@ -100,7 +100,7 @@ export function BottomNav({ hasTeam }: Props) {
   }
 
   const foodActive = ({ isActive }: { isActive: boolean }) =>
-    isActive || pathname.startsWith("/diary");
+    isActive || pathname.startsWith("/diary") || pathname.startsWith("/steps");
 
   return (
     <>

@@ -13,7 +13,6 @@ import {
 } from "../lib/diaryTarget";
 import { FoodLogHero } from "../components/food/FoodLogHero";
 import { WaterWidget } from "../components/wellness/WaterWidget";
-import { StepsWidget } from "../components/wellness/StepsWidget";
 import { Skeleton, SkeletonCard } from "../components/ui/Skeleton";
 import { EmptyState } from "../components/ui/EmptyState";
 import { NavBadgeIcon } from "../components/nav/NavBadgeIcon";
@@ -93,7 +92,6 @@ export function FoodDiaryPage() {
         subtitleKey="diary.hint"
       />
       <WaterWidget date={day} readOnly={!isToday} />
-      <StepsWidget date={day} readOnly={!isToday} />
 
       <div className="card diary-section diary-section--picker">
         <div className="diary-day-picker">

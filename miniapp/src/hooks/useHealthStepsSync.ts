@@ -40,11 +40,7 @@ export function useHealthStepsSync(enabled: boolean, onSynced?: (xpGranted?: num
         }
         return result;
       }
-      if (
-        result.error &&
-        result.error !== "APPLE_HEALTH_UNAVAILABLE" &&
-        result.error !== "HEALTH_SYNC_UNAVAILABLE"
-      ) {
+      if (result.error) {
         setLastError(result.error);
       }
       return result;

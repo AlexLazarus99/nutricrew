@@ -16,6 +16,7 @@ import {
 type Props = {
   date?: Date;
   readOnly?: boolean;
+  refreshKey?: number;
 };
 
 const GOAL_PRESETS = [5000, 8000, 10000, 12000];
@@ -28,7 +29,26 @@ function healthSourceLabel(source: string | null | undefined, t: (k: string) => 
   return source;
 }
 
-export function StepsWidget({ date, readOnly = false }: Props) {
+function healthSyncErrorMessage(error: string, t: (k: string) => string) {
+  if (error === "APPLE_HEALTH_UNAVAILABLE") return t("steps.healthAppleUnavailable");
+  if (error === "HEALTH_PERMISSION_DENIED") return t("steps.healthPermissionDenied");
+  if (error === "HEALTH_SYNC_UNAVAILABLE") return t("steps.healthSyncUnavailable");
+  return t("steps.healthSyncError");
+}
+
+function showHealthSyncAlert(message: string) {
+  const tg = window.Telegram?.WebApp as
+    | { showAlert?: (msg: string) => void; HapticFeedback?: { notificationOccurred?: (t: string) => void } }
+    | undefined;
+  tg?.HapticFeedback?.notificationOccurred?.("error");
+  if (tg?.showAlert) {
+    tg.showAlert(message);
+    return;
+  }
+  window.alert(message);
+}
+
+export function StepsWidget({ date, readOnly = false, refreshKey = 0 }: Props) {
   const { t } = useTranslation();
   const { prefs } = useAppPreferences();
   const [steps, setSteps] = useState(0);
@@ -75,7 +95,7 @@ export function StepsWidget({ date, readOnly = false }: Props) {
 
   useEffect(() => {
     void load();
-  }, [load]);
+  }, [load, refreshKey]);
 
   const onHealthSynced = useCallback(
     (xp?: number) => {
@@ -143,7 +163,13 @@ export function StepsWidget({ date, readOnly = false }: Props) {
 
   async function handleHealthSync() {
     const result = await syncHealth();
-    if (result?.ok) await load();
+    if (result?.ok) {
+      await load();
+      return;
+    }
+    if (result?.error) {
+      showHealthSyncAlert(healthSyncErrorMessage(result.error, t));
+    }
   }
 
   const pct = Math.min(100, goal > 0 ? (steps / goal) * 100 : 0);
@@ -226,9 +252,11 @@ export function StepsWidget({ date, readOnly = false }: Props) {
                 </button>
               )}
               {lastError && (
-                <p className="steps-widget__error muted small">{t("steps.healthSyncError")}</p>
+                <p className="steps-widget__error small" role="alert">
+                  {healthSyncErrorMessage(lastError, t)}
+                </p>
               )}
-              {isToday && platform === "ios" && !healthLinked && (
+              {isToday && platform === "ios" && !healthLinked && !lastError && (
                 <p className="steps-widget__hint muted small">{t("steps.healthIosHint")}</p>
               )}
 

@@ -173,3 +173,58 @@ export async function mergeHealthSteps(
     },
   });
 }
+
+export async function getWorkoutsForDay(userId: number, logDate: Date) {
+  const day = dayStartUtc(logDate);
+  const rows = await prisma.workoutLog.findMany({
+    where: { userId: BigInt(userId), logDate: day },
+    orderBy: { createdAt: "desc" },
+  });
+  return rows.map((row) => ({
+    id: row.id,
+    type: row.workoutType,
+    durationMinutes: row.durationMinutes,
+    distanceKm: row.distanceKm,
+    steps: row.steps,
+    createdAt: row.createdAt.toISOString(),
+  }));
+}
+
+export async function addWorkoutLog(
+  userId: number,
+  logDate: Date,
+  workoutType: string,
+  durationMinutes: number,
+  steps: number,
+  distanceKm?: number | null,
+) {
+  const day = dayStartUtc(logDate);
+  const [log, total] = await prisma.$transaction([
+    prisma.workoutLog.create({
+      data: {
+        userId: BigInt(userId),
+        logDate: day,
+        workoutType,
+        durationMinutes,
+        distanceKm: distanceKm ?? null,
+        steps,
+      },
+    }),
+    prisma.dailyStepTotal.upsert({
+      where: { userId_logDate: { userId: BigInt(userId), logDate: day } },
+      create: { userId: BigInt(userId), logDate: day, steps },
+      update: { steps: { increment: steps } },
+    }),
+  ]);
+  return {
+    workout: {
+      id: log.id,
+      type: log.workoutType,
+      durationMinutes: log.durationMinutes,
+      distanceKm: log.distanceKm,
+      steps: log.steps,
+      createdAt: log.createdAt.toISOString(),
+    },
+    totalSteps: total.steps,
+  };
+}
