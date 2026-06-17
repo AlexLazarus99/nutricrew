@@ -4,6 +4,7 @@ import path from "node:path";
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { apiRouter } from "./routes/index.js";
+import { tributeWebhookHandler } from "./routes/tributeWebhook.js";
 import { config } from "../config.js";
 import { isAllowedCorsOrigin } from "../lib/corsOrigins.js";
 
@@ -20,6 +21,13 @@ export function createApiApp(): express.Application {
       credentials: true,
     }),
   );
+
+  app.post(
+    "/api/webhooks/tribute",
+    express.raw({ type: "application/json", limit: "256kb" }),
+    (req, res) => void tributeWebhookHandler(req, res),
+  );
+
   app.use(express.json({ limit: "12mb" }));
 
   app.get("/", (_req, res) => {

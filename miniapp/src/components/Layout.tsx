@@ -78,7 +78,7 @@ function LayoutShell() {
       <main className="app-main">
         {mustCompleteProfile ? (
           <RegistrationPage onComplete={refresh} displayName={displayName} gateMode />
-        ) : showWellnessOffer && !pathname.startsWith("/game") && !pathname.startsWith("/quiz") ? (
+        ) : showWellnessOffer && !pathname.startsWith("/game") && !pathname.startsWith("/quiz") && !pathname.startsWith("/coach") ? (
           <PostRegistrationOffer
             displayName={displayName}
             onDismiss={() => setOfferDismissed(true)}
@@ -103,7 +103,7 @@ function LayoutShell() {
       )}
 
       {!mustCompleteProfile &&
-        (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz")) && (
+        (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz") || pathname.startsWith("/coach")) && (
           <BottomNav hasTeam={!!me.teamId} />
         )}
     </div>

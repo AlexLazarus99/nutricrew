@@ -71,6 +71,16 @@ export const config = {
     maxPoolFund: Number(process.env.MAX_POOL_FUND_STARS ?? 1000),
     winnerSharePercent: Number(process.env.WINNER_POOL_SHARE_PERCENT ?? 80),
   },
+
+  tribute: {
+    apiKey: (process.env.TRIBUTE_API_KEY ?? "").trim(),
+    proSubscriptionIds: (process.env.TRIBUTE_PRO_SUBSCRIPTION_IDS ?? "")
+      .split(",")
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0),
+    proDays: Number(process.env.TRIBUTE_PRO_DAYS ?? process.env.PRO_DAYS ?? 30),
+    proUrl: (process.env.TRIBUTE_PRO_URL ?? "").trim(),
+  },
 };
 
 export function getPublicSocialLinks(): Record<string, string> {

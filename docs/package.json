@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "pitch:pdf": "node scripts/generate-pitch-pdf.mjs",
+    "guide:deficit-pdf": "node scripts/generate-deficit-guide-pdf.mjs",
     "marketing:png": "node marketing/generate-ads.mjs"
   },
   "devDependencies": {

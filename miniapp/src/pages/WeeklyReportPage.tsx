@@ -2,9 +2,10 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type WeeklyReportResponse } from "../api/client";
+import { ProGate } from "../components/pro/ProGate";
 import { trackEvent } from "../lib/analytics";
 
-export function WeeklyReportPage() {
+function WeeklyReportContent() {
   const { t } = useTranslation();
   const [report, setReport] = useState<WeeklyReportResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,5 +94,13 @@ export function WeeklyReportPage() {
         {t("trends.title")}
       </Link>
     </section>
+  );
+}
+
+export function WeeklyReportPage() {
+  return (
+    <ProGate titleKey="report.title" descKey="pro.featureReports" source="gate-report">
+      <WeeklyReportContent />
+    </ProGate>
   );
 }

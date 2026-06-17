@@ -8,6 +8,7 @@ export type AppSection =
   | "prizes"
   | "game"
   | "quiz"
+  | "coach"
   | "features"
   | "auth";
 
@@ -22,6 +23,7 @@ export function sectionFromPath(pathname: string): AppSection {
   if (pathname.startsWith("/prizes")) return "prizes";
   if (pathname.startsWith("/game")) return "game";
   if (pathname.startsWith("/quiz")) return "quiz";
+  if (pathname.startsWith("/coach")) return "coach";
   if (pathname.startsWith("/features")) return "features";
   return "home";
 }

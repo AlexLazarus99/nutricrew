@@ -13,6 +13,7 @@ export type NavBadgeKind =
   | "game"
   | "prizes"
   | "report"
+  | "coach"
   | "more"
   | "features"
   | "settings";
@@ -146,6 +147,24 @@ function NavSvgBadge({
             <path d="M15 18 h18" stroke="#8b7355" strokeWidth="1.2" opacity="0.45" />
           </>
         );
+      case "coach":
+        return (
+          <>
+            <circle cx="24" cy="24" r="14" fill={g("coach")} />
+            <path
+              d="M14 30 Q24 22 34 30"
+              fill="none"
+              stroke="#fff"
+              strokeWidth="2"
+              strokeLinecap="round"
+              opacity="0.85"
+            />
+            <circle className="nav-badge__spark" cx="30" cy="16" r="2.5" fill="#ede9fe" />
+            <text x="24" y="27" textAnchor="middle" fontSize="11" fontWeight="800" fill="#5b21b6">
+              AI
+            </text>
+          </>
+        );
       case "more":
         return (
           <>
@@ -210,6 +229,10 @@ function NavSvgBadge({
           <linearGradient id={`${uid}-gold`} x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="#ffe082" />
             <stop offset="100%" stopColor="#c9a227" />
+          </linearGradient>
+          <linearGradient id={`${uid}-coach`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#ede9fe" />
+            <stop offset="100%" stopColor="#a78bfa" />
           </linearGradient>
         </defs>
         {art()}

@@ -4,8 +4,50 @@ import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const htmlPath = path.join(__dirname, "creatives.html");
 const outDir = path.join(__dirname, "output");
+
+const HTML_FILES = [
+  "creatives.html",
+  "creatives-en.html",
+  "creatives-streak-en.html",
+  "creatives-viral-en.html",
+];
+
+function resolveChromeExecutable() {
+  const candidates = [
+    process.env.PUPPETEER_EXECUTABLE_PATH,
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/usr/bin/google-chrome",
+  ].filter(Boolean);
+  return candidates.find((p) => fs.existsSync(p));
+}
+
+async function exportCreativesFromPage(page, outDir) {
+  const creatives = await page.$$eval(".creative[data-export], .poster[data-export]", (els) =>
+    els.map((el) => ({
+      selector: `[data-export="${el.getAttribute("data-export")}"]`,
+      filename: el.getAttribute("data-export"),
+      width: Number(el.getAttribute("data-w")),
+      height: Number(el.getAttribute("data-h")),
+    })),
+  );
+
+  for (const { selector, filename, width, height } of creatives) {
+    const el = await page.$(selector);
+    if (!el) {
+      console.warn(`Skip: ${filename} (element not found)`);
+      continue;
+    }
+    const outPath = path.join(outDir, filename);
+    await el.screenshot({ path: outPath, type: "png" });
+    console.log(`Created: ${outPath} (${width}×${height})`);
+  }
+
+  return creatives.length;
+}
 
 async function main() {
   let puppeteer;
@@ -20,14 +62,7 @@ async function main() {
     fs.mkdirSync(outDir, { recursive: true });
   }
 
-  const chromePaths = [
-    process.env.PUPPETEER_EXECUTABLE_PATH,
-    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-    "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-    "C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
-  ].filter(Boolean);
-
-  const executablePath = chromePaths.find((p) => fs.existsSync(p));
+  const executablePath = resolveChromeExecutable();
 
   const browser = await puppeteer.default.launch({
     headless: true,
@@ -35,33 +70,27 @@ async function main() {
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--font-render-hinting=none"],
   });
 
-  const page = await browser.newPage();
-  await page.setViewport({ width: 1400, height: 900, deviceScaleFactor: 1 });
-  await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle0", timeout: 60000 });
-  await page.evaluateHandle("document.fonts.ready");
+  let total = 0;
 
-  const creatives = await page.$$eval(".creative[data-export]", (els) =>
-    els.map((el) => ({
-      selector: `[data-export="${el.getAttribute("data-export")}"]`,
-      filename: el.getAttribute("data-export"),
-      width: Number(el.getAttribute("data-w")),
-      height: Number(el.getAttribute("data-h")),
-    }))
-  );
-
-  for (const { selector, filename, width, height } of creatives) {
-    const el = await page.$(selector);
-    if (!el) {
-      console.warn(`Skip: ${filename} (element not found)`);
+  for (const htmlFile of HTML_FILES) {
+    const htmlPath = path.join(__dirname, htmlFile);
+    if (!fs.existsSync(htmlPath)) {
+      console.warn(`Skip missing: ${htmlFile}`);
       continue;
     }
-    const outPath = path.join(outDir, filename);
-    await el.screenshot({ path: outPath, type: "png" });
-    console.log(`Created: ${outPath} (${width}×${height})`);
+
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1400, height: 900, deviceScaleFactor: 1 });
+    await page.goto(pathToFileURL(htmlPath).href, { waitUntil: "networkidle0", timeout: 60000 });
+    await page.evaluateHandle("document.fonts.ready");
+
+    console.log(`\nRendering ${htmlFile}…`);
+    total += await exportCreativesFromPage(page, outDir);
+    await page.close();
   }
 
   await browser.close();
-  console.log(`\nDone — ${creatives.length} images in ${outDir}`);
+  console.log(`\nDone — ${total} images in ${outDir}`);
 }
 
 main().catch((err) => {

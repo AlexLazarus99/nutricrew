@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type PrizesResponse } from "../api/client";
 import { useMe } from "../hooks/useMe";
-import { trackEvent } from "../lib/analytics";
+import { ProTributeButton } from "../components/pro/ProTributeButton";
 
 export function PrizesPage() {
   const { t } = useTranslation();
@@ -98,17 +98,9 @@ export function PrizesPage() {
         ) : (
           <>
             <p className="muted">{t("prizes.proHint")}</p>
-            <button
-              type="button"
-              className="btn btn-primary btn-block"
-              disabled={busy}
-              onClick={() => {
-                trackEvent("pro_purchase_start");
-                void openInvoice(() => api.createProInvoice());
-              }}
-            >
-              {t("prizes.proBtn")}
-            </button>
+            <ProTributeButton source="prizes">
+              {t("pro.buyTribute")}
+            </ProTributeButton>
           </>
         )}
       </div>

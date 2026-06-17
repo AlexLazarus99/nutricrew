@@ -153,6 +153,7 @@ export interface MeResponse {
     youtube: string;
     tiktok: string;
   }>;
+  tributeProUrl?: string | null;
   growth?: GrowthSummary;
   pro?: { isPro: boolean; proUntil: string | null };
 }

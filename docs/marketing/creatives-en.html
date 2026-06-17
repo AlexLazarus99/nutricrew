@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NutriCrew — ad creatives (EN)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #141a17;
+      --bg-soft: #1c2420;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.18);
+      --text: #f4f7f5;
+      --muted: #9fb0a6;
+      --peach: #f4a574;
+      --peach-dark: #d97b4a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background: #0a0d0b;
+      color: var(--text);
+      padding: 32px;
+    }
+
+    h1 {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 1.5rem;
+      margin-bottom: 24px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .card-wrap { display: flex; flex-direction: column; gap: 10px; }
+    .card-label { font-size: 13px; color: var(--muted); }
+
+    .creative {
+      position: relative;
+      overflow: hidden;
+      background: radial-gradient(ellipse 120% 80% at 50% -10%, #243028 0%, var(--bg) 55%);
+      border-radius: 0;
+      color: var(--text);
+    }
+
+    .creative--story { width: 1080px; height: 1920px; }
+    .creative--square { width: 1080px; height: 1080px; }
+
+    .creative::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 85%, rgba(34, 197, 94, 0.12) 0%, transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(244, 165, 116, 0.1) 0%, transparent 35%);
+      pointer-events: none;
+    }
+
+    .creative__inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 72px 64px 56px;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand-name {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 52px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-name span { color: var(--accent); }
+
+    .tagline {
+      margin-top: 28px;
+      font-size: 34px;
+      line-height: 1.35;
+      font-weight: 600;
+      max-width: 90%;
+    }
+
+    .tagline--lg {
+      font-family: Fraunces, Georgia, serif;
+      font-size: 58px;
+      line-height: 1.15;
+      font-weight: 700;
+      max-width: 95%;
+    }
+
+    .sub {
+      margin-top: 20px;
+      font-size: 28px;
+      line-height: 1.45;
+      color: var(--muted);
+      max-width: 88%;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 36px;
+    }
+
+    .pill {
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      border: 2px solid rgba(34, 197, 94, 0.35);
+      font-size: 24px;
+      font-weight: 700;
+      color: #bbf7d0;
+    }
+
+    .hero-art {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .peach-svg { filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.45)); }
+
+    .cta-bar {
+      margin-top: auto;
+      padding-top: 40px;
+    }
+
+    .cta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 36px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #1faa52 0%, var(--accent) 100%);
+      box-shadow: 0 12px 40px rgba(34, 197, 94, 0.35);
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .cta-pill svg { flex-shrink: 0; }
+
+    .bot-link {
+      margin-top: 18px;
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.02em;
+    }
+
+    .bot-url {
+      margin-top: 8px;
+      font-size: 26px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .flow {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      padding: 20px 0;
+    }
+
+    .flow-box {
+      width: 280px;
+      height: 280px;
+      border-radius: 32px;
+      background: var(--bg-soft);
+      border: 3px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-size: 22px;
+      font-weight: 700;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .flow-box--accent {
+      border-color: rgba(34, 197, 94, 0.5);
+      background: linear-gradient(160deg, #1a2e22 0%, var(--bg-soft) 100%);
+    }
+
+    .flow-arrow {
+      font-size: 56px;
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .xp-badge {
+      font-size: 64px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .team-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-content: center;
+      padding: 24px 0;
+    }
+
+    .team-card {
+      padding: 32px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 2px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .team-card strong {
+      display: block;
+      font-size: 28px;
+      margin-bottom: 8px;
+      color: var(--accent);
+    }
+
+    .team-card span { font-size: 22px; color: var(--muted); line-height: 1.4; }
+
+    .bird-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .bird-bubble {
+      max-width: 720px;
+      padding: 36px 40px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 2px solid rgba(34, 197, 94, 0.25);
+      font-size: 30px;
+      line-height: 1.45;
+      position: relative;
+    }
+
+    .bird-bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -20px;
+      left: 80px;
+      border: 16px solid transparent;
+      border-top-color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <h1>NutriCrew — creatives for TikTok / Instagram / Telegram (EN)</h1>
+  <div class="grid">
+
+    <div class="card-wrap" id="ad-01">
+      <span class="card-label">01 — Hero (1080×1920)</span>
+      <article class="creative creative--story" data-export="nutricrew-ad-01-hero-en.png" data-w="1080" data-h="1920">
+        <div class="creative__inner">
+          <div class="brand-row">
+            <svg class="peach-svg" width="88" height="103" viewBox="0 0 82 96" aria-hidden="true">
+              <ellipse cx="41" cy="52" rx="36" ry="40" fill="url(#peachGrad)"/>
+              <path d="M41 18 C38 8 48 2 56 8 C52 14 46 16 41 18Z" fill="#5cb85c"/>
+              <defs>
+                <linearGradient id="peachGrad" x1="20" y1="20" x2="60" y2="85">
+                  <stop offset="0%" stop-color="#ffc896"/>
+                  <stop offset="100%" stop-color="#e8884a"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <div class="brand-name">Nutri<span>Crew</span></div>
+          </div>
+          <p class="tagline tagline--lg">Team nutrition battles</p>
+          <p class="sub">Snap your meal → earn XP → level up. Play with friends in Telegram.</p>
+          <div class="pill-row">
+            <span class="pill">141 recipes</span>
+            <span class="pill">Team leaderboard</span>
+            <span class="pill">Mini app</span>
+          </div>
+          <div class="hero-art">
+            <svg class="peach-svg" width="340" height="400" viewBox="0 0 82 96" aria-hidden="true">
+              <ellipse cx="41" cy="52" rx="36" ry="40" fill="url(#peachGrad2)"/>
+              <path d="M41 18 C38 8 48 2 56 8 C52 14 46 16 41 18Z" fill="#5cb85c"/>
+              <ellipse cx="32" cy="48" rx="8" ry="5" fill="rgba(255,255,255,0.25)" transform="rotate(-25 32 48)"/>
+              <defs>
+                <linearGradient id="peachGrad2" x1="20" y1="20" x2="60" y2="85">
+                  <stop offset="0%" stop-color="#ffc896"/>
+                  <stop offset="100%" stop-color="#e8884a"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="cta-bar">
+            <div class="cta-pill">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+              Open in Telegram
+            </div>
+            <div class="bot-link">@NutriCrew_bot</div>
+            <div class="bot-url">t.me/NutriCrew_bot</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="card-wrap" id="ad-02">
+      <span class="card-label">02 — Photo → XP (1080×1080)</span>
+      <article class="creative creative--square" data-export="nutricrew-ad-02-photo-xp-en.png" data-w="1080" data-h="1080">
+        <div class="creative__inner">
+          <div class="brand-row">
+            <div class="brand-name" style="font-size:44px">Nutri<span>Crew</span></div>
+          </div>
+          <p class="tagline">Snap lunch — earn XP</p>
+          <div class="flow">
+            <div class="flow-box">
+              <span style="font-size:72px">📸</span>
+              <span>Meal photo</span>
+            </div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-box flow-box--accent">
+              <span class="xp-badge">+120</span>
+              <span>XP per meal</span>
+            </div>
+          </div>
+          <div class="cta-bar">
+            <div class="bot-link">@NutriCrew_bot</div>
+            <div class="bot-url">t.me/NutriCrew_bot</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="card-wrap" id="ad-03">
+      <span class="card-label">03 — Team (1080×1080)</span>
+      <article class="creative creative--square" data-export="nutricrew-ad-03-team-en.png" data-w="1080" data-h="1080">
+        <div class="creative__inner">
+          <p class="tagline">Build your crew. Beat records.</p>
+          <p class="sub">Compete on calories, protein, and streaks — who stays on track?</p>
+          <div class="team-grid">
+            <div class="team-card"><strong>🏆 Leaderboard</strong><span>Top teams each week</span></div>
+            <div class="team-card"><strong>🔥 Streak</strong><span>Days logged in a row</span></div>
+            <div class="team-card"><strong>📊 Macros</strong><span>Protein, carbs, fat</span></div>
+            <div class="team-card"><strong>🍽 Meal plan</strong><span>141 dishes in the menu</span></div>
+          </div>
+          <div class="cta-bar">
+            <div class="cta-pill" style="font-size:28px;padding:18px 30px">Play at @NutriCrew_bot</div>
+            <div class="bot-url">t.me/NutriCrew_bot</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="card-wrap" id="ad-04">
+      <span class="card-label">04 — NutriBird (1080×1080)</span>
+      <article class="creative creative--square" data-export="nutricrew-ad-04-nutribird-en.png" data-w="1080" data-h="1080">
+        <div class="creative__inner">
+          <div class="brand-row">
+            <svg class="peach-svg" width="72" height="84" viewBox="0 0 82 96"><ellipse cx="41" cy="52" rx="36" ry="40" fill="url(#pg4)"/><path d="M41 18 C38 8 48 2 56 8 C52 14 46 16 41 18Z" fill="#5cb85c"/><defs><linearGradient id="pg4" x1="20" y1="20" x2="60" y2="85"><stop offset="0%" stop-color="#ffc896"/><stop offset="100%" stop-color="#e8884a"/></linearGradient></defs></svg>
+            <div class="brand-name" style="font-size:40px">NutriBird says:</div>
+          </div>
+          <div class="bird-wrap">
+            <div class="bird-bubble">
+              “Don't forget to log lunch — your crew is waiting for your XP! Message me in the bot for meal tips.”
+            </div>
+          </div>
+          <div class="cta-bar">
+            <div class="bot-link">@NutriCrew_bot</div>
+            <div class="bot-url">t.me/NutriCrew_bot</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="card-wrap" id="ad-05">
+      <span class="card-label">05 — CTA Telegram (1080×1920)</span>
+      <article class="creative creative--story" data-export="nutricrew-ad-05-cta-telegram-en.png" data-w="1080" data-h="1920">
+        <div class="creative__inner" style="justify-content:center; text-align:center; align-items:center;">
+          <svg class="peach-svg" width="200" height="235" viewBox="0 0 82 96" style="margin-bottom:48px"><ellipse cx="41" cy="52" rx="36" ry="40" fill="url(#pg5)"/><path d="M41 18 C38 8 48 2 56 8 C52 14 46 16 41 18Z" fill="#5cb85c"/><defs><linearGradient id="pg5" x1="20" y1="20" x2="60" y2="85"><stop offset="0%" stop-color="#ffc896"/><stop offset="100%" stop-color="#e8884a"/></linearGradient></defs></svg>
+          <p class="tagline tagline--lg" style="text-align:center; max-width:100%">Start today</p>
+          <p class="sub" style="text-align:center; max-width:100%; margin-top:24px">Free in Telegram. Meal plans, recipes, and team battles.</p>
+          <div class="cta-bar" style="width:100%; display:flex; flex-direction:column; align-items:center;">
+            <div class="cta-pill" style="font-size:36px; padding:28px 48px; margin-top:60px">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/></svg>
+              @NutriCrew_bot
+            </div>
+            <div class="bot-url" style="margin-top:24px; font-size:32px">t.me/NutriCrew_bot</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</body>
+</html>

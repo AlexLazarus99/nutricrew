@@ -60,6 +60,9 @@ const TrendsPage = lazy(() =>
 const ProHubPage = lazy(() =>
   import("./pages/ProHubPage").then((m) => ({ default: m.ProHubPage })),
 );
+const CoachPage = lazy(() =>
+  import("./pages/CoachPage").then((m) => ({ default: m.CoachPage })),
+);
 const OrgAdminPage = lazy(() =>
   import("./pages/OrgAdminPage").then((m) => ({ default: m.OrgAdminPage })),
 );
@@ -87,6 +90,7 @@ export default function App() {
         <Route path="report" element={<WeeklyReportPage />} />
         <Route path="trends" element={<TrendsPage />} />
         <Route path="pro" element={<ProHubPage />} />
+        <Route path="coach" element={<CoachPage />} />
         <Route path="team/admin" element={<TeamAdminPage />} />
         <Route path="org/admin" element={<OrgAdminPage />} />
       </Route>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TrendsResponse } from "../api/client";
+import { ProGate } from "../components/pro/ProGate";
 
 function MiniBarChart({
   data,
@@ -29,7 +30,7 @@ function MiniBarChart({
   );
 }
 
-export function TrendsPage() {
+function TrendsContent() {
   const { t } = useTranslation();
   const [range, setRange] = useState<"7d" | "30d" | "90d">("30d");
   const [data, setData] = useState<TrendsResponse | null>(null);
@@ -123,5 +124,13 @@ export function TrendsPage() {
         {t("common.backHome")}
       </Link>
     </section>
+  );
+}
+
+export function TrendsPage() {
+  return (
+    <ProGate titleKey="trends.title" descKey="pro.featureReports" source="gate-trends">
+      <TrendsContent />
+    </ProGate>
   );
 }
