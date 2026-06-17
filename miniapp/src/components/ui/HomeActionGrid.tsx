@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { ProActionTile } from "../pro/ProActionTile";
+import { ProActionTile, type ProTileTone } from "../pro/ProActionTile";
 import { ProTributeButton } from "../pro/ProTributeButton";
 import { useMe } from "../../hooks/useMe";
 import { isProGatedPath } from "../../lib/proGated";
@@ -9,7 +9,7 @@ type Action = {
   to: string;
   kind: NavBadgeKind;
   labelKey: string;
-  primary?: boolean;
+  tone: ProTileTone;
   params?: Record<string, string | number>;
 };
 
@@ -20,31 +20,49 @@ type Props = {
   showPro?: boolean;
 };
 
+const TONE_BY_PATH: Record<string, ProTileTone> = {
+  "/log": "food",
+  "/coach": "coach",
+  "/guide": "guide",
+  "/quiz": "quiz",
+  "/game": "game",
+  "/trends": "report",
+  "/report": "report",
+  "/pro": "pro",
+  "/prizes": "prizes",
+  "/features": "features",
+};
+
 export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }: Props) {
   const { t } = useTranslation();
   const { me } = useMe();
   const isPro = !!me.pro?.isPro;
 
   const primary: Action[] = [
-    { to: "/log", kind: "food", labelKey: "home.logCta", primary: true },
-    { to: "/coach", kind: "coach", labelKey: "coach.title" },
-    { to: "/guide", kind: "guide", labelKey: "home.guideCta" },
-    { to: "/quiz", kind: "quiz", labelKey: "home.quizCta" },
-    { to: "/game", kind: "game", labelKey: "home.gameCta" },
+    { to: "/log", kind: "food", labelKey: "home.logCta", tone: "food" },
+    { to: "/coach", kind: "coach", labelKey: "coach.title", tone: "coach" },
+    { to: "/guide", kind: "guide", labelKey: "home.guideCta", tone: "guide" },
+    { to: "/quiz", kind: "quiz", labelKey: "home.quizCta", tone: "quiz" },
+    { to: "/game", kind: "game", labelKey: "home.gameCta", tone: "game" },
   ];
 
   const secondary: Action[] = [];
-  if (showTrends) secondary.push({ to: "/trends", kind: "report", labelKey: "trends.title" });
-  if (showPro) secondary.push({ to: "/pro", kind: "features", labelKey: "pro.title" });
+  if (showTrends) {
+    secondary.push({ to: "/trends", kind: "report", labelKey: "trends.title", tone: "report" });
+  }
+  if (showPro) {
+    secondary.push({ to: "/pro", kind: "features", labelKey: "pro.title", tone: "pro" });
+  }
   if (showPrizes) {
     secondary.push({
       to: "/prizes",
       kind: "prizes",
       labelKey: "nav.prizes",
+      tone: "prizes",
       params: { count: starBalance ?? 0 },
     });
   }
-  secondary.push({ to: "/features", kind: "features", labelKey: "nav.features" });
+  secondary.push({ to: "/features", kind: "features", labelKey: "nav.features", tone: "features" });
 
   function label(action: Action) {
     if (action.params) {
@@ -53,23 +71,14 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
     return t(action.labelKey);
   }
 
-  function tileVariant(action: Action): "pro" | "channel" | "muted" {
-    if (action.primary) return "pro";
-    if (action.to === "/coach") return "channel";
-    return "muted";
-  }
-
   function renderAction(action: Action, compact?: boolean) {
     const locked = !isPro && isProGatedPath(action.to);
+    const tone = action.tone ?? TONE_BY_PATH[action.to] ?? "features";
 
     return (
       <div
         key={action.to}
-        className={[
-          "home-action-grid__cell",
-          compact ? "home-action-grid__cell--compact" : "",
-          action.primary ? "home-action-grid__cell--primary" : "",
-        ]
+        className={["home-action-grid__cell", compact ? "home-action-grid__cell--compact" : ""]
           .filter(Boolean)
           .join(" ")}
       >
@@ -77,8 +86,8 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
           to={action.to}
           label={label(action)}
           kind={action.kind}
-          variant={tileVariant(action)}
-          size={action.primary ? "hero" : compact ? "compact" : "default"}
+          tone={tone}
+          size={compact ? "compact" : "default"}
           locked={locked}
         />
         {locked ? (

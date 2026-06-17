@@ -137,8 +137,7 @@ export function HomePage() {
           to="/log"
           label={t("growth.logWithoutTeam")}
           kind="food"
-          variant="pro"
-          size="hero"
+          tone="food"
         />
 
         <div className="card">

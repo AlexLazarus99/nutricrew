@@ -1,14 +1,24 @@
 import { Link } from "react-router-dom";
 import { NavBadgeIcon, type NavBadgeKind } from "../nav/NavBadgeIcon";
 
-type Variant = "pro" | "channel" | "muted";
-type Size = "default" | "compact" | "hero";
+export type ProTileTone =
+  | "food"
+  | "coach"
+  | "guide"
+  | "quiz"
+  | "game"
+  | "report"
+  | "pro"
+  | "prizes"
+  | "features";
+
+type Size = "default" | "compact";
 
 type Props = {
   to: string;
   label: string;
   kind: NavBadgeKind;
-  variant?: Variant;
+  tone?: ProTileTone;
   size?: Size;
   locked?: boolean;
 };
@@ -17,29 +27,27 @@ export function ProActionTile({
   to,
   label,
   kind,
-  variant = "muted",
+  tone = "features",
   size = "default",
   locked,
 }: Props) {
   const shellClass = [
     "pro-cta-shell",
     "pro-cta-shell--tile",
+    `pro-cta-shell--tone-${tone}`,
     size === "compact" ? "pro-cta-shell--compact" : "",
-    size === "hero" ? "pro-cta-shell--hero" : "",
-    variant !== "muted" ? `pro-cta-shell--${variant}` : "pro-cta-shell--tile-muted",
     locked ? "pro-action-tile--locked" : "",
   ]
     .filter(Boolean)
     .join(" ");
 
-  const iconSize = size === "hero" ? 44 : size === "compact" ? 34 : 40;
+  const iconSize = size === "compact" ? 28 : 32;
 
   return (
     <Link to={to} className={`pro-action-tile pro-action-tile--${size}`}>
       <div className={shellClass}>
         <span className="pro-cta-aurora" aria-hidden="true" />
         <span className="pro-cta-glow" aria-hidden="true" />
-        <span className="pro-cta-orbit" aria-hidden="true" />
         <span className="pro-cta-wave" aria-hidden="true" />
         <span className="pro-action-tile__body">
           <span className="pro-cta__shine" aria-hidden="true" />
