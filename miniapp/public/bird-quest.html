@@ -3868,40 +3868,53 @@ function drawDragonFireBreath(c, b, time){
   c.save();
   c.translate(b.x, b.y);
   c.rotate(b.tilt * 0.4);
-  const pulse = 0.75 + 0.25 * Math.sin(time * 18);
-  const len = b.r * (2.8 + pulse * 0.8);
-  const tipX = b.r * 1.38;
-  const g = c.createLinearGradient(tipX, 0, tipX + len, 0);
-  g.addColorStop(0, 'rgba(255,235,59,0.95)');
-  g.addColorStop(0.35, 'rgba(255,152,0,0.85)');
-  g.addColorStop(0.7, 'rgba(255,87,34,0.55)');
-  g.addColorStop(1, 'rgba(255,87,34,0)');
-  c.fillStyle = g;
+  const pulse = 0.78 + 0.22 * Math.sin(time * 16);
+  const len = b.r * (3.1 + pulse * 0.9);
+  const tipX = b.r * 1.42;
+  const coreG = c.createLinearGradient(tipX, 0, tipX + len, 0);
+  coreG.addColorStop(0, 'rgba(255,248,220,0.98)');
+  coreG.addColorStop(0.18, 'rgba(255,193,7,0.92)');
+  coreG.addColorStop(0.42, 'rgba(255,111,0,0.78)');
+  coreG.addColorStop(0.72, 'rgba(211,47,47,0.45)');
+  coreG.addColorStop(1, 'rgba(69,10,10,0)');
+  c.fillStyle = coreG;
   c.beginPath();
-  c.moveTo(tipX, -b.r * 0.18);
-  c.quadraticCurveTo(tipX + len * 0.45, -b.r * 0.42 + Math.sin(time * 14) * b.r * 0.12, tipX + len, -b.r * 0.08);
-  c.quadraticCurveTo(tipX + len * 0.55, b.r * 0.05, tipX + len, b.r * 0.12);
-  c.quadraticCurveTo(tipX + len * 0.4, b.r * 0.38 + Math.sin(time * 12) * b.r * 0.1, tipX, b.r * 0.2);
+  c.moveTo(tipX, -b.r * 0.14);
+  c.bezierCurveTo(
+    tipX + len * 0.28, -b.r * 0.38 + Math.sin(time * 13) * b.r * 0.1,
+    tipX + len * 0.62, -b.r * 0.12 + Math.sin(time * 11) * b.r * 0.14,
+    tipX + len, -b.r * 0.04
+  );
+  c.bezierCurveTo(
+    tipX + len * 0.68, b.r * 0.1 + Math.sin(time * 9) * b.r * 0.08,
+    tipX + len * 0.32, b.r * 0.34 + Math.sin(time * 12) * b.r * 0.1,
+    tipX, b.r * 0.16
+  );
   c.closePath();
   c.fill();
-  for(let i = 0; i < 8; i++){
-    c.globalAlpha = pulse * (0.35 + i * 0.07);
-    c.fillStyle = ['#fff176', '#ff9800', '#ff5722'][i % 3];
-    const fx = tipX + len * (0.15 + i * 0.1) + Math.sin(time * 20 + i) * 8;
-    const fy = Math.sin(time * 16 + i * 1.7) * b.r * 0.22;
-    c.beginPath(); c.ellipse(fx, fy, 8 + i * 2, 5 + i, 0, 0, TAU); c.fill();
+  c.globalCompositeOperation = 'lighter';
+  for(let i = 0; i < 12; i++){
+    c.globalAlpha = pulse * (0.22 + (12 - i) * 0.04);
+    const fx = tipX + len * (0.08 + i * 0.075) + Math.sin(time * 18 + i * 1.3) * b.r * 0.08;
+    const fy = Math.sin(time * 14 + i * 1.9) * b.r * (0.16 + i * 0.012);
+    const rg = c.createRadialGradient(fx, fy, 0, fx, fy, 10 + i * 2.2);
+    rg.addColorStop(0, 'rgba(255,255,255,0.85)');
+    rg.addColorStop(0.35, 'rgba(255,183,77,0.55)');
+    rg.addColorStop(1, 'rgba(183,28,28,0)');
+    c.fillStyle = rg;
+    c.beginPath(); c.ellipse(fx, fy, 9 + i * 1.8, 5 + i * 0.9, 0, 0, TAU); c.fill();
   }
   c.restore();
 }
 function sampleEasternDragonSpine(r, time){
   const pts = [];
-  const n = 15;
+  const n = 18;
   for(let i = 0; i < n; i++){
     const t = i / (n - 1);
-    const x = r * (1.15 - t * 6.4);
-    const wave = Math.sin(t * Math.PI * 2.35 - time * 2.1) * r * (0.18 + t * 0.42);
-    const y = wave + Math.sin(time * 1.35 + t * 2.4) * r * 0.035;
-    const width = r * (0.5 - t * 0.34);
+    const x = r * (1.18 - t * 6.5);
+    const wave = Math.sin(t * Math.PI * 2.28 - time * 1.95) * r * (0.16 + t * 0.4);
+    const y = wave + Math.sin(time * 1.2 + t * 2.2) * r * 0.028;
+    const width = r * (0.52 - t * 0.36);
     pts.push({ x, y, width, t, angle: 0 });
   }
   for(let i = 0; i < pts.length; i++){
@@ -3914,7 +3927,17 @@ function sampleEasternDragonSpine(r, time){
   }
   return pts;
 }
-function drawEasternDragonRibbon(c, spine, r){
+function dragonScaleColor(t, lit){
+  const base = [
+    ['#4a0e0e', '#6d1515', '#8f1f1f'],
+    ['#5c1010', '#7a1818', '#9c2222'],
+    ['#6b1414', '#8b1f1f', '#ad2a2a'],
+    ['#7a1818', '#9c2525', '#bf3333'],
+  ];
+  const row = base[Math.floor(t * 3.2) % base.length];
+  return row[lit % 3];
+}
+function drawRealisticDragonBody(c, spine, r){
   if(spine.length < 2) return;
   const top = [];
   const bot = [];
@@ -3923,12 +3946,17 @@ function drawEasternDragonRibbon(c, spine, r){
     const nx = -Math.sin(p.angle);
     const ny = Math.cos(p.angle);
     top.push({ x: p.x + nx * p.width, y: p.y + ny * p.width });
-    bot.push({ x: p.x - nx * p.width * 0.72, y: p.y - ny * p.width * 0.72 });
+    bot.push({ x: p.x - nx * p.width * 0.74, y: p.y - ny * p.width * 0.74 });
   }
-  const bodyG = c.createLinearGradient(spine[0].x, -r * 0.5, spine[spine.length - 1].x, r * 0.5);
-  bodyG.addColorStop(0, '#ef5350');
-  bodyG.addColorStop(0.45, '#d32f2f');
-  bodyG.addColorStop(1, '#b71c1c');
+  c.save();
+  c.shadowColor = 'rgba(30,0,0,0.55)';
+  c.shadowBlur = r * 0.22;
+  c.shadowOffsetY = r * 0.08;
+  const bodyG = c.createLinearGradient(spine[0].x, -r * 0.55, spine[spine.length - 1].x, r * 0.55);
+  bodyG.addColorStop(0, '#3d0c0c');
+  bodyG.addColorStop(0.35, '#6b1414');
+  bodyG.addColorStop(0.7, '#4a0e0e');
+  bodyG.addColorStop(1, '#2b0606');
   c.beginPath();
   c.moveTo(top[0].x, top[0].y);
   for(let i = 1; i < top.length; i++) c.lineTo(top[i].x, top[i].y);
@@ -3936,174 +3964,303 @@ function drawEasternDragonRibbon(c, spine, r){
   c.closePath();
   c.fillStyle = bodyG;
   c.fill();
-  c.strokeStyle = '#7f0000';
-  c.lineWidth = Math.max(1.4, r * 0.028);
-  c.stroke();
-}
-function drawEasternDragonBelly(c, spine, r){
-  for(let i = 1; i < spine.length - 1; i += 2){
-    const p = spine[i];
-    const nx = -Math.sin(p.angle);
-    const ny = Math.cos(p.angle);
-    const segW = p.width * 0.82;
-    const segH = p.width * 0.34;
-    c.save();
-    c.translate(p.x - nx * p.width * 0.18, p.y - ny * p.width * 0.18);
-    c.rotate(p.angle);
-    c.fillStyle = i % 4 === 1 ? '#ffb74d' : '#ffca28';
-    c.strokeStyle = '#e65100';
-    c.lineWidth = Math.max(0.8, r * 0.016);
-    c.beginPath();
-    c.ellipse(0, 0, segW, segH, 0, 0, TAU);
-    c.fill();
-    c.stroke();
-    c.restore();
-  }
-}
-function drawEasternDragonMane(c, spine, r, time){
+  c.shadowBlur = 0;
+  c.shadowOffsetY = 0;
   for(let i = 0; i < spine.length; i++){
     const p = spine[i];
     const nx = -Math.sin(p.angle);
     const ny = Math.cos(p.angle);
-    const spikes = 2 + Math.floor((1 - p.t) * 2);
-    for(let s = 0; s < spikes; s++){
-      const sway = Math.sin(time * 4.2 + i * 0.55 + s) * r * 0.04;
-      const baseX = p.x + nx * p.width * 0.92;
-      const baseY = p.y + ny * p.width * 0.92;
-      const len = p.width * (0.55 + s * 0.12);
-      const tipX = baseX - nx * len + sway;
-      const tipY = baseY - ny * len - r * 0.06;
-      c.fillStyle = s % 2 ? '#ff7043' : '#ffab91';
-      c.beginPath();
-      c.moveTo(baseX, baseY);
-      c.lineTo(tipX + ny * p.width * 0.14, tipY - nx * p.width * 0.14);
-      c.lineTo(tipX - ny * p.width * 0.08, tipY + nx * p.width * 0.08);
-      c.closePath();
-      c.fill();
+    const shade = c.createRadialGradient(p.x - nx * p.width * 0.15, p.y - ny * p.width * 0.15, 0, p.x, p.y, p.width * 1.15);
+    shade.addColorStop(0, 'rgba(255,120,100,0.22)');
+    shade.addColorStop(0.55, 'rgba(120,20,20,0.12)');
+    shade.addColorStop(1, 'rgba(20,0,0,0.35)');
+    c.fillStyle = shade;
+    c.beginPath();
+    c.ellipse(p.x, p.y, p.width * 0.95, p.width * 0.62, p.angle, 0, TAU);
+    c.fill();
+  }
+  c.restore();
+}
+function drawRealisticDragonBelly(c, spine, r){
+  for(let i = 1; i < spine.length - 1; i++){
+    const p = spine[i];
+    const nx = -Math.sin(p.angle);
+    const ny = Math.cos(p.angle);
+    const cx = p.x - nx * p.width * 0.34;
+    const cy = p.y - ny * p.width * 0.34;
+    const segW = p.width * 0.74;
+    const segH = p.width * 0.28;
+    c.save();
+    c.translate(cx, cy);
+    c.rotate(p.angle);
+    const bellyG = c.createLinearGradient(0, -segH, 0, segH);
+    bellyG.addColorStop(0, '#f0d78c');
+    bellyG.addColorStop(0.45, '#d4a94a');
+    bellyG.addColorStop(1, '#8a6420');
+    c.fillStyle = bellyG;
+    c.strokeStyle = 'rgba(74,48,8,0.55)';
+    c.lineWidth = Math.max(0.7, r * 0.014);
+    c.beginPath();
+    c.ellipse(0, 0, segW, segH, 0, 0, TAU);
+    c.fill();
+    c.stroke();
+    c.strokeStyle = 'rgba(255,235,200,0.18)';
+    c.beginPath();
+    c.moveTo(-segW * 0.55, 0);
+    c.lineTo(segW * 0.55, 0);
+    c.stroke();
+    c.restore();
+  }
+}
+function drawRealisticDragonScales(c, spine, r){
+  for(let i = 0; i < spine.length - 1; i++){
+    const p = spine[i];
+    const nx = -Math.sin(p.angle);
+    const ny = Math.cos(p.angle);
+    const cols = 3 + Math.floor((1 - p.t) * 2);
+    for(let row = 0; row < 2; row++){
+      for(let col = 0; col < cols; col++){
+        const u = col / Math.max(1, cols - 1) - 0.5;
+        const sx = p.x + nx * p.width * (0.35 + row * 0.22) + Math.cos(p.angle) * u * p.width * 0.55;
+        const sy = p.y + ny * p.width * (0.35 + row * 0.22) + Math.sin(p.angle) * u * p.width * 0.55;
+        const scaleR = p.width * (0.11 - row * 0.015);
+        const lit = (row + col + i) % 3;
+        const base = dragonScaleColor(p.t, lit);
+        const sg = c.createRadialGradient(sx - scaleR * 0.22, sy - scaleR * 0.28, 0, sx, sy, scaleR);
+        sg.addColorStop(0, lit === 0 ? '#ff8a80' : base);
+        sg.addColorStop(0.55, base);
+        sg.addColorStop(1, '#2b0606');
+        c.fillStyle = sg;
+        c.strokeStyle = 'rgba(20,0,0,0.45)';
+        c.lineWidth = Math.max(0.6, r * 0.01);
+        c.beginPath();
+        c.ellipse(sx, sy, scaleR * 0.95, scaleR * 0.72, p.angle - 0.2, 0, TAU);
+        c.fill();
+        c.stroke();
+      }
     }
   }
 }
-function drawEasternDragonLeg(c, p, r, side){
+function drawRealisticDragonMane(c, spine, r, time){
+  for(let i = 0; i < spine.length; i++){
+    const p = spine[i];
+    if(p.t > 0.92) continue;
+    const nx = -Math.sin(p.angle);
+    const ny = Math.cos(p.angle);
+    const strands = 3 + Math.floor((1 - p.t) * 2.5);
+    for(let s = 0; s < strands; s++){
+      const phase = time * 3.6 + i * 0.62 + s;
+      const baseX = p.x + nx * p.width * 0.88;
+      const baseY = p.y + ny * p.width * 0.88;
+      const len = p.width * (0.62 + s * 0.1);
+      const tipX = baseX - nx * len + Math.sin(phase) * r * 0.035;
+      const tipY = baseY - ny * len - r * 0.05;
+      const mg = c.createLinearGradient(baseX, baseY, tipX, tipY);
+      mg.addColorStop(0, 'rgba(120,18,18,0.95)');
+      mg.addColorStop(0.5, 'rgba(183,28,28,0.75)');
+      mg.addColorStop(1, 'rgba(255,138,128,0.15)');
+      c.strokeStyle = mg;
+      c.lineWidth = Math.max(1.4, r * 0.022) * (1 - s * 0.12);
+      c.lineCap = 'round';
+      c.beginPath();
+      c.moveTo(baseX, baseY);
+      c.bezierCurveTo(
+        baseX - nx * len * 0.35 + Math.sin(phase) * r * 0.03, baseY - ny * len * 0.35 - r * 0.04,
+        baseX - nx * len * 0.72, baseY - ny * len * 0.72 + Math.cos(phase) * r * 0.03,
+        tipX, tipY
+      );
+      c.stroke();
+    }
+  }
+}
+function drawRealisticDragonLeg(c, p, r, side){
   const nx = -Math.sin(p.angle);
   const ny = Math.cos(p.angle);
-  const footX = p.x - nx * p.width * 0.05 + ny * side * p.width * 0.35;
-  const footY = p.y - ny * p.width * 0.05 - nx * side * p.width * 0.35;
-  c.strokeStyle = '#7f0000';
-  c.lineWidth = Math.max(1.2, r * 0.022);
+  const hipX = p.x + ny * side * p.width * 0.12;
+  const hipY = p.y - nx * side * p.width * 0.12;
+  const kneeX = hipX + ny * side * p.width * 0.28;
+  const kneeY = hipY - nx * side * p.width * 0.28 + p.width * 0.18;
+  const footX = kneeX + ny * side * p.width * 0.14;
+  const footY = kneeY + p.width * 0.28;
+  const limbG = c.createLinearGradient(hipX, hipY, footX, footY);
+  limbG.addColorStop(0, '#5c1010');
+  limbG.addColorStop(0.5, '#8b1f1f');
+  limbG.addColorStop(1, '#6d1515');
+  c.strokeStyle = limbG;
+  c.lineWidth = Math.max(2.2, r * 0.034);
   c.lineCap = 'round';
+  c.lineJoin = 'round';
   c.beginPath();
-  c.moveTo(p.x, p.y);
-  c.lineTo(footX, footY + p.width * 0.22);
+  c.moveTo(hipX, hipY);
+  c.lineTo(kneeX, kneeY);
+  c.lineTo(footX, footY);
   c.stroke();
-  c.fillStyle = '#c62828';
+  c.fillStyle = '#4a0e0e';
+  c.beginPath();
+  c.ellipse(kneeX, kneeY, p.width * 0.11, p.width * 0.08, p.angle, 0, TAU);
+  c.fill();
   for(let claw = -1; claw <= 1; claw++){
+    const clawG = c.createLinearGradient(footX, footY, footX + claw * p.width * 0.14, footY + p.width * 0.34);
+    clawG.addColorStop(0, '#e0e0e0');
+    clawG.addColorStop(1, '#757575');
+    c.fillStyle = clawG;
     c.beginPath();
-    c.moveTo(footX + claw * p.width * 0.1, footY + p.width * 0.22);
-    c.lineTo(footX + claw * p.width * 0.16, footY + p.width * 0.34);
-    c.lineTo(footX + claw * p.width * 0.05, footY + p.width * 0.26);
+    c.moveTo(footX + claw * p.width * 0.08, footY + p.width * 0.2);
+    c.lineTo(footX + claw * p.width * 0.15, footY + p.width * 0.36);
+    c.lineTo(footX + claw * p.width * 0.03, footY + p.width * 0.28);
     c.closePath();
     c.fill();
   }
 }
-function drawEasternDragonHead(c, head, r, time, roar){
-  const jaw = 0.65 + Math.sin(time * 6.8) * 0.07 * roar;
-  const hx = head.x;
-  const hy = head.y;
-  const ang = head.angle;
+function drawRealisticDragonHead(c, head, r, time, roar){
+  const jaw = 0.58 + Math.sin(time * 5.8) * 0.06 * roar;
   c.save();
-  c.translate(hx, hy);
-  c.rotate(ang);
+  c.translate(head.x, head.y);
+  c.rotate(head.angle);
 
-  // snout — long eastern profile
-  const snoutG = c.createLinearGradient(r * 0.1, -r * 0.18, r * 1.35, r * 0.12);
-  snoutG.addColorStop(0, '#ef5350');
-  snoutG.addColorStop(0.55, '#d32f2f');
-  snoutG.addColorStop(1, '#b71c1c');
-  c.fillStyle = snoutG;
-  c.strokeStyle = '#7f0000';
-  c.lineWidth = Math.max(1.3, r * 0.026);
+  // cranium
+  const skullG = c.createRadialGradient(r * 0.45, -r * 0.12, r * 0.05, r * 0.55, -r * 0.05, r * 0.95);
+  skullG.addColorStop(0, '#c62828');
+  skullG.addColorStop(0.55, '#8b1f1f');
+  skullG.addColorStop(1, '#3d0c0c');
+  c.fillStyle = skullG;
+  c.strokeStyle = '#2b0606';
+  c.lineWidth = Math.max(1.2, r * 0.022);
   c.beginPath();
-  c.moveTo(r * 0.08, -r * 0.08);
-  c.bezierCurveTo(r * 0.42, -r * 0.2, r * 0.95, -r * 0.16, r * 1.28, -r * 0.04);
-  c.bezierCurveTo(r * 1.34, r * 0.02, r * 1.22, r * 0.1, r * 0.82, r * 0.12);
-  c.bezierCurveTo(r * 0.38, r * 0.14, r * 0.12, r * 0.08, r * 0.08, -r * 0.08);
+  c.moveTo(r * 0.05, -r * 0.1);
+  c.bezierCurveTo(r * 0.35, -r * 0.28, r * 0.82, -r * 0.24, r * 1.18, -r * 0.06);
+  c.bezierCurveTo(r * 1.28, r * 0.02, r * 1.16, r * 0.12, r * 0.78, r * 0.14);
+  c.bezierCurveTo(r * 0.34, r * 0.16, r * 0.08, r * 0.1, r * 0.05, -r * 0.1);
   c.closePath();
   c.fill();
   c.stroke();
 
-  // nose horn
-  c.fillStyle = '#ffc107';
+  // brow ridge shadow
+  c.fillStyle = 'rgba(20,0,0,0.35)';
   c.beginPath();
-  c.moveTo(r * 1.24, -r * 0.06);
-  c.lineTo(r * 1.42, -r * 0.18);
-  c.lineTo(r * 1.3, -r * 0.02);
+  c.ellipse(r * 0.72, -r * 0.14, r * 0.2, r * 0.06, -0.08, 0, TAU);
+  c.fill();
+
+  // upper jaw
+  const jawG = c.createLinearGradient(r * 0.5, 0, r * 1.3, r * 0.2);
+  jawG.addColorStop(0, '#7a1818');
+  jawG.addColorStop(1, '#4a0e0e');
+  c.fillStyle = jawG;
+  c.beginPath();
+  c.moveTo(r * 0.58, r * 0.02);
+  c.bezierCurveTo(r * 0.95, r * (0.04 + jaw * 0.06), r * 1.22, r * (0.12 + jaw * 0.14), r * 1.28, r * (0.2 + jaw * 0.18));
+  c.lineTo(r * 1.18, r * (0.24 + jaw * 0.2));
+  c.bezierCurveTo(r * 0.88, r * (0.16 + jaw * 0.12), r * 0.62, r * (0.08 + jaw * 0.06), r * 0.58, r * 0.02);
   c.closePath();
   c.fill();
 
-  // eye
-  c.fillStyle = '#fff8e1';
+  // mouth interior
+  c.fillStyle = '#1a0505';
   c.beginPath();
-  c.ellipse(r * 0.62, -r * 0.1, r * 0.075, r * 0.05, -0.1, 0, TAU);
-  c.fill();
-  c.fillStyle = '#3e2723';
-  c.beginPath();
-  c.ellipse(r * 0.64, -r * 0.1, r * 0.028, r * 0.038, -0.1, 0, TAU);
+  c.moveTo(r * 0.64, r * 0.04);
+  c.bezierCurveTo(r * 0.98, r * (0.12 + jaw * 0.1), r * 1.16, r * (0.2 + jaw * 0.16), r * 1.2, r * (0.28 + jaw * 0.22));
+  c.bezierCurveTo(r * 0.92, r * (0.3 + jaw * 0.2), r * 0.7, r * (0.18 + jaw * 0.12), r * 0.64, r * 0.04);
   c.fill();
 
-  // open jaw
-  c.fillStyle = '#4a0000';
+  // teeth
+  c.fillStyle = '#f5f5f0';
+  for(let i = 0; i < 7; i++){
+    const tx = r * (0.72 + i * 0.065);
+    const ty = r * (0.06 + (i % 2) * 0.015);
+    c.beginPath();
+    c.moveTo(tx, ty);
+    c.lineTo(tx + r * 0.02, ty + r * (0.08 + jaw * 0.06));
+    c.lineTo(tx - r * 0.012, ty + r * 0.03);
+    c.closePath();
+    c.fill();
+  }
+
+  // horn
+  const hornG = c.createLinearGradient(r * 1.2, -r * 0.2, r * 1.45, -r * 0.02);
+  hornG.addColorStop(0, '#fff8e1');
+  hornG.addColorStop(0.45, '#d7ccc8');
+  hornG.addColorStop(1, '#8d6e63');
+  c.fillStyle = hornG;
   c.beginPath();
-  c.moveTo(r * 0.72, r * 0.02);
-  c.quadraticCurveTo(r * 1.02, r * (0.1 + jaw * 0.12), r * 1.18, r * (0.18 + jaw * 0.2));
-  c.quadraticCurveTo(r * 0.92, r * (0.22 + jaw * 0.16), r * 0.68, r * (0.1 + jaw * 0.08));
+  c.moveTo(r * 1.22, -r * 0.05);
+  c.lineTo(r * 1.46, -r * 0.2);
+  c.lineTo(r * 1.3, -r * 0.01);
   c.closePath();
   c.fill();
 
-  // whiskers — flow backward like reference GIF
-  c.strokeStyle = 'rgba(255, 183, 77, 0.9)';
-  c.lineWidth = Math.max(1.1, r * 0.02);
+  // reptile eye
+  c.save();
+  c.shadowColor = '#ff6f00';
+  c.shadowBlur = r * 0.12;
+  const eyeG = c.createRadialGradient(r * 0.66, -r * 0.1, 0, r * 0.66, -r * 0.1, r * 0.09);
+  eyeG.addColorStop(0, '#fff59d');
+  eyeG.addColorStop(0.35, '#ff8f00');
+  eyeG.addColorStop(0.7, '#e65100');
+  eyeG.addColorStop(1, '#3e2723');
+  c.fillStyle = eyeG;
+  c.beginPath();
+  c.ellipse(r * 0.66, -r * 0.1, r * 0.085, r * 0.052, -0.12, 0, TAU);
+  c.fill();
+  c.shadowBlur = 0;
+  c.fillStyle = '#1b0000';
+  c.beginPath();
+  c.ellipse(r * 0.67, -r * 0.1, r * 0.018, r * 0.042, -0.12, 0, TAU);
+  c.fill();
+  c.fillStyle = 'rgba(255,255,255,0.75)';
+  c.beginPath();
+  c.ellipse(r * 0.64, -r * 0.12, r * 0.016, r * 0.01, -0.3, 0, TAU);
+  c.fill();
+  c.restore();
+
+  // whiskers
   c.lineCap = 'round';
   for(let w = 0; w < 4; w++){
-    const phase = time * 3.4 + w * 0.9;
-    const wy = -r * (0.02 + w * 0.05);
+    const phase = time * 2.8 + w * 0.85;
+    const wy = -r * (0.01 + w * 0.045);
+    const wg = c.createLinearGradient(r * 0.95, wy, -r * 1.1, wy + r * 0.1);
+    wg.addColorStop(0, 'rgba(240,215,140,0.95)');
+    wg.addColorStop(1, 'rgba(180,140,80,0.25)');
+    c.strokeStyle = wg;
+    c.lineWidth = Math.max(0.9, r * 0.016) * (1 - w * 0.08);
     c.beginPath();
-    c.moveTo(r * (0.92 - w * 0.04), wy);
+    c.moveTo(r * (0.94 - w * 0.03), wy);
     c.bezierCurveTo(
-      r * (0.45 + Math.sin(phase) * 0.05), wy - r * (0.08 + w * 0.02),
-      -r * (0.35 + w * 0.12), wy + r * (0.06 + Math.sin(phase * 0.8) * 0.04),
-      -r * (1.1 + w * 0.18), wy + r * (0.12 + Math.cos(phase) * 0.05)
+      r * (0.42 + Math.sin(phase) * 0.04), wy - r * (0.07 + w * 0.015),
+      -r * (0.28 + w * 0.1), wy + r * (0.05 + Math.sin(phase * 0.7) * 0.03),
+      -r * (1.05 + w * 0.15), wy + r * (0.1 + Math.cos(phase) * 0.04)
     );
     c.stroke();
   }
 
   c.restore();
 }
-function drawEasternDragonTailTuft(c, tail, r, time){
+function drawRealisticDragonTailTuft(c, tail, r, time){
   const nx = -Math.sin(tail.angle);
   const ny = Math.cos(tail.angle);
-  const baseX = tail.x - nx * tail.width * 0.35;
-  const baseY = tail.y - ny * tail.width * 0.35;
-  const sway = Math.sin(time * 5.5) * r * 0.05;
-  c.fillStyle = '#ff7043';
-  c.beginPath();
-  c.moveTo(baseX, baseY);
-  c.quadraticCurveTo(baseX - tail.width * 0.9 + sway, baseY - tail.width * 0.55, baseX - tail.width * 1.35, baseY + tail.width * 0.08);
-  c.quadraticCurveTo(baseX - tail.width * 0.75 - sway, baseY + tail.width * 0.42, baseX, baseY);
-  c.closePath();
-  c.fill();
-  c.fillStyle = '#ffab91';
-  c.beginPath();
-  c.moveTo(baseX, baseY);
-  c.quadraticCurveTo(baseX - tail.width * 0.55, baseY - tail.width * 0.28, baseX - tail.width * 0.95, baseY + tail.width * 0.02);
-  c.quadraticCurveTo(baseX - tail.width * 0.48, baseY + tail.width * 0.22, baseX, baseY);
-  c.closePath();
-  c.fill();
+  const baseX = tail.x - nx * tail.width * 0.32;
+  const baseY = tail.y - ny * tail.width * 0.32;
+  const sway = Math.sin(time * 4.8) * r * 0.04;
+  for(let s = 0; s < 5; s++){
+    const tg = c.createLinearGradient(baseX, baseY, baseX - tail.width * 1.2, baseY + tail.width * 0.2);
+    tg.addColorStop(0, 'rgba(100,16,16,0.9)');
+    tg.addColorStop(1, 'rgba(255,138,128,0.05)');
+    c.strokeStyle = tg;
+    c.lineWidth = Math.max(1.2, r * 0.018) * (1 - s * 0.1);
+    c.lineCap = 'round';
+    c.beginPath();
+    c.moveTo(baseX, baseY);
+    c.quadraticCurveTo(
+      baseX - tail.width * (0.55 + s * 0.08) + sway, baseY - tail.width * (0.35 + s * 0.05),
+      baseX - tail.width * (1.05 + s * 0.12), baseY + tail.width * (0.06 + s * 0.03)
+    );
+    c.stroke();
+  }
 }
 function drawDragon(c, b, time, morph){
   morph = clamp(morph ?? 1, 0.15, 1);
   const r = b.r * morph * 1.08;
   const roar = isDragonActive() ? 1 : 0.55 + morph * 0.35;
-  const bodyBob = Math.sin(time * 2.8) * r * 0.03;
+  const bodyBob = Math.sin(time * 2.6) * r * 0.025;
   const spine = sampleEasternDragonSpine(r, time);
   const head = spine[0];
   const tail = spine[spine.length - 1];
@@ -4112,20 +4269,19 @@ function drawDragon(c, b, time, morph){
   c.translate(b.x, b.y + bodyBob);
   c.rotate(b.tilt * 0.32);
 
-  // serpentine body — back to front
-  drawEasternDragonRibbon(c, spine, r);
-  drawEasternDragonBelly(c, spine, r);
-  drawEasternDragonMane(c, spine, r, time);
+  drawRealisticDragonBody(c, spine, r);
+  drawRealisticDragonBelly(c, spine, r);
+  drawRealisticDragonScales(c, spine, r);
+  drawRealisticDragonMane(c, spine, r, time);
 
-  // legs under humps
-  const legIdx = [3, 4, 8, 9];
+  const legIdx = [3, 5, 9, 11];
   for(let i = 0; i < legIdx.length; i++){
     const p = spine[legIdx[i]];
-    if(p) drawEasternDragonLeg(c, p, r, i % 2 === 0 ? 1 : -1);
+    if(p) drawRealisticDragonLeg(c, p, r, i % 2 === 0 ? 1 : -1);
   }
 
-  drawEasternDragonTailTuft(c, tail, r, time);
-  drawEasternDragonHead(c, head, r, time, roar);
+  drawRealisticDragonTailTuft(c, tail, r, time);
+  drawRealisticDragonHead(c, head, r, time, roar);
 
   c.restore();
 }
