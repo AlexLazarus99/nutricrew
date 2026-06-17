@@ -1152,17 +1152,18 @@
 }
 
 .pro-cta-shell--tile .pro-cta-aurora {
-  opacity: 0.28;
-  filter: blur(14px);
+  opacity: 0.18;
+  filter: blur(16px);
+  animation-duration: 9s;
 }
 
 .pro-cta-shell--tile .pro-cta-glow {
-  opacity: 0.32;
-  box-shadow: 0 0 18px color-mix(in srgb, var(--pro-plum) 28%, transparent);
+  opacity: 0.22;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--pro-plum) 18%, transparent);
 }
 
 .pro-cta-shell--tile .pro-cta-wave {
-  opacity: 0.2;
+  opacity: 0.14;
 }
 
 .pro-cta-shell--tile .pro-cta-orbit {
@@ -1170,17 +1171,18 @@
 }
 
 .pro-cta-shell--tile .pro-cta__shine {
-  opacity: 0.35;
-  animation-duration: 5.5s;
+  opacity: 0.22;
+  animation-duration: 6.5s;
 }
 
-/* Tone palettes */
+/* Tone palettes — muted bases for glassy gradients */
 .pro-cta-shell--tone-food {
   --pro-violet: #6ee7b7;
   --pro-lilac: #a7f3d0;
   --pro-plum: #10b981;
   --pro-deep: #047857;
   --pro-indigo: #34d399;
+  --tile-accent: #d1fae5;
 }
 
 .pro-cta-shell--tone-coach {
@@ -1189,6 +1191,7 @@
   --pro-plum: #14b8a6;
   --pro-deep: #0f766e;
   --pro-indigo: #67e8f9;
+  --tile-accent: #ccfbf1;
 }
 
 .pro-cta-shell--tone-guide {
@@ -1197,6 +1200,7 @@
   --pro-plum: #22c55e;
   --pro-deep: #15803d;
   --pro-indigo: #4ade80;
+  --tile-accent: #dcfce7;
 }
 
 .pro-cta-shell--tone-quiz {
@@ -1205,6 +1209,7 @@
   --pro-plum: #f59e0b;
   --pro-deep: #b45309;
   --pro-indigo: #fbbf24;
+  --tile-accent: #fef3c7;
 }
 
 .pro-cta-shell--tone-game {
@@ -1213,6 +1218,7 @@
   --pro-plum: #ec4899;
   --pro-deep: #be185d;
   --pro-indigo: #f472b6;
+  --tile-accent: #fce7f3;
 }
 
 .pro-cta-shell--tone-report {
@@ -1221,6 +1227,7 @@
   --pro-plum: #0ea5e9;
   --pro-deep: #0369a1;
   --pro-indigo: #38bdf8;
+  --tile-accent: #e0f2fe;
 }
 
 .pro-cta-shell--tone-pro {
@@ -1229,6 +1236,7 @@
   --pro-plum: #7c3aed;
   --pro-deep: #5b21b6;
   --pro-indigo: #818cf8;
+  --tile-accent: #ede9fe;
 }
 
 .pro-cta-shell--tone-prizes {
@@ -1237,6 +1245,7 @@
   --pro-plum: #eab308;
   --pro-deep: #a16207;
   --pro-indigo: #facc15;
+  --tile-accent: #fef9c3;
 }
 
 .pro-cta-shell--tone-features {
@@ -1245,6 +1254,25 @@
   --pro-plum: #3b82f6;
   --pro-deep: #1d4ed8;
   --pro-indigo: #60a5fa;
+  --tile-accent: #dbeafe;
+}
+
+.pro-cta-shell--tile .pro-cta-aurora {
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 40%, color-mix(in srgb, var(--tile-accent) 40%, transparent), transparent 72%),
+    radial-gradient(ellipse 55% 45% at 80% 55%, color-mix(in srgb, var(--pro-indigo) 32%, transparent), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 50% 90%, color-mix(in srgb, var(--pro-plum) 22%, transparent), transparent 68%);
+}
+
+.pro-cta-shell--tile .pro-cta-wave::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--tile-accent) 28%, transparent) 24%,
+    color-mix(in srgb, var(--pro-lilac) 38%, transparent) 48%,
+    color-mix(in srgb, var(--pro-indigo) 30%, transparent) 72%,
+    transparent 100%
+  );
 }
 
 .pro-action-tile__body {
@@ -1258,24 +1286,37 @@
   width: 100%;
   min-height: 100%;
   padding: 10px 8px;
-  border: none;
+  border: 1px solid color-mix(in srgb, var(--pro-lilac) 28%, transparent);
   border-radius: 14px;
-  color: #fff;
-  text-shadow: 0 1px 2px color-mix(in srgb, var(--pro-deep) 30%, transparent);
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--pro-lilac) 82%, #fff) 0%,
-    color-mix(in srgb, var(--pro-violet) 88%, var(--pro-plum)) 42%,
-    color-mix(in srgb, var(--pro-plum) 90%, var(--pro-deep)) 100%
-  );
-  background-size: 200% 200%;
+  color: color-mix(in srgb, #fff 88%, var(--tile-accent));
+  text-shadow: 0 1px 2px color-mix(in srgb, var(--pro-deep) 22%, transparent);
+  background:
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--tile-accent) 42%, transparent) 0%,
+      color-mix(in srgb, var(--pro-lilac) 38%, transparent) 22%,
+      color-mix(in srgb, var(--pro-violet) 36%, transparent) 48%,
+      color-mix(in srgb, var(--pro-indigo) 32%, transparent) 68%,
+      color-mix(in srgb, var(--pro-plum) 40%, transparent) 86%,
+      color-mix(in srgb, var(--pro-deep) 34%, transparent) 100%
+    );
+  background-size: 220% 220%;
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 28%, transparent),
-    inset 0 -1px 6px color-mix(in srgb, var(--pro-deep) 18%, transparent),
-    0 3px 12px color-mix(in srgb, var(--pro-plum) 22%, transparent);
+    inset 0 1px 0 color-mix(in srgb, #fff 22%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--pro-deep) 12%, transparent),
+    0 2px 10px color-mix(in srgb, var(--pro-plum) 14%, transparent);
   overflow: hidden;
-  animation: pro-cta-gradient 8s ease infinite;
-  transition: transform 0.25s ease, filter 0.2s ease;
+  animation: pro-cta-gradient 10s ease infinite;
+  transition: transform 0.25s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pro-action-tile:hover .pro-action-tile__body {
+  border-color: color-mix(in srgb, var(--pro-lilac) 42%, transparent);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 26%, transparent),
+    0 3px 14px color-mix(in srgb, var(--pro-plum) 18%, transparent);
 }
 
 .pro-cta-shell--tile.pro-cta-shell--compact .pro-action-tile__body {
