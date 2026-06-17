@@ -71,6 +71,11 @@
     "tryLogFirst": "Можно сфотографировать еду до создания команды — очки сохранятся после вступления.",
     "logWithoutTeam": "Сфотографировать еду (демо)",
     "teamTemplatesTitle": "Быстрый старт",
+    "teamTemplates": {
+      "friends": "Друзья",
+      "gym": "Зал 💪",
+      "office": "Офис"
+    },
     "autoJoinPending": "Ссылка приглашения: код {{code}} — вступаем…",
     "dailyBonusGameHint": "Сыграй в NutriRun сегодня — бонус очков команде.",
     "dailyBonusQuizHint": "Пройди квиз калорий — бонус очков команде.",

@@ -1,62 +1,62 @@
 {
   "app": {
     "name": "NutriCrew",
-    "tagline": "Team nutrition battles"
+    "tagline": "टीम न्यूट्रिशन बैटल"
   },
   "nav": {
-    "home": "Home",
-    "log": "Log meal",
-    "team": "Team",
-    "rank": "Rank",
-    "prizes": "Prizes",
-    "guide": "Guide",
+    "home": "होम",
+    "log": "भोजन लॉग",
+    "team": "टीम",
+    "rank": "रैंक",
+    "prizes": "इनाम",
+    "guide": "गाइड",
     "game": "NutriRun",
-    "quiz": "Quiz",
-    "chat": "Chat",
-    "features": "Features",
-    "report": "Report",
-    "settings": "Settings",
-    "privacy": "Privacy",
-    "menu": "Menu",
-    "collapseMenu": "Hide menu",
-    "expandMenu": "Show menu",
-    "more": "More",
-    "moreTitle": "More sections",
-    "coach": "Coach"
+    "quiz": "क्विज़",
+    "chat": "चैट",
+    "features": "फ़ीचर्स",
+    "report": "रिपोर्ट",
+    "settings": "सेटिंग्स",
+    "privacy": "गोपनीयता",
+    "menu": "मेनू",
+    "collapseMenu": "मेनू छिपाएँ",
+    "expandMenu": "मेनू दिखाएँ",
+    "more": "और",
+    "moreTitle": "अन्य सेक्शन",
+    "coach": "कोच"
   },
   "coach": {
-    "title": "AI Coach",
-    "subtitle": "Nutrition tips based on your food diary",
-    "placeholder": "Ask about meals, goals, or habits…",
-    "ask": "Ask",
-    "asking": "Thinking…",
-    "welcome": "Hi! I'm the NutriCrew AI coach — I'll help based on your diary.",
-    "welcomeHint": "Pick a prompt or type your own question.",
-    "you": "You",
-    "coach": "Coach",
-    "proRequired": "AI Coach is part of NutriCrew Pro",
-    "proRequiredHint": "Get Pro for personalized advice from your logs, unlimited meal analysis, and weekly reports.",
-    "promptBreakfast": "What should I eat for breakfast?",
-    "promptProtein": "How do I hit my protein goal?",
-    "promptDeficit": "Why isn't my weight changing?",
-    "promptSnack": "Snack ideas under 200 kcal",
-    "goPro": "Get Pro"
+    "title": "AI कोच",
+    "subtitle": "आपके फ़ूड डायरी पर आधारित पोषण सुझाव",
+    "placeholder": "भोजन, लक्ष्य या आदतों के बारे में पूछें…",
+    "ask": "पूछें",
+    "asking": "सोच रहा हूँ…",
+    "welcome": "नमस्ते! मैं NutriCrew AI कोच हूँ — आपकी डायरी के आधार पर मदद करूँगा।",
+    "welcomeHint": "कोई सुझाव चुनें या अपना सवाल लिखें।",
+    "you": "आप",
+    "coach": "कोच",
+    "proRequired": "AI कोच NutriCrew Pro का हिस्सा है",
+    "proRequiredHint": "व्यक्तिगत सलाह, असीमित भोजन विश्लेषण और साप्ताहिक रिपोर्ट के लिए Pro लें।",
+    "promptBreakfast": "नाश्ते में क्या खाऊँ?",
+    "promptProtein": "प्रोटीन लक्ष्य कैसे पूरा करूँ?",
+    "promptDeficit": "वज़न क्यों नहीं बदल रहा?",
+    "promptSnack": "200 kcal से कम स्नैक आइडिया",
+    "goPro": "Pro लें"
   },
   "chat": {
-    "title": "Team chat",
-    "subtitle": "Talk with your crew. NutriCrew Moderator keeps things friendly.",
-    "placeholder": "Write a message…",
-    "empty": "Quiet so far — say hi!",
+    "title": "टीम चैट",
+    "subtitle": "अपनी टीम से बात करें। NutriCrew Moderator माहौल मित्रवत रखता है।",
+    "placeholder": "संदेश लिखें…",
+    "empty": "अभी शांति है — नमस्ते कहें!",
     "rules": "No profanity, spam, or links. Violations are hidden by the moderator.",
-    "needTeamTitle": "Join a team first",
-    "needTeamHint": "Create or join a team from Home or an invite link to unlock team chat.",
-    "needTeamCta": "Go to Home",
+    "needTeamTitle": "पहले टीम में शामिल हों",
+    "needTeamHint": "चैट अनलॉक करने के लिए होम या आमंत्रण लिंक से टीम बनाएँ या जुड़ें।",
+    "needTeamCta": "होम पर जाएँ",
     "openFromTeam": "Open team chat"
   },
   "growth": {
-    "inviteShareBtn": "Invite via Telegram",
+    "inviteShareBtn": "Telegram से आमंत्रित करें",
     "inviteShareTitle": "NutriCrew",
-    "inviteShareText": "Join my NutriCrew team! Code: {{code}}",
+    "inviteShareText": "मेरी NutriCrew टीम में शामिल हों! कोड: {{code}}",
     "inviteShared": "Share dialog opened",
     "inviteCopied": "Link copied",
     "inviteShareFailed": "Set BOT_USERNAME on the server or copy the code manually",
@@ -65,26 +65,26 @@
     "mealShared": "Ready — post in your team chat",
     "mealCopied": "Text copied",
     "mealShareFailed": "Could not open share",
-    "dailyMealsTitle": "Meals today",
-    "dailyMealsHint": "{{count}} of {{target}} — breakfast, lunch, dinner",
-    "prizePoolHint": "Need {{needed}} more teammates for Stars prizes (min {{min}}).",
-    "tryLogFirst": "You can snap food before joining a team — points count after you join.",
-    "logWithoutTeam": "Snap food (try it)",
-    "teamTemplatesTitle": "Quick start",
+    "dailyMealsTitle": "आज के भोजन",
+    "dailyMealsHint": "{{count}} / {{target}} — नाश्ता, दोपहर, रात",
+    "prizePoolHint": "Stars इनाम के लिए {{needed}} और टीममेट चाहिए (न्यूनतम {{min}})।",
+    "tryLogFirst": "टीम में शामिल होने से पहले भी भोजन फ़ोटो कर सकते हैं — शामिल होने के बाद अंक गिने जाते हैं।",
+    "logWithoutTeam": "भोजन फ़ोटो करें (आज़माएँ)",
+    "teamTemplatesTitle": "त्वरित शुरुआत",
     "teamTemplates": {
-      "friends": "Friends",
-      "gym": "Gym Crew 💪",
-      "office": "Office"
+      "friends": "दोस्त",
+      "gym": "जिम 💪",
+      "office": "ऑफ़िस"
     },
     "autoJoinPending": "Invite link code {{code}} — joining…",
-    "dailyBonusGameHint": "Play NutriRun today for a team point bonus.",
-    "dailyBonusQuizHint": "Finish the calorie quiz for a team point bonus.",
-    "dailyBonusDone": "Today's NutriRun and quiz bonuses are claimed.",
+    "dailyBonusGameHint": "टीम अंक बोनस के लिए आज NutriRun खेलें।",
+    "dailyBonusQuizHint": "टीम अंक बोनस के लिए कैलोरी क्विज़ पूरा करें।",
+    "dailyBonusDone": "आज के NutriRun और क्विज़ बोनस ले लिए गए।",
     "dailyBonusClaimed": "+{{points}} team points for today's activity!",
     "teamFeedTitle": "Today in your crew",
     "teamFeedEmpty": "No meals logged today yet — be the first!",
     "teamFeedYou": "You",
-    "featuresCta": "All features & leagues",
+    "featuresCta": "सभी फ़ीचर्स और लीग",
     "dailyGoalShort": "Daily goal {{progress}}/{{target}}",
     "dailyGoalDone": "Daily goal complete"
   },
@@ -332,28 +332,28 @@
     "tiktok": "TikTok"
   },
   "home": {
-    "greeting": "Hey, {{name}}!",
-    "streak": "{{days}}-day streak",
-    "multiplier": "Streak ×{{value}}",
-    "teamMult": "Team mult.",
-    "todayPoints": "Today's points",
-    "logCta": "Snap your meal",
-    "teamWaiting": "Your team is waiting for your next meal",
-    "noTeam": "Join a crew to earn team points and compete weekly.",
-    "createTeam": "Create team",
-    "joinTeam": "Join with code",
-    "teamName": "Team name",
-    "inviteCode": "Invite code",
-    "createBtn": "Create",
-    "joinBtn": "Join",
-    "shareCode": "Invite friends",
-    "guideCta": "Wellness guide — diets & workouts",
-    "gameCta": "Play NutriRun",
-    "quizCta": "Calorie quiz — guess kcal"
+    "greeting": "नमस्ते, {{name}}!",
+    "streak": "{{days}}-दिन की स्ट्रीक",
+    "multiplier": "स्ट्रीक ×{{value}}",
+    "teamMult": "टीम मल्ट.",
+    "todayPoints": "आज के अंक",
+    "logCta": "अपना भोजन फ़ोटो करें",
+    "teamWaiting": "आपकी टीम अगले भोजन का इंतज़ार कर रही है",
+    "noTeam": "टीम अंक और साप्ताहिक प्रतियोगिता के लिए टीम में शामिल हों।",
+    "createTeam": "टीम बनाएँ",
+    "joinTeam": "कोड से जुड़ें",
+    "teamName": "टीम का नाम",
+    "inviteCode": "आमंत्रण कोड",
+    "createBtn": "बनाएँ",
+    "joinBtn": "जुड़ें",
+    "shareCode": "दोस्तों को आमंत्रित करें",
+    "guideCta": "वेलनेस गाइड — आहार और वर्कआउट",
+    "gameCta": "NutriRun खेलें",
+    "quizCta": "कैलोरी क्विज़ — kcal अनुमान लगाएँ"
   },
   "log": {
-    "title": "Log meal",
-    "hint": "Live camera, gallery, or snapshot → AI estimates calories → edit → earn points",
+    "title": "भोजन लॉग करें",
+    "hint": "लाइव कैमरा, गैलरी या फ़ोटो → AI कैलोरी अनुमान → संपादित करें → अंक पाएँ",
     "description": "What did you eat?",
     "calories": "Calories",
     "macros": "Macros (g)",
@@ -507,8 +507,8 @@
     "points": "{{points}} pts"
   },
   "prizes": {
-    "title": "Stars & prizes",
-    "balanceHint": "Won from weekly team battles",
+    "title": "Stars और इनाम",
+    "balanceHint": "साप्ताहिक टीम बैटल से जीते गए",
     "poolTitle": "Weekly prize pool",
     "poolTotal": "{{total}} ⭐ total · {{available}} available",
     "poolHint": "Winners split 80% every Monday. Fund with Telegram Stars.",
@@ -519,46 +519,46 @@
     "premiumHint": "Badge + bragging rights · {{price}} Stars / month",
     "premiumBtn": "Upgrade · {{price}} ⭐",
     "proTitle": "NutriCrew Pro",
-    "proHint": "Unlimited AI scans, weekly reports, +2 streak freezes · 149 Stars / 30 days",
+    "proHint": "असीमित AI स्कैन, साप्ताहिक रिपोर्ट, +2 स्ट्रीक फ़्रीज़ · 149 Stars / 30 दिन",
     "proActive": "Pro is active",
     "proBtn": "Get Pro · 149 ⭐",
     "history": "Your wins",
-    "needTeam": "Join a team to use prizes"
+    "needTeam": "इनाम उपयोग के लिए टीम में शामिल हों"
   },
   "settings": {
-    "language": "Language",
-    "languageHint": "App interface and hints",
-    "guest": "Guest",
-    "appearanceTitle": "Appearance",
-    "fontSize": "Font size",
-    "fontSizeHint": "Text scale across the app",
-    "fontSizeSm": "Small",
-    "fontSizeMd": "Medium",
-    "fontSizeLg": "Large",
-    "fontSizePreview": "Preview",
+    "language": "भाषा",
+    "languageHint": "ऐप इंटरफ़ेस और संकेत",
+    "guest": "अतिथि",
+    "appearanceTitle": "दिखावट",
+    "fontSize": "फ़ॉन्ट आकार",
+    "fontSizeHint": "पूरे ऐप में टेक्स्ट स्केल",
+    "fontSizeSm": "छोटा",
+    "fontSizeMd": "मध्यम",
+    "fontSizeLg": "बड़ा",
+    "fontSizePreview": "पूर्वावलोकन",
     "fontSizePreviewTitle": "NutriCrew",
-    "fontSizePreviewBody": "This is how text will look in the app: cards, menu, and hints.",
-    "fontSizeOk": "OK",
-    "fontSizeSaved": "Font size saved",
-    "experienceTitle": "Experience",
-    "haptics": "Haptic feedback",
-    "hapticsHint": "Vibration in the game and key actions",
-    "reduceMotion": "Reduce motion",
-    "reduceMotionHint": "Turns off smooth UI animations",
-    "gameMusic": "Game music",
-    "gameMusicHint": "Background music in NutriBird",
-    "title": "Settings",
-    "subtitle": "Export your data or manage your account (GDPR).",
-    "dataTitle": "Your data",
-    "exportBtn": "Download my data (JSON)",
-    "exportDone": "Export downloaded.",
-    "exportFailed": "Could not export your data. Try again later.",
-    "exportServerBusy": "Server is waking up — wait a moment and try again.",
-    "deleteBtn": "Delete my account",
-    "deleteConfirm": "Delete all your NutriCrew data permanently?",
-    "legalTitle": "Legal",
-    "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Use"
+    "fontSizePreviewBody": "ऐप में टेक्स्ट ऐसा दिखेगा: कार्ड, मेनू और संकेत।",
+    "fontSizeOk": "ठीक",
+    "fontSizeSaved": "फ़ॉन्ट आकार सहेजा गया",
+    "experienceTitle": "अनुभव",
+    "haptics": "हaptic फ़ीडबैक",
+    "hapticsHint": "गेम और महत्वपूर्ण क्रियाओं में कंपन",
+    "reduceMotion": "मोशन कम करें",
+    "reduceMotionHint": "स्मूथ UI एनिमेशन बंद करता है",
+    "gameMusic": "गेम संगीत",
+    "gameMusicHint": "NutriBird में बैकग्राउंड संगीत",
+    "title": "सेटिंग्स",
+    "subtitle": "डेटा निर्यात करें या खाता प्रबंधित करें (GDPR)।",
+    "dataTitle": "आपका डेटा",
+    "exportBtn": "मेरा डेटा डाउनलोड करें (JSON)",
+    "exportDone": "निर्यात डाउनलोड हुआ।",
+    "exportFailed": "डेटा निर्यात नहीं हो सका। बाद में पुनः प्रयास करें।",
+    "exportServerBusy": "सर्वर जाग रहा है — थोड़ा इंतज़ार करें और फिर कोशिश करें।",
+    "deleteBtn": "मेरा खाता हटाएँ",
+    "deleteConfirm": "सभी NutriCrew डेटा स्थायी रूप से हटाएँ?",
+    "legalTitle": "कानूनी",
+    "privacyLink": "गोपनीयता नीति",
+    "termsLink": "उपयोग की शर्तें"
   },
   "legal": {
     "updated": "Last updated: June 2026",
@@ -580,16 +580,16 @@
     ]
   },
   "report": {
-    "title": "Weekly report",
-    "meals": "Meals",
-    "days": "Active days",
-    "calories": "Calories",
-    "protein": "Protein",
-    "points": "Points",
-    "streak": "Streak",
-    "teamBlock": "Team",
-    "teamRank": "Rank #{{rank}} · {{points}} pts",
-    "avgCalories": "Avg {{value}} kcal per meal"
+    "title": "साप्ताहिक रिपोर्ट",
+    "meals": "भोजन",
+    "days": "सक्रिय दिन",
+    "calories": "कैलोरी",
+    "protein": "प्रोटीन",
+    "points": "अंक",
+    "streak": "स्ट्रीक",
+    "teamBlock": "टीम",
+    "teamRank": "रैंक #{{rank}} · {{points}} अंक",
+    "avgCalories": "प्रति भोजन औसत {{value}} kcal"
   },
   "teamAdmin": {
     "title": "Team dashboard",
@@ -601,48 +601,48 @@
     "back": "Back to team"
   },
   "splash": {
-    "loading": "Connecting NutriCrew…",
-    "tagline": "Team battles for healthy eating"
+    "loading": "NutriCrew कनेक्ट हो रहा है…",
+    "tagline": "स्वस्थ खाने के लिए टीम बैटल"
   },
   "common": {
-    "loading": "Loading…",
-    "loadingSlow": "Waking up Render (free tier). Usually 20–50s — keep the app open…",
-    "error": "Something went wrong",
-    "retry": "Retry",
-    "apiNotConfigured": "Could not reach the API. Check that Render is running.",
-    "apiUnreachable": "Could not reach the server (nutricrew-dddi.onrender.com).",
-    "apiTimeout": "Server did not respond in time. Wait a minute and tap Retry.",
-    "apiBadResponse": "Invalid server response. Check Render and Vercel deploys.",
-    "telegramRequired": "Open the mini app from your Telegram bot button, not a browser tab.",
-    "telegramAuthFailed": "Telegram did not pass sign-in data. Close the app and reopen from the bot.",
-    "telegramMenuButtonHint": "Menu Button is set by the bot API. Profile «Open App» is separate: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Then send /start to the bot.",
-    "invalidTelegramAuth": "Auth failed. On Render, BOT_TOKEN must be the token of the same bot you opened the app from.",
-    "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service.",
-    "cancel": "Cancel",
-    "save": "Save",
-    "backHome": "Back to home",
-    "close": "Close"
+    "loading": "लोड हो रहा है…",
+    "loadingSlow": "Render सर्वर जाग रहा है (फ़्री टियर)। आमतौर पर 20–50 सेक — ऐप खुला रखें…",
+    "error": "कुछ गलत हो गया",
+    "retry": "पुनः प्रयास",
+    "apiNotConfigured": "API तक नहीं पहुँच सके। जाँचें कि Render चल रहा है।",
+    "apiUnreachable": "सर्वर तक नहीं पहुँच सके (nutricrew-dddi.onrender.com)।",
+    "apiTimeout": "सर्वर ने समय पर जवाब नहीं दिया। एक मिनट रुकें और पुनः प्रयास दबाएँ।",
+    "apiBadResponse": "अमान्य सर्वर प्रतिक्रिया। Render और Vercel डिप्लॉय जाँचें।",
+    "telegramRequired": "मिनी ऐप Telegram बॉट बटन से खोलें, ब्राउज़र टैब से नहीं।",
+    "telegramAuthFailed": "Telegram ने साइन-इन डेटा नहीं भेजा। ऐप बंद करके बॉट से फिर खोलें।",
+    "telegramMenuButtonHint": "Menu Button बॉट API से सेट होता है। प्रोफ़ाइल «Open App» अलग है: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app। फिर बॉट को /start भेजें।",
+    "invalidTelegramAuth": "प्रमाणीकरण विफल। Render पर BOT_TOKEN उसी बॉट का होना चाहिए जिससे आप ऐप खोलते हैं।",
+    "botNotConfigured": "Render पर BOT_TOKEN नहीं है। @BotFather टोकन जोड़ें और सर्विस रीडिप्लॉय करें।",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "backHome": "होम पर वापस",
+    "close": "बंद करें"
   },
   "registration": {
-    "title": "Welcome, {{name}}!",
+    "title": "स्वागत है, {{name}}!",
     "friend": "friend",
-    "subtitle": "Start logging meals right away. Profile is needed after a few logs — for personalized tips and team points.",
-    "gateTitle": "Almost there, {{name}}!",
-    "gateSubtitle": "You've logged meals — add weight, height and age to continue and unlock your team.",
-    "weight": "Weight (kg)",
-    "height": "Height (cm)",
-    "age": "Age (years)",
-    "continue": "Continue",
-    "note": "Used for calorie estimates and personalized nutrition tips. You can update later in the wellness guide.",
+    "subtitle": "तुरंत भोजन लॉग करना शुरू करें। कुछ लॉग के बाद प्रोफ़ाइल चाहिए — व्यक्तिगत सुझाव और टीम अंक के लिए।",
+    "gateTitle": "लगभग हो गया, {{name}}!",
+    "gateSubtitle": "आपने भोजन लॉग किया — जारी रखने और टीम अनलॉक करने के लिए वज़न, ऊँचाई और उम्र जोड़ें।",
+    "weight": "वज़न (kg)",
+    "height": "ऊँचाई (cm)",
+    "age": "उम्र (वर्ष)",
+    "continue": "जारी रखें",
+    "note": "कैलोरी अनुमान और व्यक्तिगत पोषण सुझाव के लिए उपयोग। बाद में वेलनेस गाइड में अपडेट कर सकते हैं।",
     "invalidWeight": "Enter a valid weight between 30 and 300 kg.",
     "invalidHeight": "Enter a valid height between 120 and 230 cm.",
     "invalidAge": "Enter a valid age between 14 and 100 years."
   },
   "guest": {
-    "modeTitle": "Guest mode",
-    "modeHint": "Log meals without a profile. {{left}} logs left before registration.",
+    "modeTitle": "अतिथि मोड",
+    "modeHint": "प्रोफ़ाइल के बिना भोजन लॉग करें। पंजीकरण से पहले {{left}} लॉग बाकी।",
     "teamBoostHint": "Team members earn boosted points — join a team to keep the bonus.",
-    "joinTeamCta": "Join a team"
+    "joinTeamCta": "टीम में शामिल हों"
   },
   "postRegistration": {
     "badge": "Registration complete",
@@ -761,27 +761,57 @@
         "name": "Ectomorph",
         "summary": "Lean build, fast metabolism, gains muscle slowly.",
         "macroHint": "~50% carbs · 25% protein · 25% fat",
-        "traits": ["Narrow shoulders and hips", "Low body fat naturally", "High metabolic rate", "Needs calorie surplus to build muscle"],
+        "traits": [
+          "Narrow shoulders and hips",
+          "Low body fat naturally",
+          "High metabolic rate",
+          "Needs calorie surplus to build muscle"
+        ],
         "nutrition": "Prioritize nutrient-dense calories: whole grains, starchy vegetables, healthy fats (olive oil, nuts, avocado). Protein 1.4–1.8 g/kg/day (ISSN) spread across meals. Avoid excessive fasting.",
-        "foods": ["Brown rice, oats, quinoa", "Chicken, fish, eggs, legumes", "Nuts, olive oil, avocado", "Bananas, berries, dried fruit"],
+        "foods": [
+          "Brown rice, oats, quinoa",
+          "Chicken, fish, eggs, legumes",
+          "Nuts, olive oil, avocado",
+          "Bananas, berries, dried fruit"
+        ],
         "activity": "Emphasize progressive resistance training 3–4×/week. Keep cardio moderate (ACSM: 150 min/week) to avoid excess calorie burn."
       },
       "mesomorph": {
         "name": "Mesomorph",
         "summary": "Athletic frame, responds quickly to training and diet.",
         "macroHint": "~40% carbs · 30% protein · 30% fat",
-        "traits": ["Broad shoulders, narrow waist", "Builds muscle relatively easily", "Moderate metabolism", "Responds well to varied training"],
+        "traits": [
+          "Broad shoulders, narrow waist",
+          "Builds muscle relatively easily",
+          "Moderate metabolism",
+          "Responds well to varied training"
+        ],
         "nutrition": "Balanced plate per USDA MyPlate: half vegetables/fruits, quarter lean protein, quarter whole grains. Protein 1.2–1.6 g/kg/day. Adjust calories to goal (maintain, cut, or bulk).",
-        "foods": ["Whole grains and legumes", "Lean meats, fish, dairy", "Colorful vegetables", "Berries and citrus"],
+        "foods": [
+          "Whole grains and legumes",
+          "Lean meats, fish, dairy",
+          "Colorful vegetables",
+          "Berries and citrus"
+        ],
         "activity": "Combine strength (2–4×/week) and cardio (150–300 min/week moderate per WHO). Sport-specific drills work well."
       },
       "endomorph": {
         "name": "Endomorph",
         "summary": "Stores fat more readily; benefits from protein-rich, fiber-forward eating.",
         "macroHint": "~35% carbs · 35% protein · 30% fat",
-        "traits": ["Wider hips and midsection tendency", "Gains weight more easily", "Strong lower body potential", "Responds well to structured eating"],
+        "traits": [
+          "Wider hips and midsection tendency",
+          "Gains weight more easily",
+          "Strong lower body potential",
+          "Responds well to structured eating"
+        ],
         "nutrition": "Higher protein (1.6–2.0 g/kg/day), high fiber (25–38 g/day per USDA), low-glycemic carbs. Mediterranean or DASH patterns support cardiometabolic health (WHO/AHA).",
-        "foods": ["Leafy greens, cruciferous vegetables", "Fish, poultry, tofu, beans", "Berries, apples (whole fruit)", "Olive oil in moderation"],
+        "foods": [
+          "Leafy greens, cruciferous vegetables",
+          "Fish, poultry, tofu, beans",
+          "Berries, apples (whole fruit)",
+          "Olive oil in moderation"
+        ],
         "activity": "Prioritize daily movement (NEAT) plus 150–300 min/week aerobic activity (WHO). Add resistance 2–3×/week to preserve lean mass."
       }
     },
@@ -792,7 +822,12 @@
         "source": "WHO · AHA · UNESCO heritage diet",
         "description": "Emphasizes vegetables, fruits, whole grains, legumes, nuts, olive oil as main fat, fish 2×/week, limited red meat and processed foods. Aligns with WHO recommendations to reduce saturated fat and increase fiber.",
         "macros": "~45–50% carbs (whole grains) · 15–20% protein · 35–40% fat (mostly unsaturated)",
-        "foods": ["Extra-virgin olive oil", "Fatty fish (salmon, sardines)", "Tomatoes, leafy greens, peppers", "Chickpeas, lentils, whole wheat"],
+        "foods": [
+          "Extra-virgin olive oil",
+          "Fatty fish (salmon, sardines)",
+          "Tomatoes, leafy greens, peppers",
+          "Chickpeas, lentils, whole wheat"
+        ],
         "evidence": "PREDIMED trial and meta-analyses show reduced cardiovascular events and improved glycemic control. Endorsed by American Heart Association."
       },
       "dash": {
@@ -801,7 +836,12 @@
         "source": "NIH National Heart, Lung, and Blood Institute",
         "description": "DASH (Dietary Approaches to Stop Hypertension) limits sodium to 1,500–2,300 mg/day, increases potassium, magnesium, and calcium through whole foods. Ideal for endomorph and mesomorph types managing weight or blood pressure.",
         "macros": "~55% carbs · 18% protein · 27% fat · fiber 30+ g/day",
-        "foods": ["Low-fat dairy", "Whole grains (6–8 servings/day)", "Vegetables (4–5 servings/day)", "Nuts, seeds, legumes"],
+        "foods": [
+          "Low-fat dairy",
+          "Whole grains (6–8 servings/day)",
+          "Vegetables (4–5 servings/day)",
+          "Nuts, seeds, legumes"
+        ],
         "evidence": "NIH-funded trials demonstrate systolic BP reduction of 8–14 mmHg. Recommended by US Dietary Guidelines for hypertension."
       },
       "plantForward": {
@@ -810,7 +850,12 @@
         "source": "EAT-Lancet Commission · WHO sustainable diet",
         "description": "Half the plate from vegetables and fruits, whole grains and legumes as staples, animal products as garnish. Supports sustainability and reduces saturated fat per WHO healthy diet targets.",
         "macros": "~50% carbs · 15–20% protein · 30% fat · 25+ g fiber",
-        "foods": ["Lentils, beans, tofu, tempeh", "Whole oats, buckwheat, brown rice", "Seasonal vegetables and fruit", "Optional: eggs, yogurt, fish"],
+        "foods": [
+          "Lentils, beans, tofu, tempeh",
+          "Whole oats, buckwheat, brown rice",
+          "Seasonal vegetables and fruit",
+          "Optional: eggs, yogurt, fish"
+        ],
         "evidence": "EAT-Lancet planetary health diet links plant-rich patterns to lower CVD mortality and reduced environmental footprint."
       },
       "highProtein": {
@@ -819,7 +864,12 @@
         "source": "ISSN position stand · ACSM",
         "description": "Protein 1.6–2.2 g/kg/day distributed over 4 meals (0.25–0.4 g/kg each). Remaining calories from complex carbs and unsaturated fats. Suited to ectomorph and mesomorph training phases.",
         "macros": "~35% protein · 40% carbs · 25% fat",
-        "foods": ["Greek yogurt, cottage cheese", "Lean beef, chicken breast", "Whey or plant protein if needed", "Sweet potato, rice, oats"],
+        "foods": [
+          "Greek yogurt, cottage cheese",
+          "Lean beef, chicken breast",
+          "Whey or plant protein if needed",
+          "Sweet potato, rice, oats"
+        ],
         "evidence": "ISSN meta-analyses show improved lean mass retention during caloric deficit when protein ≥1.6 g/kg/day combined with resistance training."
       },
       "balancedPlate": {
@@ -828,7 +878,12 @@
         "source": "USDA Dietary Guidelines for Americans",
         "description": "Official US guidance for healthy eating across life stages. Focus on variety, nutrient density, and limiting added sugars, saturated fat, and sodium per Dietary Guidelines 2020–2025.",
         "macros": "Flexible — typically 45–65% carbs · 10–35% protein · 20–35% fat",
-        "foods": ["Half plate: vegetables & fruits", "Quarter plate: lean protein", "Quarter plate: whole grains", "Dairy or fortified alternatives"],
+        "foods": [
+          "Half plate: vegetables & fruits",
+          "Quarter plate: lean protein",
+          "Quarter plate: whole grains",
+          "Dairy or fortified alternatives"
+        ],
         "evidence": "Foundation of US public health nutrition policy; aligns with WHO limits on free sugars (<10% energy) and salt (<5 g/day)."
       }
     }
@@ -883,12 +938,30 @@
       "notEnoughXp": "Not enough XP.",
       "notEnoughStars": "Not enough Stars.",
       "buyTelegram": "Buy {{stars}} ⭐",
-      "classic": { "name": "Classic", "perk": "Balanced starter — healthy glow." },
-      "ember": { "name": "Ember", "perk": "Fire trail on flap · +hot combo sparks." },
-      "frost": { "name": "Frost", "perk": "Ice aura · shields last longer." },
-      "neon": { "name": "Neon", "perk": "Cyber glow · stronger fruit magnet." },
-      "royal": { "name": "Royal", "perk": "Golden crown · combo up to x5." },
-      "storm": { "name": "Storm", "perk": "Lightning flaps · bigger near-miss bonus." }
+      "classic": {
+        "name": "Classic",
+        "perk": "Balanced starter — healthy glow."
+      },
+      "ember": {
+        "name": "Ember",
+        "perk": "Fire trail on flap · +hot combo sparks."
+      },
+      "frost": {
+        "name": "Frost",
+        "perk": "Ice aura · shields last longer."
+      },
+      "neon": {
+        "name": "Neon",
+        "perk": "Cyber glow · stronger fruit magnet."
+      },
+      "royal": {
+        "name": "Royal",
+        "perk": "Golden crown · combo up to x5."
+      },
+      "storm": {
+        "name": "Storm",
+        "perk": "Lightning flaps · bigger near-miss bonus."
+      }
     },
     "tagline": "A tiny spirit sprints through a macro world — jump, glide, wall-run, and punch!",
     "menuHint": "Auto-run platformer with 6 worlds. Collect glow motes for stars.",
@@ -1074,12 +1147,31 @@
       "storm": "Exclusive · boss energy boost · lightning · Stars / Telegram only."
     },
     "skillTags": {
-      "classic": ["Balanced", "Starter"],
-      "ember": ["Junk burn", "+18% fruit"],
-      "frost": ["Slow-mo", "Wide gaps", "Long ghost"],
-      "neon": ["+1 nitro stack", "Rainbow trail"],
-      "royal": ["Long ghost", "Wide gaps"],
-      "storm": ["Boss boost+", "Lightning"]
+      "classic": [
+        "Balanced",
+        "Starter"
+      ],
+      "ember": [
+        "Junk burn",
+        "+18% fruit"
+      ],
+      "frost": [
+        "Slow-mo",
+        "Wide gaps",
+        "Long ghost"
+      ],
+      "neon": [
+        "+1 nitro stack",
+        "Rainbow trail"
+      ],
+      "royal": [
+        "Long ghost",
+        "Wide gaps"
+      ],
+      "storm": [
+        "Boss boost+",
+        "Lightning"
+      ]
     }
   },
   "quiz": {
@@ -1474,44 +1566,48 @@
     "xpProgress": "XP today: {{earned}} / {{max}}"
   },
   "trends": {
-    "title": "Trends",
-    "subtitle": "Calories, protein, and weight over time",
-    "range": { "7d": "7 days", "30d": "30 days", "90d": "90 days" },
-    "calories": "Calories",
-    "protein": "Protein",
-    "weight": "Weight",
-    "insights": "Insights",
-    "avg": "Average",
-    "target": "Target"
+    "title": "ट्रेंड",
+    "subtitle": "समय के साथ कैलोरी, प्रोटीन और वज़न",
+    "range": {
+      "7d": "7 दिन",
+      "30d": "30 दिन",
+      "90d": "90 दिन"
+    },
+    "calories": "कैलोरी",
+    "protein": "प्रोटीन",
+    "weight": "वज़न",
+    "insights": "इनसाइट्स",
+    "avg": "औसत",
+    "target": "लक्ष्य"
   },
   "pro": {
     "title": "NutriCrew Pro",
-    "subtitle": "Coach, meal plan, and shopping list",
+    "subtitle": "कोच, भोजन योजना और खरीदारी सूची",
     "paywall": "Upgrade to Pro for personalized coaching",
-    "paywallHeadline": "Level up your nutrition with Pro",
-    "paywallLead": "No extra apps or private channels — everything in NutriCrew. Pay via Tribute and Pro unlocks automatically.",
-    "featureCoach": "AI coach for meals and goals",
-    "featureAi": "Unlimited AI meal analysis",
-    "featureReports": "Weekly reports and digest",
-    "featureShopping": "Shopping list from your meal plan",
-    "featureFreeze": "+2 streak freezes when you subscribe",
-    "priceLine": "Pro subscription · 30 days",
+    "paywallHeadline": "Pro से अपना पोषण अगले स्तर पर ले जाएँ",
+    "paywallLead": "कोई अतिरिक्त ऐप या निजी चैनल नहीं — सब NutriCrew में। Tribute से भुगतान करें, Pro स्वचालित रूप से अनलॉक होगा।",
+    "featureCoach": "भोजन और लक्ष्यों के लिए AI कोच",
+    "featureAi": "असीमित AI भोजन विश्लेषण",
+    "featureReports": "साप्ताहिक रिपोर्ट और डाइजेस्ट",
+    "featureShopping": "भोजन योजना से खरीदारी सूची",
+    "featureFreeze": "सब्सक्रिप्शन पर +2 स्ट्रीक फ़्रीज़",
+    "priceLine": "Pro सब्सक्रिप्शन · 30 दिन",
     "buyBtn": "Get Pro · 149 ⭐",
-    "buyTribute": "Get Pro",
-    "buyTributeChannel": "Channel subscription",
+    "buyTribute": "Pro लें",
+    "buyTributeChannel": "चैनल सब्सक्रिप्शन",
     "pill": "Pro",
-    "locked": "Pro only",
-    "tributeHint": "Pay via Tribute — Pro unlocks in the app automatically after you subscribe.",
+    "locked": "केवल Pro",
+    "tributeHint": "Tribute से भुगतान करें — सब्सक्राइब करने के बाद Pro ऐप में स्वचालित अनलॉक होगा।",
     "buying": "Opening checkout…",
     "starsNote": "Pay with Telegram Stars inside the mini app. No card required.",
-    "purchaseSuccess": "Pro activated! Refresh if features don’t appear right away.",
-    "activeUntil": "Pro active until {{date}}",
-    "upgrade": "Get Pro",
-    "coach": "AI Coach",
-    "ask": "Ask",
-    "shopping": "Shopping list",
-    "generateList": "Generate from meal plan",
-    "weeklyDigest": "Weekly digest"
+    "purchaseSuccess": "Pro सक्रिय! फ़ीचर्स तुरंत न दिखें तो रिफ़्रेश करें।",
+    "activeUntil": "Pro {{date}} तक सक्रिय",
+    "upgrade": "Pro लें",
+    "coach": "AI कोच",
+    "ask": "पूछें",
+    "shopping": "खरीदारी सूची",
+    "generateList": "भोजन योजना से बनाएँ",
+    "weeklyDigest": "साप्ताहिक डाइजेस्ट"
   },
   "org": {
     "title": "Organization dashboard",

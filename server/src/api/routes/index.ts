@@ -763,8 +763,11 @@ apiRouter.patch("/me/timezone", ...authed, async (req, res) => {
 
 apiRouter.patch("/me/locale", ...authed, async (req, res) => {
   const { locale } = req.body as { locale?: string };
-  if (locale !== "en" && locale !== "ru") {
-    res.status(400).json({ error: "locale must be en or ru" });
+  const allowed = new Set([
+    "en", "ru", "fr", "es", "de", "tr", "pt", "sv", "it", "ar", "pl", "zh", "hi",
+  ]);
+  if (!locale || !allowed.has(locale)) {
+    res.status(400).json({ error: "Unsupported locale" });
     return;
   }
   await usersRepo.setLocale(req.dbUser!.id, locale);

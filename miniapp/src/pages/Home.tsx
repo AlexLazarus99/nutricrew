@@ -59,13 +59,13 @@ function GrowthFeaturesLink({ growth }: { growth: GrowthSummary }) {
 }
 
 const TEAM_TEMPLATES = [
-  { key: "friends", nameRu: "Друзья", nameEn: "Friends" },
-  { key: "gym", nameRu: "Зал 💪", nameEn: "Gym Crew 💪" },
-  { key: "office", nameRu: "Офис", nameEn: "Office" },
+  { key: "friends", labelKey: "growth.teamTemplates.friends" },
+  { key: "gym", labelKey: "growth.teamTemplates.gym" },
+  { key: "office", labelKey: "growth.teamTemplates.office" },
 ] as const;
 
 export function HomePage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { me, refresh } = useMe();
   const [error, setError] = useState<string | null>(null);
   const [teamName, setTeamName] = useState("");
@@ -105,8 +105,7 @@ export function HomePage() {
   }
 
   function applyTemplate(template: (typeof TEAM_TEMPLATES)[number]) {
-    const name = i18n.language.startsWith("ru") ? template.nameRu : template.nameEn;
-    setTeamName(name);
+    setTeamName(t(template.labelKey));
     setTeamLeagueTag(template.key);
   }
 
@@ -152,7 +151,7 @@ export function HomePage() {
                 className="btn btn-secondary team-template-btn"
                 onClick={() => applyTemplate(tpl)}
               >
-                {i18n.language.startsWith("ru") ? tpl.nameRu : tpl.nameEn}
+                {t(tpl.labelKey)}
               </button>
             ))}
           </div>

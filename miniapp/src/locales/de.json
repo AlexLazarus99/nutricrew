@@ -1,62 +1,62 @@
 {
   "app": {
     "name": "NutriCrew",
-    "tagline": "Team nutrition battles"
+    "tagline": "Team-Battles rund ums Essen"
   },
   "nav": {
-    "home": "Home",
-    "log": "Log meal",
+    "home": "Start",
+    "log": "Mahlzeit",
     "team": "Team",
-    "rank": "Rank",
-    "prizes": "Prizes",
+    "rank": "Rang",
+    "prizes": "Preise",
     "guide": "Guide",
     "game": "NutriRun",
     "quiz": "Quiz",
     "chat": "Chat",
     "features": "Features",
-    "report": "Report",
-    "settings": "Settings",
-    "privacy": "Privacy",
-    "menu": "Menu",
-    "collapseMenu": "Hide menu",
-    "expandMenu": "Show menu",
-    "more": "More",
-    "moreTitle": "More sections",
+    "report": "Bericht",
+    "settings": "Einstellungen",
+    "privacy": "Datenschutz",
+    "menu": "Menü",
+    "collapseMenu": "Menü ausblenden",
+    "expandMenu": "Menü anzeigen",
+    "more": "Mehr",
+    "moreTitle": "Weitere Bereiche",
     "coach": "Coach"
   },
   "coach": {
-    "title": "AI Coach",
-    "subtitle": "Nutrition tips based on your food diary",
-    "placeholder": "Ask about meals, goals, or habits…",
-    "ask": "Ask",
-    "asking": "Thinking…",
-    "welcome": "Hi! I'm the NutriCrew AI coach — I'll help based on your diary.",
-    "welcomeHint": "Pick a prompt or type your own question.",
-    "you": "You",
+    "title": "KI-Coach",
+    "subtitle": "Ernährungstipps basierend auf deinem Ernährungstagebuch",
+    "placeholder": "Frage zu Mahlzeiten, Zielen oder Gewohnheiten…",
+    "ask": "Fragen",
+    "asking": "Denke nach…",
+    "welcome": "Hi! Ich bin der NutriCrew KI-Coach — ich helfe dir anhand deines Tagebuchs.",
+    "welcomeHint": "Wähle einen Vorschlag oder stelle deine eigene Frage.",
+    "you": "Du",
     "coach": "Coach",
-    "proRequired": "AI Coach is part of NutriCrew Pro",
-    "proRequiredHint": "Get Pro for personalized advice from your logs, unlimited meal analysis, and weekly reports.",
-    "promptBreakfast": "What should I eat for breakfast?",
-    "promptProtein": "How do I hit my protein goal?",
-    "promptDeficit": "Why isn't my weight changing?",
-    "promptSnack": "Snack ideas under 200 kcal",
-    "goPro": "Get Pro"
+    "proRequired": "Der KI-Coach ist Teil von NutriCrew Pro",
+    "proRequiredHint": "Hol dir Pro für personalisierte Tipps, unbegrenzte Mahlzeiten-Analysen und Wochenberichte.",
+    "promptBreakfast": "Was soll ich zum Frühstück essen?",
+    "promptProtein": "Wie erreiche ich mein Proteinziel?",
+    "promptDeficit": "Warum ändert sich mein Gewicht nicht?",
+    "promptSnack": "Snack-Ideen unter 200 kcal",
+    "goPro": "Pro holen"
   },
   "chat": {
-    "title": "Team chat",
-    "subtitle": "Talk with your crew. NutriCrew Moderator keeps things friendly.",
-    "placeholder": "Write a message…",
-    "empty": "Quiet so far — say hi!",
+    "title": "Team-Chat",
+    "subtitle": "Rede mit deiner Crew. NutriCrew Moderator sorgt für einen freundlichen Ton.",
+    "placeholder": "Nachricht schreiben…",
+    "empty": "Noch ruhig — sag Hallo!",
     "rules": "No profanity, spam, or links. Violations are hidden by the moderator.",
-    "needTeamTitle": "Join a team first",
-    "needTeamHint": "Create or join a team from Home or an invite link to unlock team chat.",
-    "needTeamCta": "Go to Home",
+    "needTeamTitle": "Zuerst einem Team beitreten",
+    "needTeamHint": "Erstelle oder tritt einem Team über Start oder Einladungslink bei, um den Chat freizuschalten.",
+    "needTeamCta": "Zur Startseite",
     "openFromTeam": "Open team chat"
   },
   "growth": {
-    "inviteShareBtn": "Invite via Telegram",
+    "inviteShareBtn": "Per Telegram einladen",
     "inviteShareTitle": "NutriCrew",
-    "inviteShareText": "Join my NutriCrew team! Code: {{code}}",
+    "inviteShareText": "Tritt meinem NutriCrew-Team bei! Code: {{code}}",
     "inviteShared": "Share dialog opened",
     "inviteCopied": "Link copied",
     "inviteShareFailed": "Set BOT_USERNAME on the server or copy the code manually",
@@ -65,26 +65,26 @@
     "mealShared": "Ready — post in your team chat",
     "mealCopied": "Text copied",
     "mealShareFailed": "Could not open share",
-    "dailyMealsTitle": "Meals today",
-    "dailyMealsHint": "{{count}} of {{target}} — breakfast, lunch, dinner",
-    "prizePoolHint": "Need {{needed}} more teammates for Stars prizes (min {{min}}).",
-    "tryLogFirst": "You can snap food before joining a team — points count after you join.",
-    "logWithoutTeam": "Snap food (try it)",
-    "teamTemplatesTitle": "Quick start",
+    "dailyMealsTitle": "Mahlzeiten heute",
+    "dailyMealsHint": "{{count}} von {{target}} — Frühstück, Mittag, Abend",
+    "prizePoolHint": "Noch {{needed}} Teammitglieder für Stars-Preise nötig (min. {{min}}).",
+    "tryLogFirst": "Du kannst Essen fotografieren, bevor du einem Team beitrittst — Punkte zählen nach dem Beitritt.",
+    "logWithoutTeam": "Essen fotografieren (Test)",
+    "teamTemplatesTitle": "Schnellstart",
     "teamTemplates": {
-      "friends": "Friends",
+      "friends": "Freunde",
       "gym": "Gym Crew 💪",
-      "office": "Office"
+      "office": "Büro"
     },
     "autoJoinPending": "Invite link code {{code}} — joining…",
-    "dailyBonusGameHint": "Play NutriRun today for a team point bonus.",
-    "dailyBonusQuizHint": "Finish the calorie quiz for a team point bonus.",
-    "dailyBonusDone": "Today's NutriRun and quiz bonuses are claimed.",
+    "dailyBonusGameHint": "Spiele heute NutriRun für einen Team-Punktebonus.",
+    "dailyBonusQuizHint": "Schließe das Kalorien-Quiz ab für einen Team-Punktebonus.",
+    "dailyBonusDone": "Heutige NutriRun- und Quiz-Boni sind eingelöst.",
     "dailyBonusClaimed": "+{{points}} team points for today's activity!",
     "teamFeedTitle": "Today in your crew",
     "teamFeedEmpty": "No meals logged today yet — be the first!",
     "teamFeedYou": "You",
-    "featuresCta": "All features & leagues",
+    "featuresCta": "Alle Features & Ligen",
     "dailyGoalShort": "Daily goal {{progress}}/{{target}}",
     "dailyGoalDone": "Daily goal complete"
   },
@@ -333,27 +333,27 @@
   },
   "home": {
     "greeting": "Hey, {{name}}!",
-    "streak": "{{days}}-day streak",
-    "multiplier": "Streak ×{{value}}",
-    "teamMult": "Team mult.",
-    "todayPoints": "Today's points",
-    "logCta": "Snap your meal",
-    "teamWaiting": "Your team is waiting for your next meal",
-    "noTeam": "Join a crew to earn team points and compete weekly.",
-    "createTeam": "Create team",
-    "joinTeam": "Join with code",
-    "teamName": "Team name",
-    "inviteCode": "Invite code",
-    "createBtn": "Create",
-    "joinBtn": "Join",
-    "shareCode": "Invite friends",
-    "guideCta": "Wellness guide — diets & workouts",
-    "gameCta": "Play NutriRun",
-    "quizCta": "Calorie quiz — guess kcal"
+    "streak": "{{days}}-Tage-Serie",
+    "multiplier": "Serie ×{{value}}",
+    "teamMult": "Team-Mult.",
+    "todayPoints": "Punkte heute",
+    "logCta": "Fotografiere dein Essen",
+    "teamWaiting": "Dein Team wartet auf deine nächste Mahlzeit",
+    "noTeam": "Tritt einem Team bei, um Teampunkte zu sammeln und wöchentlich zu konkurrieren.",
+    "createTeam": "Team erstellen",
+    "joinTeam": "Mit Code beitreten",
+    "teamName": "Teamname",
+    "inviteCode": "Einladungscode",
+    "createBtn": "Erstellen",
+    "joinBtn": "Beitreten",
+    "shareCode": "Freunde einladen",
+    "guideCta": "Wellness-Guide — Diäten & Workouts",
+    "gameCta": "NutriRun spielen",
+    "quizCta": "Kalorien-Quiz — kcal schätzen"
   },
   "log": {
-    "title": "Log meal",
-    "hint": "Live camera, gallery, or snapshot → AI estimates calories → edit → earn points",
+    "title": "Mahlzeit loggen",
+    "hint": "Live-Kamera, Galerie oder Foto → KI schätzt Kalorien → bearbeiten → Punkte sammeln",
     "description": "What did you eat?",
     "calories": "Calories",
     "macros": "Macros (g)",
@@ -507,8 +507,8 @@
     "points": "{{points}} pts"
   },
   "prizes": {
-    "title": "Stars & prizes",
-    "balanceHint": "Won from weekly team battles",
+    "title": "Stars & Preise",
+    "balanceHint": "Gewonnen in wöchentlichen Team-Battles",
     "poolTitle": "Weekly prize pool",
     "poolTotal": "{{total}} ⭐ total · {{available}} available",
     "poolHint": "Winners split 80% every Monday. Fund with Telegram Stars.",
@@ -519,46 +519,46 @@
     "premiumHint": "Badge + bragging rights · {{price}} Stars / month",
     "premiumBtn": "Upgrade · {{price}} ⭐",
     "proTitle": "NutriCrew Pro",
-    "proHint": "Unlimited AI scans, weekly reports, +2 streak freezes · 149 Stars / 30 days",
+    "proHint": "Unbegrenzte KI-Scans, Wochenberichte, +2 Serien-Freezes · 149 Stars / 30 Tage",
     "proActive": "Pro is active",
     "proBtn": "Get Pro · 149 ⭐",
     "history": "Your wins",
-    "needTeam": "Join a team to use prizes"
+    "needTeam": "Tritt einem Team bei, um Preise zu nutzen"
   },
   "settings": {
-    "language": "Language",
-    "languageHint": "App interface and hints",
-    "guest": "Guest",
-    "appearanceTitle": "Appearance",
-    "fontSize": "Font size",
-    "fontSizeHint": "Text scale across the app",
-    "fontSizeSm": "Small",
-    "fontSizeMd": "Medium",
-    "fontSizeLg": "Large",
-    "fontSizePreview": "Preview",
+    "language": "Sprache",
+    "languageHint": "App-Oberfläche und Hinweise",
+    "guest": "Gast",
+    "appearanceTitle": "Darstellung",
+    "fontSize": "Schriftgröße",
+    "fontSizeHint": "Textskala in der gesamten App",
+    "fontSizeSm": "Klein",
+    "fontSizeMd": "Mittel",
+    "fontSizeLg": "Groß",
+    "fontSizePreview": "Vorschau",
     "fontSizePreviewTitle": "NutriCrew",
-    "fontSizePreviewBody": "This is how text will look in the app: cards, menu, and hints.",
+    "fontSizePreviewBody": "So sieht Text in der App aus: Karten, Menü und Hinweise.",
     "fontSizeOk": "OK",
-    "fontSizeSaved": "Font size saved",
-    "experienceTitle": "Experience",
-    "haptics": "Haptic feedback",
-    "hapticsHint": "Vibration in the game and key actions",
-    "reduceMotion": "Reduce motion",
-    "reduceMotionHint": "Turns off smooth UI animations",
-    "gameMusic": "Game music",
-    "gameMusicHint": "Background music in NutriBird",
-    "title": "Settings",
-    "subtitle": "Export your data or manage your account (GDPR).",
-    "dataTitle": "Your data",
-    "exportBtn": "Download my data (JSON)",
-    "exportDone": "Export downloaded.",
-    "exportFailed": "Could not export your data. Try again later.",
-    "exportServerBusy": "Server is waking up — wait a moment and try again.",
-    "deleteBtn": "Delete my account",
-    "deleteConfirm": "Delete all your NutriCrew data permanently?",
-    "legalTitle": "Legal",
-    "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Use"
+    "fontSizeSaved": "Schriftgröße gespeichert",
+    "experienceTitle": "Erlebnis",
+    "haptics": "Haptisches Feedback",
+    "hapticsHint": "Vibration im Spiel und bei wichtigen Aktionen",
+    "reduceMotion": "Bewegung reduzieren",
+    "reduceMotionHint": "Schaltet sanfte UI-Animationen aus",
+    "gameMusic": "Spielmusik",
+    "gameMusicHint": "Hintergrundmusik in NutriBird",
+    "title": "Einstellungen",
+    "subtitle": "Daten exportieren oder Konto verwalten (DSGVO).",
+    "dataTitle": "Deine Daten",
+    "exportBtn": "Meine Daten herunterladen (JSON)",
+    "exportDone": "Export heruntergeladen.",
+    "exportFailed": "Daten konnten nicht exportiert werden. Später erneut versuchen.",
+    "exportServerBusy": "Server startet gerade — kurz warten und erneut versuchen.",
+    "deleteBtn": "Mein Konto löschen",
+    "deleteConfirm": "Alle NutriCrew-Daten dauerhaft löschen?",
+    "legalTitle": "Rechtliches",
+    "privacyLink": "Datenschutzerklärung",
+    "termsLink": "Nutzungsbedingungen"
   },
   "legal": {
     "updated": "Last updated: June 2026",
@@ -580,16 +580,16 @@
     ]
   },
   "report": {
-    "title": "Weekly report",
-    "meals": "Meals",
-    "days": "Active days",
-    "calories": "Calories",
+    "title": "Wochenbericht",
+    "meals": "Mahlzeiten",
+    "days": "Aktive Tage",
+    "calories": "Kalorien",
     "protein": "Protein",
-    "points": "Points",
-    "streak": "Streak",
+    "points": "Punkte",
+    "streak": "Serie",
     "teamBlock": "Team",
-    "teamRank": "Rank #{{rank}} · {{points}} pts",
-    "avgCalories": "Avg {{value}} kcal per meal"
+    "teamRank": "Rang #{{rank}} · {{points}} Pkt.",
+    "avgCalories": "Ø {{value}} kcal pro Mahlzeit"
   },
   "teamAdmin": {
     "title": "Team dashboard",
@@ -601,48 +601,48 @@
     "back": "Back to team"
   },
   "splash": {
-    "loading": "Connecting NutriCrew…",
-    "tagline": "Team battles for healthy eating"
+    "loading": "NutriCrew wird verbunden…",
+    "tagline": "Team-Battles für gesunde Ernährung"
   },
   "common": {
-    "loading": "Loading…",
-    "loadingSlow": "Waking up Render (free tier). Usually 20–50s — keep the app open…",
-    "error": "Something went wrong",
-    "retry": "Retry",
-    "apiNotConfigured": "Could not reach the API. Check that Render is running.",
-    "apiUnreachable": "Could not reach the server (nutricrew-dddi.onrender.com).",
-    "apiTimeout": "Server did not respond in time. Wait a minute and tap Retry.",
-    "apiBadResponse": "Invalid server response. Check Render and Vercel deploys.",
-    "telegramRequired": "Open the mini app from your Telegram bot button, not a browser tab.",
-    "telegramAuthFailed": "Telegram did not pass sign-in data. Close the app and reopen from the bot.",
-    "telegramMenuButtonHint": "Menu Button is set by the bot API. Profile «Open App» is separate: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Then send /start to the bot.",
-    "invalidTelegramAuth": "Auth failed. On Render, BOT_TOKEN must be the token of the same bot you opened the app from.",
-    "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service.",
-    "cancel": "Cancel",
-    "save": "Save",
-    "backHome": "Back to home",
-    "close": "Close"
+    "loading": "Laden…",
+    "loadingSlow": "Render-Server startet (Free Tier). Meist 20–50 s — App offen lassen…",
+    "error": "Etwas ist schiefgelaufen",
+    "retry": "Erneut versuchen",
+    "apiNotConfigured": "API nicht erreichbar. Prüfe, ob Render läuft.",
+    "apiUnreachable": "Server nicht erreichbar (nutricrew-dddi.onrender.com).",
+    "apiTimeout": "Server hat nicht rechtzeitig geantwortet. Eine Minute warten und Erneut versuchen.",
+    "apiBadResponse": "Ungültige Serverantwort. Render- und Vercel-Deploys prüfen.",
+    "telegramRequired": "Mini-App über den Telegram-Bot-Button öffnen, nicht im Browser.",
+    "telegramAuthFailed": "Telegram hat keine Anmeldedaten gesendet. App schließen und aus dem Bot neu öffnen.",
+    "telegramMenuButtonHint": "Menu Button wird über die Bot-API gesetzt. Profil-«Open App» ist separat: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Dann /start an den Bot.",
+    "invalidTelegramAuth": "Anmeldung fehlgeschlagen. Auf Render muss BOT_TOKEN zum gleichen Bot gehören, aus dem du die App öffnest.",
+    "botNotConfigured": "BOT_TOKEN fehlt auf Render. @BotFather-Token hinzufügen und Service neu deployen.",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "backHome": "Zur Startseite",
+    "close": "Schließen"
   },
   "registration": {
-    "title": "Welcome, {{name}}!",
+    "title": "Willkommen, {{name}}!",
     "friend": "friend",
-    "subtitle": "Start logging meals right away. Profile is needed after a few logs — for personalized tips and team points.",
-    "gateTitle": "Almost there, {{name}}!",
-    "gateSubtitle": "You've logged meals — add weight, height and age to continue and unlock your team.",
-    "weight": "Weight (kg)",
-    "height": "Height (cm)",
-    "age": "Age (years)",
-    "continue": "Continue",
-    "note": "Used for calorie estimates and personalized nutrition tips. You can update later in the wellness guide.",
+    "subtitle": "Logge Mahlzeiten sofort. Profil wird nach ein paar Logs nötig — für personalisierte Tipps und Teampunkte.",
+    "gateTitle": "Fast geschafft, {{name}}!",
+    "gateSubtitle": "Du hast Mahlzeiten geloggt — gib Gewicht, Größe und Alter an, um weiterzumachen und dein Team freizuschalten.",
+    "weight": "Gewicht (kg)",
+    "height": "Größe (cm)",
+    "age": "Alter (Jahre)",
+    "continue": "Weiter",
+    "note": "Für Kalorienschätzungen und personalisierte Tipps. Später im Wellness-Guide änderbar.",
     "invalidWeight": "Enter a valid weight between 30 and 300 kg.",
     "invalidHeight": "Enter a valid height between 120 and 230 cm.",
     "invalidAge": "Enter a valid age between 14 and 100 years."
   },
   "guest": {
-    "modeTitle": "Guest mode",
-    "modeHint": "Log meals without a profile. {{left}} logs left before registration.",
+    "modeTitle": "Gastmodus",
+    "modeHint": "Mahlzeiten ohne Profil loggen. Noch {{left}} Logs vor der Registrierung.",
     "teamBoostHint": "Team members earn boosted points — join a team to keep the bonus.",
-    "joinTeamCta": "Join a team"
+    "joinTeamCta": "Team beitreten"
   },
   "postRegistration": {
     "badge": "Registration complete",
@@ -761,27 +761,57 @@
         "name": "Ectomorph",
         "summary": "Lean build, fast metabolism, gains muscle slowly.",
         "macroHint": "~50% carbs · 25% protein · 25% fat",
-        "traits": ["Narrow shoulders and hips", "Low body fat naturally", "High metabolic rate", "Needs calorie surplus to build muscle"],
+        "traits": [
+          "Narrow shoulders and hips",
+          "Low body fat naturally",
+          "High metabolic rate",
+          "Needs calorie surplus to build muscle"
+        ],
         "nutrition": "Prioritize nutrient-dense calories: whole grains, starchy vegetables, healthy fats (olive oil, nuts, avocado). Protein 1.4–1.8 g/kg/day (ISSN) spread across meals. Avoid excessive fasting.",
-        "foods": ["Brown rice, oats, quinoa", "Chicken, fish, eggs, legumes", "Nuts, olive oil, avocado", "Bananas, berries, dried fruit"],
+        "foods": [
+          "Brown rice, oats, quinoa",
+          "Chicken, fish, eggs, legumes",
+          "Nuts, olive oil, avocado",
+          "Bananas, berries, dried fruit"
+        ],
         "activity": "Emphasize progressive resistance training 3–4×/week. Keep cardio moderate (ACSM: 150 min/week) to avoid excess calorie burn."
       },
       "mesomorph": {
         "name": "Mesomorph",
         "summary": "Athletic frame, responds quickly to training and diet.",
         "macroHint": "~40% carbs · 30% protein · 30% fat",
-        "traits": ["Broad shoulders, narrow waist", "Builds muscle relatively easily", "Moderate metabolism", "Responds well to varied training"],
+        "traits": [
+          "Broad shoulders, narrow waist",
+          "Builds muscle relatively easily",
+          "Moderate metabolism",
+          "Responds well to varied training"
+        ],
         "nutrition": "Balanced plate per USDA MyPlate: half vegetables/fruits, quarter lean protein, quarter whole grains. Protein 1.2–1.6 g/kg/day. Adjust calories to goal (maintain, cut, or bulk).",
-        "foods": ["Whole grains and legumes", "Lean meats, fish, dairy", "Colorful vegetables", "Berries and citrus"],
+        "foods": [
+          "Whole grains and legumes",
+          "Lean meats, fish, dairy",
+          "Colorful vegetables",
+          "Berries and citrus"
+        ],
         "activity": "Combine strength (2–4×/week) and cardio (150–300 min/week moderate per WHO). Sport-specific drills work well."
       },
       "endomorph": {
         "name": "Endomorph",
         "summary": "Stores fat more readily; benefits from protein-rich, fiber-forward eating.",
         "macroHint": "~35% carbs · 35% protein · 30% fat",
-        "traits": ["Wider hips and midsection tendency", "Gains weight more easily", "Strong lower body potential", "Responds well to structured eating"],
+        "traits": [
+          "Wider hips and midsection tendency",
+          "Gains weight more easily",
+          "Strong lower body potential",
+          "Responds well to structured eating"
+        ],
         "nutrition": "Higher protein (1.6–2.0 g/kg/day), high fiber (25–38 g/day per USDA), low-glycemic carbs. Mediterranean or DASH patterns support cardiometabolic health (WHO/AHA).",
-        "foods": ["Leafy greens, cruciferous vegetables", "Fish, poultry, tofu, beans", "Berries, apples (whole fruit)", "Olive oil in moderation"],
+        "foods": [
+          "Leafy greens, cruciferous vegetables",
+          "Fish, poultry, tofu, beans",
+          "Berries, apples (whole fruit)",
+          "Olive oil in moderation"
+        ],
         "activity": "Prioritize daily movement (NEAT) plus 150–300 min/week aerobic activity (WHO). Add resistance 2–3×/week to preserve lean mass."
       }
     },
@@ -792,7 +822,12 @@
         "source": "WHO · AHA · UNESCO heritage diet",
         "description": "Emphasizes vegetables, fruits, whole grains, legumes, nuts, olive oil as main fat, fish 2×/week, limited red meat and processed foods. Aligns with WHO recommendations to reduce saturated fat and increase fiber.",
         "macros": "~45–50% carbs (whole grains) · 15–20% protein · 35–40% fat (mostly unsaturated)",
-        "foods": ["Extra-virgin olive oil", "Fatty fish (salmon, sardines)", "Tomatoes, leafy greens, peppers", "Chickpeas, lentils, whole wheat"],
+        "foods": [
+          "Extra-virgin olive oil",
+          "Fatty fish (salmon, sardines)",
+          "Tomatoes, leafy greens, peppers",
+          "Chickpeas, lentils, whole wheat"
+        ],
         "evidence": "PREDIMED trial and meta-analyses show reduced cardiovascular events and improved glycemic control. Endorsed by American Heart Association."
       },
       "dash": {
@@ -801,7 +836,12 @@
         "source": "NIH National Heart, Lung, and Blood Institute",
         "description": "DASH (Dietary Approaches to Stop Hypertension) limits sodium to 1,500–2,300 mg/day, increases potassium, magnesium, and calcium through whole foods. Ideal for endomorph and mesomorph types managing weight or blood pressure.",
         "macros": "~55% carbs · 18% protein · 27% fat · fiber 30+ g/day",
-        "foods": ["Low-fat dairy", "Whole grains (6–8 servings/day)", "Vegetables (4–5 servings/day)", "Nuts, seeds, legumes"],
+        "foods": [
+          "Low-fat dairy",
+          "Whole grains (6–8 servings/day)",
+          "Vegetables (4–5 servings/day)",
+          "Nuts, seeds, legumes"
+        ],
         "evidence": "NIH-funded trials demonstrate systolic BP reduction of 8–14 mmHg. Recommended by US Dietary Guidelines for hypertension."
       },
       "plantForward": {
@@ -810,7 +850,12 @@
         "source": "EAT-Lancet Commission · WHO sustainable diet",
         "description": "Half the plate from vegetables and fruits, whole grains and legumes as staples, animal products as garnish. Supports sustainability and reduces saturated fat per WHO healthy diet targets.",
         "macros": "~50% carbs · 15–20% protein · 30% fat · 25+ g fiber",
-        "foods": ["Lentils, beans, tofu, tempeh", "Whole oats, buckwheat, brown rice", "Seasonal vegetables and fruit", "Optional: eggs, yogurt, fish"],
+        "foods": [
+          "Lentils, beans, tofu, tempeh",
+          "Whole oats, buckwheat, brown rice",
+          "Seasonal vegetables and fruit",
+          "Optional: eggs, yogurt, fish"
+        ],
         "evidence": "EAT-Lancet planetary health diet links plant-rich patterns to lower CVD mortality and reduced environmental footprint."
       },
       "highProtein": {
@@ -819,7 +864,12 @@
         "source": "ISSN position stand · ACSM",
         "description": "Protein 1.6–2.2 g/kg/day distributed over 4 meals (0.25–0.4 g/kg each). Remaining calories from complex carbs and unsaturated fats. Suited to ectomorph and mesomorph training phases.",
         "macros": "~35% protein · 40% carbs · 25% fat",
-        "foods": ["Greek yogurt, cottage cheese", "Lean beef, chicken breast", "Whey or plant protein if needed", "Sweet potato, rice, oats"],
+        "foods": [
+          "Greek yogurt, cottage cheese",
+          "Lean beef, chicken breast",
+          "Whey or plant protein if needed",
+          "Sweet potato, rice, oats"
+        ],
         "evidence": "ISSN meta-analyses show improved lean mass retention during caloric deficit when protein ≥1.6 g/kg/day combined with resistance training."
       },
       "balancedPlate": {
@@ -828,7 +878,12 @@
         "source": "USDA Dietary Guidelines for Americans",
         "description": "Official US guidance for healthy eating across life stages. Focus on variety, nutrient density, and limiting added sugars, saturated fat, and sodium per Dietary Guidelines 2020–2025.",
         "macros": "Flexible — typically 45–65% carbs · 10–35% protein · 20–35% fat",
-        "foods": ["Half plate: vegetables & fruits", "Quarter plate: lean protein", "Quarter plate: whole grains", "Dairy or fortified alternatives"],
+        "foods": [
+          "Half plate: vegetables & fruits",
+          "Quarter plate: lean protein",
+          "Quarter plate: whole grains",
+          "Dairy or fortified alternatives"
+        ],
         "evidence": "Foundation of US public health nutrition policy; aligns with WHO limits on free sugars (<10% energy) and salt (<5 g/day)."
       }
     }
@@ -883,12 +938,30 @@
       "notEnoughXp": "Not enough XP.",
       "notEnoughStars": "Not enough Stars.",
       "buyTelegram": "Buy {{stars}} ⭐",
-      "classic": { "name": "Classic", "perk": "Balanced starter — healthy glow." },
-      "ember": { "name": "Ember", "perk": "Fire trail on flap · +hot combo sparks." },
-      "frost": { "name": "Frost", "perk": "Ice aura · shields last longer." },
-      "neon": { "name": "Neon", "perk": "Cyber glow · stronger fruit magnet." },
-      "royal": { "name": "Royal", "perk": "Golden crown · combo up to x5." },
-      "storm": { "name": "Storm", "perk": "Lightning flaps · bigger near-miss bonus." }
+      "classic": {
+        "name": "Classic",
+        "perk": "Balanced starter — healthy glow."
+      },
+      "ember": {
+        "name": "Ember",
+        "perk": "Fire trail on flap · +hot combo sparks."
+      },
+      "frost": {
+        "name": "Frost",
+        "perk": "Ice aura · shields last longer."
+      },
+      "neon": {
+        "name": "Neon",
+        "perk": "Cyber glow · stronger fruit magnet."
+      },
+      "royal": {
+        "name": "Royal",
+        "perk": "Golden crown · combo up to x5."
+      },
+      "storm": {
+        "name": "Storm",
+        "perk": "Lightning flaps · bigger near-miss bonus."
+      }
     },
     "tagline": "A tiny spirit sprints through a macro world — jump, glide, wall-run, and punch!",
     "menuHint": "Auto-run platformer with 6 worlds. Collect glow motes for stars.",
@@ -1074,12 +1147,31 @@
       "storm": "Exclusive · boss energy boost · lightning · Stars / Telegram only."
     },
     "skillTags": {
-      "classic": ["Balanced", "Starter"],
-      "ember": ["Junk burn", "+18% fruit"],
-      "frost": ["Slow-mo", "Wide gaps", "Long ghost"],
-      "neon": ["+1 nitro stack", "Rainbow trail"],
-      "royal": ["Long ghost", "Wide gaps"],
-      "storm": ["Boss boost+", "Lightning"]
+      "classic": [
+        "Balanced",
+        "Starter"
+      ],
+      "ember": [
+        "Junk burn",
+        "+18% fruit"
+      ],
+      "frost": [
+        "Slow-mo",
+        "Wide gaps",
+        "Long ghost"
+      ],
+      "neon": [
+        "+1 nitro stack",
+        "Rainbow trail"
+      ],
+      "royal": [
+        "Long ghost",
+        "Wide gaps"
+      ],
+      "storm": [
+        "Boss boost+",
+        "Lightning"
+      ]
     }
   },
   "quiz": {
@@ -1475,43 +1567,47 @@
   },
   "trends": {
     "title": "Trends",
-    "subtitle": "Calories, protein, and weight over time",
-    "range": { "7d": "7 days", "30d": "30 days", "90d": "90 days" },
-    "calories": "Calories",
+    "subtitle": "Kalorien, Protein und Gewicht im Zeitverlauf",
+    "range": {
+      "7d": "7 Tage",
+      "30d": "30 Tage",
+      "90d": "90 Tage"
+    },
+    "calories": "Kalorien",
     "protein": "Protein",
-    "weight": "Weight",
-    "insights": "Insights",
-    "avg": "Average",
-    "target": "Target"
+    "weight": "Gewicht",
+    "insights": "Einblicke",
+    "avg": "Durchschnitt",
+    "target": "Ziel"
   },
   "pro": {
     "title": "NutriCrew Pro",
-    "subtitle": "Coach, meal plan, and shopping list",
+    "subtitle": "Coach, Speiseplan und Einkaufsliste",
     "paywall": "Upgrade to Pro for personalized coaching",
-    "paywallHeadline": "Level up your nutrition with Pro",
-    "paywallLead": "No extra apps or private channels — everything in NutriCrew. Pay via Tribute and Pro unlocks automatically.",
-    "featureCoach": "AI coach for meals and goals",
-    "featureAi": "Unlimited AI meal analysis",
-    "featureReports": "Weekly reports and digest",
-    "featureShopping": "Shopping list from your meal plan",
-    "featureFreeze": "+2 streak freezes when you subscribe",
-    "priceLine": "Pro subscription · 30 days",
+    "paywallHeadline": "Bring deine Ernährung mit Pro aufs nächste Level",
+    "paywallLead": "Keine Extra-Apps oder privaten Kanäle — alles in NutriCrew. Bezahlen via Tribute, Pro wird automatisch freigeschaltet.",
+    "featureCoach": "KI-Coach für Mahlzeiten und Ziele",
+    "featureAi": "Unbegrenzte KI-Mahlzeiten-Analyse",
+    "featureReports": "Wochenberichte und Digest",
+    "featureShopping": "Einkaufsliste aus deinem Speiseplan",
+    "featureFreeze": "+2 Serien-Freezes beim Abo",
+    "priceLine": "Pro-Abo · 30 Tage",
     "buyBtn": "Get Pro · 149 ⭐",
-    "buyTribute": "Get Pro",
-    "buyTributeChannel": "Channel subscription",
+    "buyTribute": "Pro holen",
+    "buyTributeChannel": "Kanal-Abo",
     "pill": "Pro",
-    "locked": "Pro only",
-    "tributeHint": "Pay via Tribute — Pro unlocks in the app automatically after you subscribe.",
+    "locked": "Nur Pro",
+    "tributeHint": "Bezahlen via Tribute — Pro wird nach dem Abo automatisch in der App freigeschaltet.",
     "buying": "Opening checkout…",
     "starsNote": "Pay with Telegram Stars inside the mini app. No card required.",
-    "purchaseSuccess": "Pro activated! Refresh if features don’t appear right away.",
-    "activeUntil": "Pro active until {{date}}",
-    "upgrade": "Get Pro",
-    "coach": "AI Coach",
-    "ask": "Ask",
-    "shopping": "Shopping list",
-    "generateList": "Generate from meal plan",
-    "weeklyDigest": "Weekly digest"
+    "purchaseSuccess": "Pro aktiviert! Aktualisieren, falls Features nicht sofort erscheinen.",
+    "activeUntil": "Pro aktiv bis {{date}}",
+    "upgrade": "Pro holen",
+    "coach": "KI-Coach",
+    "ask": "Fragen",
+    "shopping": "Einkaufsliste",
+    "generateList": "Aus Speiseplan generieren",
+    "weeklyDigest": "Wochen-Digest"
   },
   "org": {
     "title": "Organization dashboard",

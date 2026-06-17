@@ -13,9 +13,11 @@ const PRO_FEATURES = [
   "pro.featureFreeze",
 ] as const;
 
+import { intlLocaleTag } from "../lib/formatLocale";
+
 function formatProUntil(iso: string | null | undefined, locale: string) {
   if (!iso) return null;
-  return new Date(iso).toLocaleDateString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
+  return new Date(iso).toLocaleDateString(intlLocaleTag(locale), {
     day: "numeric",
     month: "long",
     year: "numeric",

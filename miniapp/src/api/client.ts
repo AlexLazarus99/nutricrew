@@ -847,7 +847,7 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ offsetMinutes }),
     }),
-  setLocale: (locale: "en" | "ru") =>
+  setLocale: (locale: import("../lib/localeConfig").AppLocale) =>
     request<{ ok: boolean }>("/me/locale", {
       method: "PATCH",
       body: JSON.stringify({ locale }),

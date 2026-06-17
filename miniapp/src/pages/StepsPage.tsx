@@ -7,8 +7,10 @@ import { WorkoutsPanel } from "../components/wellness/WorkoutsPanel";
 import { useMe } from "../hooks/useMe";
 import { localDayBounds } from "../lib/diaryTarget";
 
+import { intlLocaleTag } from "../lib/formatLocale";
+
 function formatDayLabel(date: Date, locale: string): string {
-  return date.toLocaleDateString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
+  return date.toLocaleDateString(intlLocaleTag(locale), {
     weekday: "long",
     day: "numeric",
     month: "long",

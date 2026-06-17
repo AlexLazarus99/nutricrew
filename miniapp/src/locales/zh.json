@@ -1,62 +1,62 @@
 {
   "app": {
     "name": "NutriCrew",
-    "tagline": "Team nutrition battles"
+    "tagline": "团队营养对战"
   },
   "nav": {
-    "home": "Home",
-    "log": "Log meal",
-    "team": "Team",
-    "rank": "Rank",
-    "prizes": "Prizes",
-    "guide": "Guide",
+    "home": "首页",
+    "log": "记录餐食",
+    "team": "团队",
+    "rank": "排名",
+    "prizes": "奖品",
+    "guide": "指南",
     "game": "NutriRun",
-    "quiz": "Quiz",
-    "chat": "Chat",
-    "features": "Features",
-    "report": "Report",
-    "settings": "Settings",
-    "privacy": "Privacy",
-    "menu": "Menu",
-    "collapseMenu": "Hide menu",
-    "expandMenu": "Show menu",
-    "more": "More",
-    "moreTitle": "More sections",
-    "coach": "Coach"
+    "quiz": "测验",
+    "chat": "聊天",
+    "features": "功能",
+    "report": "报告",
+    "settings": "设置",
+    "privacy": "隐私",
+    "menu": "菜单",
+    "collapseMenu": "隐藏菜单",
+    "expandMenu": "显示菜单",
+    "more": "更多",
+    "moreTitle": "更多板块",
+    "coach": "教练"
   },
   "coach": {
-    "title": "AI Coach",
-    "subtitle": "Nutrition tips based on your food diary",
-    "placeholder": "Ask about meals, goals, or habits…",
-    "ask": "Ask",
-    "asking": "Thinking…",
-    "welcome": "Hi! I'm the NutriCrew AI coach — I'll help based on your diary.",
-    "welcomeHint": "Pick a prompt or type your own question.",
-    "you": "You",
-    "coach": "Coach",
-    "proRequired": "AI Coach is part of NutriCrew Pro",
-    "proRequiredHint": "Get Pro for personalized advice from your logs, unlimited meal analysis, and weekly reports.",
-    "promptBreakfast": "What should I eat for breakfast?",
-    "promptProtein": "How do I hit my protein goal?",
-    "promptDeficit": "Why isn't my weight changing?",
-    "promptSnack": "Snack ideas under 200 kcal",
-    "goPro": "Get Pro"
+    "title": "AI 教练",
+    "subtitle": "基于饮食日记的营养建议",
+    "placeholder": "询问餐食、目标或习惯…",
+    "ask": "提问",
+    "asking": "思考中…",
+    "welcome": "你好！我是 NutriCrew AI 教练——会根据你的日记提供帮助。",
+    "welcomeHint": "选择提示语或输入自己的问题。",
+    "you": "你",
+    "coach": "教练",
+    "proRequired": "AI 教练是 NutriCrew Pro 的一部分",
+    "proRequiredHint": "开通 Pro 获取个性化建议、无限餐食分析和周报。",
+    "promptBreakfast": "早餐该吃什么？",
+    "promptProtein": "如何达到蛋白质目标？",
+    "promptDeficit": "为什么体重没有变化？",
+    "promptSnack": "200 千卡以下的零食建议",
+    "goPro": "开通 Pro"
   },
   "chat": {
-    "title": "Team chat",
-    "subtitle": "Talk with your crew. NutriCrew Moderator keeps things friendly.",
-    "placeholder": "Write a message…",
-    "empty": "Quiet so far — say hi!",
+    "title": "团队聊天",
+    "subtitle": "与队友交流。NutriCrew Moderator 维护友好氛围。",
+    "placeholder": "输入消息…",
+    "empty": "目前还没有消息——打个招呼吧！",
     "rules": "No profanity, spam, or links. Violations are hidden by the moderator.",
-    "needTeamTitle": "Join a team first",
-    "needTeamHint": "Create or join a team from Home or an invite link to unlock team chat.",
-    "needTeamCta": "Go to Home",
+    "needTeamTitle": "请先加入团队",
+    "needTeamHint": "从首页或邀请链接创建或加入团队以解锁团队聊天。",
+    "needTeamCta": "前往首页",
     "openFromTeam": "Open team chat"
   },
   "growth": {
-    "inviteShareBtn": "Invite via Telegram",
+    "inviteShareBtn": "通过 Telegram 邀请",
     "inviteShareTitle": "NutriCrew",
-    "inviteShareText": "Join my NutriCrew team! Code: {{code}}",
+    "inviteShareText": "加入我的 NutriCrew 团队！邀请码：{{code}}",
     "inviteShared": "Share dialog opened",
     "inviteCopied": "Link copied",
     "inviteShareFailed": "Set BOT_USERNAME on the server or copy the code manually",
@@ -65,26 +65,26 @@
     "mealShared": "Ready — post in your team chat",
     "mealCopied": "Text copied",
     "mealShareFailed": "Could not open share",
-    "dailyMealsTitle": "Meals today",
-    "dailyMealsHint": "{{count}} of {{target}} — breakfast, lunch, dinner",
-    "prizePoolHint": "Need {{needed}} more teammates for Stars prizes (min {{min}}).",
-    "tryLogFirst": "You can snap food before joining a team — points count after you join.",
-    "logWithoutTeam": "Snap food (try it)",
-    "teamTemplatesTitle": "Quick start",
+    "dailyMealsTitle": "今日餐食",
+    "dailyMealsHint": "{{count}} / {{target}}——早餐、午餐、晚餐",
+    "prizePoolHint": "Stars 奖品还需 {{needed}} 名队友（最少 {{min}} 人）。",
+    "tryLogFirst": "加入团队前也可以拍照记录——加入后积分才会计入。",
+    "logWithoutTeam": "拍照记录（试用）",
+    "teamTemplatesTitle": "快速开始",
     "teamTemplates": {
-      "friends": "Friends",
-      "gym": "Gym Crew 💪",
-      "office": "Office"
+      "friends": "朋友",
+      "gym": "健身房 💪",
+      "office": "办公室"
     },
     "autoJoinPending": "Invite link code {{code}} — joining…",
-    "dailyBonusGameHint": "Play NutriRun today for a team point bonus.",
-    "dailyBonusQuizHint": "Finish the calorie quiz for a team point bonus.",
-    "dailyBonusDone": "Today's NutriRun and quiz bonuses are claimed.",
+    "dailyBonusGameHint": "今天玩 NutriRun 可获得团队积分奖励。",
+    "dailyBonusQuizHint": "完成卡路里测验可获得团队积分奖励。",
+    "dailyBonusDone": "今天的 NutriRun 和测验奖励已领取。",
     "dailyBonusClaimed": "+{{points}} team points for today's activity!",
     "teamFeedTitle": "Today in your crew",
     "teamFeedEmpty": "No meals logged today yet — be the first!",
     "teamFeedYou": "You",
-    "featuresCta": "All features & leagues",
+    "featuresCta": "全部功能与联赛",
     "dailyGoalShort": "Daily goal {{progress}}/{{target}}",
     "dailyGoalDone": "Daily goal complete"
   },
@@ -332,28 +332,28 @@
     "tiktok": "TikTok"
   },
   "home": {
-    "greeting": "Hey, {{name}}!",
-    "streak": "{{days}}-day streak",
-    "multiplier": "Streak ×{{value}}",
-    "teamMult": "Team mult.",
-    "todayPoints": "Today's points",
-    "logCta": "Snap your meal",
-    "teamWaiting": "Your team is waiting for your next meal",
-    "noTeam": "Join a crew to earn team points and compete weekly.",
-    "createTeam": "Create team",
-    "joinTeam": "Join with code",
-    "teamName": "Team name",
-    "inviteCode": "Invite code",
-    "createBtn": "Create",
-    "joinBtn": "Join",
-    "shareCode": "Invite friends",
-    "guideCta": "Wellness guide — diets & workouts",
-    "gameCta": "Play NutriRun",
-    "quizCta": "Calorie quiz — guess kcal"
+    "greeting": "你好，{{name}}！",
+    "streak": "{{days}} 天连续",
+    "multiplier": "连续 ×{{value}}",
+    "teamMult": "团队加成",
+    "todayPoints": "今日积分",
+    "logCta": "拍摄你的餐食",
+    "teamWaiting": "团队在等待你的下一餐",
+    "noTeam": "加入团队以获得团队积分并参与每周竞赛。",
+    "createTeam": "创建团队",
+    "joinTeam": "用邀请码加入",
+    "teamName": "团队名称",
+    "inviteCode": "邀请码",
+    "createBtn": "创建",
+    "joinBtn": "加入",
+    "shareCode": "邀请好友",
+    "guideCta": "健康指南——饮食与训练",
+    "gameCta": "玩 NutriRun",
+    "quizCta": "卡路里测验——猜 kcal"
   },
   "log": {
-    "title": "Log meal",
-    "hint": "Live camera, gallery, or snapshot → AI estimates calories → edit → earn points",
+    "title": "记录餐食",
+    "hint": "实时相机、相册或拍照 → AI 估算卡路里 → 编辑 → 获得积分",
     "description": "What did you eat?",
     "calories": "Calories",
     "macros": "Macros (g)",
@@ -507,8 +507,8 @@
     "points": "{{points}} pts"
   },
   "prizes": {
-    "title": "Stars & prizes",
-    "balanceHint": "Won from weekly team battles",
+    "title": "Stars 与奖品",
+    "balanceHint": "来自每周团队对战",
     "poolTitle": "Weekly prize pool",
     "poolTotal": "{{total}} ⭐ total · {{available}} available",
     "poolHint": "Winners split 80% every Monday. Fund with Telegram Stars.",
@@ -519,46 +519,46 @@
     "premiumHint": "Badge + bragging rights · {{price}} Stars / month",
     "premiumBtn": "Upgrade · {{price}} ⭐",
     "proTitle": "NutriCrew Pro",
-    "proHint": "Unlimited AI scans, weekly reports, +2 streak freezes · 149 Stars / 30 days",
+    "proHint": "无限 AI 扫描、周报、+2 次连续冻结 · 149 Stars / 30 天",
     "proActive": "Pro is active",
     "proBtn": "Get Pro · 149 ⭐",
     "history": "Your wins",
-    "needTeam": "Join a team to use prizes"
+    "needTeam": "加入团队才能使用奖品"
   },
   "settings": {
-    "language": "Language",
-    "languageHint": "App interface and hints",
-    "guest": "Guest",
-    "appearanceTitle": "Appearance",
-    "fontSize": "Font size",
-    "fontSizeHint": "Text scale across the app",
-    "fontSizeSm": "Small",
-    "fontSizeMd": "Medium",
-    "fontSizeLg": "Large",
-    "fontSizePreview": "Preview",
+    "language": "语言",
+    "languageHint": "应用界面与提示文字",
+    "guest": "访客",
+    "appearanceTitle": "外观",
+    "fontSize": "字体大小",
+    "fontSizeHint": "全应用文字缩放",
+    "fontSizeSm": "小",
+    "fontSizeMd": "中",
+    "fontSizeLg": "大",
+    "fontSizePreview": "预览",
     "fontSizePreviewTitle": "NutriCrew",
-    "fontSizePreviewBody": "This is how text will look in the app: cards, menu, and hints.",
-    "fontSizeOk": "OK",
-    "fontSizeSaved": "Font size saved",
-    "experienceTitle": "Experience",
-    "haptics": "Haptic feedback",
-    "hapticsHint": "Vibration in the game and key actions",
-    "reduceMotion": "Reduce motion",
-    "reduceMotionHint": "Turns off smooth UI animations",
-    "gameMusic": "Game music",
-    "gameMusicHint": "Background music in NutriBird",
-    "title": "Settings",
-    "subtitle": "Export your data or manage your account (GDPR).",
-    "dataTitle": "Your data",
-    "exportBtn": "Download my data (JSON)",
-    "exportDone": "Export downloaded.",
-    "exportFailed": "Could not export your data. Try again later.",
-    "exportServerBusy": "Server is waking up — wait a moment and try again.",
-    "deleteBtn": "Delete my account",
-    "deleteConfirm": "Delete all your NutriCrew data permanently?",
-    "legalTitle": "Legal",
-    "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Use"
+    "fontSizePreviewBody": "应用中的文字将显示为这样：卡片、菜单和提示。",
+    "fontSizeOk": "确定",
+    "fontSizeSaved": "字体大小已保存",
+    "experienceTitle": "体验",
+    "haptics": "触觉反馈",
+    "hapticsHint": "游戏和关键操作中的振动",
+    "reduceMotion": "减少动画",
+    "reduceMotionHint": "关闭流畅的界面动画",
+    "gameMusic": "游戏音乐",
+    "gameMusicHint": "NutriBird 中的背景音乐",
+    "title": "设置",
+    "subtitle": "导出数据或管理账户（GDPR）。",
+    "dataTitle": "你的数据",
+    "exportBtn": "下载我的数据 (JSON)",
+    "exportDone": "导出已下载。",
+    "exportFailed": "无法导出数据。请稍后再试。",
+    "exportServerBusy": "服务器正在启动——请稍等再试。",
+    "deleteBtn": "删除我的账户",
+    "deleteConfirm": "永久删除所有 NutriCrew 数据？",
+    "legalTitle": "法律信息",
+    "privacyLink": "隐私政策",
+    "termsLink": "使用条款"
   },
   "legal": {
     "updated": "Last updated: June 2026",
@@ -580,16 +580,16 @@
     ]
   },
   "report": {
-    "title": "Weekly report",
-    "meals": "Meals",
-    "days": "Active days",
-    "calories": "Calories",
-    "protein": "Protein",
-    "points": "Points",
-    "streak": "Streak",
-    "teamBlock": "Team",
-    "teamRank": "Rank #{{rank}} · {{points}} pts",
-    "avgCalories": "Avg {{value}} kcal per meal"
+    "title": "周报",
+    "meals": "餐食",
+    "days": "活跃天数",
+    "calories": "卡路里",
+    "protein": "蛋白质",
+    "points": "积分",
+    "streak": "连续",
+    "teamBlock": "团队",
+    "teamRank": "排名 #{{rank}} · {{points}} 分",
+    "avgCalories": "平均每餐 {{value}} kcal"
   },
   "teamAdmin": {
     "title": "Team dashboard",
@@ -601,48 +601,48 @@
     "back": "Back to team"
   },
   "splash": {
-    "loading": "Connecting NutriCrew…",
-    "tagline": "Team battles for healthy eating"
+    "loading": "正在连接 NutriCrew…",
+    "tagline": "健康饮食团队对战"
   },
   "common": {
-    "loading": "Loading…",
-    "loadingSlow": "Waking up Render (free tier). Usually 20–50s — keep the app open…",
-    "error": "Something went wrong",
-    "retry": "Retry",
-    "apiNotConfigured": "Could not reach the API. Check that Render is running.",
-    "apiUnreachable": "Could not reach the server (nutricrew-dddi.onrender.com).",
-    "apiTimeout": "Server did not respond in time. Wait a minute and tap Retry.",
-    "apiBadResponse": "Invalid server response. Check Render and Vercel deploys.",
-    "telegramRequired": "Open the mini app from your Telegram bot button, not a browser tab.",
-    "telegramAuthFailed": "Telegram did not pass sign-in data. Close the app and reopen from the bot.",
-    "telegramMenuButtonHint": "Menu Button is set by the bot API. Profile «Open App» is separate: @BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app. Then send /start to the bot.",
-    "invalidTelegramAuth": "Auth failed. On Render, BOT_TOKEN must be the token of the same bot you opened the app from.",
-    "botNotConfigured": "BOT_TOKEN is missing on Render. Add your @BotFather token and redeploy the service.",
-    "cancel": "Cancel",
-    "save": "Save",
-    "backHome": "Back to home",
-    "close": "Close"
+    "loading": "加载中…",
+    "loadingSlow": "Render 服务器正在唤醒（免费套餐）。通常 20–50 秒——请保持应用打开…",
+    "error": "出了点问题",
+    "retry": "重试",
+    "apiNotConfigured": "无法连接 API。请检查 Render 是否运行。",
+    "apiUnreachable": "无法连接服务器 (nutricrew-dddi.onrender.com)。",
+    "apiTimeout": "服务器未及时响应。请等待一分钟后点重试。",
+    "apiBadResponse": "服务器响应无效。请检查 Render 和 Vercel 部署。",
+    "telegramRequired": "请从 Telegram 机器人按钮打开小程序，不要在浏览器中打开。",
+    "telegramAuthFailed": "Telegram 未传递登录数据。请关闭应用并从机器人重新打开。",
+    "telegramMenuButtonHint": "Menu Button 通过机器人 API 设置。个人资料中的「Open App」需单独配置：@BotFather → Bot Settings → Configure Mini App → Enable + URL https://nutricrew-miniapp.vercel.app。然后向机器人发送 /start。",
+    "invalidTelegramAuth": "认证失败。Render 上的 BOT_TOKEN 必须是你打开应用所用机器人的 token。",
+    "botNotConfigured": "Render 上缺少 BOT_TOKEN。请添加 @BotFather 的 token 并重新部署。",
+    "cancel": "取消",
+    "save": "保存",
+    "backHome": "返回首页",
+    "close": "关闭"
   },
   "registration": {
-    "title": "Welcome, {{name}}!",
+    "title": "欢迎，{{name}}！",
     "friend": "friend",
-    "subtitle": "Start logging meals right away. Profile is needed after a few logs — for personalized tips and team points.",
-    "gateTitle": "Almost there, {{name}}!",
-    "gateSubtitle": "You've logged meals — add weight, height and age to continue and unlock your team.",
-    "weight": "Weight (kg)",
-    "height": "Height (cm)",
-    "age": "Age (years)",
-    "continue": "Continue",
-    "note": "Used for calorie estimates and personalized nutrition tips. You can update later in the wellness guide.",
+    "subtitle": "马上开始记录餐食。记录几次后会需要完善资料——用于个性化建议和团队积分。",
+    "gateTitle": "快完成了，{{name}}！",
+    "gateSubtitle": "你已记录餐食——添加体重、身高和年龄以继续并解锁团队。",
+    "weight": "体重 (kg)",
+    "height": "身高 (cm)",
+    "age": "年龄 (岁)",
+    "continue": "继续",
+    "note": "用于估算卡路里和个性化营养建议。可在健康指南中稍后更新。",
     "invalidWeight": "Enter a valid weight between 30 and 300 kg.",
     "invalidHeight": "Enter a valid height between 120 and 230 cm.",
     "invalidAge": "Enter a valid age between 14 and 100 years."
   },
   "guest": {
-    "modeTitle": "Guest mode",
-    "modeHint": "Log meals without a profile. {{left}} logs left before registration.",
+    "modeTitle": "访客模式",
+    "modeHint": "无需资料即可记录餐食。注册前还可记录 {{left}} 次。",
     "teamBoostHint": "Team members earn boosted points — join a team to keep the bonus.",
-    "joinTeamCta": "Join a team"
+    "joinTeamCta": "加入团队"
   },
   "postRegistration": {
     "badge": "Registration complete",
@@ -761,27 +761,57 @@
         "name": "Ectomorph",
         "summary": "Lean build, fast metabolism, gains muscle slowly.",
         "macroHint": "~50% carbs · 25% protein · 25% fat",
-        "traits": ["Narrow shoulders and hips", "Low body fat naturally", "High metabolic rate", "Needs calorie surplus to build muscle"],
+        "traits": [
+          "Narrow shoulders and hips",
+          "Low body fat naturally",
+          "High metabolic rate",
+          "Needs calorie surplus to build muscle"
+        ],
         "nutrition": "Prioritize nutrient-dense calories: whole grains, starchy vegetables, healthy fats (olive oil, nuts, avocado). Protein 1.4–1.8 g/kg/day (ISSN) spread across meals. Avoid excessive fasting.",
-        "foods": ["Brown rice, oats, quinoa", "Chicken, fish, eggs, legumes", "Nuts, olive oil, avocado", "Bananas, berries, dried fruit"],
+        "foods": [
+          "Brown rice, oats, quinoa",
+          "Chicken, fish, eggs, legumes",
+          "Nuts, olive oil, avocado",
+          "Bananas, berries, dried fruit"
+        ],
         "activity": "Emphasize progressive resistance training 3–4×/week. Keep cardio moderate (ACSM: 150 min/week) to avoid excess calorie burn."
       },
       "mesomorph": {
         "name": "Mesomorph",
         "summary": "Athletic frame, responds quickly to training and diet.",
         "macroHint": "~40% carbs · 30% protein · 30% fat",
-        "traits": ["Broad shoulders, narrow waist", "Builds muscle relatively easily", "Moderate metabolism", "Responds well to varied training"],
+        "traits": [
+          "Broad shoulders, narrow waist",
+          "Builds muscle relatively easily",
+          "Moderate metabolism",
+          "Responds well to varied training"
+        ],
         "nutrition": "Balanced plate per USDA MyPlate: half vegetables/fruits, quarter lean protein, quarter whole grains. Protein 1.2–1.6 g/kg/day. Adjust calories to goal (maintain, cut, or bulk).",
-        "foods": ["Whole grains and legumes", "Lean meats, fish, dairy", "Colorful vegetables", "Berries and citrus"],
+        "foods": [
+          "Whole grains and legumes",
+          "Lean meats, fish, dairy",
+          "Colorful vegetables",
+          "Berries and citrus"
+        ],
         "activity": "Combine strength (2–4×/week) and cardio (150–300 min/week moderate per WHO). Sport-specific drills work well."
       },
       "endomorph": {
         "name": "Endomorph",
         "summary": "Stores fat more readily; benefits from protein-rich, fiber-forward eating.",
         "macroHint": "~35% carbs · 35% protein · 30% fat",
-        "traits": ["Wider hips and midsection tendency", "Gains weight more easily", "Strong lower body potential", "Responds well to structured eating"],
+        "traits": [
+          "Wider hips and midsection tendency",
+          "Gains weight more easily",
+          "Strong lower body potential",
+          "Responds well to structured eating"
+        ],
         "nutrition": "Higher protein (1.6–2.0 g/kg/day), high fiber (25–38 g/day per USDA), low-glycemic carbs. Mediterranean or DASH patterns support cardiometabolic health (WHO/AHA).",
-        "foods": ["Leafy greens, cruciferous vegetables", "Fish, poultry, tofu, beans", "Berries, apples (whole fruit)", "Olive oil in moderation"],
+        "foods": [
+          "Leafy greens, cruciferous vegetables",
+          "Fish, poultry, tofu, beans",
+          "Berries, apples (whole fruit)",
+          "Olive oil in moderation"
+        ],
         "activity": "Prioritize daily movement (NEAT) plus 150–300 min/week aerobic activity (WHO). Add resistance 2–3×/week to preserve lean mass."
       }
     },
@@ -792,7 +822,12 @@
         "source": "WHO · AHA · UNESCO heritage diet",
         "description": "Emphasizes vegetables, fruits, whole grains, legumes, nuts, olive oil as main fat, fish 2×/week, limited red meat and processed foods. Aligns with WHO recommendations to reduce saturated fat and increase fiber.",
         "macros": "~45–50% carbs (whole grains) · 15–20% protein · 35–40% fat (mostly unsaturated)",
-        "foods": ["Extra-virgin olive oil", "Fatty fish (salmon, sardines)", "Tomatoes, leafy greens, peppers", "Chickpeas, lentils, whole wheat"],
+        "foods": [
+          "Extra-virgin olive oil",
+          "Fatty fish (salmon, sardines)",
+          "Tomatoes, leafy greens, peppers",
+          "Chickpeas, lentils, whole wheat"
+        ],
         "evidence": "PREDIMED trial and meta-analyses show reduced cardiovascular events and improved glycemic control. Endorsed by American Heart Association."
       },
       "dash": {
@@ -801,7 +836,12 @@
         "source": "NIH National Heart, Lung, and Blood Institute",
         "description": "DASH (Dietary Approaches to Stop Hypertension) limits sodium to 1,500–2,300 mg/day, increases potassium, magnesium, and calcium through whole foods. Ideal for endomorph and mesomorph types managing weight or blood pressure.",
         "macros": "~55% carbs · 18% protein · 27% fat · fiber 30+ g/day",
-        "foods": ["Low-fat dairy", "Whole grains (6–8 servings/day)", "Vegetables (4–5 servings/day)", "Nuts, seeds, legumes"],
+        "foods": [
+          "Low-fat dairy",
+          "Whole grains (6–8 servings/day)",
+          "Vegetables (4–5 servings/day)",
+          "Nuts, seeds, legumes"
+        ],
         "evidence": "NIH-funded trials demonstrate systolic BP reduction of 8–14 mmHg. Recommended by US Dietary Guidelines for hypertension."
       },
       "plantForward": {
@@ -810,7 +850,12 @@
         "source": "EAT-Lancet Commission · WHO sustainable diet",
         "description": "Half the plate from vegetables and fruits, whole grains and legumes as staples, animal products as garnish. Supports sustainability and reduces saturated fat per WHO healthy diet targets.",
         "macros": "~50% carbs · 15–20% protein · 30% fat · 25+ g fiber",
-        "foods": ["Lentils, beans, tofu, tempeh", "Whole oats, buckwheat, brown rice", "Seasonal vegetables and fruit", "Optional: eggs, yogurt, fish"],
+        "foods": [
+          "Lentils, beans, tofu, tempeh",
+          "Whole oats, buckwheat, brown rice",
+          "Seasonal vegetables and fruit",
+          "Optional: eggs, yogurt, fish"
+        ],
         "evidence": "EAT-Lancet planetary health diet links plant-rich patterns to lower CVD mortality and reduced environmental footprint."
       },
       "highProtein": {
@@ -819,7 +864,12 @@
         "source": "ISSN position stand · ACSM",
         "description": "Protein 1.6–2.2 g/kg/day distributed over 4 meals (0.25–0.4 g/kg each). Remaining calories from complex carbs and unsaturated fats. Suited to ectomorph and mesomorph training phases.",
         "macros": "~35% protein · 40% carbs · 25% fat",
-        "foods": ["Greek yogurt, cottage cheese", "Lean beef, chicken breast", "Whey or plant protein if needed", "Sweet potato, rice, oats"],
+        "foods": [
+          "Greek yogurt, cottage cheese",
+          "Lean beef, chicken breast",
+          "Whey or plant protein if needed",
+          "Sweet potato, rice, oats"
+        ],
         "evidence": "ISSN meta-analyses show improved lean mass retention during caloric deficit when protein ≥1.6 g/kg/day combined with resistance training."
       },
       "balancedPlate": {
@@ -828,7 +878,12 @@
         "source": "USDA Dietary Guidelines for Americans",
         "description": "Official US guidance for healthy eating across life stages. Focus on variety, nutrient density, and limiting added sugars, saturated fat, and sodium per Dietary Guidelines 2020–2025.",
         "macros": "Flexible — typically 45–65% carbs · 10–35% protein · 20–35% fat",
-        "foods": ["Half plate: vegetables & fruits", "Quarter plate: lean protein", "Quarter plate: whole grains", "Dairy or fortified alternatives"],
+        "foods": [
+          "Half plate: vegetables & fruits",
+          "Quarter plate: lean protein",
+          "Quarter plate: whole grains",
+          "Dairy or fortified alternatives"
+        ],
         "evidence": "Foundation of US public health nutrition policy; aligns with WHO limits on free sugars (<10% energy) and salt (<5 g/day)."
       }
     }
@@ -883,12 +938,30 @@
       "notEnoughXp": "Not enough XP.",
       "notEnoughStars": "Not enough Stars.",
       "buyTelegram": "Buy {{stars}} ⭐",
-      "classic": { "name": "Classic", "perk": "Balanced starter — healthy glow." },
-      "ember": { "name": "Ember", "perk": "Fire trail on flap · +hot combo sparks." },
-      "frost": { "name": "Frost", "perk": "Ice aura · shields last longer." },
-      "neon": { "name": "Neon", "perk": "Cyber glow · stronger fruit magnet." },
-      "royal": { "name": "Royal", "perk": "Golden crown · combo up to x5." },
-      "storm": { "name": "Storm", "perk": "Lightning flaps · bigger near-miss bonus." }
+      "classic": {
+        "name": "Classic",
+        "perk": "Balanced starter — healthy glow."
+      },
+      "ember": {
+        "name": "Ember",
+        "perk": "Fire trail on flap · +hot combo sparks."
+      },
+      "frost": {
+        "name": "Frost",
+        "perk": "Ice aura · shields last longer."
+      },
+      "neon": {
+        "name": "Neon",
+        "perk": "Cyber glow · stronger fruit magnet."
+      },
+      "royal": {
+        "name": "Royal",
+        "perk": "Golden crown · combo up to x5."
+      },
+      "storm": {
+        "name": "Storm",
+        "perk": "Lightning flaps · bigger near-miss bonus."
+      }
     },
     "tagline": "A tiny spirit sprints through a macro world — jump, glide, wall-run, and punch!",
     "menuHint": "Auto-run platformer with 6 worlds. Collect glow motes for stars.",
@@ -1074,12 +1147,31 @@
       "storm": "Exclusive · boss energy boost · lightning · Stars / Telegram only."
     },
     "skillTags": {
-      "classic": ["Balanced", "Starter"],
-      "ember": ["Junk burn", "+18% fruit"],
-      "frost": ["Slow-mo", "Wide gaps", "Long ghost"],
-      "neon": ["+1 nitro stack", "Rainbow trail"],
-      "royal": ["Long ghost", "Wide gaps"],
-      "storm": ["Boss boost+", "Lightning"]
+      "classic": [
+        "Balanced",
+        "Starter"
+      ],
+      "ember": [
+        "Junk burn",
+        "+18% fruit"
+      ],
+      "frost": [
+        "Slow-mo",
+        "Wide gaps",
+        "Long ghost"
+      ],
+      "neon": [
+        "+1 nitro stack",
+        "Rainbow trail"
+      ],
+      "royal": [
+        "Long ghost",
+        "Wide gaps"
+      ],
+      "storm": [
+        "Boss boost+",
+        "Lightning"
+      ]
     }
   },
   "quiz": {
@@ -1474,44 +1566,48 @@
     "xpProgress": "XP today: {{earned}} / {{max}}"
   },
   "trends": {
-    "title": "Trends",
-    "subtitle": "Calories, protein, and weight over time",
-    "range": { "7d": "7 days", "30d": "30 days", "90d": "90 days" },
-    "calories": "Calories",
-    "protein": "Protein",
-    "weight": "Weight",
-    "insights": "Insights",
-    "avg": "Average",
-    "target": "Target"
+    "title": "趋势",
+    "subtitle": "卡路里、蛋白质与体重变化",
+    "range": {
+      "7d": "7 天",
+      "30d": "30 天",
+      "90d": "90 天"
+    },
+    "calories": "卡路里",
+    "protein": "蛋白质",
+    "weight": "体重",
+    "insights": "洞察",
+    "avg": "平均",
+    "target": "目标"
   },
   "pro": {
     "title": "NutriCrew Pro",
-    "subtitle": "Coach, meal plan, and shopping list",
+    "subtitle": "教练、餐食计划与购物清单",
     "paywall": "Upgrade to Pro for personalized coaching",
-    "paywallHeadline": "Level up your nutrition with Pro",
-    "paywallLead": "No extra apps or private channels — everything in NutriCrew. Pay via Tribute and Pro unlocks automatically.",
-    "featureCoach": "AI coach for meals and goals",
-    "featureAi": "Unlimited AI meal analysis",
-    "featureReports": "Weekly reports and digest",
-    "featureShopping": "Shopping list from your meal plan",
-    "featureFreeze": "+2 streak freezes when you subscribe",
-    "priceLine": "Pro subscription · 30 days",
+    "paywallHeadline": "用 Pro 提升你的营养管理",
+    "paywallLead": "无需额外应用或私密频道——一切都在 NutriCrew。通过 Tribute 支付，Pro 自动解锁。",
+    "featureCoach": "餐食与目标的 AI 教练",
+    "featureAi": "无限 AI 餐食分析",
+    "featureReports": "周报与摘要",
+    "featureShopping": "从餐食计划生成购物清单",
+    "featureFreeze": "订阅时 +2 次连续冻结",
+    "priceLine": "Pro 订阅 · 30 天",
     "buyBtn": "Get Pro · 149 ⭐",
-    "buyTribute": "Get Pro",
-    "buyTributeChannel": "Channel subscription",
+    "buyTribute": "开通 Pro",
+    "buyTributeChannel": "频道订阅",
     "pill": "Pro",
-    "locked": "Pro only",
-    "tributeHint": "Pay via Tribute — Pro unlocks in the app automatically after you subscribe.",
+    "locked": "仅限 Pro",
+    "tributeHint": "通过 Tribute 支付——订阅后 Pro 会在应用中自动解锁。",
     "buying": "Opening checkout…",
     "starsNote": "Pay with Telegram Stars inside the mini app. No card required.",
-    "purchaseSuccess": "Pro activated! Refresh if features don’t appear right away.",
-    "activeUntil": "Pro active until {{date}}",
-    "upgrade": "Get Pro",
-    "coach": "AI Coach",
-    "ask": "Ask",
-    "shopping": "Shopping list",
-    "generateList": "Generate from meal plan",
-    "weeklyDigest": "Weekly digest"
+    "purchaseSuccess": "Pro 已激活！若功能未立即显示请刷新。",
+    "activeUntil": "Pro 有效期至 {{date}}",
+    "upgrade": "开通 Pro",
+    "coach": "AI 教练",
+    "ask": "提问",
+    "shopping": "购物清单",
+    "generateList": "从餐食计划生成",
+    "weeklyDigest": "每周摘要"
   },
   "org": {
     "title": "Organization dashboard",

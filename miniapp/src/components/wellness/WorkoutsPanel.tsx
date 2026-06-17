@@ -18,8 +18,10 @@ type Props = {
   onUpdated?: () => void;
 };
 
+import { intlLocaleTag } from "../../lib/formatLocale";
+
 function formatWorkoutTime(iso: string, locale: string) {
-  return new Date(iso).toLocaleTimeString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
+  return new Date(iso).toLocaleTimeString(intlLocaleTag(locale), {
     hour: "2-digit",
     minute: "2-digit",
   });

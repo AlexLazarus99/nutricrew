@@ -17,8 +17,10 @@ import { Skeleton, SkeletonCard } from "../components/ui/Skeleton";
 import { EmptyState } from "../components/ui/EmptyState";
 import { NavBadgeIcon } from "../components/nav/NavBadgeIcon";
 
+import { intlLocaleTag } from "../lib/formatLocale";
+
 function formatDayLabel(date: Date, locale: string): string {
-  return date.toLocaleDateString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
+  return date.toLocaleDateString(intlLocaleTag(locale), {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -26,7 +28,7 @@ function formatDayLabel(date: Date, locale: string): string {
 }
 
 function formatTime(iso: string, locale: string): string {
-  return new Date(iso).toLocaleTimeString(locale.startsWith("ru") ? "ru-RU" : "en-US", {
+  return new Date(iso).toLocaleTimeString(intlLocaleTag(locale), {
     hour: "2-digit",
     minute: "2-digit",
   });
