@@ -1,4 +1,4 @@
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api, type MealAnalysisResponse } from "../../api/client";
 import { fileToDataUrl } from "../../lib/imageCapture";
@@ -10,6 +10,7 @@ type Props = {
   analyzing: boolean;
   preview: string | null;
   aiNote: string | null;
+  autoStart?: "live" | "capture" | null;
   onAnalyzingChange: (value: boolean) => void;
   onAnalysis: (result: MealPhotoAnalysis) => void;
   onPhotoOnly: (preview: string) => void;
@@ -20,6 +21,7 @@ export function MealPhotoCapture({
   analyzing,
   preview,
   aiNote,
+  autoStart,
   onAnalyzingChange,
   onAnalysis,
   onPhotoOnly,
@@ -30,6 +32,17 @@ export function MealPhotoCapture({
   const cameraRef = useRef<HTMLInputElement>(null);
   const photoOnlyRef = useRef<HTMLInputElement>(null);
   const [liveOpen, setLiveOpen] = useState(false);
+  const autoStartedRef = useRef(false);
+
+  useEffect(() => {
+    if (!autoStart || autoStartedRef.current || analyzing || preview) return;
+    autoStartedRef.current = true;
+    if (autoStart === "live") {
+      setLiveOpen(true);
+      return;
+    }
+    cameraRef.current?.click();
+  }, [autoStart, analyzing, preview]);
 
   async function analyzeFile(file: File) {
     onAnalyzingChange(true);

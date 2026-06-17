@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type MealAnalysisResponse, type MealResponse } from "../api/client";
 import { trackEvent } from "../lib/analytics";
@@ -21,6 +21,7 @@ import type { FoodSearchResult } from "../api/client";
 import { VoiceMealLog } from "../components/food/VoiceMealLog";
 import { incrementMealLogCount } from "../lib/guestSession";
 import { maybeScheduleGuideOffer } from "../lib/postRegistration";
+import { parseLogCameraMode } from "../lib/logCameraPath";
 
 type AnalysisPortionBase = {
   servingGrams: number;
@@ -42,6 +43,8 @@ function resolveServingGrams(analysis: MealAnalysisResponse): number | undefined
 export function LogMealPage() {
   const { t } = useTranslation();
   const { me, refresh } = useMe();
+  const [searchParams] = useSearchParams();
+  const autoCamera = parseLogCameraMode(searchParams.get("camera"));
   const logTour = useTutorialTour("log", true);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
@@ -66,7 +69,7 @@ export function LogMealPage() {
   const [catalogOpen, setCatalogOpen] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [showMoreWays, setShowMoreWays] = useState(false);
-  const [showPhotoCapture, setShowPhotoCapture] = useState(false);
+  const [showPhotoCapture, setShowPhotoCapture] = useState(!!autoCamera);
   const [portionGrams, setPortionGrams] = useState("");
   const analysisBaseRef = useRef<AnalysisPortionBase | null>(null);
   const photoSectionRef = useRef<HTMLDivElement | null>(null);
@@ -375,6 +378,7 @@ export function LogMealPage() {
             analyzing={analyzing}
             preview={preview}
             aiNote={aiNote}
+            autoStart={autoCamera}
             onAnalyzingChange={setAnalyzing}
             onAnalysis={applyAnalysis}
             onPhotoOnly={applyPhotoOnly}

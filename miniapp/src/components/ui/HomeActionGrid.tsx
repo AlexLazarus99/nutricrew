@@ -39,7 +39,6 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
   const isPro = !!me.pro?.isPro;
 
   const primary: Action[] = [
-    { to: "/log", kind: "food", labelKey: "home.logCta", tone: "food" },
     { to: "/coach", kind: "coach", labelKey: "coach.title", tone: "coach" },
     { to: "/guide", kind: "guide", labelKey: "home.guideCta", tone: "guide" },
     { to: "/quiz", kind: "quiz", labelKey: "home.quizCta", tone: "quiz" },

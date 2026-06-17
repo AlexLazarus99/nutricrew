@@ -14,6 +14,7 @@ import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
 import type { GrowthSummary } from "../api/client";
+import { LOG_CAMERA_LIVE_PATH } from "../lib/logCameraPath";
 
 const LEAGUE_TIER_EMOJI: Record<string, string> = {
   bronze: "🥉",
@@ -121,6 +122,14 @@ export function HomePage() {
           key={`${me.todayPoints}-${me.progress.xp}-${me.starBalance}`}
           onClaimed={refresh}
         />
+
+        <ProActionTile
+          to={LOG_CAMERA_LIVE_PATH}
+          label={t("home.logCta")}
+          kind="food"
+          tone="food"
+        />
+
         {error && (
           <div className="card error-card">
             <p className="muted">{error}</p>
@@ -132,13 +141,6 @@ export function HomePage() {
           <p className="muted">{t("home.noTeam")}</p>
           <p className="muted small">{t("growth.tryLogFirst")}</p>
         </div>
-
-        <ProActionTile
-          to="/log"
-          label={t("growth.logWithoutTeam")}
-          kind="food"
-          tone="food"
-        />
 
         <div className="card">
           <h3>{t("growth.teamTemplatesTitle")}</h3>
@@ -202,6 +204,14 @@ export function HomePage() {
         key={`${me.todayPoints}-${me.progress.xp}-${me.starBalance}`}
         onClaimed={refresh}
       />
+
+      <ProActionTile
+        to={LOG_CAMERA_LIVE_PATH}
+        label={t("home.logCta")}
+        kind="food"
+        tone="food"
+      />
+
       <div className="card hero" data-tutorial="home-hero">
         <h2>{t("home.greeting", { name: displayName })}</h2>
         <p className="muted">{t("home.teamWaiting")}</p>
