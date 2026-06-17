@@ -8,6 +8,13 @@ const monorepoRoot = path.resolve(serverRoot, "..");
 dotenv.config({ path: path.join(monorepoRoot, ".env") });
 dotenv.config({ path: path.join(serverRoot, ".env") });
 
+function parseTributeProUrlsEnv(raw: string): string[] {
+  return raw
+    .split(/[,\n]/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
 export const config = {
   port: Number(process.env.PORT ?? 3000),
   host: process.env.HOST ?? "0.0.0.0",
@@ -79,7 +86,10 @@ export const config = {
       .map((s) => Number(s.trim()))
       .filter((n) => Number.isFinite(n) && n > 0),
     proDays: Number(process.env.TRIBUTE_PRO_DAYS ?? process.env.PRO_DAYS ?? 30),
-    proUrl: (process.env.TRIBUTE_PRO_URL ?? "").trim(),
+    proUrls: parseTributeProUrlsEnv(process.env.TRIBUTE_PRO_URL ?? ""),
+    get proUrl(): string {
+      return this.proUrls[0] ?? "";
+    },
   },
 };
 

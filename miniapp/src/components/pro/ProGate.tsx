@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useMe } from "../../hooks/useMe";
-import { ProTributeButton } from "./ProTributeButton";
+import { ProTributeCheckout } from "./ProTributeCheckout";
 
 type Props = {
   titleKey: string;
@@ -32,7 +32,7 @@ export function ProGate({ titleKey, descKey, source, children }: Props) {
           <li>{t("pro.featureAi")}</li>
           <li>{t("pro.featureReports")}</li>
         </ul>
-        <ProTributeButton source={source}>{t("pro.buyTribute")}</ProTributeButton>
+        <ProTributeCheckout source={source} />
         <p className="pro-gate__hint muted small">{t("pro.tributeHint")}</p>
       </div>
     </section>

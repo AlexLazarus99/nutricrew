@@ -1009,6 +1009,17 @@
   margin: 0.65rem 0 0;
 }
 
+.pro-tribute-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.pro-tribute-options .pro-cta-shell--compact {
+  margin-top: 0;
+}
+
 .bottom-nav__slot {
   display: flex;
   flex-direction: column;

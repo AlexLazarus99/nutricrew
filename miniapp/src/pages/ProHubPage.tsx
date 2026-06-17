@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useMe } from "../hooks/useMe";
-import { ProTributeButton } from "../components/pro/ProTributeButton";
+import { ProTributeCheckout } from "../components/pro/ProTributeCheckout";
 
 const PRO_FEATURES = [
   "pro.featureCoach",
@@ -61,7 +61,7 @@ export function ProHubPage() {
 
           <p className="pro-paywall__price">{t("pro.priceLine")}</p>
 
-          <ProTributeButton source="pro_hub">{t("pro.buyTribute")}</ProTributeButton>
+          <ProTributeCheckout source="pro_hub" />
 
           <p className="pro-paywall__stars muted small">{t("pro.tributeHint")}</p>
         </div>

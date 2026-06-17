@@ -1,6 +1,5 @@
 import { trackEvent } from "./analytics";
-
-const FALLBACK_TRIBUTE = "https://t.me/tribute";
+import { primaryTributeProUrl } from "./tributeProUrls";
 
 type TgWebApp = {
   openTelegramLink?: (url: string) => void;
@@ -9,7 +8,7 @@ type TgWebApp = {
 
 export function openTributePro(url: string | null | undefined, source?: string): void {
   trackEvent("pro_tribute_click", { source: source ?? "unknown" });
-  const target = url?.trim() || FALLBACK_TRIBUTE;
+  const target = url?.trim() || primaryTributeProUrl();
   const tg = window.Telegram?.WebApp as TgWebApp | undefined;
 
   if (tg?.openTelegramLink && /t\.me\//i.test(target)) {

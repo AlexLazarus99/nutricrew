@@ -213,7 +213,8 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     progress,
     socialLinks: getPublicSocialLinks(),
     growth,
-    tributeProUrl: config.tribute.proUrl || null,
+    tributeProUrl: config.tribute.proUrls[0] || null,
+    tributeProUrls: config.tribute.proUrls.length ? config.tribute.proUrls : null,
     pro,
   });
 });

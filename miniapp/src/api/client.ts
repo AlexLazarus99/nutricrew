@@ -154,6 +154,7 @@ export interface MeResponse {
     tiktok: string;
   }>;
   tributeProUrl?: string | null;
+  tributeProUrls?: string[] | null;
   growth?: GrowthSummary;
   pro?: { isPro: boolean; proUntil: string | null };
 }
