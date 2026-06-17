@@ -243,6 +243,9 @@
   "quests": {
     "title": "Quests & challenges",
     "subtitle": "Complete tasks — tap Claim. Resets daily and weekly.",
+    "collapseSection": "Collapse quests",
+    "expandSection": "Expand quests",
+    "collapsedReady": "{{count}} ready to claim",
     "tabs": {
       "daily": "Daily",
       "weekly": "Weekly",

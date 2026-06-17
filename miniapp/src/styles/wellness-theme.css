@@ -1290,10 +1290,46 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 0 0 12px;
+  border: none;
   border-bottom: 2px solid transparent;
   border-image: linear-gradient(90deg, var(--heading-gradient-c), #c5e8d8, transparent) 1;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.quests-panel--collapsed .quests-panel-head {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  border-image: none;
+}
+
+.quests-panel-head__copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.quests-panel-head__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.quests-panel-chevron {
+  font-size: 0.75rem;
+  opacity: 0.65;
+  line-height: 1;
+}
+
+.quests-panel__loading {
+  margin: 0;
 }
 
 .quests-panel-head h3 {
