@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { NavBadgeIcon, type NavBadgeKind } from "../nav/NavBadgeIcon";
+import { ProActionTile } from "../pro/ProActionTile";
 import { ProTributeButton } from "../pro/ProTributeButton";
 import { useMe } from "../../hooks/useMe";
 import { isProGatedPath } from "../../lib/proGated";
+import type { NavBadgeKind } from "../nav/NavBadgeIcon";
 
 type Action = {
   to: string;
@@ -53,33 +53,41 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
     return t(action.labelKey);
   }
 
+  function tileVariant(action: Action): "pro" | "channel" | "muted" {
+    if (action.primary) return "pro";
+    if (action.to === "/coach") return "channel";
+    return "muted";
+  }
+
   function renderAction(action: Action, compact?: boolean) {
     const locked = !isPro && isProGatedPath(action.to);
 
     return (
       <div
         key={action.to}
-        className={`home-action-grid__cell${compact ? " home-action-grid__cell--compact" : ""}`}
+        className={[
+          "home-action-grid__cell",
+          compact ? "home-action-grid__cell--compact" : "",
+          action.primary ? "home-action-grid__cell--primary" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
       >
-        <Link
+        <ProActionTile
           to={action.to}
-          className={[
-            "home-action-grid__item",
-            action.primary ? "home-action-grid__item--primary" : "",
-            compact ? "home-action-grid__item--compact" : "",
-            locked ? "home-action-grid__item--pro-locked" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-        >
-          <span className="home-action-grid__icon-wrap">
-            <NavBadgeIcon kind={action.kind} size={compact ? 36 : 40} animated />
-            {locked ? <span className="home-action-grid__lock" aria-hidden>🔒</span> : null}
-          </span>
-          <span className="home-action-grid__label">{label(action)}</span>
-        </Link>
+          label={label(action)}
+          kind={action.kind}
+          variant={tileVariant(action)}
+          size={action.primary ? "hero" : compact ? "compact" : "default"}
+          locked={locked}
+        />
         {locked ? (
-          <ProTributeButton size="pill" source={`home-${action.to}`} className="home-action-grid__pro-pill">
+          <ProTributeButton
+            size="pill"
+            source={`home-${action.to}`}
+            className="home-action-grid__pro-pill"
+            variant={action.to === "/coach" ? "channel" : "pro"}
+          >
             {t("pro.pill")}
           </ProTributeButton>
         ) : null}
@@ -89,11 +97,11 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
 
   return (
     <>
-      <div className="home-action-grid">
+      <div className="home-action-grid home-action-grid--pro">
         {primary.map((action) => renderAction(action))}
       </div>
       {secondary.length > 0 ? (
-        <div className="home-action-grid home-action-grid--secondary">
+        <div className="home-action-grid home-action-grid--secondary home-action-grid--pro">
           {secondary.map((item) => renderAction(item, true))}
         </div>
       ) : null}

@@ -9,6 +9,7 @@ import { DailyMealsProgress } from "../components/DailyMealsProgress";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { HomeActionGrid } from "../components/ui/HomeActionGrid";
+import { ProActionTile } from "../components/pro/ProActionTile";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
@@ -133,9 +134,13 @@ export function HomePage() {
           <p className="muted small">{t("growth.tryLogFirst")}</p>
         </div>
 
-        <Link to="/log" className="btn btn-primary btn-block">
-          {t("growth.logWithoutTeam")}
-        </Link>
+        <ProActionTile
+          to="/log"
+          label={t("growth.logWithoutTeam")}
+          kind="food"
+          variant="pro"
+          size="hero"
+        />
 
         <div className="card">
           <h3>{t("growth.teamTemplatesTitle")}</h3>

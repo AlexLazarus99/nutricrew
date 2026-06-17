@@ -23,9 +23,9 @@ export function ProTributeCheckout({ source }: Props) {
           key={url}
           url={url}
           source={`${source}-${index + 1}`}
-          size={index === 0 ? "default" : "compact"}
+          variant={index === 0 ? "pro" : "channel"}
         >
-          {index === 0 ? t("pro.buyTribute") : t("pro.buyTribute2")}
+          {index === 0 ? t("pro.buyTribute") : t("pro.buyTributeChannel")}
         </ProTributeButton>
       ))}
     </div>

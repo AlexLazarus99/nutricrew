@@ -5,10 +5,12 @@ import { resolveTributeProUrls } from "../../lib/tributeProUrls";
 import { ProSubscribeButton } from "./ProSubscribeButton";
 
 type Size = "default" | "compact" | "pill";
+type Variant = "pro" | "channel";
 
 type Props = {
   children: ReactNode;
   size?: Size;
+  variant?: Variant;
   source?: string;
   className?: string;
   url?: string;
@@ -18,6 +20,7 @@ type Props = {
 export function ProTributeButton({
   children,
   size = "default",
+  variant = "pro",
   source,
   className,
   url,
@@ -30,6 +33,7 @@ export function ProTributeButton({
   return (
     <ProSubscribeButton
       size={size}
+      variant={variant}
       className={className}
       onClick={() => openTributePro(target, source)}
     >
