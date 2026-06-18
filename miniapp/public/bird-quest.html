@@ -3863,48 +3863,85 @@ function drawNitroFlames(c, b){
   c.closePath(); c.fill();
   c.restore();
 }
-function drawDragonFireBreath(c, b, time){
-  if(!isDragonActive() || game.dragonMode.rampTime > 0) return;
-  c.save();
-  c.translate(b.x, b.y);
-  c.rotate(b.tilt * 0.4);
+function drawDragonFireBreath(c, b, time, pose){
+  if(!pose || !isDragonActive() || game.dragonMode.rampTime > 0) return;
+  const { mouth, bodyBob, tilt, r } = pose;
   const pulse = 0.78 + 0.22 * Math.sin(time * 16);
-  const len = b.r * (3.1 + pulse * 0.9);
-  const tipX = b.r * 1.42;
-  const coreG = c.createLinearGradient(tipX, 0, tipX + len, 0);
-  coreG.addColorStop(0, 'rgba(255,248,220,0.98)');
-  coreG.addColorStop(0.18, 'rgba(255,193,7,0.92)');
-  coreG.addColorStop(0.42, 'rgba(255,111,0,0.78)');
-  coreG.addColorStop(0.72, 'rgba(211,47,47,0.45)');
+  const len = r * (3.0 + pulse * 0.85);
+  const mx = mouth.x;
+  const my = mouth.y;
+  const ma = mouth.angle;
+  const cos = Math.cos(ma);
+  const sin = Math.sin(ma);
+  const px = -sin;
+  const py = cos;
+  const halfW = r * 0.15;
+  const endX = mx + cos * len;
+  const endY = my + sin * len;
+
+  c.save();
+  c.translate(b.x, b.y + bodyBob);
+  c.rotate(tilt);
+
+  const coreG = c.createLinearGradient(mx, my, endX, endY);
+  coreG.addColorStop(0, 'rgba(255,252,230,0.98)');
+  coreG.addColorStop(0.15, 'rgba(255,213,79,0.94)');
+  coreG.addColorStop(0.4, 'rgba(255,111,0,0.82)');
+  coreG.addColorStop(0.72, 'rgba(211,47,47,0.48)');
   coreG.addColorStop(1, 'rgba(69,10,10,0)');
   c.fillStyle = coreG;
   c.beginPath();
-  c.moveTo(tipX, -b.r * 0.14);
-  c.bezierCurveTo(
-    tipX + len * 0.28, -b.r * 0.38 + Math.sin(time * 13) * b.r * 0.1,
-    tipX + len * 0.62, -b.r * 0.12 + Math.sin(time * 11) * b.r * 0.14,
-    tipX + len, -b.r * 0.04
+  c.moveTo(mx + px * halfW * 0.35, my + py * halfW * 0.35);
+  c.quadraticCurveTo(
+    mx + cos * len * 0.32 + px * halfW + Math.sin(time * 13) * r * 0.06,
+    my + sin * len * 0.32 + py * halfW - Math.cos(time * 11) * r * 0.05,
+    endX, endY - py * halfW * 0.2
   );
-  c.bezierCurveTo(
-    tipX + len * 0.68, b.r * 0.1 + Math.sin(time * 9) * b.r * 0.08,
-    tipX + len * 0.32, b.r * 0.34 + Math.sin(time * 12) * b.r * 0.1,
-    tipX, b.r * 0.16
+  c.quadraticCurveTo(
+    mx + cos * len * 0.55 + px * halfW * 0.5,
+    my + sin * len * 0.55 + py * halfW * 0.5 + Math.sin(time * 9) * r * 0.04,
+    mx + px * halfW * 0.55, my + py * halfW * 0.55
   );
   c.closePath();
   c.fill();
+
   c.globalCompositeOperation = 'lighter';
-  for(let i = 0; i < 12; i++){
-    c.globalAlpha = pulse * (0.22 + (12 - i) * 0.04);
-    const fx = tipX + len * (0.08 + i * 0.075) + Math.sin(time * 18 + i * 1.3) * b.r * 0.08;
-    const fy = Math.sin(time * 14 + i * 1.9) * b.r * (0.16 + i * 0.012);
-    const rg = c.createRadialGradient(fx, fy, 0, fx, fy, 10 + i * 2.2);
-    rg.addColorStop(0, 'rgba(255,255,255,0.85)');
-    rg.addColorStop(0.35, 'rgba(255,183,77,0.55)');
+  for(let i = 0; i < 10; i++){
+    c.globalAlpha = pulse * (0.25 + (10 - i) * 0.045);
+    const t = 0.06 + i * 0.085;
+    const fx = mx + cos * len * t + Math.sin(time * 18 + i * 1.4) * r * 0.06;
+    const fy = my + sin * len * t + (px * Math.sin(time * 14 + i) * r * 0.12);
+    const rg = c.createRadialGradient(fx, fy, 0, fx, fy, 8 + i * 2);
+    rg.addColorStop(0, 'rgba(255,255,255,0.9)');
+    rg.addColorStop(0.4, 'rgba(255,183,77,0.5)');
     rg.addColorStop(1, 'rgba(183,28,28,0)');
     c.fillStyle = rg;
-    c.beginPath(); c.ellipse(fx, fy, 9 + i * 1.8, 5 + i * 0.9, 0, 0, TAU); c.fill();
+    c.beginPath();
+    c.ellipse(fx, fy, 7 + i * 1.6, 4 + i * 0.8, ma, 0, TAU);
+    c.fill();
   }
   c.restore();
+}
+function computeDragonPose(b, time, morph){
+  morph = clamp(morph ?? 1, 0.15, 1);
+  const r = b.r * morph * 1.08;
+  const bodyBob = Math.sin(time * 2.6) * r * 0.025;
+  const tilt = b.tilt * 0.32;
+  const spine = sampleEasternDragonSpine(r, time);
+  const neck = spine[0];
+  const headAngle = neck.angle + Math.PI;
+  const headR = r * 1.15;
+  const hx = neck.x + Math.cos(headAngle) * r * 0.52;
+  const hy = neck.y + Math.sin(headAngle) * r * 0.52;
+  const roar = isDragonActive() ? 1 : 0.55 + morph * 0.35;
+  const jaw = 0.58 + Math.sin(time * 5.8) * 0.06 * roar;
+  const mouthX = hx + Math.cos(headAngle) * headR * 1.05;
+  const mouthY = hy + Math.sin(headAngle) * headR * (0.08 + jaw * 0.12 * roar);
+  return {
+    r, morph, bodyBob, tilt, spine, roar, jaw,
+    head: { x: hx, y: hy, angle: headAngle, r: headR, neckX: neck.x, neckY: neck.y },
+    mouth: { x: mouthX, y: mouthY, angle: headAngle, jaw },
+  };
 }
 function sampleEasternDragonSpine(r, time){
   const pts = [];
@@ -3945,8 +3982,9 @@ function drawRealisticDragonBody(c, spine, r){
     const p = spine[i];
     const nx = -Math.sin(p.angle);
     const ny = Math.cos(p.angle);
-    top.push({ x: p.x + nx * p.width, y: p.y + ny * p.width });
-    bot.push({ x: p.x - nx * p.width * 0.74, y: p.y - ny * p.width * 0.74 });
+    const wScale = i === 0 ? 0.5 : i === 1 ? 0.78 : 1;
+    top.push({ x: p.x + nx * p.width * wScale, y: p.y + ny * p.width * wScale });
+    bot.push({ x: p.x - nx * p.width * 0.74 * wScale, y: p.y - ny * p.width * 0.74 * wScale });
   }
   c.save();
   c.shadowColor = 'rgba(30,0,0,0.55)';
@@ -3967,6 +4005,7 @@ function drawRealisticDragonBody(c, spine, r){
   c.shadowBlur = 0;
   c.shadowOffsetY = 0;
   for(let i = 0; i < spine.length; i++){
+    if(i < 2) continue;
     const p = spine[i];
     const nx = -Math.sin(p.angle);
     const ny = Math.cos(p.angle);
@@ -3983,6 +4022,7 @@ function drawRealisticDragonBody(c, spine, r){
 }
 function drawRealisticDragonBelly(c, spine, r){
   for(let i = 1; i < spine.length - 1; i++){
+    if(i < 2) continue;
     const p = spine[i];
     const nx = -Math.sin(p.angle);
     const ny = Math.cos(p.angle);
@@ -4014,6 +4054,7 @@ function drawRealisticDragonBelly(c, spine, r){
 }
 function drawRealisticDragonScales(c, spine, r){
   for(let i = 0; i < spine.length - 1; i++){
+    if(i < 2) continue;
     const p = spine[i];
     const nx = -Math.sin(p.angle);
     const ny = Math.cos(p.angle);
@@ -4043,6 +4084,7 @@ function drawRealisticDragonScales(c, spine, r){
 }
 function drawRealisticDragonMane(c, spine, r, time){
   for(let i = 0; i < spine.length; i++){
+    if(i < 2) continue;
     const p = spine[i];
     if(p.t > 0.92) continue;
     const nx = -Math.sin(p.angle);
@@ -4112,124 +4154,202 @@ function drawRealisticDragonLeg(c, p, r, side){
     c.fill();
   }
 }
-function drawRealisticDragonHead(c, head, r, time, roar){
-  const jaw = 0.58 + Math.sin(time * 5.8) * 0.06 * roar;
+function drawDragonNeckBridge(c, head, r){
+  const nx = Math.cos(head.angle + Math.PI);
+  const ny = Math.sin(head.angle + Math.PI);
+  const bridgeG = c.createLinearGradient(head.neckX, head.neckY, head.x, head.y);
+  bridgeG.addColorStop(0, '#4a0e0e');
+  bridgeG.addColorStop(1, '#8b1f1f');
+  c.fillStyle = bridgeG;
+  c.strokeStyle = '#2b0606';
+  c.lineWidth = Math.max(1.2, r * 0.02);
+  c.beginPath();
+  c.moveTo(head.neckX + ny * r * 0.18, head.neckY - nx * r * 0.18);
+  c.quadraticCurveTo(
+    (head.neckX + head.x) * 0.5, (head.neckY + head.y) * 0.5 - r * 0.12,
+    head.x - nx * r * 0.38, head.y - ny * r * 0.38
+  );
+  c.lineTo(head.x - nx * r * 0.38 + ny * r * 0.22, head.y - ny * r * 0.38 - nx * r * 0.22);
+  c.quadraticCurveTo(
+    (head.neckX + head.x) * 0.5 + ny * r * 0.1, (head.neckY + head.y) * 0.5 + r * 0.08,
+    head.neckX + ny * r * 0.28, head.neckY - nx * r * 0.28
+  );
+  c.closePath();
+  c.fill();
+  c.stroke();
+}
+function drawRealisticDragonHead(c, head, time, roar, jaw){
+  const r = head.r;
   c.save();
   c.translate(head.x, head.y);
   c.rotate(head.angle);
 
-  // cranium
-  const skullG = c.createRadialGradient(r * 0.45, -r * 0.12, r * 0.05, r * 0.55, -r * 0.05, r * 0.95);
-  skullG.addColorStop(0, '#c62828');
-  skullG.addColorStop(0.55, '#8b1f1f');
-  skullG.addColorStop(1, '#3d0c0c');
+  // skull + long snout (faces +x)
+  const skullG = c.createRadialGradient(r * 0.35, -r * 0.12, r * 0.08, r * 0.45, -r * 0.05, r * 1.05);
+  skullG.addColorStop(0, '#e53935');
+  skullG.addColorStop(0.45, '#b71c1c');
+  skullG.addColorStop(0.85, '#7f0000');
+  skullG.addColorStop(1, '#3e0a0a');
   c.fillStyle = skullG;
-  c.strokeStyle = '#2b0606';
-  c.lineWidth = Math.max(1.2, r * 0.022);
+  c.strokeStyle = '#1a0505';
+  c.lineWidth = Math.max(1.4, r * 0.024);
   c.beginPath();
-  c.moveTo(r * 0.05, -r * 0.1);
-  c.bezierCurveTo(r * 0.35, -r * 0.28, r * 0.82, -r * 0.24, r * 1.18, -r * 0.06);
-  c.bezierCurveTo(r * 1.28, r * 0.02, r * 1.16, r * 0.12, r * 0.78, r * 0.14);
-  c.bezierCurveTo(r * 0.34, r * 0.16, r * 0.08, r * 0.1, r * 0.05, -r * 0.1);
+  c.moveTo(-r * 0.42, -r * 0.06);
+  c.bezierCurveTo(-r * 0.08, -r * 0.38, r * 0.42, -r * 0.36, r * 0.82, -r * 0.2);
+  c.bezierCurveTo(r * 1.18, -r * 0.08, r * 1.38, r * 0.02, r * 1.22, r * 0.14);
+  c.bezierCurveTo(r * 0.88, r * 0.2, r * 0.35, r * 0.18, -r * 0.12, r * 0.14);
+  c.bezierCurveTo(-r * 0.32, r * 0.1, -r * 0.42, r * 0.02, -r * 0.42, -r * 0.06);
   c.closePath();
   c.fill();
   c.stroke();
 
-  // brow ridge shadow
-  c.fillStyle = 'rgba(20,0,0,0.35)';
+  // brow ridge
+  c.fillStyle = 'rgba(0,0,0,0.28)';
   c.beginPath();
-  c.ellipse(r * 0.72, -r * 0.14, r * 0.2, r * 0.06, -0.08, 0, TAU);
+  c.ellipse(r * 0.38, -r * 0.18, r * 0.24, r * 0.07, -0.1, 0, TAU);
   c.fill();
 
-  // upper jaw
-  const jawG = c.createLinearGradient(r * 0.5, 0, r * 1.3, r * 0.2);
-  jawG.addColorStop(0, '#7a1818');
-  jawG.addColorStop(1, '#4a0e0e');
-  c.fillStyle = jawG;
+  // upper jaw / lip
+  c.fillStyle = '#6d1515';
   c.beginPath();
-  c.moveTo(r * 0.58, r * 0.02);
-  c.bezierCurveTo(r * 0.95, r * (0.04 + jaw * 0.06), r * 1.22, r * (0.12 + jaw * 0.14), r * 1.28, r * (0.2 + jaw * 0.18));
-  c.lineTo(r * 1.18, r * (0.24 + jaw * 0.2));
-  c.bezierCurveTo(r * 0.88, r * (0.16 + jaw * 0.12), r * 0.62, r * (0.08 + jaw * 0.06), r * 0.58, r * 0.02);
+  c.moveTo(r * 0.45, r * 0.02);
+  c.bezierCurveTo(r * 0.82, r * 0.04, r * 1.12, r * 0.06, r * 1.22, r * 0.1);
+  c.lineTo(r * 1.18, r * (0.14 + jaw * 0.04 * roar));
+  c.bezierCurveTo(r * 0.78, r * (0.1 + jaw * 0.03 * roar), r * 0.48, r * 0.06, r * 0.45, r * 0.02);
+  c.fill();
+
+  // open mouth cavity
+  c.fillStyle = '#0d0202';
+  c.beginPath();
+  c.moveTo(r * 0.52, r * 0.05);
+  c.quadraticCurveTo(r * 0.92, r * (0.1 + jaw * 0.1 * roar), r * 1.14, r * (0.16 + jaw * 0.16 * roar));
+  c.quadraticCurveTo(r * 0.82, r * (0.2 + jaw * 0.18 * roar), r * 0.52, r * (0.1 + jaw * 0.06 * roar));
   c.closePath();
   c.fill();
 
-  // mouth interior
-  c.fillStyle = '#1a0505';
+  // lower jaw
+  c.fillStyle = '#5c1010';
   c.beginPath();
-  c.moveTo(r * 0.64, r * 0.04);
-  c.bezierCurveTo(r * 0.98, r * (0.12 + jaw * 0.1), r * 1.16, r * (0.2 + jaw * 0.16), r * 1.2, r * (0.28 + jaw * 0.22));
-  c.bezierCurveTo(r * 0.92, r * (0.3 + jaw * 0.2), r * 0.7, r * (0.18 + jaw * 0.12), r * 0.64, r * 0.04);
+  c.moveTo(r * 0.48, r * 0.08);
+  c.quadraticCurveTo(r * 0.88, r * (0.16 + jaw * 0.14 * roar), r * 1.1, r * (0.22 + jaw * 0.2 * roar));
+  c.quadraticCurveTo(r * 0.72, r * (0.26 + jaw * 0.18 * roar), r * 0.48, r * (0.14 + jaw * 0.08 * roar));
   c.fill();
 
   // teeth
   c.fillStyle = '#f5f5f0';
-  for(let i = 0; i < 7; i++){
-    const tx = r * (0.72 + i * 0.065);
-    const ty = r * (0.06 + (i % 2) * 0.015);
+  for(let i = 0; i < 8; i++){
+    const tx = r * (0.58 + i * 0.062);
+    const ty = r * (0.06 + (i % 2) * 0.012);
     c.beginPath();
     c.moveTo(tx, ty);
-    c.lineTo(tx + r * 0.02, ty + r * (0.08 + jaw * 0.06));
-    c.lineTo(tx - r * 0.012, ty + r * 0.03);
+    c.lineTo(tx + r * 0.022, ty + r * (0.07 + jaw * 0.05 * roar));
+    c.lineTo(tx - r * 0.014, ty + r * 0.028);
+    c.closePath();
+    c.fill();
+  }
+  for(let i = 0; i < 6; i++){
+    const tx = r * (0.62 + i * 0.058);
+    const ty = r * (0.14 + jaw * 0.14 * roar);
+    c.beginPath();
+    c.moveTo(tx, ty);
+    c.lineTo(tx + r * 0.018, ty + r * (0.06 + jaw * 0.05 * roar));
+    c.lineTo(tx - r * 0.012, ty + r * 0.025);
     c.closePath();
     c.fill();
   }
 
-  // horn
-  const hornG = c.createLinearGradient(r * 1.2, -r * 0.2, r * 1.45, -r * 0.02);
-  hornG.addColorStop(0, '#fff8e1');
-  hornG.addColorStop(0.45, '#d7ccc8');
-  hornG.addColorStop(1, '#8d6e63');
-  c.fillStyle = hornG;
+  // crown horns
+  const horns = [
+    [0.18, -0.34, 0.08, -0.62], [0.34, -0.38, 0.1, -0.72], [0.52, -0.32, 0.09, -0.58],
+  ];
+  for(const [hx, hy, hw, tip] of horns){
+    const hornG = c.createLinearGradient(r * hx, r * hy, r * (hx + hw), r * tip);
+    hornG.addColorStop(0, '#efebe9');
+    hornG.addColorStop(0.6, '#bcaaa4');
+    hornG.addColorStop(1, '#5d4037');
+    c.fillStyle = hornG;
+    c.beginPath();
+    c.moveTo(r * hx, r * hy);
+    c.lineTo(r * (hx + hw * 0.35), r * (hy + tip * 0.45));
+    c.lineTo(r * (hx + hw), r * tip);
+    c.lineTo(r * (hx + hw * 0.2), r * (hy + tip * 0.25));
+    c.closePath();
+    c.fill();
+  }
+
+  // nose horn
+  const noseG = c.createLinearGradient(r * 1.28, -r * 0.08, r * 1.48, -r * 0.22);
+  noseG.addColorStop(0, '#fff8e1');
+  noseG.addColorStop(1, '#8d6e63');
+  c.fillStyle = noseG;
   c.beginPath();
-  c.moveTo(r * 1.22, -r * 0.05);
-  c.lineTo(r * 1.46, -r * 0.2);
-  c.lineTo(r * 1.3, -r * 0.01);
+  c.moveTo(r * 1.3, -r * 0.04);
+  c.lineTo(r * 1.5, -r * 0.2);
+  c.lineTo(r * 1.34, r * 0.02);
   c.closePath();
   c.fill();
 
   // reptile eye
   c.save();
   c.shadowColor = '#ff6f00';
-  c.shadowBlur = r * 0.12;
-  const eyeG = c.createRadialGradient(r * 0.66, -r * 0.1, 0, r * 0.66, -r * 0.1, r * 0.09);
-  eyeG.addColorStop(0, '#fff59d');
-  eyeG.addColorStop(0.35, '#ff8f00');
-  eyeG.addColorStop(0.7, '#e65100');
+  c.shadowBlur = r * 0.14;
+  const eyeG = c.createRadialGradient(r * 0.4, -r * 0.14, 0, r * 0.4, -r * 0.14, r * 0.1);
+  eyeG.addColorStop(0, '#fff9c4');
+  eyeG.addColorStop(0.4, '#ff8f00');
+  eyeG.addColorStop(0.75, '#e65100');
   eyeG.addColorStop(1, '#3e2723');
   c.fillStyle = eyeG;
   c.beginPath();
-  c.ellipse(r * 0.66, -r * 0.1, r * 0.085, r * 0.052, -0.12, 0, TAU);
+  c.ellipse(r * 0.4, -r * 0.14, r * 0.1, r * 0.062, -0.14, 0, TAU);
   c.fill();
   c.shadowBlur = 0;
-  c.fillStyle = '#1b0000';
+  c.fillStyle = '#1a0000';
   c.beginPath();
-  c.ellipse(r * 0.67, -r * 0.1, r * 0.018, r * 0.042, -0.12, 0, TAU);
+  c.ellipse(r * 0.41, -r * 0.14, r * 0.022, r * 0.048, -0.14, 0, TAU);
   c.fill();
-  c.fillStyle = 'rgba(255,255,255,0.75)';
+  c.fillStyle = 'rgba(255,255,255,0.8)';
   c.beginPath();
-  c.ellipse(r * 0.64, -r * 0.12, r * 0.016, r * 0.01, -0.3, 0, TAU);
+  c.ellipse(r * 0.37, -r * 0.17, r * 0.018, r * 0.011, -0.3, 0, TAU);
   c.fill();
   c.restore();
 
-  // whiskers
+  // nostril
+  c.fillStyle = '#1a0505';
+  c.beginPath();
+  c.ellipse(r * 1.2, -r * 0.02, r * 0.028, r * 0.018, 0, 0, TAU);
+  c.fill();
+
+  // whiskers flowing backward
   c.lineCap = 'round';
   for(let w = 0; w < 4; w++){
     const phase = time * 2.8 + w * 0.85;
-    const wy = -r * (0.01 + w * 0.045);
-    const wg = c.createLinearGradient(r * 0.95, wy, -r * 1.1, wy + r * 0.1);
+    const wy = -r * (0.02 + w * 0.04);
+    const wg = c.createLinearGradient(r * 0.95, wy, -r * 0.9, wy + r * 0.08);
     wg.addColorStop(0, 'rgba(240,215,140,0.95)');
-    wg.addColorStop(1, 'rgba(180,140,80,0.25)');
+    wg.addColorStop(1, 'rgba(180,140,80,0.2)');
     c.strokeStyle = wg;
-    c.lineWidth = Math.max(0.9, r * 0.016) * (1 - w * 0.08);
+    c.lineWidth = Math.max(0.9, r * 0.017) * (1 - w * 0.08);
     c.beginPath();
-    c.moveTo(r * (0.94 - w * 0.03), wy);
+    c.moveTo(r * (0.92 - w * 0.03), wy);
     c.bezierCurveTo(
-      r * (0.42 + Math.sin(phase) * 0.04), wy - r * (0.07 + w * 0.015),
-      -r * (0.28 + w * 0.1), wy + r * (0.05 + Math.sin(phase * 0.7) * 0.03),
-      -r * (1.05 + w * 0.15), wy + r * (0.1 + Math.cos(phase) * 0.04)
+      r * (0.45 + Math.sin(phase) * 0.04), wy - r * (0.06 + w * 0.012),
+      r * (0.02 - w * 0.06), wy + r * (0.04 + Math.sin(phase * 0.7) * 0.03),
+      -r * (0.55 + w * 0.12), wy + r * (0.08 + Math.cos(phase) * 0.03)
     );
     c.stroke();
+  }
+
+  // mouth glow when roaring
+  if(roar > 0.7){
+    c.globalAlpha = 0.35 + jaw * 0.25;
+    const glow = c.createRadialGradient(r * 1.02, r * 0.12, 0, r * 1.02, r * 0.12, r * 0.22);
+    glow.addColorStop(0, 'rgba(255,213,79,0.9)');
+    glow.addColorStop(1, 'rgba(255,87,34,0)');
+    c.fillStyle = glow;
+    c.beginPath();
+    c.ellipse(r * 1.02, r * (0.12 + jaw * 0.08), r * 0.14, r * (0.08 + jaw * 0.06), 0, 0, TAU);
+    c.fill();
+    c.globalAlpha = 1;
   }
 
   c.restore();
@@ -4257,17 +4377,15 @@ function drawRealisticDragonTailTuft(c, tail, r, time){
   }
 }
 function drawDragon(c, b, time, morph){
-  morph = clamp(morph ?? 1, 0.15, 1);
-  const r = b.r * morph * 1.08;
-  const roar = isDragonActive() ? 1 : 0.55 + morph * 0.35;
-  const bodyBob = Math.sin(time * 2.6) * r * 0.025;
-  const spine = sampleEasternDragonSpine(r, time);
-  const head = spine[0];
-  const tail = spine[spine.length - 1];
+  const pose = computeDragonPose(b, time, morph);
+  const { r, bodyBob, tilt, spine, roar, jaw, head, tail } = {
+    ...pose,
+    tail: pose.spine[pose.spine.length - 1],
+  };
 
   c.save();
   c.translate(b.x, b.y + bodyBob);
-  c.rotate(b.tilt * 0.32);
+  c.rotate(tilt);
 
   drawRealisticDragonBody(c, spine, r);
   drawRealisticDragonBelly(c, spine, r);
@@ -4281,9 +4399,11 @@ function drawDragon(c, b, time, morph){
   }
 
   drawRealisticDragonTailTuft(c, tail, r, time);
-  drawRealisticDragonHead(c, head, r, time, roar);
+  drawDragonNeckBridge(c, head, r);
+  drawRealisticDragonHead(c, head, time, roar, jaw);
 
   c.restore();
+  return pose;
 }
 function drawMutationFx(c, b, progress, time){
   c.save();
@@ -5066,14 +5186,12 @@ function renderWorld(c, frozen){
   if(game.nitroTime>0 && game.bird && !isDragonActive()){
     drawNitroFlames(c, game.bird);
   }
-  if(isDragonActive() && game.bird){
-    drawDragonFireBreath(c, game.bird, game.t);
-  }
   if(isCoconutCharging() && game.bird){
     drawCoconutAbsorbRays(c, game.bird, coconutEnergy());
     drawCoconutBirdAura(c, game.bird, coconutEnergy());
   }
   // bird / dragon
+  let dragonPose = null;
   if(game.bird){
     const morph = dragonMutateProgress();
     if(isMutating()){
@@ -5081,10 +5199,11 @@ function renderWorld(c, frozen){
       c.globalAlpha = 1 - morph * 0.65;
       drawBird(c, game.bird, game.displayFat, game.t);
       c.restore();
-      drawDragon(c, game.bird, game.t, morph * 0.85);
+      dragonPose = drawDragon(c, game.bird, game.t, morph * 0.85);
       drawMutationFx(c, game.bird, morph, game.t);
     } else if(isDragonActive()){
-      drawDragon(c, game.bird, game.t, 1);
+      dragonPose = drawDragon(c, game.bird, game.t, 1);
+      drawDragonFireBreath(c, game.bird, game.t, dragonPose);
     } else {
       drawBirdGlideTrail(c, game.bird, game.t);
       drawBird(c, game.bird, game.displayFat, game.t);
