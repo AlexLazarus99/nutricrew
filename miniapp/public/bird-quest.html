@@ -432,6 +432,23 @@ const LEVELS = [
   { name:'Дубай',              theme:'dubai',      sky:['#ffaa66','#ffd9a8','#fff0d9'], ground:'#d4a05a', accent:'#8d6e3f', landmark:'burj', deco:'#ffcc80' },
 ];
 
+const CITY_SCENERY = {
+  eiffel:    { houses:'sparse', water:'river', waterDepth:0.14, locale:'park' },
+  bigben:    { houses:'sparse', water:'river', waterDepth:0.12, locale:'embankment' },
+  kremlin:   { houses:'sparse', water:'river', waterDepth:0.1, locale:'embankment' },
+  colosseum: { houses:'none', water:'none', terrain:'ancient' },
+  liberty:   { houses:'far', water:'harbor', waterDepth:0.28, locale:'island' },
+  fuji:      { houses:'none', water:'lake', waterDepth:0.22, terrain:'mountain' },
+  pyramids:  { houses:'none', water:'none', terrain:'desert' },
+  opera:     { houses:'none', water:'harbor', waterDepth:0.34, locale:'harbor' },
+  greatwall: { houses:'none', water:'none', terrain:'hills' },
+  rio:       { houses:'far', water:'coast', waterDepth:0.16, locale:'coast' },
+  burj:      { houses:'far', water:'none', terrain:'desert' },
+};
+function getCityScenery(landmark){
+  return CITY_SCENERY[landmark] || { houses:'sparse', water:'none' };
+}
+
 /* Очки за один забег на уровне N, чтобы открыть уровень N+1: 625, 875, 1125 … */
 function scoreGoalForLevel(levelIdx){
   return (125 + Math.max(0, levelIdx) * 50) * 5;
@@ -3207,44 +3224,201 @@ function gapHazardHit(b, gh, pipe){
 }
 
 /* ---- City background + landmark ---- */
-function drawCity(c, lv, scroll, t, gy){
-  // soft sun/moon
-  sun(c, W*0.2, H*0.18, 30, 'rgba(255,255,255,0.7)');
-  // far skyline silhouette
-  const s1=scroll*0.12;
-  c.fillStyle=shade(lv.accent, 70);
-  for(let i=0;i<14;i++){
-    const x=((i*120)-s1)%(W+200); const xx=x<-100?x+W+200:x;
-    const h=60+((i*53)%90);
-    c.globalAlpha=0.5; c.fillRect(xx, gy-h, 80, h); c.globalAlpha=1;
-  }
-  // landmark in mid layer (parallax slow), centered-ish, repeats slowly
-  drawLandmark(c, lv.landmark, lv, scroll*0.18, gy, t);
-  // near buildings
-  const s3=scroll*0.5;
-  c.fillStyle=shade(lv.accent,-10);
-  for(let i=0;i<10;i++){
-    const x=((i*170)-s3)%(W+260); const xx=x<-130?x+W+260:x;
-    const h=80+((i*71)%120);
-    c.fillRect(xx, gy-h, 110, h);
-    // windows
-    c.fillStyle='rgba(255,235,150,0.55)';
-    for(let wy=gy-h+10; wy<gy-10; wy+=22){
-      for(let wx=xx+12; wx<xx+98; wx+=24){ c.fillRect(wx,wy,12,12); }
+function drawCityFarHouses(c, lv, scroll, gy, scenery){
+  const mode = scenery.houses || 'sparse';
+  if(mode === 'none') return;
+  const count = mode === 'far' ? 14 : 9;
+  const alpha = mode === 'far' ? 0.28 : 0.38;
+  const s = scroll * 0.07;
+  const maxH = mode === 'far' ? 95 : 72;
+  c.fillStyle = shade(lv.accent, 55);
+  for(let i = 0; i < count; i++){
+    const x = ((i * 118) - s) % (W + 160);
+    const xx = x < -80 ? x + W + 160 : x;
+    const h = 38 + (i * 41) % maxH;
+    const w = 58 + (i * 19) % 36;
+    c.globalAlpha = alpha * (0.75 + (i % 4) * 0.06);
+    c.fillRect(xx, gy - h, w, h);
+    if(mode === 'far' && i % 2 === 0){
+      c.fillStyle = 'rgba(255,235,170,0.22)';
+      for(let wy = gy - h + 8; wy < gy - 10; wy += 16){
+        for(let wx = xx + 8; wx < xx + w - 8; wx += 14){ c.fillRect(wx, wy, 6, 7); }
+      }
+      c.fillStyle = shade(lv.accent, 55);
     }
-    c.fillStyle=shade(lv.accent,-10);
+  }
+  c.globalAlpha = 1;
+}
+function drawCityBackTerrain(c, lv, scroll, gy, scenery){
+  const s = scroll * 0.14;
+  if(scenery.terrain === 'desert'){
+    c.fillStyle = shade(lv.ground, 18);
+    hill(c, gy + 8, H * 0.09, shade(lv.ground, 8), s, 44, 12);
+    hill(c, gy + 4, H * 0.06, shade(lv.ground, 22), s * 1.1, 38, 48);
+  } else if(scenery.terrain === 'hills'){
+    c.fillStyle = shade(lv.ground, -8);
+    hill(c, gy + 6, H * 0.11, shade(lv.ground, 5), s, 42, 0);
+    hill(c, gy + 2, H * 0.07, shade(lv.ground, 15), s * 0.85, 36, 30);
+  } else if(scenery.terrain === 'mountain'){
+    c.fillStyle = shade(lv.ground, 10);
+    hill(c, gy + 10, H * 0.08, '#6d8f6a', s * 0.6, 40, 8);
+  } else if(scenery.terrain === 'ancient'){
+    c.fillStyle = shade(lv.ground, 12);
+    c.beginPath();
+    c.ellipse(W * 0.5, gy - 4, W * 0.55, H * 0.05, 0, Math.PI, 0);
+    c.fill();
   }
 }
+function drawCityWater(c, lv, scroll, gy, scenery, t){
+  const kind = scenery.water;
+  if(!kind || kind === 'none') return;
+  const depth = (scenery.waterDepth || 0.15) * H;
+  const waterTop = gy - depth;
+  const s = scroll * 0.22;
+  const waterCol = kind === 'harbor' ? (lv.deco || '#4fc3f7')
+    : kind === 'lake' ? '#5eb8d4'
+    : kind === 'coast' ? '#3aa8c8'
+    : '#4a9ec4';
+  const wg = c.createLinearGradient(0, waterTop - 20, 0, gy);
+  wg.addColorStop(0, shade(waterCol, 28));
+  wg.addColorStop(0.35, waterCol);
+  wg.addColorStop(0.85, shade(lv.ground, 5));
+  wg.addColorStop(1, lv.ground);
+  c.fillStyle = wg;
+  c.fillRect(0, waterTop, W, gy - waterTop + 2);
+  c.strokeStyle = 'rgba(255,255,255,0.32)';
+  c.lineWidth = 1.8;
+  const rows = kind === 'harbor' ? 5 : 4;
+  for(let row = 0; row < rows; row++){
+    const wy = waterTop + 14 + row * (depth / (rows + 0.5));
+    c.beginPath();
+    for(let x = -20; x <= W + 30; x += 18){
+      const wave = Math.sin((x + s) * 0.028 + row * 0.9 + t * 1.8) * (4 + row * 0.6);
+      if(x <= -20) c.moveTo(x, wy + wave);
+      else c.lineTo(x, wy + wave);
+    }
+    c.stroke();
+  }
+  if(kind === 'harbor' || kind === 'coast'){
+    c.fillStyle = shade(lv.ground, 8);
+    for(let i = 0; i < 3; i++){
+      const bx = ((i * 220) - scroll * 0.12) % (W + 140);
+      const xx = bx < -70 ? bx + W + 140 : bx;
+      c.beginPath();
+      c.ellipse(xx, gy - 2, 48 + i * 12, 8, 0, 0, TAU);
+      c.fill();
+    }
+  }
+}
+function drawLandmarkLocale(c, kind, lv, scenery, t){
+  const locale = scenery.locale;
+  const terrain = scenery.terrain;
+  if(locale === 'harbor'){
+    c.fillStyle = shade(lv.ground, -6);
+    c.beginPath();
+    c.moveTo(-150, 0);
+    c.quadraticCurveTo(-40, -18, 60, -8);
+    c.lineTo(150, 0);
+    c.closePath();
+    c.fill();
+    c.fillStyle = 'rgba(255,255,255,0.18)';
+    c.beginPath();
+    c.ellipse(0, 6, 120, 10, 0, 0, TAU);
+    c.fill();
+  } else if(locale === 'island'){
+    c.fillStyle = shade(lv.ground, 6);
+    c.beginPath();
+    c.ellipse(0, 4, 95, 22, 0, 0, TAU);
+    c.fill();
+    c.strokeStyle = 'rgba(255,255,255,0.25)';
+    c.lineWidth = 2;
+    c.beginPath();
+    c.ellipse(0, 8, 110, 12, 0, 0, TAU);
+    c.stroke();
+  } else if(locale === 'park'){
+    c.fillStyle = '#5a9e62';
+    c.fillRect(-160, -10, 320, 12);
+    c.fillStyle = 'rgba(90,158,98,0.45)';
+    for(let i = -7; i <= 7; i++){
+      c.beginPath();
+      c.arc(i * 22, -6, 9, 0, TAU);
+      c.fill();
+    }
+  } else if(locale === 'embankment'){
+    c.fillStyle = shade(lv.ground, -4);
+    c.fillRect(-180, -8, 360, 10);
+    c.strokeStyle = 'rgba(255,255,255,0.2)';
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(-180, -8);
+    c.lineTo(180, -8);
+    c.stroke();
+  } else if(locale === 'coast'){
+    c.fillStyle = '#e8d4a8';
+    c.beginPath();
+    c.moveTo(-170, 0);
+    c.quadraticCurveTo(0, -14, 170, 0);
+    c.fill();
+  } else if(terrain === 'desert'){
+    c.fillStyle = shade(lv.ground, 10);
+    c.beginPath();
+    c.ellipse(0, 2, 140, 16, 0, 0, TAU);
+    c.fill();
+  } else if(terrain === 'ancient'){
+    c.fillStyle = '#c9a96a';
+    c.beginPath();
+    c.ellipse(0, 0, 200, 18, 0, 0, TAU);
+    c.fill();
+  }
+}
+function drawLandmarkWaterReflection(c, kind, scenery, t){
+  if(!scenery.water || scenery.water === 'none') return;
+  if(kind !== 'opera' && kind !== 'liberty' && kind !== 'fuji') return;
+  c.save();
+  c.globalAlpha = 0.22 + Math.sin(t * 2.2) * 0.04;
+  c.scale(1, -0.35);
+  c.translate(0, -8);
+  if(kind === 'opera'){
+    c.fillStyle = '#dfe8ef';
+    const shells = [[-70,60,40],[-20,80,55],[35,70,48],[80,55,38]];
+    for(const s of shells){
+      c.beginPath();
+      c.moveTo(s[0] - s[2], 0);
+      c.quadraticCurveTo(s[0], -s[1] * 1.6, s[0] + s[2], 0);
+      c.fill();
+    }
+  } else if(kind === 'liberty'){
+    c.fillStyle = '#86c5a5';
+    c.fillRect(-10, 0, 20, 70);
+  } else if(kind === 'fuji'){
+    c.fillStyle = '#7e8fbf';
+    c.beginPath();
+    c.moveTo(-120, 0);
+    c.lineTo(0, -120);
+    c.lineTo(120, 0);
+    c.fill();
+  }
+  c.restore();
+}
+function drawCity(c, lv, scroll, t, gy){
+  const scenery = getCityScenery(lv.landmark);
+  sun(c, W * 0.2, H * 0.18, 30, 'rgba(255,255,255,0.7)');
+  drawCityFarHouses(c, lv, scroll, gy, scenery);
+  drawCityBackTerrain(c, lv, scroll, gy, scenery);
+  drawCityWater(c, lv, scroll, gy, scenery, t);
+  drawLandmark(c, lv.landmark, lv, scroll * 0.32, gy, t, scenery);
+}
 
-function drawLandmark(c, kind, lv, scroll, gy, t){
-  // place one landmark that slowly drifts; wrap so it's always visible-ish
-  const period = W*1.4;
-  let lx = (W*0.5 - (scroll % period));
-  // draw two instances for seamless wrap
-  for(let k=0;k<2;k++){
-    const x = lx + k*period;
-    if(x < -period*0.6 || x > W+period*0.6) continue;
-    c.save(); c.translate(x, gy);
+function drawLandmark(c, kind, lv, scroll, gy, t, scenery){
+  scenery = scenery || getCityScenery(kind);
+  const period = W * 1.4;
+  let lx = (W * 0.5 - (scroll % period));
+  for(let k = 0; k < 2; k++){
+    const x = lx + k * period;
+    if(x < -period * 0.6 || x > W + period * 0.6) continue;
+    c.save();
+    c.translate(x, gy);
+    drawLandmarkLocale(c, kind, lv, scenery, t);
     switch(kind){
       case 'eiffel':    landmarkEiffel(c); break;
       case 'bigben':    landmarkBigBen(c); break;
@@ -3258,6 +3432,7 @@ function drawLandmark(c, kind, lv, scroll, gy, t){
       case 'rio':       landmarkRio(c); break;
       case 'burj':      landmarkBurj(c); break;
     }
+    drawLandmarkWaterReflection(c, kind, scenery, t);
     c.restore();
   }
 }
@@ -3383,14 +3558,32 @@ function landmarkPyramids(c){
   c.globalAlpha=1;
 }
 function landmarkOpera(c){
-  c.globalAlpha=0.95; c.fillStyle='#f2f6f9';
-  const shells=[[-70,60,40],[-20,80,55],[35,70,48],[80,55,38]];
+  c.globalAlpha = 0.95;
+  c.fillStyle = '#6a8fa8';
+  c.beginPath();
+  c.moveTo(-130, 0);
+  c.lineTo(-130, -10);
+  c.lineTo(130, -10);
+  c.lineTo(130, 0);
+  c.closePath();
+  c.fill();
+  c.fillStyle = '#f2f6f9';
+  const shells = [[-70,60,40],[-20,80,55],[35,70,48],[80,55,38]];
   for(const s of shells){
-    c.beginPath(); c.moveTo(s[0]-s[2],0); c.quadraticCurveTo(s[0],-s[1]*1.6, s[0]+s[2],0); c.fill();
-    c.strokeStyle='#cdd9e0'; c.lineWidth=2; c.beginPath(); c.moveTo(s[0]-s[2]*0.5,0); c.quadraticCurveTo(s[0],-s[1]*1.2,s[0]+s[2]*0.5,0); c.stroke();
+    c.beginPath();
+    c.moveTo(s[0] - s[2], 0);
+    c.quadraticCurveTo(s[0], -s[1] * 1.6, s[0] + s[2], 0);
+    c.fill();
+    c.strokeStyle = '#cdd9e0';
+    c.lineWidth = 2;
+    c.beginPath();
+    c.moveTo(s[0] - s[2] * 0.5, 0);
+    c.quadraticCurveTo(s[0], -s[1] * 1.2, s[0] + s[2] * 0.5, 0);
+    c.stroke();
   }
-  c.fillStyle='#7fa8c0'; c.fillRect(-110,-6,230,8);
-  c.globalAlpha=1;
+  c.fillStyle = '#7fa8c0';
+  c.fillRect(-110, -6, 230, 8);
+  c.globalAlpha = 1;
 }
 function landmarkGreatWall(c){
   c.globalAlpha=0.95; c.fillStyle='#9a8264';
@@ -3416,16 +3609,29 @@ function landmarkRio(c){
   c.globalAlpha=1;
 }
 function landmarkBurj(c){
-  c.globalAlpha=0.95;
-  const grd=c.createLinearGradient(0,-260,0,0); grd.addColorStop(0,'#cfe3f0'); grd.addColorStop(1,'#9bb6c9');
-  c.fillStyle=grd;
+  c.globalAlpha = 0.95;
+  const grd = c.createLinearGradient(0, -260, 0, 0);
+  grd.addColorStop(0, '#cfe3f0');
+  grd.addColorStop(1, '#9bb6c9');
+  c.fillStyle = grd;
   c.beginPath();
-  c.moveTo(-30,0); c.lineTo(-18,-150); c.lineTo(-8,-220); c.lineTo(0,-270); c.lineTo(8,-220); c.lineTo(18,-150); c.lineTo(30,0); c.fill();
-  c.strokeStyle='rgba(255,255,255,0.4)'; c.lineWidth=1.5;
-  for(let i=-2;i<=2;i++){ c.beginPath(); c.moveTo(i*8,0); c.lineTo(i*3,-220); c.stroke(); }
-  // skyline siblings
-  c.fillStyle='#9bb6c9'; c.fillRect(-90,-90,30,90); c.fillRect(60,-120,34,120);
-  c.globalAlpha=1;
+  c.moveTo(-30, 0);
+  c.lineTo(-18, -150);
+  c.lineTo(-8, -220);
+  c.lineTo(0, -270);
+  c.lineTo(8, -220);
+  c.lineTo(18, -150);
+  c.lineTo(30, 0);
+  c.fill();
+  c.strokeStyle = 'rgba(255,255,255,0.4)';
+  c.lineWidth = 1.5;
+  for(let i = -2; i <= 2; i++){
+    c.beginPath();
+    c.moveTo(i * 8, 0);
+    c.lineTo(i * 3, -220);
+    c.stroke();
+  }
+  c.globalAlpha = 1;
 }
 
 /* ============================ OBSTACLES / FOOD =========================== */
