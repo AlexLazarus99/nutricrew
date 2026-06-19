@@ -619,12 +619,13 @@ body {
 }
 
 .app-shell {
-  --nav-safe-area: 118px;
+  --nav-bottom-offset: calc(22px + env(safe-area-inset-bottom, 0px));
+  --nav-safe-area: calc(128px + env(safe-area-inset-bottom, 0px));
   padding-bottom: var(--nav-safe-area);
 }
 
 html[data-nav-collapsed="1"] .app-shell {
-  --nav-safe-area: 52px;
+  --nav-safe-area: calc(60px + env(safe-area-inset-bottom, 0px));
 }
 
 .bottom-nav-6 {
@@ -648,7 +649,7 @@ html[data-nav-collapsed="1"] .app-shell {
 
 .bottom-nav {
   position: fixed;
-  bottom: 0;
+  bottom: var(--nav-bottom-offset, calc(22px + env(safe-area-inset-bottom, 0px)));
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -656,7 +657,7 @@ html[data-nav-collapsed="1"] .app-shell {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
-  padding: 4px 8px 16px;
+  padding: 4px 8px calc(12px + env(safe-area-inset-bottom, 0px) * 0.35);
   background: color-mix(in srgb, var(--surface) 94%, var(--section-accent));
   border-top: 1px solid color-mix(in srgb, var(--section-accent) 22%, var(--surface-2));
   z-index: 40;
@@ -688,7 +689,7 @@ html[data-nav-collapsed="1"] .app-shell {
 
 .bottom-nav-peek {
   position: fixed;
-  bottom: 8px;
+  bottom: var(--nav-bottom-offset, calc(22px + env(safe-area-inset-bottom, 0px)));
   left: 50%;
   transform: translateX(-50%);
   z-index: 41;

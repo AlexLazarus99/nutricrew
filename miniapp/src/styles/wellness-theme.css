@@ -389,7 +389,7 @@ body {
 
 /* ——— Floating nav position ——— */
 .bottom-nav {
-  bottom: 12px;
+  bottom: var(--nav-bottom-offset, calc(22px + env(safe-area-inset-bottom, 0px)));
 }
 
 /* ——— Cards & hero ——— */
