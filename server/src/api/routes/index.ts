@@ -26,6 +26,7 @@ import { teamMultiplier } from "../../services/points.js";
 import { isAppLocale } from "../../lib/locales.js";
 import { isProfileComplete, validateProfile } from "../../lib/profileValidation.js";
 import { requireProfile } from "../middleware/requireProfile.js";
+import { requireAppAccess } from "../middleware/requireAppAccess.js";
 import { config, getPublicSocialLinks } from "../../config.js";
 import { buildTeamInviteUrl } from "../../lib/inviteLink.js";
 import { apiReady } from "../ready.js";
@@ -50,7 +51,9 @@ apiRouter.use("/privacy", privacyRouter);
 apiRouter.use("/", valuationRouter);
 
 const authed = [authInitData, ensureUser] as const;
+const authedAccess = [...authed, requireAppAccess] as const;
 const authedProfile = [...authed, requireProfile] as const;
+const authedProfileAccess = [...authedProfile, requireAppAccess] as const;
 
 const DB_HEALTH_CACHE_MS = 8000;
 let dbHealthCache: { ok: boolean; checkedAt: number } | null = null;
@@ -182,6 +185,8 @@ apiRouter.get("/me", ...authed, async (req, res) => {
   const growth = await buildGrowthSummary(user, { mealsToday, todayPoints });
   const { getUserProStatus } = await import("../../services/userPro.js");
   const pro = await getUserProStatus(user.id);
+  const { getUserAccessStatus } = await import("../../services/userAccess.js");
+  const access = await getUserAccessStatus(user.id);
 
   res.json({
     user: {
@@ -217,10 +222,11 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     tributeProUrl: config.tribute.proUrls[0] || null,
     tributeProUrls: config.tribute.proUrls.length ? config.tribute.proUrls : null,
     pro,
+    access,
   });
 });
 
-apiRouter.get("/me/weekly-report", ...authedProfile, async (req, res) => {
+apiRouter.get("/me/weekly-report", ...authedProfileAccess, async (req, res) => {
   const { buildWeeklyReport } = await import("../../services/weeklyReport.js");
   const weekKey = (req.query.weekKey as string) || undefined;
   const report = await buildWeeklyReport(req.dbUser!, weekKey);
@@ -229,12 +235,12 @@ apiRouter.get("/me/weekly-report", ...authedProfile, async (req, res) => {
   res.json(report);
 });
 
-apiRouter.get("/quests", ...authedProfile, async (req, res) => {
+apiRouter.get("/quests", ...authedProfileAccess, async (req, res) => {
   const board = await getQuestBoard(req.dbUser!);
   res.json(board);
 });
 
-apiRouter.post("/quests/:questId/claim", ...authedProfile, async (req, res) => {
+apiRouter.post("/quests/:questId/claim", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const questId = String(req.params.questId ?? "");
   const result = await claimQuest(user, questId);
@@ -255,7 +261,7 @@ apiRouter.post("/quests/:questId/claim", ...authedProfile, async (req, res) => {
   });
 });
 
-apiRouter.get("/team", ...authedProfile, async (req, res) => {
+apiRouter.get("/team", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   if (!user.team_id) {
     res.status(404).json({ error: "NO_TEAM", message: "Join or create a team first" });
@@ -299,7 +305,7 @@ apiRouter.get("/team", ...authedProfile, async (req, res) => {
   });
 });
 
-apiRouter.get("/leaderboard", ...authedProfile, async (_req, res) => {
+apiRouter.get("/leaderboard", ...authedProfileAccess, async (_req, res) => {
   const weekKey = getCurrentWeekKey();
   const teams = await teamsRepo.getLeaderboard(weekKey, 20);
 
@@ -313,7 +319,7 @@ apiRouter.get("/leaderboard", ...authedProfile, async (_req, res) => {
   });
 });
 
-apiRouter.get("/meals/barcode/:code", ...authed, async (req, res) => {
+apiRouter.get("/meals/barcode/:code", ...authedAccess, async (req, res) => {
   const code = String(req.params.code ?? "").replace(/\D/g, "");
   if (code.length < 8) {
     res.status(400).json({ error: "INVALID_BARCODE" });
@@ -332,7 +338,7 @@ apiRouter.get("/meals/barcode/:code", ...authed, async (req, res) => {
   res.json(product);
 });
 
-apiRouter.post("/meals/analyze", ...authed, async (req, res) => {
+apiRouter.post("/meals/analyze", ...authedAccess, async (req, res) => {
   const { imageBase64 } = req.body as { imageBase64?: string };
   if (!imageBase64) {
     res.status(400).json({ error: "imageBase64 required" });
@@ -350,7 +356,7 @@ apiRouter.post("/meals/analyze", ...authed, async (req, res) => {
   res.json(attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"));
 });
 
-apiRouter.post("/meals/analyze-text", ...authed, async (req, res) => {
+apiRouter.post("/meals/analyze-text", ...authedAccess, async (req, res) => {
   const { text } = req.body as { text?: string };
   if (!text?.trim()) {
     res.status(400).json({ error: "TEXT_REQUIRED" });
@@ -378,7 +384,7 @@ apiRouter.post("/meals/analyze-text", ...authed, async (req, res) => {
   res.json(attachNutritionInsight(analysis, req.dbUser!.locale ?? "ru"));
 });
 
-apiRouter.post("/meals/analyze-audio", ...authed, async (req, res) => {
+apiRouter.post("/meals/analyze-audio", ...authedAccess, async (req, res) => {
   const { audioBase64, mimeType } = req.body as { audioBase64?: string; mimeType?: string };
   if (!audioBase64?.trim()) {
     res.status(400).json({ error: "AUDIO_REQUIRED" });
@@ -428,7 +434,7 @@ apiRouter.post("/meals/analyze-audio", ...authed, async (req, res) => {
   }
 });
 
-apiRouter.post("/meals/barcode-estimate", ...authed, async (req, res) => {
+apiRouter.post("/meals/barcode-estimate", ...authedAccess, async (req, res) => {
   const { barcode, hint } = req.body as { barcode?: string; hint?: string };
   const code = String(barcode ?? "").replace(/\D/g, "");
   if (code.length < 8) {
@@ -457,7 +463,7 @@ apiRouter.post("/meals/barcode-estimate", ...authed, async (req, res) => {
   });
 });
 
-apiRouter.post("/meals", ...authed, async (req, res) => {
+apiRouter.post("/meals", ...authedAccess, async (req, res) => {
   const user = req.dbUser!;
   const {
     description,
@@ -549,7 +555,7 @@ apiRouter.post("/meals", ...authed, async (req, res) => {
   });
 });
 
-apiRouter.get("/meals/diary", ...authed, async (req, res) => {
+apiRouter.get("/meals/diary", ...authedAccess, async (req, res) => {
   const user = req.dbUser!;
   const dayStart = req.query.dayStart as string | undefined;
   const dayEnd = req.query.dayEnd as string | undefined;
@@ -596,7 +602,7 @@ apiRouter.get("/meals/diary", ...authed, async (req, res) => {
   });
 });
 
-apiRouter.get("/prizes", ...authedProfile, async (req, res) => {
+apiRouter.get("/prizes", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const summary = await import("../../services/stars.js").then((m) =>
     m.getPrizesSummary(user.id, user.team_id),
@@ -604,7 +610,7 @@ apiRouter.get("/prizes", ...authedProfile, async (req, res) => {
   res.json(summary);
 });
 
-apiRouter.post("/prizes/fund-invoice", ...authedProfile, async (req, res) => {
+apiRouter.post("/prizes/fund-invoice", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const { stars } = req.body as { stars?: number };
   if (!user.team_id) {
@@ -624,7 +630,7 @@ apiRouter.post("/prizes/fund-invoice", ...authedProfile, async (req, res) => {
   res.json({ invoiceLink: link });
 });
 
-apiRouter.post("/prizes/pro-invoice", ...authedProfile, async (req, res) => {
+apiRouter.post("/prizes/pro-invoice", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const { getAppBot } = await import("../../services/botInstance.js");
   const link = await import("../../services/stars.js").then((m) =>
@@ -633,7 +639,7 @@ apiRouter.post("/prizes/pro-invoice", ...authedProfile, async (req, res) => {
   res.json({ invoiceLink: link });
 });
 
-apiRouter.post("/prizes/premium-invoice", ...authedProfile, async (req, res) => {
+apiRouter.post("/prizes/premium-invoice", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   if (!user.team_id) {
     res.status(400).json({ error: "NO_TEAM" });
@@ -646,7 +652,7 @@ apiRouter.post("/prizes/premium-invoice", ...authedProfile, async (req, res) => 
   res.json({ invoiceLink: link });
 });
 
-apiRouter.post("/teams/create", ...authedProfile, async (req, res) => {
+apiRouter.post("/teams/create", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const { name } = req.body as { name?: string };
   if (!name?.trim()) {
@@ -663,7 +669,7 @@ apiRouter.post("/teams/create", ...authedProfile, async (req, res) => {
   res.json({ id: team.id, name: team.name, inviteCode: team.invite_code });
 });
 
-apiRouter.post("/teams/join", ...authedProfile, async (req, res) => {
+apiRouter.post("/teams/join", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const { code, referrerTelegramId } = req.body as {
     code?: string;
@@ -687,7 +693,7 @@ apiRouter.post("/teams/join", ...authedProfile, async (req, res) => {
   }
 });
 
-apiRouter.get("/team/activity", ...authedProfile, async (req, res) => {
+apiRouter.get("/team/activity", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   if (!user.team_id) {
     res.status(404).json({ error: "NO_TEAM" });
@@ -715,7 +721,7 @@ apiRouter.get("/team/activity", ...authedProfile, async (req, res) => {
   });
 });
 
-apiRouter.post("/meals/:mealId/kudos", ...authedProfile, async (req, res) => {
+apiRouter.post("/meals/:mealId/kudos", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   if (!user.team_id) {
     res.status(400).json({ error: "NO_TEAM" });
@@ -736,7 +742,7 @@ apiRouter.post("/meals/:mealId/kudos", ...authedProfile, async (req, res) => {
   res.json({ ok: true, added: result.added, kudosCount: result.count });
 });
 
-apiRouter.post("/engagement/daily-bonus", ...authedProfile, async (req, res) => {
+apiRouter.post("/engagement/daily-bonus", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const { type } = req.body as { type?: string };
   if (type !== "game" && type !== "quiz") {
@@ -798,7 +804,7 @@ apiRouter.patch("/me/profile", ...authed, async (req, res) => {
   });
 });
 
-apiRouter.get("/game/leaderboard", ...authed, async (req, res) => {
+apiRouter.get("/game/leaderboard", ...authedAccess, async (req, res) => {
   const rows = await birdGameRepo.getLeaderboard(20);
   const myId = req.dbUser!.id;
   res.json({
@@ -813,7 +819,7 @@ apiRouter.get("/game/leaderboard", ...authed, async (req, res) => {
   });
 });
 
-apiRouter.post("/game/score", ...authed, async (req, res) => {
+apiRouter.post("/game/score", ...authedAccess, async (req, res) => {
   const { score, level, fruits, birdId, ghostSamples } = req.body as {
     score?: number;
     level?: number;
@@ -875,14 +881,14 @@ apiRouter.post("/game/score", ...authed, async (req, res) => {
   res.json({ ok: true, improved, trials });
 });
 
-apiRouter.get("/game/meta", ...authed, async (req, res) => {
+apiRouter.get("/game/meta", ...authedAccess, async (req, res) => {
   const meta = await import("../../services/birdGameMeta.js").then((m) =>
     m.getGameMeta(req.dbUser!.id),
   );
   res.json(meta);
 });
 
-apiRouter.post("/game/daily/claim", ...authed, async (req, res) => {
+apiRouter.post("/game/daily/claim", ...authedAccess, async (req, res) => {
   const result = await import("../../services/birdGameMeta.js").then((m) =>
     m.claimDailyReward(req.dbUser!.id),
   );
@@ -893,7 +899,7 @@ apiRouter.post("/game/daily/claim", ...authed, async (req, res) => {
   res.json(result);
 });
 
-apiRouter.post("/game/upgrades", ...authed, async (req, res) => {
+apiRouter.post("/game/upgrades", ...authedAccess, async (req, res) => {
   const { kind } = req.body as { kind?: string };
   if (!kind || !["ghost", "gap", "nearMiss"].includes(kind)) {
     res.status(400).json({ error: "Invalid kind" });
@@ -909,7 +915,7 @@ apiRouter.post("/game/upgrades", ...authed, async (req, res) => {
   res.json(result);
 });
 
-apiRouter.get("/game/duel", ...authed, async (req, res) => {
+apiRouter.get("/game/duel", ...authedAccess, async (req, res) => {
   const near = Math.round(Number(req.query.score) || 0);
   const opponent = await import("../../services/birdGameMeta.js").then((m) =>
     m.getDuelOpponent(req.dbUser!.id, near),
@@ -917,14 +923,14 @@ apiRouter.get("/game/duel", ...authed, async (req, res) => {
   res.json({ opponent });
 });
 
-apiRouter.get("/game/birds", ...authed, async (req, res) => {
+apiRouter.get("/game/birds", ...authedAccess, async (req, res) => {
   const roster = await import("../../services/birdRoster.js").then((m) =>
     m.getBirdRoster(req.dbUser!.id),
   );
   res.json(roster);
 });
 
-apiRouter.post("/game/birds/select", ...authed, async (req, res) => {
+apiRouter.post("/game/birds/select", ...authedAccess, async (req, res) => {
   const { birdId } = req.body as { birdId?: string };
   if (!birdId?.trim()) {
     res.status(400).json({ error: "birdId required" });
@@ -940,7 +946,7 @@ apiRouter.post("/game/birds/select", ...authed, async (req, res) => {
   res.json({ ok: true, selectedBirdId: birdId.trim() });
 });
 
-apiRouter.post("/game/birds/unlock-stars", ...authed, async (req, res) => {
+apiRouter.post("/game/birds/unlock-stars", ...authedAccess, async (req, res) => {
   const { birdId } = req.body as { birdId?: string };
   if (!birdId?.trim()) {
     res.status(400).json({ error: "birdId required" });
@@ -956,7 +962,7 @@ apiRouter.post("/game/birds/unlock-stars", ...authed, async (req, res) => {
   res.json({ ok: true, starBalance: result.starBalance, selectedBirdId: birdId.trim() });
 });
 
-apiRouter.post("/game/birds/unlock-xp", ...authed, async (req, res) => {
+apiRouter.post("/game/birds/unlock-xp", ...authedAccess, async (req, res) => {
   const { birdId } = req.body as { birdId?: string };
   if (!birdId?.trim()) {
     res.status(400).json({ error: "birdId required" });
@@ -976,7 +982,7 @@ apiRouter.post("/game/birds/unlock-xp", ...authed, async (req, res) => {
   });
 });
 
-apiRouter.post("/game/birds/invoice", ...authed, async (req, res) => {
+apiRouter.post("/game/birds/invoice", ...authedAccess, async (req, res) => {
   const { birdId } = req.body as { birdId?: string };
   if (!birdId?.trim()) {
     res.status(400).json({ error: "birdId required" });

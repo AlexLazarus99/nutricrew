@@ -20,7 +20,7 @@ privacyRouter.get("/export", ...authed, async (req, res) => {
   }
 });
 
-privacyRouter.delete("/account", ...authedProfile, async (req, res) => {
+privacyRouter.delete("/account", ...authed, async (req, res) => {
   const userId = req.dbUser!.id;
   await trackEvents(userId, [{ name: "settings_delete" }]);
   await deleteUserAccount(userId);

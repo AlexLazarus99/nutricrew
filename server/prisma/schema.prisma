@@ -90,6 +90,7 @@ model User {
   onboardingVariant     String   @default("team_first") @map("onboarding_variant") @db.VarChar(16)
   isPro                 Boolean  @default(false) @map("is_pro")
   proUntil              DateTime? @map("pro_until")
+  liteCrewUntil         DateTime? @map("lite_crew_until")
   createdAt     DateTime  @default(now()) @map("created_at")
 
   referredBy        User?  @relation("UserReferrals", fields: [referredByUserId], references: [id], onDelete: SetNull)

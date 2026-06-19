@@ -2,6 +2,7 @@ import { Router } from "express";
 import { authInitData } from "../middleware/authInitData.js";
 import { ensureUser } from "../middleware/ensureUser.js";
 import { requireProfile } from "../middleware/requireProfile.js";
+import { requireAppAccess } from "../middleware/requireAppAccess.js";
 import * as growthRepo from "../../repositories/growth.js";
 import {
   buildGrowthPayload,
@@ -15,13 +16,14 @@ import * as wellnessRepo from "../../repositories/wellness.js";
 
 export const growthRouter = Router();
 const authedProfile = [authInitData, ensureUser, requireProfile] as const;
+const authedProfileAccess = [...authedProfile, requireAppAccess] as const;
 
-growthRouter.get("/", ...authedProfile, async (req, res) => {
+growthRouter.get("/", ...authedProfileAccess, async (req, res) => {
   const payload = await buildGrowthPayload(req.dbUser!);
   res.json(payload);
 });
 
-growthRouter.patch("/settings", ...authedProfile, async (req, res) => {
+growthRouter.patch("/settings", ...authedProfileAccess, async (req, res) => {
   const { dailyGoalType, dailyGoalTarget, photoPrivacy, onboardingVariant } =
     req.body as Record<string, unknown>;
   const allowedGoals = ["meals", "points", "protein", "calories", "steps"];
@@ -53,7 +55,7 @@ growthRouter.patch("/settings", ...authedProfile, async (req, res) => {
   res.json({ ok: true, growth: await buildGrowthPayload(req.dbUser!) });
 });
 
-growthRouter.post("/streak-freeze/buy", ...authedProfile, async (req, res) => {
+growthRouter.post("/streak-freeze/buy", ...authedProfileAccess, async (req, res) => {
   const { useStars } = req.body as { useStars?: boolean };
   const result = await purchaseStreakFreeze(req.dbUser!, !!useStars);
   if (!result.ok) {
@@ -68,7 +70,7 @@ growthRouter.post("/streak-freeze/buy", ...authedProfile, async (req, res) => {
   });
 });
 
-growthRouter.post("/streak-freeze/use", ...authedProfile, async (req, res) => {
+growthRouter.post("/streak-freeze/use", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const ok = await growthRepo.useStreakFreeze(user.id);
   if (!ok) {
@@ -84,7 +86,7 @@ growthRouter.post("/streak-freeze/use", ...authedProfile, async (req, res) => {
   res.json({ ok: true });
 });
 
-growthRouter.post("/double-points", ...authedProfile, async (req, res) => {
+growthRouter.post("/double-points", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   const weekKey = getCurrentWeekKey();
   const fields = await growthRepo.getUserGrowthFields(user.id);
@@ -118,7 +120,7 @@ growthRouter.post("/double-points", ...authedProfile, async (req, res) => {
   res.json({ ok: true, weekKey });
 });
 
-growthRouter.post("/duel/start", ...authedProfile, async (req, res) => {
+growthRouter.post("/duel/start", ...authedProfileAccess, async (req, res) => {
   const result = await startDuelForUser(req.dbUser!);
   if (!result.ok) {
     res.status(400).json({ error: result.error });
@@ -127,7 +129,7 @@ growthRouter.post("/duel/start", ...authedProfile, async (req, res) => {
   res.json(result);
 });
 
-growthRouter.post("/favorites", ...authedProfile, async (req, res) => {
+growthRouter.post("/favorites", ...authedProfileAccess, async (req, res) => {
   const { description, calories, protein, carbs, fat } = req.body as Record<string, unknown>;
   const row = await growthRepo.upsertFavorite(req.dbUser!.id, {
     description: String(description ?? "Meal").slice(0, 200),
@@ -147,7 +149,7 @@ growthRouter.post("/favorites", ...authedProfile, async (req, res) => {
   });
 });
 
-growthRouter.post("/team/league-tag", ...authedProfile, async (req, res) => {
+growthRouter.post("/team/league-tag", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   if (!user.team_id) {
     res.status(400).json({ error: "NO_TEAM" });
@@ -170,7 +172,7 @@ growthRouter.post("/team/league-tag", ...authedProfile, async (req, res) => {
   res.json({ ok: true, tag: normalized });
 });
 
-growthRouter.get("/team/admin", ...authedProfile, async (req, res) => {
+growthRouter.get("/team/admin", ...authedProfileAccess, async (req, res) => {
   const { buildTeamAdminDashboard } = await import("../../services/teamAdmin.js");
   const { trackEvents } = await import("../../services/analytics.js");
   const dashboard = await buildTeamAdminDashboard(req.dbUser!);
@@ -182,7 +184,7 @@ growthRouter.get("/team/admin", ...authedProfile, async (req, res) => {
   res.json(dashboard);
 });
 
-growthRouter.post("/team/promote", ...authedProfile, async (req, res) => {
+growthRouter.post("/team/promote", ...authedProfileAccess, async (req, res) => {
   const user = req.dbUser!;
   if (!user.team_id) {
     res.status(400).json({ error: "NO_TEAM" });

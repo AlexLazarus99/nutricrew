@@ -7,9 +7,12 @@ import { MeProvider, useMe } from "../hooks/useMe";
 import { AppPreferencesProvider, useAppPreferences } from "../hooks/useAppPreferences";
 import { RegistrationPage } from "../pages/Registration";
 import { PostRegistrationOffer } from "../pages/PostRegistrationOffer";
+import { AccessPaywall } from "./access/AccessPaywall";
+import { TrialBanner } from "./access/TrialBanner";
 import { useTelegram } from "../hooks/useTelegram";
 import { shouldShowPostRegistrationOffer } from "../lib/postRegistration";
 import { getMealLogCount, shouldRequireProfile } from "../lib/guestSession";
+import { hasAppAccess } from "../lib/userAccess";
 import { sectionFromPath, type AppSection } from "../lib/appSection";
 import { APP_BUILD } from "../lib/apiBase";
 import { SocialLinks } from "./SocialLinks";
@@ -42,6 +45,9 @@ function LayoutShell() {
     !offerDismissed &&
     shouldShowPostRegistrationOffer(profileComplete, mealLogCount) &&
     !pathname.startsWith("/log");
+  const appAccess = hasAppAccess(me);
+  const showAccessPaywall =
+    profileComplete && !mustCompleteProfile && !showWellnessOffer && !appAccess;
   const displayName = me.user.firstName ?? user?.first_name;
   const section = resolveSection(mustCompleteProfile, showWellnessOffer, pathname);
 
@@ -83,14 +89,19 @@ function LayoutShell() {
             displayName={displayName}
             onDismiss={() => setOfferDismissed(true)}
           />
+        ) : showAccessPaywall ? (
+          <AccessPaywall />
         ) : (
-          <Suspense fallback={<PageLoader />}>
-            <Outlet key={pathname} />
-          </Suspense>
+          <>
+            <TrialBanner />
+            <Suspense fallback={<PageLoader />}>
+              <Outlet key={pathname} />
+            </Suspense>
+          </>
         )}
       </main>
 
-      {!mustCompleteProfile && !showWellnessOffer && (
+      {!mustCompleteProfile && !showWellnessOffer && !showAccessPaywall && (
         <footer className="app-footer">
           <SocialLinks links={me.socialLinks ?? {}} variant="footer" />
           <nav className="footer-legal">
@@ -103,6 +114,7 @@ function LayoutShell() {
       )}
 
       {!mustCompleteProfile &&
+        !showAccessPaywall &&
         (!showWellnessOffer || pathname.startsWith("/game") || pathname.startsWith("/quiz") || pathname.startsWith("/coach")) && (
           <BottomNav hasTeam={!!me.teamId} />
         )}

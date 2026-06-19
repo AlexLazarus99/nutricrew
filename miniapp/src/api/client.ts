@@ -157,6 +157,14 @@ export interface MeResponse {
   tributeProUrls?: string[] | null;
   growth?: GrowthSummary;
   pro?: { isPro: boolean; proUntil: string | null };
+  access?: {
+    hasAccess: boolean;
+    inTrial: boolean;
+    trialEndsAt: string;
+    liteCrewUntil: string | null;
+    hasLiteCrew: boolean;
+    trialHoursLeft: number;
+  };
 }
 
 export type GrowthSummary = {

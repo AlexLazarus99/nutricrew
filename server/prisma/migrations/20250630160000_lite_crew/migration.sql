@@ -1,0 +1,1 @@
+ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "lite_crew_until" TIMESTAMPTZ;

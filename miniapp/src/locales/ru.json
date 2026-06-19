@@ -1542,6 +1542,24 @@
     "avg": "Среднее",
     "target": "Цель"
   },
+  "liteCrew": {
+    "badge": "LiteCrew",
+    "buyBtn": "LiteCrew",
+    "trialBadge": "Бесплатно · осталось {{hours}} ч",
+    "paywallTitle": "24 часа пробного доступа закончились",
+    "paywallLead": "Оформите LiteCrew, чтобы продолжить вести дневник, играть в командах и сохранять серии.",
+    "tutorialTitle": "Выберите подписку",
+    "tutorialLite": "Лайт-версия NutriCrew — дневник, команды и игры на 30 дней.",
+    "tutorialPro": "Pro — AI-коуч, недельные отчёты и расширенные лимиты ИИ.",
+    "tutorialHint": "Нажмите кнопку ниже — оплата через Tribute.",
+    "featureDiary": "Дневник питания и ИИ-разбор еды",
+    "featureTeams": "Команды, серии и квесты",
+    "featureGames": "NutriBird и мини-игры",
+    "priceLine": "LiteCrew · месячная подписка",
+    "tributeHint": "Оплата через Tribute — доступ откроется автоматически после оплаты.",
+    "refreshAccess": "Я оплатил — обновить доступ",
+    "activeUntil": "LiteCrew активен до {{date}}"
+  },
   "pro": {
     "title": "NutriCrew Pro",
     "subtitle": "Коуч, план питания и список покупок",
@@ -1556,7 +1574,7 @@
     "priceLine": "Подписка Pro · 30 дней",
     "buyBtn": "Оформить Pro · 149 ⭐",
     "buyTribute": "Купить Pro",
-    "buyTributeChannel": "Подписка на канал",
+    "buyTributeChannel": "LiteCrew",
     "pill": "Pro",
     "locked": "Только Pro",
     "tributeHint": "Оплата через Tribute — после подписки Pro откроется в приложении автоматически.",

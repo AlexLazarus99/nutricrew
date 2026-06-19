@@ -132,6 +132,16 @@ export function MeProvider({ children }: { children: ReactNode }) {
     };
   }, [refresh, bootAttempt]);
 
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && me) {
+        void refresh();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+  }, [refresh, me]);
+
   const value = useMemo(
     () => (me ? { me, refresh } : null),
     [me, refresh],

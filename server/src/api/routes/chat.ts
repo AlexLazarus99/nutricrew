@@ -2,11 +2,13 @@ import { Router, type Request, type Response } from "express";
 import { authInitData } from "../middleware/authInitData.js";
 import { ensureUser } from "../middleware/ensureUser.js";
 import { requireProfile } from "../middleware/requireProfile.js";
+import { requireAppAccess } from "../middleware/requireAppAccess.js";
 import { getTeamChat, postTeamMessage, reactToMessage } from "../../services/chat.js";
 
 export const chatRouter = Router();
 
 const authedProfile = [authInitData, ensureUser, requireProfile] as const;
+const authedProfileAccess = [...authedProfile, requireAppAccess] as const;
 
 function requireTeam(req: Request, res: Response): string | null {
   const teamId = req.dbUser?.team_id;
@@ -17,14 +19,14 @@ function requireTeam(req: Request, res: Response): string | null {
   return teamId;
 }
 
-chatRouter.get("/messages", ...authedProfile, async (req, res) => {
+chatRouter.get("/messages", ...authedProfileAccess, async (req, res) => {
   const teamId = requireTeam(req, res);
   if (!teamId) return;
   const chat = await getTeamChat(req.dbUser!, teamId);
   res.json(chat);
 });
 
-chatRouter.post("/messages", ...authedProfile, async (req, res) => {
+chatRouter.post("/messages", ...authedProfileAccess, async (req, res) => {
   const teamId = requireTeam(req, res);
   if (!teamId) return;
 
@@ -44,7 +46,7 @@ chatRouter.post("/messages", ...authedProfile, async (req, res) => {
   });
 });
 
-chatRouter.post("/messages/:messageId/reactions", ...authedProfile, async (req, res) => {
+chatRouter.post("/messages/:messageId/reactions", ...authedProfileAccess, async (req, res) => {
   const teamId = requireTeam(req, res);
   if (!teamId) return;
 

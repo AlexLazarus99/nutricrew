@@ -1,6 +1,7 @@
 import { prisma } from "../db/client.js";
 import { config } from "../config.js";
 import { setUserProUntil } from "./userPro.js";
+import { setLiteCrewUntil } from "./userLiteCrew.js";
 import { grantStreakFreeze } from "../repositories/growth.js";
 
 type TributeWebhookEvent = {
@@ -63,9 +64,34 @@ function parseExpiresAt(payload: Record<string, unknown>): Date | null {
 
 function isProSubscription(subscriptionIdValue: number | null): boolean {
   const allowed = config.tribute.proSubscriptionIds;
-  if (!allowed.length) return true;
+  if (!allowed.length) return false;
   if (subscriptionIdValue == null) return false;
   return allowed.includes(subscriptionIdValue);
+}
+
+function isLiteCrewSubscription(subscriptionIdValue: number | null): boolean {
+  const allowed = config.tribute.liteCrewSubscriptionIds;
+  if (allowed.length) {
+    if (subscriptionIdValue == null) return false;
+    return allowed.includes(subscriptionIdValue);
+  }
+  const proIds = config.tribute.proSubscriptionIds;
+  if (
+    proIds.length &&
+    subscriptionIdValue != null &&
+    !proIds.includes(subscriptionIdValue) &&
+    config.tribute.proUrls.length >= 2
+  ) {
+    return true;
+  }
+  return false;
+}
+
+function isLegacyProSubscription(subscriptionIdValue: number | null): boolean {
+  const proIds = config.tribute.proSubscriptionIds;
+  const liteIds = config.tribute.liteCrewSubscriptionIds;
+  if (proIds.length || liteIds.length) return false;
+  return true;
 }
 
 async function ensureUserByTelegramId(telegramId: number): Promise<number> {
@@ -80,6 +106,12 @@ async function ensureUserByTelegramId(telegramId: number): Promise<number> {
     select: { id: true },
   });
   return Number(user.id);
+}
+
+function liteCrewUntilFromPayload(payload: Record<string, unknown>): Date {
+  const explicit = parseExpiresAt(payload);
+  if (explicit && explicit.getTime() > Date.now()) return explicit;
+  return new Date(Date.now() + config.tribute.liteCrewDays * 24 * 60 * 60 * 1000);
 }
 
 function proUntilFromPayload(payload: Record<string, unknown>): Date {
@@ -103,24 +135,56 @@ export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<
   const subId = subscriptionId(payload);
 
   if (name === "new_subscription" || name === "renewed_subscription") {
-    if (!isProSubscription(subId)) {
-      return { handled: true, action: "ignored_subscription" };
-    }
-
     const userId = await ensureUserByTelegramId(tgId);
-    const until = proUntilFromPayload(payload);
-    await setUserProUntil(userId, until);
 
-    if (name === "new_subscription") {
-      await grantStreakFreeze(userId, 2);
+    if (isLiteCrewSubscription(subId) && !isProSubscription(subId)) {
+      const until = liteCrewUntilFromPayload(payload);
+      await setLiteCrewUntil(userId, until);
+      console.log(`[tribute] LiteCrew until ${until.toISOString()} for tg=${tgId} (${name})`);
+      return { handled: true, action: `lite_crew_${name}` };
     }
 
-    console.log(`[tribute] Pro until ${until.toISOString()} for tg=${tgId} (${name})`);
-    return { handled: true, action: name };
+    if (isProSubscription(subId) || isLegacyProSubscription(subId)) {
+      const until = proUntilFromPayload(payload);
+      await setUserProUntil(userId, until);
+
+      if (name === "new_subscription") {
+        await grantStreakFreeze(userId, 2);
+      }
+
+      console.log(`[tribute] Pro until ${until.toISOString()} for tg=${tgId} (${name})`);
+      return { handled: true, action: name };
+    }
+
+    if (isLiteCrewSubscription(subId)) {
+      const until = liteCrewUntilFromPayload(payload);
+      await setLiteCrewUntil(userId, until);
+      console.log(`[tribute] LiteCrew until ${until.toISOString()} for tg=${tgId} (${name})`);
+      return { handled: true, action: `lite_crew_${name}` };
+    }
+
+    return { handled: true, action: "ignored_subscription" };
   }
 
   if (name === "cancelled_subscription") {
-    if (!isProSubscription(subId)) {
+    if (isLiteCrewSubscription(subId) && !isProSubscription(subId)) {
+      const user = await prisma.user.findUnique({
+        where: { telegramId: BigInt(tgId) },
+        select: { id: true },
+      });
+      if (!user) return { handled: true, action: "cancelled_no_user" };
+
+      const until = parseExpiresAt(payload);
+      if (until && until.getTime() > Date.now()) {
+        await setLiteCrewUntil(Number(user.id), until);
+        return { handled: true, action: "lite_crew_cancelled_until_period_end" };
+      }
+
+      await setLiteCrewUntil(Number(user.id), new Date());
+      return { handled: true, action: "lite_crew_cancelled_revoked" };
+    }
+
+    if (!isProSubscription(subId) && !isLegacyProSubscription(subId)) {
       return { handled: true, action: "ignored_subscription" };
     }
 

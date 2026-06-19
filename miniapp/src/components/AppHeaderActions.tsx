@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { GameSettingsGear } from "./GameSettingsGear";
+import { SubscriptionTierBadge } from "./SubscriptionTierBadge";
 
 type Props = {
   displayName?: string;
@@ -27,7 +28,10 @@ export function AppHeaderActions({ displayName, username, photoUrl }: Props) {
             <span className="app-header__avatar-fallback">{profileInitials(displayName)}</span>
           )}
         </span>
-        <span className="app-header__nickname">{nickname}</span>
+        <span className="app-header__profile-text">
+          <span className="app-header__nickname">{nickname}</span>
+          <SubscriptionTierBadge />
+        </span>
       </div>
       <Link to="/settings" className="app-header__settings-btn" aria-label={t("nav.settings")}>
         <GameSettingsGear />

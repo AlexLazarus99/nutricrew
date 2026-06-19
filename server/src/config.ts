@@ -79,13 +79,33 @@ export const config = {
     winnerSharePercent: Number(process.env.WINNER_POOL_SHARE_PERCENT ?? 80),
   },
 
+  app: {
+    trialHours: Number(process.env.APP_TRIAL_HOURS ?? 24),
+  },
+
+  admin: {
+    telegramUsernames: (process.env.ADMIN_TELEGRAM_USERNAMES ?? "ingritoo")
+      .split(",")
+      .map((s) => s.trim().replace(/^@/, "").toLowerCase())
+      .filter(Boolean),
+    telegramIds: (process.env.ADMIN_TELEGRAM_IDS ?? "")
+      .split(",")
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0),
+  },
+
   tribute: {
     apiKey: (process.env.TRIBUTE_API_KEY ?? "").trim(),
     proSubscriptionIds: (process.env.TRIBUTE_PRO_SUBSCRIPTION_IDS ?? "")
       .split(",")
       .map((s) => Number(s.trim()))
       .filter((n) => Number.isFinite(n) && n > 0),
+    liteCrewSubscriptionIds: (process.env.TRIBUTE_LITE_CREW_SUBSCRIPTION_IDS ?? "")
+      .split(",")
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0),
     proDays: Number(process.env.TRIBUTE_PRO_DAYS ?? process.env.PRO_DAYS ?? 30),
+    liteCrewDays: Number(process.env.TRIBUTE_LITE_CREW_DAYS ?? 30),
     proUrls: parseTributeProUrlsEnv(process.env.TRIBUTE_PRO_URL ?? ""),
     get proUrl(): string {
       return this.proUrls[0] ?? "";

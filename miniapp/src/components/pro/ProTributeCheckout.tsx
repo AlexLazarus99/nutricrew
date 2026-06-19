@@ -25,7 +25,7 @@ export function ProTributeCheckout({ source }: Props) {
           source={`${source}-${index + 1}`}
           variant={index === 0 ? "pro" : "channel"}
         >
-          {index === 0 ? t("pro.buyTribute") : t("pro.buyTributeChannel")}
+          {index === 0 ? t("pro.buyTribute") : t("liteCrew.buyBtn")}
         </ProTributeButton>
       ))}
     </div>

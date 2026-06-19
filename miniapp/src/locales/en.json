@@ -1487,6 +1487,24 @@
     "avg": "Average",
     "target": "Target"
   },
+  "liteCrew": {
+    "badge": "LiteCrew",
+    "buyBtn": "LiteCrew",
+    "trialBadge": "Free trial · {{hours}}h left",
+    "paywallTitle": "Your 24h trial has ended",
+    "paywallLead": "Subscribe to LiteCrew to keep your diary, teams, games, and streaks.",
+    "tutorialTitle": "Choose your plan",
+    "tutorialLite": "Lite version of NutriCrew — diary, teams, and games for 30 days.",
+    "tutorialPro": "Pro — AI coach, weekly reports, and higher AI limits.",
+    "tutorialHint": "Tap a button below to subscribe via Tribute.",
+    "featureDiary": "Food diary and AI meal analysis",
+    "featureTeams": "Teams, streaks, and quests",
+    "featureGames": "NutriBird and mini-games",
+    "priceLine": "LiteCrew · monthly subscription",
+    "tributeHint": "Pay via Tribute — access unlocks automatically after payment.",
+    "refreshAccess": "I paid — refresh access",
+    "activeUntil": "LiteCrew active until {{date}}"
+  },
   "pro": {
     "title": "NutriCrew Pro",
     "subtitle": "Coach, meal plan, and shopping list",
@@ -1501,7 +1519,7 @@
     "priceLine": "Pro subscription · 30 days",
     "buyBtn": "Get Pro · 149 ⭐",
     "buyTribute": "Get Pro",
-    "buyTributeChannel": "Channel subscription",
+    "buyTributeChannel": "LiteCrew",
     "pill": "Pro",
     "locked": "Pro only",
     "tributeHint": "Pay via Tribute — Pro unlocks in the app automatically after you subscribe.",
