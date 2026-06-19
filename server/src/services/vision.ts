@@ -274,16 +274,23 @@ async function tryVisionProviders(
   dataUrl: string,
   locale: AppLocale,
   imageHash: string,
+  proPriority = false,
 ): Promise<MealAnalysis | null> {
   const chain: Array<() => Promise<MealAnalysis | null>> = [];
 
   if (config.anthropicApiKey) {
     chain.push(() => callClaudeVision(dataUrl, locale, imageHash));
   }
-  if (config.openaiApiKey) {
+  if (!proPriority && config.openaiApiKey) {
     chain.push(() => callOpenAIVision(dataUrl, locale, imageHash));
   }
-  if (config.geminiApiKey) {
+  if (!proPriority && config.geminiApiKey) {
+    chain.push(() => callGeminiVision(dataUrl, locale, imageHash));
+  }
+  if (proPriority && config.openaiApiKey) {
+    chain.push(() => callOpenAIVision(dataUrl, locale, imageHash));
+  }
+  if (proPriority && config.geminiApiKey) {
     chain.push(() => callGeminiVision(dataUrl, locale, imageHash));
   }
 
@@ -387,6 +394,7 @@ export async function probeVisionProviders(): Promise<{
 export async function analyzeFoodImage(
   base64Image: string,
   locale: AppLocale = "en",
+  options?: { proPriority?: boolean },
 ): Promise<MealAnalysis> {
   const imageHash = hashImageBase64(base64Image);
   const cached = await visionCacheRepo.getCachedAnalysis(imageHash, locale);
@@ -402,7 +410,12 @@ export async function analyzeFoodImage(
     return { ...fallbackAnalysis("no_key"), imageHash, cacheHit: false };
   }
 
-  const result = await tryVisionProviders(dataUrl, locale, imageHash);
+  const result = await tryVisionProviders(
+    dataUrl,
+    locale,
+    imageHash,
+    options?.proPriority ?? false,
+  );
   if (result) return cacheAndReturn(result, locale);
 
   const reason: VisionFallbackReason = hasVisionKey() ? "api_error" : "no_key";

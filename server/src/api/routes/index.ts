@@ -345,7 +345,11 @@ apiRouter.post("/meals/analyze", ...authedAccess, async (req, res) => {
     return;
   }
 
-  const analysis = await analyzeFoodImage(imageBase64, req.dbUser!.locale);
+  const { isUserPro } = await import("../../services/userPro.js");
+  const pro = await isUserPro(req.dbUser!.id);
+  const analysis = await analyzeFoodImage(imageBase64, req.dbUser!.locale, {
+    proPriority: pro,
+  });
   const { trackEvents } = await import("../../services/analytics.js");
   await trackEvents(req.dbUser!.id, [
     {

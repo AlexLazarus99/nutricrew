@@ -4,6 +4,8 @@ import { ensureUser } from "../middleware/ensureUser.js";
 import { requireProfile } from "../middleware/requireProfile.js";
 import { exportUserData, deleteUserAccount } from "../../services/accountPrivacy.js";
 import { trackEvents } from "../../services/analytics.js";
+import { exportDiaryCsv } from "../../services/proExtras.js";
+import { isUserPro } from "../../services/userPro.js";
 
 export const privacyRouter = Router();
 const authed = [authInitData, ensureUser] as const;
@@ -17,6 +19,25 @@ privacyRouter.get("/export", ...authed, async (req, res) => {
   } catch (err) {
     console.error("[privacy/export]", err);
     res.status(500).json({ error: "EXPORT_FAILED", message: "Could not export user data" });
+  }
+});
+
+privacyRouter.get("/export-csv", ...authedProfile, async (req, res) => {
+  try {
+    if (!(await isUserPro(req.dbUser!.id))) {
+      res.status(403).json({ error: "PRO_REQUIRED" });
+      return;
+    }
+    await trackEvents(req.dbUser!.id, [{ name: "settings_export_csv" }]);
+    const csv = await exportDiaryCsv(req.dbUser!);
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", 'attachment; filename="nutricrew-diary.csv"');
+    res.send(csv);
+  } catch (err) {
+    console.error("[privacy/export-csv]", err);
+    res.status((err as Error).message === "PRO_REQUIRED" ? 403 : 500).json({
+      error: (err as Error).message === "PRO_REQUIRED" ? "PRO_REQUIRED" : "EXPORT_FAILED",
+    });
   }
 });
 

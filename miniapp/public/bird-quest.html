@@ -609,10 +609,12 @@ function levelLabel(idx){
 }
 function levelParams(idx){
   const t = 1 - Math.exp(-idx / 14);
+  /** ~22% more pipes: shorter gap between spawns */
+  const PIPE_COUNT_MULT = 1.22;
   return {
     speed:   lerp(190, 385, t),
     gap:     lerp(0.48, 0.31, t),
-    spacing: lerp(1.68, 1.05, t),
+    spacing: lerp(1.68, 1.05, t) / PIPE_COUNT_MULT,
     junkChance: lerp(0.10, 0.34, t),
     fat:     clamp(1 - t, 0.05, 1)
   };

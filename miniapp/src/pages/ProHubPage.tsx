@@ -1,18 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { useMe } from "../hooks/useMe";
 import { ProTributeCheckout } from "../components/pro/ProTributeCheckout";
-
-const PRO_FEATURES = [
-  "pro.featureCoach",
-  "pro.featureAi",
-  "pro.featureReports",
-  "pro.featureShopping",
-  "pro.featureFreeze",
-] as const;
-
+import { ProFeatureShowcase } from "../components/pro/ProFeatureShowcase";
+import { DeficitChart } from "../components/pro/DeficitChart";
 import { intlLocaleTag } from "../lib/formatLocale";
 
 function formatProUntil(iso: string | null | undefined, locale: string) {
@@ -28,11 +21,25 @@ export function ProHubPage() {
   const { t, i18n } = useTranslation();
   const { me } = useMe();
   const [shopping, setShopping] = useState<string[]>([]);
+  const [goals, setGoals] = useState<Awaited<ReturnType<typeof api.getProGoals>> | null>(null);
+  const [deficit, setDeficit] = useState<Awaited<ReturnType<typeof api.getProDeficit>> | null>(null);
+  const [perks, setPerks] = useState<Awaited<ReturnType<typeof api.getProPerks>> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const isPro = me.pro?.isPro;
   const proUntilLabel = formatProUntil(me.pro?.proUntil, i18n.language);
+
+  useEffect(() => {
+    if (!isPro) return;
+    void Promise.all([api.getProGoals(), api.getProDeficit("30d"), api.getProPerks()])
+      .then(([g, d, p]) => {
+        setGoals(g);
+        setDeficit(d);
+        setPerks(p);
+      })
+      .catch((e: Error) => setError(e.message));
+  }, [isPro]);
 
   async function loadShopping() {
     setBusy(true);
@@ -54,38 +61,54 @@ export function ProHubPage() {
           <p className="pro-paywall__badge">⭐ Pro</p>
           <h2>{t("pro.paywallHeadline")}</h2>
           <p className="pro-paywall__lead">{t("pro.paywallLead")}</p>
-
-          <ul className="pro-paywall__features">
-            {PRO_FEATURES.map((key) => (
-              <li key={key}>{t(key)}</li>
-            ))}
-          </ul>
-
+          <ProFeatureShowcase compact />
           <p className="pro-paywall__price">{t("pro.priceLine")}</p>
-
           <ProTributeCheckout source="pro_hub" />
-
           <p className="pro-paywall__stars muted small">{t("pro.tributeHint")}</p>
         </div>
-
         {error && <p className="error">{error}</p>}
       </section>
     );
   }
 
   return (
-    <section className="stack">
-      <div className="card hero pro-hub-hero">
+    <section className="stack pro-hub-page">
+      <div className="card hero pro-hub-hero pro-hub-hero--animated">
         <h2>{t("pro.title")}</h2>
-        <p className="muted">{t("pro.subtitle")}</p>
+        <p className="muted">{t("pro.subtitleExtended")}</p>
         {proUntilLabel && (
           <p className="pro-hub-hero__until success small">{t("pro.activeUntil", { date: proUntilLabel })}</p>
         )}
       </div>
 
-      <Link to="/coach" className="btn btn-primary btn-block">
-        {t("coach.title")} →
-      </Link>
+      <ProFeatureShowcase />
+
+      {goals && (
+        <div className="card pro-goals-card pro-animate-in">
+          <h3>{t("pro.goalsTitle")}</h3>
+          <div className="pro-goals-grid">
+            <div><span className="muted small">{t("trends.calories")}</span><p className="stat-value">{goals.calories ?? "—"}</p></div>
+            <div><span className="muted small">{t("trends.protein")}</span><p className="stat-value">{goals.protein ?? "—"} g</p></div>
+            <div><span className="muted small">{t("pro.waterGoal")}</span><p className="stat-value">{goals.waterMl} ml</p></div>
+            <div><span className="muted small">{t("pro.stepsGoal")}</span><p className="stat-value">{goals.steps}</p></div>
+          </div>
+          <p className="muted small">{goals.explain}</p>
+        </div>
+      )}
+
+      {deficit && (
+        <div className="card pro-deficit-card pro-animate-in">
+          <h3>{t("pro.deficitTitle")}</h3>
+          <p className="muted small">
+            {t("pro.deficitAvg", { kcal: deficit.avgBalance, kg: deficit.projectedKgPerWeek })}
+          </p>
+          <DeficitChart daily={deficit.daily} />
+        </div>
+      )}
+
+      <Link to="/coach" className="btn btn-primary btn-block">{t("coach.title")} →</Link>
+      <Link to="/report" className="btn btn-secondary btn-block">{t("pro.weeklyDigest")}</Link>
+      <Link to="/trends" className="btn btn-secondary btn-block">{t("trends.title")}</Link>
 
       <div className="card stack">
         <h3>{t("pro.shopping")}</h3>
@@ -93,17 +116,30 @@ export function ProHubPage() {
           {t("pro.generateList")}
         </button>
         {shopping.length > 0 && (
-          <ul>
-            {shopping.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
+          <ul>{shopping.map((item) => <li key={item}>{item}</li>)}</ul>
         )}
       </div>
 
-      <Link to="/report" className="btn btn-secondary btn-block">
-        {t("pro.weeklyDigest")}
-      </Link>
+      {perks && (
+        <div className="card pro-perks-card pro-animate-in">
+          <h3>{t("pro.perksTitle")}</h3>
+          <ul className="pro-perks-list">
+            <li>{t("pro.perkAi")}</li>
+            <li>{t("pro.perkFreeze")}</li>
+            <li>{t("pro.perkBird", { percent: perks.birdBoostDiscountPercent })}</li>
+            {perks.partnerInviteUrl && (
+              <li>
+                <a href={perks.partnerInviteUrl} target="_blank" rel="noreferrer">{t("pro.perkPartner")}</a>
+              </li>
+            )}
+            {perks.channelUrl && (
+              <li>
+                <a href={perks.channelUrl} target="_blank" rel="noreferrer">{t("pro.perkChannel")}</a>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
 
       {error && <p className="error">{error}</p>}
     </section>

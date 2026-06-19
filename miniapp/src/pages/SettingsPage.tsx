@@ -12,6 +12,7 @@ import { SettingsRow } from "../components/settings/SettingsRow";
 import { SettingsSegment } from "../components/settings/SettingsSegment";
 import { SettingsToggle } from "../components/settings/SettingsToggle";
 import { APP_BUILD } from "../lib/apiBase";
+import { ProTributeButton } from "../components/pro/ProTributeButton";
 
 export function SettingsPage() {
   const { t } = useTranslation();
@@ -55,6 +56,10 @@ export function SettingsPage() {
   }
 
   async function importWearableSample() {
+    if (!me.pro?.isPro) {
+      setError("PRO_REQUIRED");
+      return;
+    }
     setBusy("wearable");
     setError(null);
     try {
@@ -80,6 +85,29 @@ export function SettingsPage() {
     try {
       await api.addWeightLog(kg);
       setMessage(t("settings.weightSaved", { defaultValue: "Weight saved" }));
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function exportCsv() {
+    if (!me.pro?.isPro) {
+      setError("PRO_REQUIRED");
+      return;
+    }
+    setBusy("export-csv");
+    setError(null);
+    try {
+      const blob = await api.exportDiaryCsv();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `nutricrew-diary-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setMessage(t("settings.exportCsvDone"));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -218,9 +246,20 @@ export function SettingsPage() {
         <button type="button" className="btn btn-secondary btn-block" disabled={busy !== null} onClick={() => void logWeight()}>
           {t("settings.logWeight", { defaultValue: "Log weight" })}
         </button>
-        <button type="button" className="btn btn-secondary btn-block" disabled={busy !== null} onClick={() => void importWearableSample()}>
-          {t("settings.importWearable", { defaultValue: "Import Apple Health (demo)" })}
-        </button>
+        <div className="settings-pro-row">
+          <button
+            type="button"
+            className="btn btn-secondary btn-block"
+            disabled={busy !== null || !me.pro?.isPro}
+            onClick={() => void importWearableSample()}
+          >
+            {t("settings.importWearable", { defaultValue: "Import Apple Health (demo)" })}
+            {!me.pro?.isPro ? " 🔒" : ""}
+          </button>
+          {!me.pro?.isPro && (
+            <ProTributeButton size="pill" source="settings-wearable">{t("pro.pill")}</ProTributeButton>
+          )}
+        </div>
       </div>
 
       <div className="card">
@@ -234,6 +273,20 @@ export function SettingsPage() {
         >
           {busy === "export" ? t("common.loading") : t("settings.exportBtn")}
         </button>
+        <div className="settings-pro-row">
+          <button
+            type="button"
+            className="btn btn-secondary btn-block"
+            disabled={busy !== null || !me.pro?.isPro}
+            onClick={() => void exportCsv()}
+          >
+            {busy === "export-csv" ? t("common.loading") : t("settings.exportCsvBtn")}
+            {!me.pro?.isPro ? " 🔒" : ""}
+          </button>
+          {!me.pro?.isPro && (
+            <ProTributeButton size="pill" source="settings-export-csv">{t("pro.pill")}</ProTributeButton>
+          )}
+        </div>
         <button
           type="button"
           className="btn btn-danger btn-block"

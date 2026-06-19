@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { useMe } from "../../hooks/useMe";
 import { ProTributeCheckout } from "./ProTributeCheckout";
+import { ProFeatureShowcase } from "./ProFeatureShowcase";
 
 type Props = {
   titleKey: string;
@@ -29,9 +30,10 @@ export function ProGate({ titleKey, descKey, source, children }: Props) {
         {descKey ? <p className="pro-gate__desc muted">{t(descKey)}</p> : null}
         <ul className="pro-gate__features">
           <li>{t("pro.featureCoach")}</li>
-          <li>{t("pro.featureAi")}</li>
-          <li>{t("pro.featureReports")}</li>
+          <li>{t("pro.featureDeficit")}</li>
+          <li>{t("pro.featurePlateReview")}</li>
         </ul>
+        <ProFeatureShowcase compact />
         <ProTributeCheckout source={source} />
         <p className="pro-gate__hint muted small">{t("pro.tributeHint")}</p>
       </div>

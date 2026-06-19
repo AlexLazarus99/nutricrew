@@ -117,6 +117,8 @@ export async function handleSuccessfulPayment(
     const { grantStreakFreeze } = await import("../repositories/growth.js");
     await setUserPro(Number(payment.userId), config.stars.proDays);
     await grantStreakFreeze(Number(payment.userId), 2);
+    const { grantMonthlyProFreeze } = await import("./proExtras.js");
+    await grantMonthlyProFreeze(Number(payment.userId));
     return { type: "user_pro", stars: totalAmount };
   }
 

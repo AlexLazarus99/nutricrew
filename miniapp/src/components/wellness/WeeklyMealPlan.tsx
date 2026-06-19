@@ -12,6 +12,7 @@ import {
 } from "../../data/wellness/dietMealPlans";
 import type { DietId } from "../../data/wellness/catalog";
 import { DishPhoto } from "./DishPhoto";
+import { ProTributeButton } from "../pro/ProTributeButton";
 import { getCurrentWeekKey, getUtcWeekday } from "../../lib/week";
 
 function asStringArray(value: unknown): string[] {
@@ -98,9 +99,10 @@ function MealCard({ meal, slot }: { meal: MealEntry; slot: MealSlot }) {
 
 type Props = {
   dietId: DietId;
+  previewOnly?: boolean;
 };
 
-export function WeeklyMealPlan({ dietId }: Props) {
+export function WeeklyMealPlan({ dietId, previewOnly = false }: Props) {
   const { t } = useTranslation();
   const weekKey = getCurrentWeekKey();
   const plan = getDietWeeklyPlan(dietId, weekKey);
@@ -132,12 +134,20 @@ export function WeeklyMealPlan({ dietId }: Props) {
             role="tab"
             aria-selected={activeDay === day}
             className={activeDay === day ? "active" : ""}
+            disabled={previewOnly && day !== activeDay}
             onClick={() => setActiveDay(day)}
           >
             {t(`wellness.weekdays.${day}`)}
           </button>
         ))}
       </div>
+
+      {previewOnly && (
+        <div className="card pro-meal-preview-cta">
+          <p className="muted small">{t("pro.mealPlanPreview")}</p>
+          <ProTributeButton source="wellness-meal-plan">{t("pro.upgrade")}</ProTributeButton>
+        </div>
+      )}
 
       <div className="card meal-day-summary">
         <span className="wellness-badge">{t(`wellness.weekdays.${dayPlan.day}`)}</span>

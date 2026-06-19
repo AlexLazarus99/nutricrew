@@ -31,6 +31,8 @@ export async function buildTrends(user: DbUser, range: TrendsRange = "30d") {
   const byDay = await mealsRepo.aggregateMealsByDay(user.id, from, to);
   const weightLogs = await wellnessRepo.getWeightLogs(user.id, days);
   const waterHistory = await wellnessRepo.getWaterHistory(user.id, days);
+  const kcalTarget = estimateDailyKcalTarget(user);
+  const proteinTarget = estimateDailyProteinTarget(user);
 
   const daily: Array<{
     date: string;
@@ -39,6 +41,7 @@ export async function buildTrends(user: DbUser, range: TrendsRange = "30d") {
     carbs: number;
     fat: number;
     meals: number;
+    calorieBalance: number | null;
   }> = [];
 
   for (let i = 0; i < days; i++) {
@@ -53,6 +56,8 @@ export async function buildTrends(user: DbUser, range: TrendsRange = "30d") {
       carbs: agg.carbs,
       fat: agg.fat,
       meals: agg.count,
+      calorieBalance:
+        kcalTarget && agg.count > 0 ? agg.calories - kcalTarget : null,
     });
   }
 
@@ -65,9 +70,6 @@ export async function buildTrends(user: DbUser, range: TrendsRange = "30d") {
     loggedDays.length > 0
       ? Math.round(loggedDays.reduce((s, d) => s + d.protein, 0) / loggedDays.length)
       : 0;
-
-  const kcalTarget = estimateDailyKcalTarget(user);
-  const proteinTarget = estimateDailyProteinTarget(user);
 
   const insights: string[] = [];
   if (proteinTarget && loggedDays.length >= 3) {

@@ -305,6 +305,7 @@ export interface TrendsResponse {
     carbs: number;
     fat: number;
     meals: number;
+    calorieBalance?: number | null;
   }>;
   avgCalories: number;
   avgProtein: number;
@@ -314,6 +315,7 @@ export interface TrendsResponse {
   waterHistory: Array<{ date: string; ml: number }>;
   insightTexts: string[];
   daysLogged: number;
+  proExtendedRange?: boolean;
 }
 
 export interface WaterResponse {
@@ -753,6 +755,22 @@ export const api = {
     ),
   getTeamAdmin: () => request<TeamAdminResponse>("/growth/team/admin"),
   exportMyData: () => request<Record<string, unknown>>("/privacy/export"),
+  exportDiaryCsv: async (): Promise<Blob> => {
+    const apiBase = getApiBase();
+    const res = await fetchWithTimeout(`${apiBase}/privacy/export-csv`, {
+      headers: { "X-Telegram-Init-Data": getInitData() },
+    });
+    if (!res.ok) {
+      let body: { error?: string } = {};
+      try {
+        body = await parseJsonBody<{ error?: string }>(res);
+      } catch {
+        /* ignore */
+      }
+      throw new Error(body.error ?? `HTTP ${res.status}`);
+    }
+    return res.blob();
+  },
   deleteMyAccount: () =>
     request<{ ok: boolean }>("/privacy/account", { method: "DELETE", body: "{}" }),
   postMealKudos: (mealId: string, emoji: string) =>
@@ -951,6 +969,47 @@ export const api = {
       }>;
     }>("/pro/meal-plan"),
   getProShoppingList: () => request<{ items: string[] }>("/pro/shopping-list"),
+  getProGoals: (mode: "lose" | "maintain" | "gain" = "maintain") =>
+    request<{
+      mode: string;
+      calories: number | null;
+      protein: number | null;
+      waterMl: number;
+      steps: number;
+      explain: string;
+    }>(`/pro/goals?mode=${mode}`),
+  getProDeficit: (range: "7d" | "30d" | "90d" = "30d") =>
+    request<{
+      range: string;
+      daily: Array<{ date: string; calories: number; target: number; balance: number | null }>;
+      avgBalance: number;
+      totalBalance: number;
+      projectedKgPerWeek: number;
+    }>(`/pro/deficit?range=${encodeURIComponent(range)}`),
+  getProMealPlan4w: () =>
+    request<{
+      weeks: Array<
+        Array<{
+          day: string;
+          meals: Array<{ slot: string; description: string; calories: number; protein: number }>;
+        }>
+      >;
+    }>("/pro/meal-plan-4w"),
+  proPlateReview: (description: string) =>
+    request<{ summary: string; tips: string[] }>("/pro/plate-review", {
+      method: "POST",
+      body: JSON.stringify({ description }),
+    }),
+  getProPerks: () =>
+    request<{
+      channelUrl: string | null;
+      partnerInviteUrl: string | null;
+      birdBoostDiscountPercent: number;
+      priorityAi: boolean;
+      monthlyFreezeIncluded: boolean;
+    }>("/pro/perks"),
+  getEnrichedWeeklyReport: () =>
+    request<WeeklyReportResponse & { insights?: string[] }>("/me/weekly-report/enriched"),
   createOrganization: (name: string, billingEmail?: string) =>
     request<{ organization: { id: string; name: string } }>("/org", {
       method: "POST",

@@ -2,6 +2,7 @@ import { prisma } from "../db/client.js";
 import { config } from "../config.js";
 import { setUserProUntil } from "./userPro.js";
 import { setLiteCrewUntil } from "./userLiteCrew.js";
+import { grantMonthlyProFreeze } from "./proExtras.js";
 import { grantStreakFreeze } from "../repositories/growth.js";
 
 type TributeWebhookEvent = {
@@ -151,6 +152,7 @@ export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<
       if (name === "new_subscription") {
         await grantStreakFreeze(userId, 2);
       }
+      await grantMonthlyProFreeze(userId);
 
       console.log(`[tribute] Pro until ${until.toISOString()} for tg=${tgId} (${name})`);
       return { handled: true, action: name };

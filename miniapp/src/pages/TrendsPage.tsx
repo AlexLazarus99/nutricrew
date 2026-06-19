@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api, type TrendsResponse } from "../api/client";
+import { useMe } from "../hooks/useMe";
 import { ProGate } from "../components/pro/ProGate";
+import { DeficitChart } from "../components/pro/DeficitChart";
+import { ProTributeButton } from "../components/pro/ProTributeButton";
 
 function MiniBarChart({
   data,
@@ -32,8 +35,11 @@ function MiniBarChart({
 
 function TrendsContent() {
   const { t } = useTranslation();
-  const [range, setRange] = useState<"7d" | "30d" | "90d">("30d");
+  const { me } = useMe();
+  const isPro = !!me.pro?.isPro;
+  const [range, setRange] = useState<"7d" | "30d" | "90d">(isPro ? "30d" : "7d");
   const [data, setData] = useState<TrendsResponse | null>(null);
+  const [deficit, setDeficit] = useState<Awaited<ReturnType<typeof api.getProDeficit>> | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -44,10 +50,20 @@ function TrendsContent() {
       .catch((e: Error) => setError(e.message));
   }, [range]);
 
+  useEffect(() => {
+    if (!isPro) return;
+    void api.getProDeficit(range).then(setDeficit).catch(() => setDeficit(null));
+  }, [range, isPro]);
+
   const maxKcal = data ? Math.max(data.kcalTarget ?? 0, ...data.daily.map((d) => d.calories), 1) : 1;
   const maxProtein = data
     ? Math.max(data.proteinTarget ?? 0, ...data.daily.map((d) => d.protein), 1)
     : 1;
+
+  function selectRange(r: "7d" | "30d" | "90d") {
+    if (!isPro && r !== "7d") return;
+    setRange(r);
+  }
 
   return (
     <section className="stack">
@@ -55,17 +71,29 @@ function TrendsContent() {
         <h2>{t("trends.title")}</h2>
         <p className="muted">{t("trends.subtitle")}</p>
         <div className="trends-range-tabs">
-          {(["7d", "30d", "90d"] as const).map((r) => (
-            <button
-              key={r}
-              type="button"
-              className={`btn btn-sm ${range === r ? "btn-primary" : "btn-secondary"}`}
-              onClick={() => setRange(r)}
-            >
-              {t(`trends.range.${r}`)}
-            </button>
-          ))}
+          {(["7d", "30d", "90d"] as const).map((r) => {
+            const locked = !isPro && r !== "7d";
+            return (
+              <button
+                key={r}
+                type="button"
+                className={`btn btn-sm ${range === r ? "btn-primary" : "btn-secondary"}${locked ? " trends-range-tabs__locked" : ""}`}
+                onClick={() => selectRange(r)}
+              >
+                {locked ? "🔒 " : ""}
+                {t(`trends.range.${r}`)}
+              </button>
+            );
+          })}
         </div>
+        {!isPro && (
+          <p className="muted small trends-pro-hint">
+            {t("pro.trendsLiteHint")}{" "}
+            <ProTributeButton size="pill" source="trends-range">
+              {t("pro.pill")}
+            </ProTributeButton>
+          </p>
+        )}
       </div>
 
       {error && <p className="error">{error}</p>}
@@ -73,6 +101,16 @@ function TrendsContent() {
 
       {data && (
         <>
+          {deficit && (
+            <div className="card pro-deficit-card pro-animate-in">
+              <h3>{t("pro.deficitTitle")}</h3>
+              <p className="muted small">
+                {t("pro.deficitAvg", { kcal: deficit.avgBalance, kg: deficit.projectedKgPerWeek })}
+              </p>
+              <DeficitChart daily={deficit.daily} />
+            </div>
+          )}
+
           <div className="card">
             <h3>{t("trends.calories")}</h3>
             <p className="muted small">

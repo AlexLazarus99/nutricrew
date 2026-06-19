@@ -7,6 +7,7 @@ import { WellnessIllustration } from "../components/wellness/WellnessIllustratio
 import { MuscleGroupSections, WarmupBlock, WeeklySplit } from "../components/wellness/MuscleGroupSections";
 import { WeeklyMealPlan } from "../components/wellness/WeeklyMealPlan";
 import { EXERCISE_GROUP_ORDER, type BodyTypeId, type DietId, type ExerciseId } from "../data/wellness/catalog";
+import { useMe } from "../hooks/useMe";
 
 type DetailParams = {
   category: string;
@@ -31,6 +32,7 @@ function asStringArray(value: unknown): string[] {
 export function WellnessDetailPage() {
   const { category, id } = useParams<DetailParams>();
   const { t } = useTranslation();
+  const { me } = useMe();
   const [wellnessReady, setWellnessReady] = useState(false);
 
   useEffect(() => {
@@ -115,7 +117,7 @@ export function WellnessDetailPage() {
             <h3>{t("wellness.sections.evidence")}</h3>
             <p className="muted small">{t(`${prefix}.evidence`)}</p>
           </div>
-          <WeeklyMealPlan dietId={id as DietId} />
+          <WeeklyMealPlan dietId={id as DietId} previewOnly={!me.pro?.isPro} />
         </>
       )}
 

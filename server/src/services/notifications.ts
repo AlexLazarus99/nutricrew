@@ -168,3 +168,24 @@ export async function notifyStreakBroken(user: DbUser, teamName: string): Promis
     );
   }
 }
+
+export async function sendProSmartReminders(): Promise<void> {
+  const { isUserPro } = await import("./userPro.js");
+  const users = await usersRepo.listAllWithTeams();
+  const today = new Date().toISOString().slice(0, 10);
+
+  for (const user of users) {
+    if (!(await isUserPro(user.id))) continue;
+    if (user.last_meal_date === today) continue;
+    if (user.timezone_offset_minutes != null && !isLocalHour(user, 13)) continue;
+    if (user.timezone_offset_minutes == null && new Date().getUTCHours() !== 13) continue;
+
+    const ru = user.locale?.startsWith("ru");
+    await send(
+      user.telegram_id,
+      ru
+        ? "⭐ *Pro-напоминание*: сегодня ещё нет записей в дневнике — залогируйте приём пищи, пока не потеряете темп."
+        : "⭐ *Pro reminder*: no meals logged today — log a meal while you're on track.",
+    );
+  }
+}

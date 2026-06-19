@@ -31,6 +31,15 @@ import { importWearablePayload, listWearableImports } from "../../services/weara
 import { buildWeeklyReport } from "../../services/weeklyReport.js";
 import { buildStepsResponse, syncHealthStepsForUser, grantStepsXpForDay } from "../../services/stepsRewards.js";
 import { estimateWorkoutSteps, isWorkoutType } from "../../lib/workoutTypes.js";
+import { isUserPro } from "../../services/userPro.js";
+import {
+  buildDeficitSummary,
+  buildFourWeekMealPlan,
+  exportDiaryCsv,
+  getProGoals,
+  getProPerks,
+  plateReview,
+} from "../../services/proExtras.js";
 
 const authed = [authInitData, ensureUser] as const;
 const authedAccess = [...authed, requireAppAccess] as const;
@@ -61,12 +70,17 @@ valuationRouter.delete("/meals/:mealId", ...authedProfileAccess, async (req, res
 
 valuationRouter.get("/me/trends", ...authedProfileAccess, async (req, res) => {
   const range = (req.query.range as string) || "30d";
-  const r = range === "7d" || range === "90d" ? range : "30d";
+  let r: "7d" | "30d" | "90d" = range === "7d" || range === "90d" ? range : "30d";
+  const pro = await isUserPro(req.dbUser!.id);
+  if (!pro && r !== "7d") {
+    r = "7d";
+  }
   const trends = await buildTrends(req.dbUser!, r);
   const locale = req.dbUser!.locale ?? "en";
   res.json({
     ...trends,
     insightTexts: trends.insights.map((i) => insightText(i, locale)),
+    proExtendedRange: pro,
   });
 });
 
@@ -251,6 +265,51 @@ valuationRouter.get("/pro/shopping-list", ...authedProfileAccess, async (req, re
   }
 });
 
+valuationRouter.get("/pro/goals", ...authedProfileAccess, async (req, res) => {
+  try {
+    const mode = (req.query.mode as string) || "maintain";
+    const m = mode === "lose" || mode === "gain" ? mode : "maintain";
+    res.json(await getProGoals(req.dbUser!, m));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/pro/deficit", ...authedProfileAccess, async (req, res) => {
+  try {
+    const range = (req.query.range as string) || "30d";
+    const r = range === "7d" || range === "90d" ? range : "30d";
+    res.json(await buildDeficitSummary(req.dbUser!, r));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/pro/meal-plan-4w", ...authedProfileAccess, async (req, res) => {
+  try {
+    res.json(await buildFourWeekMealPlan(req.dbUser!));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.post("/pro/plate-review", ...authedProfileAccess, async (req, res) => {
+  try {
+    const { description } = req.body as { description?: string };
+    res.json(await plateReview(req.dbUser!, String(description ?? "")));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
+valuationRouter.get("/pro/perks", ...authedProfileAccess, async (req, res) => {
+  try {
+    res.json(await getProPerks(req.dbUser!));
+  } catch (e) {
+    res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
+  }
+});
+
 valuationRouter.post("/org", ...authedProfileAccess, async (req, res) => {
   const { name, billingEmail } = req.body as { name?: string; billingEmail?: string };
   if (!name?.trim()) {
@@ -306,12 +365,20 @@ valuationRouter.get("/analytics/cohorts", ...authedAccess, async (req, res) => {
 });
 
 valuationRouter.post("/wearables/import", ...authedProfileAccess, async (req, res) => {
-  const { source, payload } = req.body as { source?: string; payload?: unknown };
-  if (!source?.trim()) {
-    res.status(400).json({ error: "SOURCE_REQUIRED" });
-    return;
+  try {
+    if (!(await isUserPro(req.dbUser!.id))) {
+      res.status(403).json({ error: "PRO_REQUIRED" });
+      return;
+    }
+    const { source, payload } = req.body as { source?: string; payload?: unknown };
+    if (!source?.trim()) {
+      res.status(400).json({ error: "SOURCE_REQUIRED" });
+      return;
+    }
+    res.json(await importWearablePayload(req.dbUser!.id, source, payload ?? {}));
+  } catch (e) {
+    res.status(400).json({ error: (e as Error).message });
   }
-  res.json(await importWearablePayload(req.dbUser!.id, source, payload ?? {}));
 });
 
 valuationRouter.get("/wearables/imports", ...authedProfileAccess, async (req, res) => {
@@ -360,6 +427,10 @@ valuationRouter.post("/auth/web/magic-link", async (req, res) => {
 });
 
 valuationRouter.get("/me/weekly-report/enriched", ...authedProfileAccess, async (req, res) => {
+  if (!(await isUserPro(req.dbUser!.id))) {
+    res.status(403).json({ error: "PRO_REQUIRED" });
+    return;
+  }
   const report = await buildWeeklyReport(req.dbUser!);
   const trends = await buildTrends(req.dbUser!, "7d");
   const locale = req.dbUser!.locale ?? "en";

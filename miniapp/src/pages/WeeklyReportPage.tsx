@@ -13,9 +13,11 @@ function WeeklyReportContent() {
   useEffect(() => {
     trackEvent("weekly_report_view");
     api
-      .getWeeklyReport()
+      .getEnrichedWeeklyReport()
       .then(setReport)
-      .catch((e: Error) => setError(e.message));
+      .catch(() =>
+        api.getWeeklyReport().then(setReport).catch((e: Error) => setError(e.message)),
+      );
   }, []);
 
   if (error) {
