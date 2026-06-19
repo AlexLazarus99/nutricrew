@@ -6,6 +6,7 @@ import { getCurrentWeekKey } from "../lib/week.js";
 import type { Telegraf } from "telegraf";
 import type { Context } from "telegraf";
 import { createStarsInvoice } from "./payments.js";
+import type { AppLocale } from "../types.js";
 
 function weekStartForKey(weekKey: string): Date {
   const match = /^(\d{4})-W(\d{2})$/.exec(weekKey);
@@ -106,7 +107,7 @@ export async function createPoolFundInvoice(
   userId: number,
   teamId: string,
   stars: number,
-  locale: "en" | "ru",
+  locale: AppLocale,
 ): Promise<string> {
   return createStarsInvoice(bot, {
     userId,
@@ -125,7 +126,7 @@ export async function createPremiumInvoice(
   bot: Telegraf<Context>,
   userId: number,
   teamId: string,
-  locale: "en" | "ru",
+  locale: AppLocale,
 ): Promise<string> {
   return createStarsInvoice(bot, {
     userId,
@@ -143,7 +144,7 @@ export async function createPremiumInvoice(
 export async function createProInvoice(
   bot: Telegraf<Context>,
   userId: number,
-  locale: "en" | "ru",
+  locale: AppLocale,
 ): Promise<string> {
   return createStarsInvoice(bot, {
     userId,

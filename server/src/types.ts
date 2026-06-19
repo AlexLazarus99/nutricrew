@@ -1,4 +1,17 @@
-export type AppLocale = "en" | "ru";
+export type AppLocale =
+  | "en"
+  | "ru"
+  | "fr"
+  | "es"
+  | "de"
+  | "tr"
+  | "pt"
+  | "sv"
+  | "it"
+  | "ar"
+  | "pl"
+  | "zh"
+  | "hi";
 
 export type WeeklyGoalType = "points" | "protein" | "calories";
 

@@ -23,6 +23,7 @@ import { notifyMealLogged } from "../../services/notifications.js";
 import { streakMultiplier } from "../../services/streak.js";
 import { getCurrentWeekKey } from "../../lib/week.js";
 import { teamMultiplier } from "../../services/points.js";
+import { isAppLocale } from "../../lib/locales.js";
 import { isProfileComplete, validateProfile } from "../../lib/profileValidation.js";
 import { requireProfile } from "../middleware/requireProfile.js";
 import { config, getPublicSocialLinks } from "../../config.js";
@@ -763,10 +764,7 @@ apiRouter.patch("/me/timezone", ...authed, async (req, res) => {
 
 apiRouter.patch("/me/locale", ...authed, async (req, res) => {
   const { locale } = req.body as { locale?: string };
-  const allowed = new Set([
-    "en", "ru", "fr", "es", "de", "tr", "pt", "sv", "it", "ar", "pl", "zh", "hi",
-  ]);
-  if (!locale || !allowed.has(locale)) {
+  if (!locale || !isAppLocale(locale)) {
     res.status(400).json({ error: "Unsupported locale" });
     return;
   }

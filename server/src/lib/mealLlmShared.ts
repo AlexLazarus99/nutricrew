@@ -1,4 +1,5 @@
 import type { AppLocale, MealAnalysis, MealType } from "../types.js";
+import { llmLanguageName } from "./locales.js";
 
 export const MEAL_TYPES = new Set<MealType>([
   "breakfast",
@@ -50,7 +51,7 @@ export function descriptionWithPortion(description: string, grams?: number): str
 }
 
 export function buildFoodImagePrompt(locale: AppLocale): string {
-  const lang = locale === "ru" ? "Russian" : "English";
+  const lang = llmLanguageName(locale);
   const notFood = locale === "ru" ? "Не еда" : "Not food";
 
   return `You are a nutrition vision assistant for NutriCrew (Telegram miniapp).
@@ -72,7 +73,7 @@ Rules:
 }
 
 export function buildFoodTextPrompt(locale: AppLocale, text: string): string {
-  const lang = locale === "ru" ? "Russian" : "English";
+  const lang = llmLanguageName(locale);
 
   return `You are a nutrition assistant for NutriCrew (Telegram miniapp).
 
@@ -96,7 +97,7 @@ export function buildBarcodeAiPrompt(
   barcode: string,
   hint?: string,
 ): string {
-  const lang = locale === "ru" ? "Russian" : "English";
+  const lang = llmLanguageName(locale);
   const hintLine = hint?.trim()
     ? `User hint about the product: """${hint.trim()}"""`
     : "No product name hint was provided.";
