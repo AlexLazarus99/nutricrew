@@ -109,6 +109,10 @@ export function createBot(): Telegraf<Context> {
     await ctx.reply(openHint, inlineWebAppKeyboard(locale));
   });
 
+  bot.command("appss_verify", async (ctx) => {
+    await ctx.reply("appss_6b10e2");
+  });
+
   bot.command("app", async (ctx) => {
     if (!ctx.from) return;
     const user = await usersRepo.findByTelegramId(ctx.from.id);
