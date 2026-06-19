@@ -158,3 +158,21 @@ export async function createProInvoice(
         : `Unlimited AI · reports · ${config.stars.proDays} days`,
   });
 }
+
+export async function createProYearlyInvoice(
+  bot: Telegraf<Context>,
+  userId: number,
+  locale: AppLocale,
+): Promise<string> {
+  return createStarsInvoice(bot, {
+    userId,
+    teamId: null,
+    paymentType: "user_pro_yearly",
+    stars: config.stars.proYearlyPrice,
+    title: locale === "ru" ? "NutriCrew Pro · год" : "NutriCrew Pro · year",
+    description:
+      locale === "ru"
+        ? `Год Pro · коуч · отчёты · ${config.stars.proYearlyDays} дней`
+        : `Annual Pro · coach · reports · ${config.stars.proYearlyDays} days`,
+  });
+}

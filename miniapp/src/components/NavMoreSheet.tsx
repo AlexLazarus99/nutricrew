@@ -38,6 +38,8 @@ export function NavMoreSheet({ open, onClose, hasTeam, isPro }: Props) {
     { to: "/quiz", kind: "quiz", labelKey: "nav.quiz" },
     { to: "/report", kind: "report", labelKey: "nav.report", proGated: true },
     { to: "/trends", kind: "report", labelKey: "trends.title", proGated: true },
+    { to: "/referrals", kind: "features", labelKey: "nav.referrals" },
+    { to: "/business", kind: "features", labelKey: "nav.business" },
     { to: "/features", kind: "features", labelKey: "nav.features", end: true },
     { to: "/settings", kind: "settings", labelKey: "nav.settings" },
   );

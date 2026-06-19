@@ -1,5 +1,7 @@
 {
   "name": "nutricrew",
+  "author": "ingritoo",
+  "license": "UNLICENSED",
   "private": true,
   "version": "0.1.0",
   "description": "NutriCrew — social nutrition game for Telegram",

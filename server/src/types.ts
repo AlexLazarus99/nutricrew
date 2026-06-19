@@ -15,7 +15,7 @@ export type AppLocale =
 
 export type WeeklyGoalType = "points" | "protein" | "calories";
 
-export type PaymentType = "pool_fund" | "premium" | "bird_unlock" | "user_pro";
+export type PaymentType = "pool_fund" | "premium" | "bird_unlock" | "user_pro" | "user_pro_yearly";
 
 export interface DbUser {
   id: number;

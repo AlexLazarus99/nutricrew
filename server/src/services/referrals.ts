@@ -22,6 +22,23 @@ export function parseInviteStartParam(startParam?: string): {
   };
 }
 
+export function parseReferralStartParam(startParam?: string): {
+  referrerTelegramId?: number;
+} {
+  if (!startParam) return {};
+  const raw = startParam.trim();
+  const match = raw.match(/^ref[_-]?(\d+)$/i);
+  if (!match) return {};
+  const referrerTelegramId = Number(match[1]);
+  return Number.isFinite(referrerTelegramId) ? { referrerTelegramId } : {};
+}
+
+export function referrerTelegramIdFromStartParam(startParam?: string): number | undefined {
+  const fromRef = parseReferralStartParam(startParam).referrerTelegramId;
+  if (fromRef != null) return fromRef;
+  return parseInviteStartParam(startParam).referrerTelegramId;
+}
+
 export async function attachReferrerOnJoin(
   joiner: DbUser,
   referrerTelegramId?: number,

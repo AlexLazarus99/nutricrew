@@ -4477,6 +4477,14 @@ button {
   margin: 0 0 12px;
 }
 
+.legal-page .legal-operator {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  line-height: 1.45;
+}
+
 /* Food log + diary hero */
 .food-log-hero {
   animation: nc-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;

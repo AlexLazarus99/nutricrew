@@ -2,7 +2,8 @@
 
 Telegram bot + Mini App — social nutrition game with team battles, AI food photos, S3 storage, and Telegram Stars prizes (EN / RU).
 
-**Documentation:** [docs/README.md](./docs/README.md) — spec, DB, pitch, **UI prototype**.
+**Documentation:** [docs/README.md](./docs/README.md) — spec, DB, pitch, **UI prototype**.  
+**IP & sale:** [docs/legal/OWNERSHIP.md](./docs/legal/OWNERSHIP.md) · [acquisition pack](./docs/acquisition/README.md) — rights holder **@ingritoo**
 
 ## Stack
 

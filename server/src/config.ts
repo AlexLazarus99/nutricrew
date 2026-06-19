@@ -57,6 +57,8 @@ export const config = {
   growth: {
     dailyBonusPoints: Number(process.env.DAILY_BONUS_POINTS ?? 8),
     referralTeamPoints: Number(process.env.REFERRAL_TEAM_POINTS ?? 25),
+    referralProDaysLiteCrew: Number(process.env.REFERRAL_PRO_DAYS_LITE ?? 7),
+    referralProDaysPro: Number(process.env.REFERRAL_PRO_DAYS_PRO ?? 14),
     minTeamForPrizes: Number(process.env.MIN_TEAM_FOR_PRIZES ?? 3),
   },
 
@@ -74,6 +76,8 @@ export const config = {
     premiumDays: Number(process.env.PREMIUM_DAYS ?? 30),
     proPrice: Number(process.env.PRO_STARS_PRICE ?? 149),
     proDays: Number(process.env.PRO_DAYS ?? 30),
+    proYearlyPrice: Number(process.env.PRO_YEARLY_STARS_PRICE ?? 1199),
+    proYearlyDays: Number(process.env.PRO_YEARLY_DAYS ?? 365),
     minPoolFund: Number(process.env.MIN_POOL_FUND_STARS ?? 10),
     maxPoolFund: Number(process.env.MAX_POOL_FUND_STARS ?? 1000),
     winnerSharePercent: Number(process.env.WINNER_POOL_SHARE_PERCENT ?? 80),
@@ -105,8 +109,14 @@ export const config = {
       .map((s) => Number(s.trim()))
       .filter((n) => Number.isFinite(n) && n > 0),
     proDays: Number(process.env.TRIBUTE_PRO_DAYS ?? process.env.PRO_DAYS ?? 30),
+    proYearlyDays: Number(process.env.TRIBUTE_PRO_YEARLY_DAYS ?? process.env.PRO_YEARLY_DAYS ?? 365),
     liteCrewDays: Number(process.env.TRIBUTE_LITE_CREW_DAYS ?? 30),
     proUrls: parseTributeProUrlsEnv(process.env.TRIBUTE_PRO_URL ?? ""),
+    proYearlyUrl: (process.env.TRIBUTE_PRO_YEARLY_URL ?? "").trim(),
+    proYearlySubscriptionIds: (process.env.TRIBUTE_PRO_YEARLY_SUBSCRIPTION_IDS ?? "")
+      .split(",")
+      .map((s) => Number(s.trim()))
+      .filter((n) => Number.isFinite(n) && n > 0),
     get proUrl(): string {
       return this.proUrls[0] ?? "";
     },

@@ -66,6 +66,12 @@ const CoachPage = lazy(() =>
 const OrgAdminPage = lazy(() =>
   import("./pages/OrgAdminPage").then((m) => ({ default: m.OrgAdminPage })),
 );
+const ReferralsPage = lazy(() =>
+  import("./pages/ReferralsPage").then((m) => ({ default: m.ReferralsPage })),
+);
+const B2BLandingPage = lazy(() =>
+  import("./pages/B2BLandingPage").then((m) => ({ default: m.B2BLandingPage })),
+);
 
 export default function App() {
   return (
@@ -93,6 +99,8 @@ export default function App() {
         <Route path="coach" element={<CoachPage />} />
         <Route path="team/admin" element={<TeamAdminPage />} />
         <Route path="org/admin" element={<OrgAdminPage />} />
+        <Route path="referrals" element={<ReferralsPage />} />
+        <Route path="business" element={<B2BLandingPage />} />
       </Route>
     </Routes>
   );

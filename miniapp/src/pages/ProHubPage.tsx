@@ -62,7 +62,6 @@ export function ProHubPage() {
           <h2>{t("pro.paywallHeadline")}</h2>
           <p className="pro-paywall__lead">{t("pro.paywallLead")}</p>
           <ProFeatureShowcase compact />
-          <p className="pro-paywall__price">{t("pro.priceLine")}</p>
           <ProTributeCheckout source="pro_hub" />
           <p className="pro-paywall__stars muted small">{t("pro.tributeHint")}</p>
         </div>

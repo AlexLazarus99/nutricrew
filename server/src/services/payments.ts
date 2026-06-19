@@ -13,7 +13,7 @@ export async function createStarsInvoice(
   input: {
     userId: number;
     teamId: string | null;
-    paymentType: "pool_fund" | "premium" | "user_pro";
+    paymentType: "pool_fund" | "premium" | "user_pro" | "user_pro_yearly";
     stars: number;
     title: string;
     description: string;
@@ -24,7 +24,9 @@ export async function createStarsInvoice(
       ? config.stars.premiumPrice
       : input.paymentType === "user_pro"
         ? config.stars.proPrice
-        : clampStars(input.stars);
+        : input.paymentType === "user_pro_yearly"
+          ? config.stars.proYearlyPrice
+          : clampStars(input.stars);
   const payload = `nc_${crypto.randomUUID().replace(/-/g, "")}`;
 
   await prizesRepo.createPayment({
@@ -119,7 +121,21 @@ export async function handleSuccessfulPayment(
     await grantStreakFreeze(Number(payment.userId), 2);
     const { grantMonthlyProFreeze } = await import("./proExtras.js");
     await grantMonthlyProFreeze(Number(payment.userId));
+    const { maybeRewardReferrerForPayment } = await import("./referralRewards.js");
+    await maybeRewardReferrerForPayment(Number(payment.userId), "pro");
     return { type: "user_pro", stars: totalAmount };
+  }
+
+  if (payment.paymentType === "user_pro_yearly") {
+    const { setUserPro } = await import("./userPro.js");
+    const { grantStreakFreeze } = await import("../repositories/growth.js");
+    await setUserPro(Number(payment.userId), config.stars.proYearlyDays);
+    await grantStreakFreeze(Number(payment.userId), 2);
+    const { grantMonthlyProFreeze } = await import("./proExtras.js");
+    await grantMonthlyProFreeze(Number(payment.userId));
+    const { maybeRewardReferrerForPayment } = await import("./referralRewards.js");
+    await maybeRewardReferrerForPayment(Number(payment.userId), "pro_yearly");
+    return { type: "user_pro_yearly", stars: totalAmount };
   }
 
   return null;
@@ -167,6 +183,12 @@ export function registerPaymentHandlers(bot: Telegraf<Context>): void {
         locale === "ru"
           ? `⭐ NutriCrew Pro на ${config.stars.proDays} дней! Безлимит ИИ и отчёты.`
           : `⭐ NutriCrew Pro for ${config.stars.proDays} days! Unlimited AI & reports.`,
+      );
+    } else if (result?.type === "user_pro_yearly") {
+      await ctx.reply(
+        locale === "ru"
+          ? `⭐ NutriCrew Pro на ${config.stars.proYearlyDays} дней! Годовая подписка активна.`
+          : `⭐ NutriCrew Pro for ${config.stars.proYearlyDays} days! Annual plan active.`,
       );
     }
   });

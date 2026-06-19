@@ -8,6 +8,7 @@ export function TermsPage() {
     <section className="card legal-page">
       <h2>{t("legal.termsTitle")}</h2>
       <p className="muted small">{t("legal.updated")}</p>
+      <p className="legal-operator small">{t("legal.operator")}</p>
       {Array.isArray(sections) &&
         sections.map((paragraph, i) => (
           <p key={i} className="legal-paragraph">

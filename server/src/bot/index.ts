@@ -73,6 +73,14 @@ export function createBot(): Telegraf<Context> {
     const name = ctx.from.first_name ?? "friend";
 
     const startPayload = ctx.startPayload;
+    if (startPayload?.match(/^ref[_-]?\d+$/i)) {
+      const { parseReferralStartParam, attachReferrerOnJoin } = await import("../services/referrals.js");
+      const ref = parseReferralStartParam(startPayload);
+      if (ref.referrerTelegramId) {
+        await attachReferrerOnJoin(dbUser, ref.referrerTelegramId);
+      }
+    }
+
     if (startPayload?.startsWith("join_") && !dbUser.team_id) {
       const { parseInviteStartParam } = await import("../services/referrals.js");
       const parsed = parseInviteStartParam(startPayload);

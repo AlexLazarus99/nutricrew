@@ -1,5 +1,11 @@
+import { config } from "../config.js";
 import { prisma } from "../db/client.js";
 import * as mealsRepo from "../repositories/meals.js";
+import * as usersRepo from "../repositories/users.js";
+import {
+  buildReferralShareUrl,
+  getReferrerRewardStats,
+} from "./referralRewards.js";
 
 const REFERRAL_TIERS = [
   { count: 3, stars: 15 },
@@ -8,6 +14,7 @@ const REFERRAL_TIERS = [
 ];
 
 export async function getReferralProgress(userId: number) {
+  const user = await usersRepo.findById(userId);
   const referrals = await prisma.user.findMany({
     where: { referredByUserId: BigInt(userId) },
     select: { id: true },
@@ -18,11 +25,24 @@ export async function getReferralProgress(userId: number) {
     if (meals >= 3) active++;
   }
   const next = REFERRAL_TIERS.find((t) => active < t.count);
+  const rewardStats = await getReferrerRewardStats(userId);
+  const shareUrl =
+    user != null
+      ? buildReferralShareUrl(config.botUsername, user.telegram_id)
+      : null;
+
   return {
     totalReferrals: referrals.length,
     activeReferrals: active,
+    paidReferrals: rewardStats.paidReferrals,
+    proDaysEarned: rewardStats.proDaysEarned,
     tiers: REFERRAL_TIERS,
     nextTier: next ?? null,
+    shareUrl,
+    rewards: {
+      proDaysLiteCrew: config.growth.referralProDaysLiteCrew,
+      proDaysPro: config.growth.referralProDaysPro,
+    },
   };
 }
 

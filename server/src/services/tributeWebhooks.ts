@@ -4,6 +4,7 @@ import { setUserProUntil } from "./userPro.js";
 import { setLiteCrewUntil } from "./userLiteCrew.js";
 import { grantMonthlyProFreeze } from "./proExtras.js";
 import { grantStreakFreeze } from "../repositories/growth.js";
+import { maybeRewardReferrerForPayment } from "./referralRewards.js";
 
 type TributeWebhookEvent = {
   name?: string;
@@ -70,6 +71,13 @@ function isProSubscription(subscriptionIdValue: number | null): boolean {
   return allowed.includes(subscriptionIdValue);
 }
 
+function isProYearlySubscription(subscriptionIdValue: number | null): boolean {
+  const allowed = config.tribute.proYearlySubscriptionIds;
+  if (!allowed.length) return false;
+  if (subscriptionIdValue == null) return false;
+  return allowed.includes(subscriptionIdValue);
+}
+
 function isLiteCrewSubscription(subscriptionIdValue: number | null): boolean {
   const allowed = config.tribute.liteCrewSubscriptionIds;
   if (allowed.length) {
@@ -115,10 +123,11 @@ function liteCrewUntilFromPayload(payload: Record<string, unknown>): Date {
   return new Date(Date.now() + config.tribute.liteCrewDays * 24 * 60 * 60 * 1000);
 }
 
-function proUntilFromPayload(payload: Record<string, unknown>): Date {
+function proUntilFromPayload(payload: Record<string, unknown>, yearly = false): Date {
   const explicit = parseExpiresAt(payload);
   if (explicit && explicit.getTime() > Date.now()) return explicit;
-  return new Date(Date.now() + config.tribute.proDays * 24 * 60 * 60 * 1000);
+  const days = yearly ? config.tribute.proYearlyDays : config.tribute.proDays;
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 }
 
 export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<{
@@ -138,11 +147,30 @@ export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<
   if (name === "new_subscription" || name === "renewed_subscription") {
     const userId = await ensureUserByTelegramId(tgId);
 
-    if (isLiteCrewSubscription(subId) && !isProSubscription(subId)) {
+    if (isLiteCrewSubscription(subId) && !isProSubscription(subId) && !isProYearlySubscription(subId)) {
       const until = liteCrewUntilFromPayload(payload);
       await setLiteCrewUntil(userId, until);
+      if (name === "new_subscription") {
+        await maybeRewardReferrerForPayment(userId, "lite_crew");
+      }
       console.log(`[tribute] LiteCrew until ${until.toISOString()} for tg=${tgId} (${name})`);
       return { handled: true, action: `lite_crew_${name}` };
+    }
+
+    if (isProYearlySubscription(subId)) {
+      const until = proUntilFromPayload(payload, true);
+      await setUserProUntil(userId, until);
+
+      if (name === "new_subscription") {
+        await grantStreakFreeze(userId, 2);
+      }
+      await grantMonthlyProFreeze(userId);
+      if (name === "new_subscription") {
+        await maybeRewardReferrerForPayment(userId, "pro_yearly");
+      }
+
+      console.log(`[tribute] Pro yearly until ${until.toISOString()} for tg=${tgId} (${name})`);
+      return { handled: true, action: `pro_yearly_${name}` };
     }
 
     if (isProSubscription(subId) || isLegacyProSubscription(subId)) {
@@ -153,6 +181,9 @@ export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<
         await grantStreakFreeze(userId, 2);
       }
       await grantMonthlyProFreeze(userId);
+      if (name === "new_subscription") {
+        await maybeRewardReferrerForPayment(userId, "pro");
+      }
 
       console.log(`[tribute] Pro until ${until.toISOString()} for tg=${tgId} (${name})`);
       return { handled: true, action: name };
@@ -169,7 +200,7 @@ export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<
   }
 
   if (name === "cancelled_subscription") {
-    if (isLiteCrewSubscription(subId) && !isProSubscription(subId)) {
+    if (isLiteCrewSubscription(subId) && !isProSubscription(subId) && !isProYearlySubscription(subId)) {
       const user = await prisma.user.findUnique({
         where: { telegramId: BigInt(tgId) },
         select: { id: true },
@@ -186,7 +217,7 @@ export async function handleTributeWebhook(event: TributeWebhookEvent): Promise<
       return { handled: true, action: "lite_crew_cancelled_revoked" };
     }
 
-    if (!isProSubscription(subId) && !isLegacyProSubscription(subId)) {
+    if (!isProSubscription(subId) && !isProYearlySubscription(subId) && !isLegacyProSubscription(subId)) {
       return { handled: true, action: "ignored_subscription" };
     }
 

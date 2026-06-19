@@ -298,6 +298,17 @@ export function SettingsPage() {
       </div>
 
       <div className="card">
+        <h3>{t("referrals.title")}</h3>
+        <p className="muted small">{t("referrals.lead")}</p>
+        <Link to="/referrals" className="btn btn-primary btn-block">
+          {t("referrals.shareBtn")}
+        </Link>
+        <Link to="/business" className="btn btn-secondary btn-block">
+          {t("nav.business")}
+        </Link>
+      </div>
+
+      <div className="card">
         <h3>{t("settings.legalTitle")}</h3>
         <Link to="/privacy" className="btn btn-secondary btn-block">
           {t("settings.privacyLink")}

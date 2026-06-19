@@ -126,6 +126,8 @@ model User {
   orgMemberships    OrgMember[]
   recipeVotes       TeamRecipeVote[]
   wearableImports   WearableImport[]
+  referralPaidRewardsGiven ReferralPaidReward[] @relation("ReferralRewardsGiven")
+  referralPaidReward       ReferralPaidReward?  @relation("ReferralRewardFrom")
 
   @@index([teamId])
   @@index([referredByUserId])
@@ -634,4 +636,18 @@ model StarTransaction {
 
   @@index([userId])
   @@map("star_transactions")
+}
+
+model ReferralPaidReward {
+  referredUserId BigInt   @id @map("referred_user_id")
+  referrerUserId BigInt   @map("referrer_user_id")
+  rewardKind     String   @map("reward_kind") @db.VarChar(16)
+  proDaysGranted Int      @map("pro_days_granted")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  referrer User @relation("ReferralRewardsGiven", fields: [referrerUserId], references: [id], onDelete: Cascade)
+  referred User @relation("ReferralRewardFrom", fields: [referredUserId], references: [id], onDelete: Cascade)
+
+  @@index([referrerUserId])
+  @@map("referral_paid_rewards")
 }

@@ -29,6 +29,18 @@ export async function setUserProUntil(userId: number, until: Date): Promise<void
   });
 }
 
+export async function extendUserPro(userId: number, days: number): Promise<Date> {
+  const user = await prisma.user.findUnique({
+    where: { id: BigInt(userId) },
+    select: { proUntil: true },
+  });
+  const base =
+    user?.proUntil && user.proUntil.getTime() > Date.now() ? user.proUntil : new Date();
+  const until = new Date(base.getTime() + days * 24 * 60 * 60 * 1000);
+  await setUserProUntil(userId, until);
+  return until;
+}
+
 export async function getUserProStatus(userId: number) {
   const user = await prisma.user.findUnique({
     where: { id: BigInt(userId) },

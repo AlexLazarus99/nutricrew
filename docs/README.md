@@ -8,6 +8,8 @@ Product specification and database reference in two languages.
 | **UI prototype** | [prototype/index.html](./prototype/index.html) | same (EN/RU toggle inside) |
 | **Product & API spec** | [SPEC.md](./en/SPEC.md) | [SPEC.md](./ru/SPEC.md) |
 | **Database schema** | [DATABASE.md](./en/DATABASE.md) | [DATABASE.md](./ru/DATABASE.md) |
+| **Legal & IP (@ingritoo)** | [legal/OWNERSHIP.md](./legal/OWNERSHIP.md) | same |
+| **Sale / acquisition** | [acquisition/README.md](./acquisition/README.md) | same |
 
 ## Quick links
 

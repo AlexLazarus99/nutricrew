@@ -155,6 +155,13 @@ export interface MeResponse {
   }>;
   tributeProUrl?: string | null;
   tributeProUrls?: string[] | null;
+  tributeProYearlyUrl?: string | null;
+  proPricing?: {
+    monthlyStars: number;
+    monthlyDays: number;
+    yearlyStars: number;
+    yearlyDays: number;
+  };
   growth?: GrowthSummary;
   pro?: { isPro: boolean; proUntil: string | null };
   access?: {
@@ -390,8 +397,15 @@ export interface OrgDashboardResponse {
 export interface ReferralV2Response {
   totalReferrals: number;
   activeReferrals: number;
+  paidReferrals: number;
+  proDaysEarned: number;
   tiers: Array<{ count: number; stars: number }>;
   nextTier: { count: number; stars: number } | null;
+  shareUrl: string | null;
+  rewards: {
+    proDaysLiteCrew: number;
+    proDaysPro: number;
+  };
 }
 
 export interface TeamAdminResponse {
@@ -831,6 +845,8 @@ export const api = {
     request<{ invoiceLink: string }>("/prizes/premium-invoice", { method: "POST", body: "{}" }),
   createProInvoice: () =>
     request<{ invoiceLink: string }>("/prizes/pro-invoice", { method: "POST", body: "{}" }),
+  createProYearlyInvoice: () =>
+    request<{ invoiceLink: string }>("/prizes/pro-yearly-invoice", { method: "POST", body: "{}" }),
   createTeam: (name: string, leagueTag?: string) =>
     request<{ id: string; name: string; inviteCode: string }>("/teams/create", {
       method: "POST",

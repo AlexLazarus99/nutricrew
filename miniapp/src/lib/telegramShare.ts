@@ -39,6 +39,37 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
+export function buildReferralShareUrl(
+  botUsername: string | null | undefined,
+  referrerTelegramId: number,
+): string | null {
+  const user = botUsername?.replace(/^@/, "");
+  if (!user || !Number.isFinite(referrerTelegramId)) return null;
+  return `https://t.me/${user}?startapp=${encodeURIComponent(`ref_${referrerTelegramId}`)}`;
+}
+
+export function shareReferralLink(opts: {
+  shareUrl: string;
+  title: string;
+  text: string;
+}): "shared" | "copied" | "failed" {
+  const tg = getTelegramWebApp();
+  const shareText = `${opts.text}\n\n${opts.shareUrl}`;
+
+  if (tg?.openTelegramLink) {
+    try {
+      const shareUrl = `https://t.me/share/url?url=${encodeURIComponent(opts.shareUrl)}&text=${encodeURIComponent(opts.text)}`;
+      tg.openTelegramLink(shareUrl);
+      return "shared";
+    } catch {
+      /* fall through */
+    }
+  }
+
+  void copyToClipboard(shareText);
+  return "copied";
+}
+
 export function shareInviteLink(opts: {
   inviteCode: string;
   botUsername?: string | null;

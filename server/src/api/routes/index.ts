@@ -31,7 +31,7 @@ import { config, getPublicSocialLinks } from "../../config.js";
 import { buildTeamInviteUrl } from "../../lib/inviteLink.js";
 import { apiReady } from "../ready.js";
 import * as engagementRepo from "../../repositories/engagement.js";
-import { parseInviteStartParam } from "../../services/referrals.js";
+import { parseInviteStartParam, attachReferrerOnJoin, referrerTelegramIdFromStartParam } from "../../services/referrals.js";
 import { computeUserProgress } from "../../services/progress.js";
 import { claimQuest, getQuestBoard } from "../../services/quests.js";
 import { chatRouter } from "./chat.js";
@@ -153,6 +153,13 @@ apiRouter.get("/health", async (_req, res) => {
 apiRouter.get("/me", ...authed, async (req, res) => {
   const user = req.dbUser!;
 
+  const refTelegramId = referrerTelegramIdFromStartParam(req.telegram!.startParam);
+  if (refTelegramId != null) {
+    await attachReferrerOnJoin(user, refTelegramId);
+    const refreshed = await usersRepo.findById(user.id);
+    if (refreshed) Object.assign(user, refreshed);
+  }
+
   const [todayPoints, mealsToday, dailyBonus, progress] = await Promise.all([
     mealsRepo.getTodayPoints(user.id),
     mealsRepo.countMealsToday(user.id),
@@ -221,6 +228,13 @@ apiRouter.get("/me", ...authed, async (req, res) => {
     growth,
     tributeProUrl: config.tribute.proUrls[0] || null,
     tributeProUrls: config.tribute.proUrls.length ? config.tribute.proUrls : null,
+    tributeProYearlyUrl: config.tribute.proYearlyUrl || null,
+    proPricing: {
+      monthlyStars: config.stars.proPrice,
+      monthlyDays: config.stars.proDays,
+      yearlyStars: config.stars.proYearlyPrice,
+      yearlyDays: config.stars.proYearlyDays,
+    },
     pro,
     access,
   });
@@ -639,6 +653,15 @@ apiRouter.post("/prizes/pro-invoice", ...authedProfileAccess, async (req, res) =
   const { getAppBot } = await import("../../services/botInstance.js");
   const link = await import("../../services/stars.js").then((m) =>
     m.createProInvoice(getAppBot(), user.id, user.locale),
+  );
+  res.json({ invoiceLink: link });
+});
+
+apiRouter.post("/prizes/pro-yearly-invoice", ...authedProfileAccess, async (req, res) => {
+  const user = req.dbUser!;
+  const { getAppBot } = await import("../../services/botInstance.js");
+  const link = await import("../../services/stars.js").then((m) =>
+    m.createProYearlyInvoice(getAppBot(), user.id, user.locale),
   );
   res.json({ invoiceLink: link });
 });
