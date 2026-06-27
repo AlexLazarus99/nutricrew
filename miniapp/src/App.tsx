@@ -42,6 +42,9 @@ const FeaturesPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import("./pages/SettingsPage").then((m) => ({ default: m.SettingsPage })),
 );
+const SupportPage = lazy(() =>
+  import("./pages/SupportPage").then((m) => ({ default: m.SupportPage })),
+);
 const PrivacyPolicyPage = lazy(() =>
   import("./pages/PrivacyPolicyPage").then((m) => ({ default: m.PrivacyPolicyPage })),
 );
@@ -91,6 +94,7 @@ export default function App() {
         <Route path="game" element={<BirdGamePage />} />
         <Route path="quiz" element={<CalorieQuizPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="support" element={<SupportPage />} />
         <Route path="privacy" element={<PrivacyPolicyPage />} />
         <Route path="terms" element={<TermsPage />} />
         <Route path="report" element={<WeeklyReportPage />} />

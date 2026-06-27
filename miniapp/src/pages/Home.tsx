@@ -8,9 +8,7 @@ import { InviteShareButton } from "../components/InviteShareButton";
 import { DailyMealsProgress } from "../components/DailyMealsProgress";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { TutorialCoach } from "../components/TutorialCoach";
-import { HomeActionGrid } from "../components/ui/HomeActionGrid";
 import { HomeLogFoodCta } from "../components/home/HomeLogFoodCta";
-import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
 import type { GrowthSummary } from "../api/client";
@@ -184,9 +182,6 @@ export function HomePage() {
           <p className="muted small">{t("growth.autoJoinPending", { code: me.startInviteCode })}</p>
         )}
 
-        <HomeActionGrid />
-
-        <SocialLinks links={me.socialLinks ?? {}} variant="card" />
       </section>
     );
   }
@@ -282,14 +277,6 @@ export function HomePage() {
         />
       )}
 
-      <HomeActionGrid
-        showPrizes
-        starBalance={me.starBalance}
-        showTrends
-        showPro={!!me.pro?.isPro}
-      />
-
-      <SocialLinks links={me.socialLinks ?? {}} variant="card" />
     </section>
   );
 }

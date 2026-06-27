@@ -19,6 +19,7 @@ import "./styles/achievement-badges.css";
 import "./styles/valuation.css";
 import "./styles/nav-badges.css";
 import "./styles/motion-badges.css";
+import "./styles/support.css";
 
 bootstrapTelegramWebApp();
 if (import.meta.env.VITE_MOCK_HEALTH_BRIDGE === "1") {

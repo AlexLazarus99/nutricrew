@@ -8,6 +8,7 @@ import { useTelegram } from "../hooks/useTelegram";
 import { useMe } from "../hooks/useMe";
 import { useAppPreferences } from "../hooks/useAppPreferences";
 import { LanguageSwitcher } from "../components/LanguageSwitcher";
+import { SettingsSupportLink } from "../components/settings/SettingsSupportLink";
 import { SettingsRow } from "../components/settings/SettingsRow";
 import { SettingsSegment } from "../components/settings/SettingsSegment";
 import { SettingsToggle } from "../components/settings/SettingsToggle";
@@ -192,6 +193,8 @@ export function SettingsPage() {
           <p className="muted">{nickname}</p>
         </div>
       </div>
+
+      <SettingsSupportLink />
 
       <div className="card">
         <h3>{t("settings.appearanceTitle")}</h3>

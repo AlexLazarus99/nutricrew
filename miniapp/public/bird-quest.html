@@ -1751,6 +1751,94 @@ function clearButtons(){ buttons = []; }
 function addButton(b){ buttons.push(b); }
 function pointInBtn(px,py,b){ return px>=b.x && px<=b.x+b.w && py>=b.y && py<=b.y+b.h; }
 
+let levelMapScroll = { y: 0, active: false, startPy: 0, startScroll: 0, moved: false };
+
+function levelsViewport(){
+  const top = H * 0.14 + safeTop();
+  const bottom = H - 80 - safeBottom();
+  return { top, bottom, h: Math.max(120, bottom - top) };
+}
+function getLevelsLayout(){
+  const cols = 3;
+  const levelCount = Math.max(6, progress.unlocked + 1);
+  const gw = Math.min(W * 0.86, 420);
+  const cell = gw / cols;
+  const gx = (W - gw) / 2;
+  const gy = levelsViewport().top + 4;
+  const size = cell - 12;
+  const rowH = size + 14;
+  const rows = Math.ceil(levelCount / cols);
+  const contentH = rows * rowH;
+  return { cols, levelCount, gw, cell, gx, gy, size, rowH, rows, contentH };
+}
+function levelsMaxScroll(){
+  const layout = getLevelsLayout();
+  const vp = levelsViewport();
+  return Math.max(0, layout.gy + layout.contentH - vp.bottom + 12);
+}
+function syncLevelButtonPositions(){
+  for(const b of buttons){
+    if(b.baseY != null) b.y = b.baseY - levelMapScroll.y;
+  }
+}
+function scrollLevelsToUnlocked(){
+  const layout = getLevelsLayout();
+  const idx = Math.max(0, (progress.unlocked || 1) - 1);
+  const row = Math.floor(idx / layout.cols);
+  const tileY = layout.gy + row * layout.rowH;
+  const vp = levelsViewport();
+  levelMapScroll.y = clamp(tileY - vp.top - layout.rowH * 0.5, 0, levelsMaxScroll());
+}
+function drawLevelMapScrollHints(c){
+  const max = levelsMaxScroll();
+  if(max <= 2) return;
+  const vp = levelsViewport();
+  if(levelMapScroll.y > 4){
+    const g = c.createLinearGradient(0, vp.top, 0, vp.top + 28);
+    g.addColorStop(0, 'rgba(8,16,30,0.75)'); g.addColorStop(1, 'rgba(8,16,30,0)');
+    c.fillStyle = g; c.fillRect(0, vp.top, W, 28);
+  }
+  if(levelMapScroll.y < max - 4){
+    const g = c.createLinearGradient(0, vp.bottom - 32, 0, vp.bottom);
+    g.addColorStop(0, 'rgba(8,16,30,0)'); g.addColorStop(1, 'rgba(8,16,30,0.78)');
+    c.fillStyle = g; c.fillRect(0, vp.bottom - 32, W, 32);
+    c.fillStyle = 'rgba(238,245,240,0.55)';
+    c.font = typeCaption(11); c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText('⇅ листай', W / 2, vp.bottom - 12);
+  }
+}
+function levelsPointerDown(py){
+  const vp = levelsViewport();
+  levelMapScroll.active = py >= vp.top - 8 && py <= vp.bottom + 8;
+  levelMapScroll.startPy = py;
+  levelMapScroll.startScroll = levelMapScroll.y;
+  levelMapScroll.moved = false;
+}
+function levelsPointerMove(py){
+  if(!levelMapScroll.active) return;
+  const dy = py - levelMapScroll.startPy;
+  if(Math.abs(dy) > 6) levelMapScroll.moved = true;
+  if(levelMapScroll.moved){
+    levelMapScroll.y = clamp(levelMapScroll.startScroll - dy, 0, levelsMaxScroll());
+    syncLevelButtonPositions();
+  }
+}
+function levelsPointerUp(px, py){
+  const moved = levelMapScroll.moved;
+  levelMapScroll.active = false;
+  levelMapScroll.moved = false;
+  if(moved) return true;
+  for(const b of buttons){
+    if(pointInBtn(px, py, b)){ b.onClick(); haptic('light'); return true; }
+  }
+  return false;
+}
+function levelsWheel(deltaY){
+  const before = levelMapScroll.y;
+  levelMapScroll.y = clamp(levelMapScroll.y + deltaY * 0.45, 0, levelsMaxScroll());
+  if(levelMapScroll.y !== before) syncLevelButtonPositions();
+}
+
 /* --------------------------------- Input --------------------------------- */
 let pointer = {x:0,y:0,down:false};
 function handleDown(px,py){
@@ -1761,6 +1849,10 @@ function handleDown(px,py){
     if(muted){ SFX.stopDragonFlame(); BGM.stop(); }
     else if(state===STATE.PLAY) BGM.start();
     haptic('select'); return;
+  }
+  if(state===STATE.LEVELS){
+    levelsPointerDown(py);
+    return;
   }
   // Buttons
   for(const b of buttons){ if(pointInBtn(px,py,b)){ b.onClick(); haptic('light'); return; } }
@@ -1783,10 +1875,39 @@ function flap(){
   haptic('light');
   spawnFlapBurst(b);
 }
+function handleUp(px, py){
+  if(state===STATE.LEVELS){
+    levelsPointerUp(px, py);
+    pointer.down = false;
+    return;
+  }
+  pointer.down = false;
+}
 canvas.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.changedTouches[0]; const r=canvas.getBoundingClientRect(); handleDown(t.clientX-r.left, t.clientY-r.top); }, {passive:false});
-canvas.addEventListener('touchend', e=>{ e.preventDefault(); pointer.down=false; }, {passive:false});
+canvas.addEventListener('touchmove', e=>{
+  e.preventDefault();
+  const t=e.changedTouches[0];
+  const r=canvas.getBoundingClientRect();
+  if(state===STATE.LEVELS) levelsPointerMove(t.clientY-r.top);
+}, {passive:false});
+canvas.addEventListener('touchend', e=>{
+  e.preventDefault();
+  const t=e.changedTouches[0];
+  const r=canvas.getBoundingClientRect();
+  handleUp(t.clientX-r.left, t.clientY-r.top);
+}, {passive:false});
 canvas.addEventListener('mousedown', e=>{ const r=canvas.getBoundingClientRect(); handleDown(e.clientX-r.left, e.clientY-r.top); });
-canvas.addEventListener('mouseup', ()=>{ pointer.down=false; });
+canvas.addEventListener('mousemove', e=>{
+  if(!pointer.down) return;
+  const r=canvas.getBoundingClientRect();
+  if(state===STATE.LEVELS) levelsPointerMove(e.clientY-r.top);
+});
+canvas.addEventListener('mouseup', e=>{ const r=canvas.getBoundingClientRect(); handleUp(e.clientX-r.left, e.clientY-r.top); });
+canvas.addEventListener('wheel', e=>{
+  if(state!==STATE.LEVELS) return;
+  e.preventDefault();
+  levelsWheel(e.deltaY);
+}, {passive:false});
 window.addEventListener('keyup', e=>{
   if(e.code==='Space'||e.code==='ArrowUp') pointer.down=false;
 });
@@ -5253,48 +5374,74 @@ function drawMenu(c){
 
 function buildLevels(){
   clearButtons();
-  const cols=3;
-  const levelCount = Math.max(6, progress.unlocked + 1);
-  const rows = Math.ceil(levelCount / cols);
-  const gw=Math.min(W*0.86,420), cell=gw/cols, gx=(W-gw)/2, gy=H*0.16+safeTop();
-  const size=cell-12;
+  scrollLevelsToUnlocked();
+  levelMapScroll.y = clamp(levelMapScroll.y, 0, levelsMaxScroll());
+  const layout = getLevelsLayout();
+  const { cols, levelCount, cell, gx, gy, size, rowH } = layout;
   for(let i=0;i<levelCount;i++){
     const cx=gx + (i%cols)*cell + 6;
-    const cy=gy + Math.floor(i/cols)*(size+14);
+    const baseY=gy + Math.floor(i/cols)*rowH;
     const unlocked = i < progress.unlocked;
     const need = i > 0 ? scoreGoalForLevel(i - 1) : 0;
-    addButton({ x:cx, y:cy, w:size, h:size, label:'', idx:i, locked:!unlocked, needScore:need,
+    addButton({ x:cx, y:baseY - levelMapScroll.y, baseY, w:size, h:size, label:'', idx:i, locked:!unlocked, needScore:need,
       onClick:()=>{ if(unlocked){ startLevel(i); } else { haptic('warning'); } }, id:'lvl'+i });
   }
   const bw=Math.min(W*0.6,260);
   addButton({ x:(W-bw)/2, y:H-80-safeBottom(), w:bw, h:50, label:'← Назад', onClick:()=>{ state=STATE.MENU; buildMenu(); }, id:'back' });
+}
+function drawLevelTile(c, b){
+  const i=b.idx, lv=getLevel(i);
+  const label = levelLabel(i);
+  rr(c,b.x,b.y,b.w,b.h,14);
+  const g=c.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
+  g.addColorStop(0,lv.sky[0]); g.addColorStop(0.5,lv.sky[1]); g.addColorStop(1,lv.sky[2]||lv.sky[1]); c.fillStyle=g; c.fill();
+  rr(c,b.x,b.y,b.w,b.h,14); c.strokeStyle='rgba(255,255,255,0.3)'; c.lineWidth=1.5; c.stroke();
+  c.fillStyle=b.locked?'rgba(0,0,0,0.45)':'rgba(0,0,0,0.18)';
+  if(b.locked){ rr(c,b.x,b.y,b.w,b.h,14); c.fill(); }
+  c.fillStyle='#fff'; c.font=typeTitle(Math.round(b.h*0.34)); c.textAlign='center'; c.textBaseline='middle';
+  c.fillText(b.locked?'🔒':(i+1), b.x+b.w/2, b.y+b.h*0.38);
+  c.globalAlpha=1; c.font=typeUI(Math.round(b.h*0.12),'600');
+  c.fillText(label.length>11?label.slice(0,10)+'…':label, b.x+b.w/2, b.y+b.h*0.66);
+  const stars = (progress.levelStars && progress.levelStars[i]) || 0;
+  if(!b.locked && stars > 0) drawStarRow(c, b.x+b.w*0.22, b.y+b.h*0.82, stars, 3, 9);
+  if(b.locked){
+    c.font=fontSans(Math.round(b.h*0.1),'500');
+    c.fillStyle='rgba(255,255,255,0.75)';
+    c.fillText(b.needScore+' оч.', b.x+b.w/2, b.y+b.h*0.86);
+  }
 }
 function drawLevels(c){
   drawBackground(c, LEVELS[0], game.t*30, game.t);
   c.fillStyle='rgba(8,16,30,0.6)'; c.fillRect(0,0,W,H);
   c.fillStyle=TYPE.text; c.textAlign='center'; c.textBaseline='top'; c.font=typeTitle(22);
   c.fillText('Выбор уровня', W/2, H*0.07+safeTop());
+
+  const vp = levelsViewport();
+  c.save();
+  c.beginPath();
+  c.rect(0, vp.top, W, vp.h);
+  c.clip();
   for(const b of buttons){
-    if(b.id==='back'){ bigButton(c,b,false); continue; }
-    const i=b.idx, lv=getLevel(i);
-    const label = levelLabel(i);
-    rr(c,b.x,b.y,b.w,b.h,14);
-    const g=c.createLinearGradient(b.x,b.y,b.x,b.y+b.h);
-    g.addColorStop(0,lv.sky[0]); g.addColorStop(0.5,lv.sky[1]); g.addColorStop(1,lv.sky[2]||lv.sky[1]); c.fillStyle=g; c.fill();
-    rr(c,b.x,b.y,b.w,b.h,14); c.strokeStyle='rgba(255,255,255,0.3)'; c.lineWidth=1.5; c.stroke();
-    c.fillStyle=b.locked?'rgba(0,0,0,0.45)':'rgba(0,0,0,0.18)';
-    if(b.locked){ rr(c,b.x,b.y,b.w,b.h,14); c.fill(); }
-    c.fillStyle='#fff'; c.font=typeTitle(Math.round(b.h*0.34)); c.textAlign='center'; c.textBaseline='middle';
-    c.fillText(b.locked?'🔒':(i+1), b.x+b.w/2, b.y+b.h*0.38);
-    c.globalAlpha=1; c.font=typeUI(Math.round(b.h*0.12),'600');
-    c.fillText(label.length>11?label.slice(0,10)+'…':label, b.x+b.w/2, b.y+b.h*0.66);
-    const stars = (progress.levelStars && progress.levelStars[i]) || 0;
-    if(!b.locked && stars > 0) drawStarRow(c, b.x+b.w*0.22, b.y+b.h*0.82, stars, 3, 9);
-    if(b.locked){
-      c.font=fontSans(Math.round(b.h*0.1),'500');
-      c.fillStyle='rgba(255,255,255,0.75)';
-      c.fillText(b.needScore+' оч.', b.x+b.w/2, b.y+b.h*0.86);
-    }
+    if(b.id==='back') continue;
+    if(b.y + b.h < vp.top - 8 || b.y > vp.bottom + 8) continue;
+    drawLevelTile(c, b);
+  }
+  c.restore();
+
+  drawLevelMapScrollHints(c);
+
+  const max = levelsMaxScroll();
+  if(max > 4){
+    const trackX = W - 10, trackY = vp.top + 8, trackH = vp.h - 16;
+    const layout = getLevelsLayout();
+    const thumbH = Math.max(24, trackH * (vp.h / (layout.contentH + 24)));
+    const thumbY = trackY + (levelMapScroll.y / max) * (trackH - thumbH);
+    rr(c, trackX - 2, trackY, 4, trackH, 2); c.fillStyle = 'rgba(255,255,255,0.12)'; c.fill();
+    rr(c, trackX - 2, thumbY, 4, thumbH, 2); c.fillStyle = 'rgba(255,255,255,0.38)'; c.fill();
+  }
+
+  for(const b of buttons){
+    if(b.id==='back') bigButton(c,b,false);
   }
 }
 

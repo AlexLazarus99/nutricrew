@@ -566,7 +566,55 @@
     "deleteConfirm": "Delete all your NutriCrew data permanently?",
     "legalTitle": "Legal",
     "privacyLink": "Privacy Policy",
-    "termsLink": "Terms of Use"
+    "termsLink": "Terms of Use",
+    "supportLink": "Support & FAQ"
+  },
+  "support": {
+    "title": "Support",
+    "lead": "Answers to common errors and how to reach the NutriCrew team.",
+    "settingsTitle": "Support",
+    "settingsHint": "FAQ, AI errors, camera, teams",
+    "faqTitle": "Common questions",
+    "contactTitle": "Still need help?",
+    "contactHint": "Can't find an answer? Message us with a screenshot of the error.",
+    "openBot": "Message NutriCrew bot",
+    "writeTelegram": "Telegram @ingritoo",
+    "writeEmail": "Email hello@nutricrew.app",
+    "backSettings": "← Back to settings",
+    "faq": [
+      {
+        "q": "App loads slowly or says \"server is waking up\"",
+        "a": "Wait 10–20 seconds and try again. The API may sleep when idle. If it persists, close the mini app and reopen via the NutriCrew menu button in the bot."
+      },
+      {
+        "q": "AI won't count calories / \"AI unavailable\"",
+        "a": "Try another photo with good lighting and the plate filling the frame. You can enter calories manually or use voice/text. Free tier has a daily scan limit — Pro removes it."
+      },
+      {
+        "q": "\"Doesn't look like food\" or \"photo already logged\"",
+        "a": "Photograph real food, not a menu or empty plate. The same photo can't be logged twice the same day — take a new shot or edit the entry in your diary."
+      },
+      {
+        "q": "Camera access denied",
+        "a": "Allow camera in Telegram settings, or pick a photo from the gallery on the Log screen."
+      },
+      {
+        "q": "Can't join a team",
+        "a": "Check the invite code has no extra spaces. On Home use Join by code, or open a friend's link t.me/bot?start=join_CODE. Points logged before joining are kept."
+      },
+      {
+        "q": "No points or no team",
+        "a": "Create or join a team — without a team, points are stored until you join. After logging, tap to award points and wait for confirmation."
+      },
+      {
+        "q": "Pro features locked 🔒",
+        "a": "Coach, reports, and unlimited AI are in NutriCrew Pro. Subscribe in Pro or via the button on the locked feature. LiteCrew offers a trial."
+      },
+      {
+        "q": "Export or delete my data",
+        "a": "Settings → Your data: download JSON or delete account. CSV diary export is Pro. Deletion is permanent."
+      }
+    ]
   },
   "legal": {
     "updated": "Last updated: June 2026",
