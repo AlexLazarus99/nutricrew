@@ -1,6 +1,7 @@
 /* Bottom nav animated badges */
 .nav-badge {
   --nav-badge-size: 46px;
+  --nav-badge-accent: var(--accent, #c9a227);
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
@@ -8,26 +9,37 @@
   justify-content: center;
   width: var(--nav-badge-size);
   height: var(--nav-badge-size);
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: visible;
+  filter: drop-shadow(0 3px 8px color-mix(in srgb, var(--nav-badge-accent) 22%, transparent));
+}
+
+.nav-badge__halo {
+  position: absolute;
+  inset: -5px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--nav-badge-accent) 35%, transparent), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
 }
 
 .nav-badge__ring,
 .nav-badge__shine {
   position: absolute;
-  inset: -2px;
-  border-radius: 16px;
+  inset: -3px;
+  border-radius: 18px;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.25s ease;
 }
 
 .nav-badge__ring {
-  border: 1.5px solid color-mix(in srgb, var(--accent, #c9a227) 55%, transparent);
+  border: 2px solid color-mix(in srgb, var(--nav-badge-accent) 65%, transparent);
 }
 
 .nav-badge__shine {
-  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.55), transparent 62%);
+  background: radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.7), transparent 62%);
 }
 
 .nav-badge__svg {
@@ -35,6 +47,24 @@
   height: 100%;
   display: block;
 }
+
+.nav-badge--food { --nav-badge-accent: #ff8a65; }
+.nav-badge--guide { --nav-badge-accent: #66bb6a; }
+.nav-badge--quiz { --nav-badge-accent: #ffb300; }
+.nav-badge--team { --nav-badge-accent: #f48fb1; }
+.nav-badge--chat { --nav-badge-accent: #81c784; }
+.nav-badge--rank { --nav-badge-accent: #ffb300; }
+.nav-badge--prizes { --nav-badge-accent: #ffd54f; }
+.nav-badge--report { --nav-badge-accent: #42a5f5; }
+.nav-badge--trends { --nav-badge-accent: #29b6f6; }
+.nav-badge--coach { --nav-badge-accent: #a78bfa; }
+.nav-badge--referrals { --nav-badge-accent: #f48fb1; }
+.nav-badge--business { --nav-badge-accent: #90a4ae; }
+.nav-badge--features { --nav-badge-accent: #7986cb; }
+.nav-badge--settings { --nav-badge-accent: #66bb6a; }
+.nav-badge--game { --nav-badge-accent: #ec4899; }
+.nav-badge--home { --nav-badge-accent: #22c55e; }
+.nav-badge--more { --nav-badge-accent: #8bc34a; }
 
 .nav-badge__bird {
   width: 100% !important;
@@ -44,17 +74,25 @@
 
 .nav-badge--active .nav-badge__ring,
 .nav-badge--active .nav-badge__shine,
+.nav-badge--active .nav-badge__halo,
 .nav-badge--live .nav-badge__ring,
-.nav-badge--live .nav-badge__shine {
+.nav-badge--live .nav-badge__shine,
+.nav-badge--live .nav-badge__halo {
   opacity: 1;
 }
 
 .nav-badge--live .nav-badge__ring {
+  opacity: 0.7;
+  animation: nav-badge-ring-pulse 2.6s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__halo {
   opacity: 0.55;
+  animation: nav-badge-halo 3.2s ease-in-out infinite;
 }
 
 .nav-badge--live .nav-badge__shine {
-  opacity: 0.45;
+  opacity: 0.55;
 }
 
 .nav-badge--active {
@@ -153,6 +191,84 @@
 
 .nav-badge--active .nav-badge__spark {
   animation: nav-badge-spark 2s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__meal,
+.nav-badge--active .nav-badge__meal {
+  animation: nav-badge-meal-bob 2.8s ease-in-out infinite;
+  transform-origin: 24px 26px;
+}
+
+.nav-badge--live .nav-badge__cam-mini,
+.nav-badge--active .nav-badge__cam-mini {
+  animation: nav-badge-cam-wiggle 3s ease-in-out infinite;
+  transform-origin: 35px 18px;
+}
+
+.nav-badge--live .nav-badge__leaf,
+.nav-badge--active .nav-badge__leaf {
+  animation: nav-badge-leaf-sway 3.4s ease-in-out infinite;
+  transform-origin: 24px 34px;
+}
+
+.nav-badge--live .nav-badge__quiz-mark,
+.nav-badge--active .nav-badge__quiz-mark {
+  animation: nav-badge-quiz-pop 2.4s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__heart,
+.nav-badge--active .nav-badge__heart {
+  animation: nav-badge-heart 2.2s ease-in-out infinite;
+  transform-origin: 24px 16px;
+}
+
+.nav-badge--live .nav-badge__crew-head,
+.nav-badge--active .nav-badge__crew-head {
+  animation: nav-badge-crew-bob 2.6s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__crew-head--2,
+.nav-badge--active .nav-badge__crew-head--2 {
+  animation: nav-badge-crew-bob 2.6s ease-in-out 0.2s infinite;
+}
+
+.nav-badge--live .nav-badge__podium,
+.nav-badge--active .nav-badge__podium {
+  animation: nav-badge-podium 2.8s ease-in-out infinite;
+  transform-origin: 24px 35px;
+}
+
+.nav-badge--live .nav-badge__trend-line,
+.nav-badge--active .nav-badge__trend-line {
+  stroke-dasharray: 40;
+  animation: nav-badge-trend-draw 3s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__gift-box,
+.nav-badge--active .nav-badge__gift-box {
+  animation: nav-badge-gift-bounce 2.6s ease-in-out infinite;
+  transform-origin: 24px 28px;
+}
+
+.nav-badge--live .nav-badge__gift-bow,
+.nav-badge--active .nav-badge__gift-bow {
+  animation: nav-badge-bow-wiggle 2.4s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__gear,
+.nav-badge--active .nav-badge__gear {
+  animation: nav-badge-gear-spin 8s linear infinite;
+  transform-origin: 24px 24px;
+}
+
+.nav-badge--live .nav-badge__ai-text,
+.nav-badge--active .nav-badge__ai-text {
+  animation: nav-badge-ai-glow 2.5s ease-in-out infinite;
+}
+
+.nav-badge--live .nav-badge__spark--2,
+.nav-badge--active .nav-badge__spark--2 {
+  animation: nav-badge-spark 2.4s ease-in-out 0.35s infinite;
 }
 
 .nav-badge--live.nav-badge--game .nav-badge__bird,
@@ -316,6 +432,100 @@
   }
 }
 
+@keyframes nav-badge-ring-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.07);
+    opacity: 0.95;
+  }
+}
+
+@keyframes nav-badge-halo {
+  0%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.75;
+  }
+}
+
+@keyframes nav-badge-meal-bob {
+  0%,
+  100% { transform: translateY(0); }
+  50% { transform: translateY(-1.5px); }
+}
+
+@keyframes nav-badge-cam-wiggle {
+  0%,
+  100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+
+@keyframes nav-badge-leaf-sway {
+  0%,
+  100% { transform: rotate(-4deg); }
+  50% { transform: rotate(4deg); }
+}
+
+@keyframes nav-badge-quiz-pop {
+  0%,
+  100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+@keyframes nav-badge-heart {
+  0%,
+  100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes nav-badge-crew-bob {
+  0%,
+  100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes nav-badge-podium {
+  0%,
+  100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.04); }
+}
+
+@keyframes nav-badge-trend-draw {
+  0%,
+  100% { stroke-dashoffset: 0; opacity: 1; }
+  50% { stroke-dashoffset: 12; opacity: 0.85; }
+}
+
+@keyframes nav-badge-gift-bounce {
+  0%,
+  100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.03); }
+}
+
+@keyframes nav-badge-bow-wiggle {
+  0%,
+  100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+@keyframes nav-badge-gear-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes nav-badge-ai-glow {
+  0%,
+  100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
 @keyframes food-badge-scan {
   0%,
   100% {
@@ -365,6 +575,8 @@
 
 html[data-reduce-motion="true"] .nav-badge--active,
 html[data-reduce-motion="true"] .nav-badge--live,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__ring,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__halo,
 html[data-reduce-motion="true"] .nav-badge--live .nav-badge__svg,
 html[data-reduce-motion="true"] .nav-badge--live .nav-badge__star,
 html[data-reduce-motion="true"] .nav-badge--live .nav-badge__steam,
@@ -372,6 +584,16 @@ html[data-reduce-motion="true"] .nav-badge--live .nav-badge__dot,
 html[data-reduce-motion="true"] .nav-badge--live .nav-badge__bar--1,
 html[data-reduce-motion="true"] .nav-badge--live .nav-badge__bar--2,
 html[data-reduce-motion="true"] .nav-badge--live .nav-badge__bar--3,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__meal,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__cam-mini,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__leaf,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__quiz-mark,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__heart,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__crew-head,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__podium,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__trend-line,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__gift-box,
+html[data-reduce-motion="true"] .nav-badge--live .nav-badge__gear,
 html[data-reduce-motion="true"] .food-action-badge--live,
 html[data-reduce-motion="true"] .food-action-badge__ring,
 html[data-reduce-motion="true"] .food-action-badge__scanline,

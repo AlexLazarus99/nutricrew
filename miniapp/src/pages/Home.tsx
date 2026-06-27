@@ -9,12 +9,11 @@ import { DailyMealsProgress } from "../components/DailyMealsProgress";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { HomeActionGrid } from "../components/ui/HomeActionGrid";
-import { ProActionTile } from "../components/pro/ProActionTile";
+import { HomeLogFoodCta } from "../components/home/HomeLogFoodCta";
 import { SocialLinks } from "../components/SocialLinks";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
 import type { GrowthSummary } from "../api/client";
-import { LOG_CAMERA_LIVE_PATH } from "../lib/logCameraPath";
 
 const LEAGUE_TIER_EMOJI: Record<string, string> = {
   bronze: "🥉",
@@ -117,18 +116,18 @@ export function HomePage() {
     return (
       <section className="stack">
         <TutorialCoach {...welcomeTour} />
-        <ProgressLevelCard progress={me.progress} />
+        <ProgressLevelCard
+          progress={me.progress}
+          bannerTitle={t("home.greeting", { name: displayName })}
+          bannerSubtitle={t("home.noTeam")}
+          tutorialId="home-hero"
+        />
         <QuestsPanel
           key={`${me.todayPoints}-${me.progress.xp}-${me.starBalance}`}
           onClaimed={refresh}
         />
 
-        <ProActionTile
-          to={LOG_CAMERA_LIVE_PATH}
-          label={t("home.logCta")}
-          kind="food"
-          tone="food"
-        />
+        <HomeLogFoodCta label={t("home.logCta")} />
 
         {error && (
           <div className="card error-card">
@@ -136,11 +135,7 @@ export function HomePage() {
           </div>
         )}
 
-        <div className="card hero">
-          <h2>{t("home.greeting", { name: displayName })}</h2>
-          <p className="muted">{t("home.noTeam")}</p>
-          <p className="muted small">{t("growth.tryLogFirst")}</p>
-        </div>
+        <p className="card muted small">{t("growth.tryLogFirst")}</p>
 
         <div className="card">
           <h3>{t("growth.teamTemplatesTitle")}</h3>
@@ -199,28 +194,24 @@ export function HomePage() {
   return (
     <section className="stack">
       <TutorialCoach {...welcomeTour} />
-      <ProgressLevelCard progress={me.progress} />
+      <ProgressLevelCard
+        progress={me.progress}
+        bannerTitle={t("home.greeting", { name: displayName })}
+        bannerSubtitle={t("home.teamWaiting")}
+        tutorialId="home-hero"
+      />
       <QuestsPanel
         key={`${me.todayPoints}-${me.progress.xp}-${me.starBalance}`}
         onClaimed={refresh}
       />
 
-      <ProActionTile
-        to={LOG_CAMERA_LIVE_PATH}
-        label={t("home.logCta")}
-        kind="food"
-        tone="food"
-      />
+      <HomeLogFoodCta label={t("home.logCta")} />
 
-      <div className="card hero" data-tutorial="home-hero">
-        <h2>{t("home.greeting", { name: displayName })}</h2>
-        <p className="muted">{t("home.teamWaiting")}</p>
-        {me.inviteCode && (
-          <p className="invite">
-            {t("home.shareCode")}: <code>{me.inviteCode}</code>
-          </p>
-        )}
-      </div>
+      {me.inviteCode && (
+        <p className="card invite muted small">
+          {t("home.shareCode")}: <code>{me.inviteCode}</code>
+        </p>
+      )}
 
       <DailyMealsProgress
         mealsToday={me.mealsToday}

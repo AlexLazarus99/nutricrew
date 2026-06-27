@@ -342,7 +342,7 @@ export function LogMealPage() {
       <FoodSectionNav />
       <FoodLogHero
         progress={me.progress}
-        titleKey="log.title"
+        titleKey="home.logCta"
         subtitleKey="log.hint"
         compactBadge
       />

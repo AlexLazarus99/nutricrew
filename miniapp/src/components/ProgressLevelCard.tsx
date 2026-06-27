@@ -7,16 +7,34 @@ import { LevelBadgeIcon } from "./LevelBadgeIcon";
 type Props = {
   progress: MeResponse["progress"];
   compact?: boolean;
+  bannerTitle?: string;
+  bannerSubtitle?: string;
+  tutorialId?: string;
 };
 
-export function ProgressLevelCard({ progress, compact = false }: Props) {
+export function ProgressLevelCard({
+  progress,
+  compact = false,
+  bannerTitle,
+  bannerSubtitle,
+  tutorialId,
+}: Props) {
   const { t } = useTranslation();
   const [showRoadmap, setShowRoadmap] = useState(false);
 
   const title = t(`progress.titles.${progress.titleKey}`);
 
   return (
-    <div className="card progress-level-card" data-tutorial="progress-card">
+    <div
+      className="card progress-level-card"
+      data-tutorial={tutorialId ?? "progress-card"}
+    >
+      {(bannerTitle || bannerSubtitle) && (
+        <div className="progress-level-banner">
+          {bannerTitle && <h2 className="progress-level-banner__title">{bannerTitle}</h2>}
+          {bannerSubtitle && <p className="progress-level-banner__subtitle muted">{bannerSubtitle}</p>}
+        </div>
+      )}
       <div className="progress-level-header">
         <div className="progress-level-badge-wrap">
           <LevelBadgeIcon titleKey={progress.titleKey} size={168} active />

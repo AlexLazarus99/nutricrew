@@ -1152,9 +1152,9 @@
 }
 
 .pro-cta-shell--tile .pro-cta-aurora {
-  opacity: 0.18;
+  opacity: 0.28;
   filter: blur(16px);
-  animation-duration: 9s;
+  animation-duration: 7s;
 }
 
 .pro-cta-shell--tile .pro-cta-glow {
@@ -1282,10 +1282,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 8px;
   width: 100%;
   min-height: 100%;
-  padding: 10px 8px;
+  padding: 14px 10px;
   border: 1px solid color-mix(in srgb, var(--pro-lilac) 28%, transparent);
   border-radius: 14px;
   color: color-mix(in srgb, #fff 88%, var(--tile-accent));
@@ -1320,18 +1320,9 @@
 }
 
 .pro-cta-shell--tile.pro-cta-shell--compact .pro-action-tile__body {
-  padding: 8px 6px;
-  border-radius: 12px;
-  gap: 4px;
-}
-
-.pro-action-tile:active .pro-action-tile__body {
-  transform: scale(0.985);
-}
-
-.pro-action-tile__icon-wrap {
-  position: relative;
-  display: inline-flex;
+  padding: 10px 8px;
+  border-radius: 14px;
+  gap: 6px;
 }
 
 .pro-action-tile__lock {
@@ -1343,14 +1334,384 @@
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
 }
 
+.pro-action-tile:active .pro-action-tile__body {
+  transform: scale(0.985);
+}
+
+.pro-action-tile__icon-wrap {
+  position: relative;
+  display: inline-flex;
+  padding: 4px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.35), transparent 70%);
+  transition: transform 0.25s ease;
+}
+
+.pro-action-tile:hover .pro-action-tile__icon-wrap,
+.pro-action-tile:focus-visible .pro-action-tile__icon-wrap {
+  transform: scale(1.08) translateY(-2px);
+}
+
+.pro-action-tile--tone-coach .pro-action-tile__icon-wrap { background: radial-gradient(circle, #ede9fe88, transparent 70%); }
+.pro-action-tile--tone-guide .pro-action-tile__icon-wrap { background: radial-gradient(circle, #c8e6c988, transparent 70%); }
+.pro-action-tile--tone-quiz .pro-action-tile__icon-wrap { background: radial-gradient(circle, #fff9c488, transparent 70%); }
+.pro-action-tile--tone-game .pro-action-tile__icon-wrap { background: radial-gradient(circle, #fce7f388, transparent 70%); }
+.pro-action-tile--tone-report .pro-action-tile__icon-wrap { background: radial-gradient(circle, #bbdefb88, transparent 70%); }
+.pro-action-tile--tone-pro .pro-action-tile__icon-wrap { background: radial-gradient(circle, #ddd6fe88, transparent 70%); }
+.pro-action-tile--tone-prizes .pro-action-tile__icon-wrap { background: radial-gradient(circle, #fff59d88, transparent 70%); }
+.pro-action-tile--tone-features .pro-action-tile__icon-wrap { background: radial-gradient(circle, #c5cae988, transparent 70%); }
+
 .pro-action-tile__label {
   position: relative;
   z-index: 1;
-  font-size: 0.74rem;
-  font-weight: 650;
+  font-size: 0.8rem;
+  font-weight: 700;
   text-align: center;
   line-height: 1.2;
   letter-spacing: 0.01em;
+}
+
+/* —— Home hero: log food CTA —— */
+.home-log-food-cta {
+  display: block;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  margin: 4px 0 8px;
+  animation: home-log-food-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.home-log-food-cta__aurora {
+  position: absolute;
+  inset: -6px -4px;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 70% 60% at 18% 35%, rgba(255, 213, 79, 0.45), transparent 68%),
+    radial-gradient(ellipse 65% 55% at 82% 30%, rgba(129, 199, 132, 0.42), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 95%, rgba(79, 195, 247, 0.35), transparent 72%);
+  filter: blur(14px);
+  opacity: 0.85;
+  animation: home-log-food-aurora 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.home-log-food-cta__shimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.home-log-food-cta__shimmer::after {
+  content: "";
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 45%;
+  height: 180%;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 48%,
+    transparent 100%
+  );
+  transform: rotate(12deg);
+  animation: home-log-food-shimmer 3.8s ease-in-out infinite;
+}
+
+.home-log-food-cta__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 16px 16px;
+  border-radius: 20px;
+  border: 2px solid color-mix(in srgb, #ffca28 45%, #66bb6a 35%);
+  background:
+    linear-gradient(
+      145deg,
+      #fff8e1 0%,
+      #c8e6c9 28%,
+      #b3e5fc 52%,
+      #f8bbd0 78%,
+      #ffe082 100%
+    );
+  background-size: 240% 240%;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 8px 28px rgba(46, 125, 50, 0.22),
+    0 2px 8px rgba(21, 101, 192, 0.12);
+  animation: home-log-food-gradient 7s ease infinite;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.home-log-food-cta:hover .home-log-food-cta__body,
+.home-log-food-cta:focus-visible .home-log-food-cta__body {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    0 12px 32px rgba(46, 125, 50, 0.28),
+    0 4px 12px rgba(21, 101, 192, 0.16);
+}
+
+.home-log-food-cta:active .home-log-food-cta__body {
+  transform: scale(0.985);
+}
+
+.home-log-food-cta__icon {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: home-log-food-float 3.6s ease-in-out infinite;
+}
+
+.home-log-food-cta__icon-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 22px;
+  border: 3px solid transparent;
+  background:
+    linear-gradient(#fff8e1, #fff8e1) padding-box,
+    linear-gradient(135deg, #ffca28, #66bb6a, #29b6f6, #ff80ab, #ffca28) border-box;
+  animation: home-log-food-ring 2.8s linear infinite;
+}
+
+.home-log-food-cta__icon-glow {
+  position: absolute;
+  inset: 4px;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 45%, rgba(255, 255, 255, 0.9), transparent 68%);
+  animation: home-log-food-glow 2.4s ease-in-out infinite;
+}
+
+.home-log-food-cta__svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(40, 53, 147, 0.25));
+}
+
+.home-log-food-cta__camera {
+  transform-origin: 60px 46px;
+  animation: home-log-food-cam-tilt 4s ease-in-out infinite;
+}
+
+.home-log-food-cta__plate {
+  transform-origin: 30px 58px;
+  animation: home-log-food-plate-bob 3.2s ease-in-out infinite;
+}
+
+.home-log-food-cta__flash-bulb {
+  animation: home-log-food-flash 2.4s ease-in-out infinite;
+}
+
+.home-log-food-cta__flash-ray {
+  animation: home-log-food-flash-ray 2.4s ease-in-out infinite;
+}
+
+.home-log-food-cta__xp {
+  fill: #f9a825;
+  font-weight: 800;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  animation: home-log-food-xp-pop 2.8s ease-in-out infinite;
+}
+
+.home-log-food-cta__spark {
+  animation: home-log-food-spark 2.2s ease-in-out infinite;
+}
+
+.home-log-food-cta__spark--2 {
+  animation-delay: 0.5s;
+}
+
+.home-log-food-cta__spark--3 {
+  animation-delay: 1s;
+}
+
+.home-log-food-cta__label {
+  font-size: 1.12rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  color: #1b3a2f;
+  text-align: center;
+  line-height: 1.15;
+}
+
+.home-log-food-cta__hint {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: color-mix(in srgb, #1b5e20 72%, #1565c0);
+  text-align: center;
+}
+
+@keyframes home-log-food-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes home-log-food-aurora {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04) rotate(2deg);
+  }
+}
+
+@keyframes home-log-food-shimmer {
+  0%,
+  100% {
+    left: -60%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  45% {
+    left: 120%;
+    opacity: 0;
+  }
+}
+
+@keyframes home-log-food-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes home-log-food-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes home-log-food-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes home-log-food-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes home-log-food-cam-tilt {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3deg) translateY(-2px);
+  }
+}
+
+@keyframes home-log-food-plate-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(-3deg);
+  }
+}
+
+@keyframes home-log-food-flash {
+  0%,
+  78%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.85);
+  }
+  82%,
+  88% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes home-log-food-flash-ray {
+  0%,
+  78%,
+  100% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  84% {
+    opacity: 0.75;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes home-log-food-xp-pop {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.12) translateY(-2px);
+    opacity: 1;
+  }
+}
+
+@keyframes home-log-food-spark {
+  0%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.app-shell[data-reduce-motion="true"] .home-log-food-cta,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__aurora,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__shimmer::after,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__body,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__icon,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__icon-ring,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__icon-glow,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__camera,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__plate,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__flash-bulb,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__flash-ray,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__xp,
+.app-shell[data-reduce-motion="true"] .home-log-food-cta__spark {
+  animation: none !important;
 }
 
 .pro-cta-shell--tile.pro-cta-shell--compact .pro-action-tile__label {

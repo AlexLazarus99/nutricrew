@@ -37,9 +37,9 @@ export function NavMoreSheet({ open, onClose, hasTeam, isPro }: Props) {
     { to: "/coach", kind: "coach", labelKey: "nav.coach", proGated: true },
     { to: "/quiz", kind: "quiz", labelKey: "nav.quiz" },
     { to: "/report", kind: "report", labelKey: "nav.report", proGated: true },
-    { to: "/trends", kind: "report", labelKey: "trends.title", proGated: true },
-    { to: "/referrals", kind: "features", labelKey: "nav.referrals" },
-    { to: "/business", kind: "features", labelKey: "nav.business" },
+    { to: "/trends", kind: "trends", labelKey: "trends.title", proGated: true },
+    { to: "/referrals", kind: "referrals", labelKey: "nav.referrals" },
+    { to: "/business", kind: "business", labelKey: "nav.business" },
     { to: "/features", kind: "features", labelKey: "nav.features", end: true },
     { to: "/settings", kind: "settings", labelKey: "nav.settings" },
   );
@@ -71,6 +71,7 @@ export function NavMoreSheet({ open, onClose, hasTeam, isPro }: Props) {
                   className={({ isActive }) =>
                     [
                       "nav-more-sheet__item",
+                      `nav-more-sheet__item--tone-${item.kind}`,
                       isActive ? "active" : "",
                       locked ? "nav-more-sheet__item--pro-locked" : "",
                     ]
@@ -82,7 +83,7 @@ export function NavMoreSheet({ open, onClose, hasTeam, isPro }: Props) {
                   {({ isActive }) => (
                     <>
                       <span className="nav-more-sheet__icon-wrap">
-                        <NavBadgeIcon kind={item.kind} size={38} active={isActive} animated={!isActive} />
+                        <NavBadgeIcon kind={item.kind} size={50} active={isActive} animated />
                         {locked ? <span className="nav-more-sheet__lock" aria-hidden>🔒</span> : null}
                       </span>
                       <span>{t(item.labelKey)}</span>

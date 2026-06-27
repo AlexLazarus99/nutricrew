@@ -17,6 +17,10 @@ export function FoodLogHero({ progress, titleKey, subtitleKey, compactBadge }: P
   if (compactBadge) {
     return (
       <div className="food-log-hero food-log-hero--compact">
+        <div className="food-log-hero__banner">
+          <h2>{t(titleKey)}</h2>
+          {subtitleKey ? <p className="muted small">{t(subtitleKey)}</p> : null}
+        </div>
         <ProgressLevelCard progress={progress} compact />
       </div>
     );

@@ -47,7 +47,7 @@ export function HomeActionGrid({ showPrizes, starBalance, showTrends, showPro }:
 
   const secondary: Action[] = [];
   if (showTrends) {
-    secondary.push({ to: "/trends", kind: "report", labelKey: "trends.title", tone: "report" });
+    secondary.push({ to: "/trends", kind: "trends", labelKey: "trends.title", tone: "report" });
   }
   if (showPro) {
     secondary.push({ to: "/pro", kind: "features", labelKey: "pro.title", tone: "pro" });

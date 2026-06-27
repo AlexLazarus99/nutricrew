@@ -41,10 +41,10 @@ export function ProActionTile({
     .filter(Boolean)
     .join(" ");
 
-  const iconSize = size === "compact" ? 28 : 32;
+  const iconSize = size === "compact" ? 36 : 46;
 
   return (
-    <Link to={to} className={`pro-action-tile pro-action-tile--${size}`}>
+    <Link to={to} className={`pro-action-tile pro-action-tile--${size} pro-action-tile--tone-${tone}`}>
       <div className={shellClass}>
         <span className="pro-cta-aurora" aria-hidden="true" />
         <span className="pro-cta-glow" aria-hidden="true" />
