@@ -275,12 +275,31 @@
   border: 1.5px solid var(--border);
   background: var(--surface-muted);
   text-decoration: none;
-  color: var(--text);
   font-size: 0.74rem;
   font-weight: 650;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   animation: nav-more-item-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Pastel tiles always use dark labels (theme --text is light in dark mode). */
+.nav-more-sheet__label {
+  display: block;
+  max-width: 100%;
+  color: #142820;
+  font-size: 0.78rem;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.nav-more-sheet__item.active .nav-more-sheet__label {
+  color: #0d3d24;
+}
+
+.nav-more-sheet__item--pro-locked .nav-more-sheet__label {
+  opacity: 0.92;
 }
 
 .nav-more-sheet__cell:nth-child(3n + 1) .nav-more-sheet__item { animation-delay: 0.02s; }
@@ -298,6 +317,19 @@
   background: color-mix(in srgb, var(--section-accent-soft) 75%, var(--section-surface));
   box-shadow: 0 4px 14px color-mix(in srgb, var(--section-accent) 18%, transparent);
 }
+
+.nav-more-sheet__item--tone-team .nav-more-sheet__label { color: #5d1f3a; }
+.nav-more-sheet__item--tone-chat .nav-more-sheet__label { color: #1b5e20; }
+.nav-more-sheet__item--tone-rank .nav-more-sheet__label { color: #6d4c00; }
+.nav-more-sheet__item--tone-prizes .nav-more-sheet__label { color: #7a5a00; }
+.nav-more-sheet__item--tone-coach .nav-more-sheet__label { color: #4527a0; }
+.nav-more-sheet__item--tone-quiz .nav-more-sheet__label { color: #8a5a00; }
+.nav-more-sheet__item--tone-report .nav-more-sheet__label { color: #0d47a1; }
+.nav-more-sheet__item--tone-trends .nav-more-sheet__label { color: #01579b; }
+.nav-more-sheet__item--tone-referrals .nav-more-sheet__label { color: #880e4f; }
+.nav-more-sheet__item--tone-business .nav-more-sheet__label { color: #37474f; }
+.nav-more-sheet__item--tone-features .nav-more-sheet__label { color: #283593; }
+.nav-more-sheet__item--tone-settings .nav-more-sheet__label { color: #33691e; }
 
 .nav-more-sheet__item--tone-team { background: linear-gradient(145deg, #fce4ec, #e1f5fe); border-color: #f48fb155; }
 .nav-more-sheet__item--tone-chat { background: linear-gradient(145deg, #e8f5e9, #c8e6c9); border-color: #81c78455; }

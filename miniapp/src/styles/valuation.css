@@ -1100,10 +1100,6 @@
   font-size: 0.58rem;
 }
 
-.nav-more-sheet__item--pro-locked span:not(.nav-more-sheet__lock) {
-  opacity: 0.88;
-}
-
 .nav-more-sheet__pro-pill {
   transform: scale(0.88);
 }

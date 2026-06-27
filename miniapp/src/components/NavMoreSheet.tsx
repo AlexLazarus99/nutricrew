@@ -86,7 +86,7 @@ export function NavMoreSheet({ open, onClose, hasTeam, isPro }: Props) {
                         <NavBadgeIcon kind={item.kind} size={50} active={isActive} animated />
                         {locked ? <span className="nav-more-sheet__lock" aria-hidden>🔒</span> : null}
                       </span>
-                      <span>{t(item.labelKey)}</span>
+                      <span className="nav-more-sheet__label">{t(item.labelKey)}</span>
                     </>
                   )}
                 </NavLink>
