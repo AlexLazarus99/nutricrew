@@ -11,6 +11,7 @@ type Props = {
   preview: string | null;
   aiNote: string | null;
   autoStart?: "live" | "capture" | null;
+  onLiveOpenChange?: (open: boolean) => void;
   onAnalyzingChange: (value: boolean) => void;
   onAnalysis: (result: MealPhotoAnalysis) => void;
   onPhotoOnly: (preview: string) => void;
@@ -22,6 +23,7 @@ export function MealPhotoCapture({
   preview,
   aiNote,
   autoStart,
+  onLiveOpenChange,
   onAnalyzingChange,
   onAnalysis,
   onPhotoOnly,
@@ -31,8 +33,12 @@ export function MealPhotoCapture({
   const galleryRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
   const photoOnlyRef = useRef<HTMLInputElement>(null);
-  const [liveOpen, setLiveOpen] = useState(false);
-  const autoStartedRef = useRef(false);
+  const [liveOpen, setLiveOpen] = useState(autoStart === "live");
+  const autoStartedRef = useRef(autoStart === "live");
+
+  useEffect(() => {
+    onLiveOpenChange?.(liveOpen);
+  }, [liveOpen, onLiveOpenChange]);
 
   useEffect(() => {
     if (!autoStart || autoStartedRef.current || analyzing || preview) return;

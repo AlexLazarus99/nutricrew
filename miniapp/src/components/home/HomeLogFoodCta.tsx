@@ -2,6 +2,7 @@ import { useId } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LOG_CAMERA_LIVE_PATH } from "../../lib/logCameraPath";
+import { prefetchLogMealPage } from "../../lib/routeChunks";
 
 type Props = {
   label: string;
@@ -83,7 +84,14 @@ export function HomeLogFoodCta({ label }: Props) {
   const { t } = useTranslation();
 
   return (
-    <Link to={LOG_CAMERA_LIVE_PATH} className="home-log-food-cta" data-tutorial="home-log-cta">
+    <Link
+      to={LOG_CAMERA_LIVE_PATH}
+      className="home-log-food-cta"
+      data-tutorial="home-log-cta"
+      onPointerEnter={prefetchLogMealPage}
+      onPointerDown={prefetchLogMealPage}
+      onTouchStart={prefetchLogMealPage}
+    >
       <span className="home-log-food-cta__aurora" aria-hidden />
       <span className="home-log-food-cta__shimmer" aria-hidden />
       <span className="home-log-food-cta__body">

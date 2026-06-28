@@ -45,6 +45,7 @@ export function LogMealPage() {
   const { me, refresh } = useMe();
   const [searchParams] = useSearchParams();
   const autoCamera = parseLogCameraMode(searchParams.get("camera"));
+  const liveCameraEntry = autoCamera === "live";
   const logTour = useTutorialTour("log", true);
   const [description, setDescription] = useState("");
   const [calories, setCalories] = useState("");
@@ -70,6 +71,7 @@ export function LogMealPage() {
   const [voiceOpen, setVoiceOpen] = useState(false);
   const [showMoreWays, setShowMoreWays] = useState(false);
   const [showPhotoCapture, setShowPhotoCapture] = useState(!!autoCamera);
+  const [liveScannerOpen, setLiveScannerOpen] = useState(liveCameraEntry);
   const [portionGrams, setPortionGrams] = useState("");
   const analysisBaseRef = useRef<AnalysisPortionBase | null>(null);
   const photoSectionRef = useRef<HTMLDivElement | null>(null);
@@ -87,12 +89,12 @@ export function LogMealPage() {
   >([]);
 
   useEffect(() => {
-    if (!me.profileComplete) return;
+    if (!me.profileComplete || liveCameraEntry) return;
     void api
       .getGrowth()
       .then((g) => setFavorites(g.favorites))
       .catch(() => {});
-  }, [me.profileComplete]);
+  }, [me.profileComplete, liveCameraEntry]);
 
   useEffect(() => {
     const draft = loadMealDraft();
@@ -336,28 +338,53 @@ export function LogMealPage() {
     });
   }
 
+  const showCaptureUi = showPhotoCapture || !!preview || analyzing;
+  const hideLogChrome = liveCameraEntry && liveScannerOpen && !preview && !analyzing;
+  const captureBlock = showCaptureUi ? (
+    <div ref={photoSectionRef} className="card log-section log-section--capture">
+      <MealPhotoCapture
+        analyzing={analyzing}
+        preview={preview}
+        aiNote={aiNote}
+        autoStart={autoCamera}
+        onLiveOpenChange={setLiveScannerOpen}
+        onAnalyzingChange={setAnalyzing}
+        onAnalysis={applyAnalysis}
+        onPhotoOnly={applyPhotoOnly}
+        onError={setCaptureError}
+      />
+      {captureError && <p className="error-text">{captureError}</p>}
+    </div>
+  ) : null;
+
   return (
-    <section className="stack log-page">
-      <TutorialCoach {...logTour} />
-      <FoodSectionNav />
-      <FoodLogHero
-        progress={me.progress}
-        titleKey="home.logCta"
-        subtitleKey="log.hint"
-        compactBadge
-      />
+    <section className={`stack log-page${hideLogChrome ? " log-page--camera-first" : ""}`}>
+      {hideLogChrome && captureBlock}
 
-      {!me.profileComplete && <GuestModeBanner hasTeam={!!me.teamId} />}
+      {!hideLogChrome && <TutorialCoach {...logTour} />}
+      {!hideLogChrome && <FoodSectionNav />}
+      {!hideLogChrome && (
+        <FoodLogHero
+          progress={me.progress}
+          titleKey="home.logCta"
+          subtitleKey="log.hint"
+          compactBadge
+        />
+      )}
 
-      <FoodDayActions
-        scanning={barcodeOpen || analyzing}
-        photoOpen={showPhotoCapture || !!preview || analyzing}
-        onScan={() => {
-          setCatalogOpen(false);
-          setBarcodeOpen(true);
-        }}
-        onPhoto={openPhotoCapture}
-      />
+      {!me.profileComplete && !hideLogChrome && <GuestModeBanner hasTeam={!!me.teamId} />}
+
+      {!hideLogChrome && (
+        <FoodDayActions
+          scanning={barcodeOpen || analyzing}
+          photoOpen={showCaptureUi}
+          onScan={() => {
+            setCatalogOpen(false);
+            setBarcodeOpen(true);
+          }}
+          onPhoto={openPhotoCapture}
+        />
+      )}
 
       {barcodeOpen && (
         <div className="card log-section">
@@ -372,21 +399,7 @@ export function LogMealPage() {
         </div>
       )}
 
-      {(showPhotoCapture || preview || analyzing) && (
-        <div ref={photoSectionRef} className="card log-section log-section--capture">
-          <MealPhotoCapture
-            analyzing={analyzing}
-            preview={preview}
-            aiNote={aiNote}
-            autoStart={autoCamera}
-            onAnalyzingChange={setAnalyzing}
-            onAnalysis={applyAnalysis}
-            onPhotoOnly={applyPhotoOnly}
-            onError={setCaptureError}
-          />
-          {captureError && <p className="error-text">{captureError}</p>}
-        </div>
-      )}
+      {!hideLogChrome && captureBlock}
 
       {draftNote && <p className="muted small">{draftNote}</p>}
 

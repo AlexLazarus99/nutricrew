@@ -6,6 +6,7 @@ import { NavMoreSheet } from "./NavMoreSheet";
 import { ProTributeButton } from "./pro/ProTributeButton";
 import { useMe } from "../hooks/useMe";
 import { isProGatedPath } from "../lib/proGated";
+import { prefetchLogMealPage } from "../lib/routeChunks";
 
 const STORAGE_KEY = "nutricrew_nav_collapsed";
 const BADGE_SIZE = 46;
@@ -44,6 +45,9 @@ function NavItem({
         to={to}
         end={end}
         data-tutorial={tutorial}
+        onPointerEnter={to === "/log" ? prefetchLogMealPage : undefined}
+        onPointerDown={to === "/log" ? prefetchLogMealPage : undefined}
+        onTouchStart={to === "/log" ? prefetchLogMealPage : undefined}
         className={({ isActive }) => {
           const active = isActiveFn ? isActiveFn({ isActive, pathname }) : isActive;
           return [

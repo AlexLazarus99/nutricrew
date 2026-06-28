@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
@@ -9,8 +9,10 @@ import { DailyMealsProgress } from "../components/DailyMealsProgress";
 import { ProgressLevelCard } from "../components/ProgressLevelCard";
 import { TutorialCoach } from "../components/TutorialCoach";
 import { HomeLogFoodCta } from "../components/home/HomeLogFoodCta";
+import { HomeGradientLinkCta } from "../components/home/HomeGradientLinkCta";
 import { useTutorialTour } from "../hooks/useTutorialTour";
 import { QuestsPanel } from "../components/QuestsPanel";
+import { prefetchLogMealPage } from "../lib/routeChunks";
 import type { GrowthSummary } from "../api/client";
 
 const LEAGUE_TIER_EMOJI: Record<string, string> = {
@@ -73,6 +75,10 @@ export function HomePage() {
 
   useAutoJoinTeam(me, refresh);
   const welcomeTour = useTutorialTour("welcome", me.profileComplete);
+
+  useEffect(() => {
+    prefetchLogMealPage();
+  }, []);
 
   async function onCreateTeam(e: FormEvent) {
     e.preventDefault();
@@ -213,13 +219,14 @@ export function HomePage() {
         target={me.growth?.dailyGoal?.type === "meals" ? me.growth.dailyGoal.target : me.mealsTodayTarget}
       />
 
-      <Link to="/trends" className="btn btn-secondary btn-block">
-        {t("trends.title")}
-      </Link>
+      <HomeGradientLinkCta
+        to="/trends"
+        tone="trends"
+        label={t("trends.title")}
+        hint={t("trends.subtitle")}
+      />
       {me.pro?.isPro && (
-        <Link to="/pro" className="btn btn-secondary btn-block">
-          {t("pro.title")}
-        </Link>
+        <HomeGradientLinkCta to="/pro" tone="pro" label={t("pro.title")} hint={t("pro.subtitle")} />
       )}
 
       {me.growth && (

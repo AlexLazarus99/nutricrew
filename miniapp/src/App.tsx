@@ -2,10 +2,9 @@ import { lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { HomePage } from "./pages/Home";
+import { loadLogMealPage } from "./lib/routeChunks";
 
-const LogMealPage = lazy(() =>
-  import("./pages/LogMeal").then((m) => ({ default: m.LogMealPage })),
-);
+const LogMealPage = lazy(loadLogMealPage);
 const FoodDiaryPage = lazy(() =>
   import("./pages/FoodDiary").then((m) => ({ default: m.FoodDiaryPage })),
 );
