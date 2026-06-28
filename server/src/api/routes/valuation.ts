@@ -295,8 +295,11 @@ valuationRouter.get("/pro/meal-plan-4w", ...authedProfileAccess, async (req, res
 
 valuationRouter.post("/pro/plate-review", ...authedProfileAccess, async (req, res) => {
   try {
-    const { description } = req.body as { description?: string };
-    res.json(await plateReview(req.dbUser!, String(description ?? "")));
+    const { description, imageBase64 } = req.body as {
+      description?: string;
+      imageBase64?: string;
+    };
+    res.json(await plateReview(req.dbUser!, String(description ?? ""), imageBase64));
   } catch (e) {
     res.status((e as Error).message === "PRO_REQUIRED" ? 403 : 400).json({ error: (e as Error).message });
   }

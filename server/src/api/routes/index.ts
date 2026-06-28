@@ -386,7 +386,7 @@ apiRouter.post("/meals/analyze-text", ...authedAccess, async (req, res) => {
   } catch {
     res.status(429).json({
       error: "VOICE_ANALYZE_LIMIT",
-      limit: getVoiceAnalyzeDailyLimit(),
+      limit: await getVoiceAnalyzeDailyLimit(req.dbUser!.id),
     });
     return;
   }
@@ -414,7 +414,7 @@ apiRouter.post("/meals/analyze-audio", ...authedAccess, async (req, res) => {
   } catch {
     res.status(429).json({
       error: "VOICE_ANALYZE_LIMIT",
-      limit: getVoiceAnalyzeDailyLimit(),
+      limit: await getVoiceAnalyzeDailyLimit(req.dbUser!.id),
     });
     return;
   }
@@ -570,6 +570,7 @@ apiRouter.post("/meals", ...authedAccess, async (req, res) => {
     message: "Logged",
     birdBoostUntil: result.birdBoostUntil,
     newAchievements: result.newAchievements,
+    microFeedback: result.microFeedback,
   });
 });
 

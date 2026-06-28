@@ -10,6 +10,7 @@ import { leagueXpForMeal, tierFromWeeklyXp } from "../lib/leagueTiers.js";
 import { checkAchievementsAfterMeal, checkLeagueAchievement } from "./achievements.js";
 import { validateMealInput } from "./mealValidation.js";
 import { trackEvents } from "./analytics.js";
+import { buildMealMicroFeedback } from "./mealMicroFeedback.js";
 import type { DbUser } from "../types.js";
 import type { MealAnalysis } from "../types.js";
 
@@ -167,6 +168,14 @@ export async function logMealForUser(
 
   const newAchievements = await checkAchievementsAfterMeal(user, streak.streak);
   const leagueAchievements = await checkLeagueAchievement(user.id, newWeeklyXp);
+  const microFeedback = await buildMealMicroFeedback(user, {
+    description: input.description,
+    calories: input.calories,
+    protein: input.protein,
+    carbs: input.carbs,
+    fat: input.fat,
+    mealSlot: input.mealSlot,
+  });
 
   return {
     meal,
@@ -178,5 +187,6 @@ export async function logMealForUser(
     photoUrl: fields?.photoPrivacy === "private" ? null : photoUrl,
     birdBoostUntil: birdBoostUntil.toISOString(),
     newAchievements: [...newAchievements, ...leagueAchievements],
+    microFeedback,
   };
 }

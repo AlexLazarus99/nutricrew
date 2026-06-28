@@ -3,7 +3,7 @@ import { config } from "../config.js";
 import { runWeeklyReset } from "./weeklyReset.js";
 import { runMorningReminders, runEveningNudges, runStreakReset } from "./daily.js";
 import { runReengagementNudges } from "./reengagement.js";
-import { sendProSmartReminders } from "../services/notifications.js";
+import { sendProSmartReminders, sendDailyAiTips } from "../services/notifications.js";
 
 export function startCronJobs(): void {
   if (!config.cronEnabled) {
@@ -41,7 +41,12 @@ export function startCronJobs(): void {
     void sendProSmartReminders().catch(console.error);
   });
 
+  // Lite/Pro AI daily tip — 09:00 UTC
+  cron.schedule("0 9 * * *", () => {
+    void sendDailyAiTips().catch(console.error);
+  });
+
   console.log(
-    `Cron started (weekly Mon 00:05 UTC, reminders ${config.reminderHourUtc}:00 UTC, evening 18:00 UTC, reengagement Tue/Fri 11:00 UTC, pro 13:00 UTC)`,
+    `Cron started (weekly Mon 00:05 UTC, reminders ${config.reminderHourUtc}:00 UTC, evening 18:00 UTC, reengagement Tue/Fri 11:00 UTC, pro 13:00 UTC, ai tip 09:00 UTC)`,
   );
 }

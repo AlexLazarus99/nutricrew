@@ -3029,6 +3029,30 @@
   background: var(--surface);
 }
 
+.meal-micro-feedback {
+  border-left: 3px solid #8b5cf6;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(59, 130, 246, 0.06));
+}
+
+.meal-micro-feedback__label {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+}
+
+.meal-micro-feedback__text {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.report-narrative p {
+  margin: 0;
+  line-height: 1.5;
+}
+
 .plate-review__tips {
   margin: 8px 0 0;
   padding-left: 1.1rem;

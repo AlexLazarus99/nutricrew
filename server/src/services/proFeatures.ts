@@ -3,6 +3,7 @@ import { prisma } from "../db/client.js";
 import { isUserPro } from "./userPro.js";
 import { buildWeeklyReport } from "./weeklyReport.js";
 import { insightText, buildTrends } from "./trends.js";
+import { buildCoachAnswer } from "./aiNarrative.js";
 import type { DbUser } from "../types.js";
 
 export async function coachReply(user: DbUser, question: string) {
@@ -18,22 +19,11 @@ export async function coachReply(user: DbUser, question: string) {
     .join("; ");
   const q = question.trim().slice(0, 400);
   const locale = user.locale ?? "en";
-  const ru = locale.startsWith("ru");
-
-  if (!summary) {
-    return {
-      answer: ru
-        ? "Пока мало данных за неделю — залогируй 2–3 приёма пищи, и я смогу дать совет."
-        : "Not enough meals this week — log 2–3 meals and I can advise.",
-    };
-  }
 
   const trends = await buildTrends(user, "7d");
   const tips: string[] = trends.insights.map((i) => insightText(i, locale)).filter(Boolean);
 
-  const answer = ru
-    ? `На основе вашего дневника (${meals.length} приёмов): ${tips.join(" ") || "Баланс в целом стабильный."} Ваш вопрос: «${q}» — попробуйте добавить белок к завтраку и держать воду 2 л/день.`
-    : `Based on your diary (${meals.length} meals): ${tips.join(" ") || "Overall balance looks steady."} Re: "${q}" — try adding protein at breakfast and ~2L water daily.`;
+  const answer = buildCoachAnswer(user, q, summary, meals.length, tips);
 
   return { answer };
 }

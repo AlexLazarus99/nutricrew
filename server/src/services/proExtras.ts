@@ -6,6 +6,7 @@ import { assertUserPro } from "../lib/assertPro.js";
 import { grantStreakFreeze } from "../repositories/growth.js";
 import { buildTrends } from "./trends.js";
 import { buildMealPlan } from "./proFeatures.js";
+import { analyzeFoodImage } from "./vision.js";
 import type { DbUser } from "../types.js";
 
 export type ProGoalMode = "lose" | "maintain" | "gain";
@@ -66,7 +67,11 @@ export async function buildFourWeekMealPlan(user: DbUser) {
   return { weeks };
 }
 
-export async function plateReview(user: DbUser, description: string) {
+export async function plateReview(
+  user: DbUser,
+  description: string,
+  imageBase64?: string,
+) {
   await assertUserPro(user.id);
   const text = description.trim().slice(0, 500);
   const since = new Date();
@@ -79,6 +84,19 @@ export async function plateReview(user: DbUser, description: string) {
   const ru = user.locale?.startsWith("ru");
   const goals = await getProGoals(user, "maintain");
 
+  let visionNote: string | null = null;
+  if (imageBase64?.trim()) {
+    const analysis = await analyzeFoodImage(imageBase64, user.locale ?? "en", {
+      proPriority: true,
+    });
+    visionNote = ru
+      ? `ИИ по фото: ~${analysis.calories} ккал, Б${analysis.protein} Ж${analysis.fat} У${analysis.carbs} — «${analysis.description}».`
+      : `AI from photo: ~${analysis.calories} kcal, P${analysis.protein} F${analysis.fat} C${analysis.carbs} — "${analysis.description}".`;
+    if (!text) {
+      description = analysis.description;
+    }
+  }
+
   const tips: string[] = [];
   if (goals.protein && avgProtein < goals.protein * 0.7) {
     tips.push(
@@ -87,12 +105,16 @@ export async function plateReview(user: DbUser, description: string) {
         : "Add a protein source — chicken, fish, cottage cheese, or legumes.",
     );
   }
-  if (/сладк|sweet|dessert|торт|cake/i.test(text)) {
+  const reviewText = text || description;
+  if (/сладк|sweet|dessert|торт|cake/i.test(reviewText)) {
     tips.push(
       ru
         ? "Много быстрых углеводов — попробуйте половину порции или замену на ягоды."
         : "Likely high in fast carbs — try half portion or swap sweets for berries.",
     );
+  }
+  if (visionNote) {
+    tips.push(visionNote);
   }
   if (tips.length === 0) {
     tips.push(
@@ -102,10 +124,11 @@ export async function plateReview(user: DbUser, description: string) {
     );
   }
 
+  const label = (text || description).trim();
   return {
     summary: ru
-      ? `Разбор тарелки «${text}» с учётом вашего дневника.`
-      : `Plate review for "${text}" based on your recent diary.`,
+      ? `Разбор тарелки «${label}» с учётом вашего дневника.`
+      : `Plate review for "${label}" based on your recent diary.`,
     tips,
     goals,
   };

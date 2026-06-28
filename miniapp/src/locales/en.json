@@ -367,6 +367,7 @@
     "carbs": "Carbs",
     "fat": "Fat",
     "submit": "Add points",
+    "microFeedbackTitle": "AI insight",
     "success": "+{{points}} you, +{{team}} team · streak {{streak}}d",
     "pickPhoto": "Take or choose photo",
     "liveCamera": "Live camera — real-time calories",
@@ -648,7 +649,8 @@
     "streak": "Streak",
     "teamBlock": "Team",
     "teamRank": "Rank #{{rank}} · {{points}} pts",
-    "avgCalories": "Avg {{value}} kcal per meal"
+    "avgCalories": "Avg {{value}} kcal per meal",
+    "narrative": "Week in review"
   },
   "teamAdmin": {
     "title": "Team dashboard",
@@ -1600,6 +1602,9 @@
     "plateReviewHint": "Describe your plate — get quick fixes.",
     "plateReviewPlaceholder": "e.g. pasta with cream sauce and salad",
     "plateReviewBtn": "Analyze plate",
+    "plateReviewPhoto": "Add plate photo",
+    "plateReviewPhotoSelected": "Photo: {{name}}",
+    "plateReviewPhotoError": "Could not read photo",
     "mealPlanPreview": "Full weekly meal plan is in Pro — preview is one day.",
     "trendsLiteHint": "30 and 90 day trends are Pro:",
     "priceLine": "Pro subscription · 30 days",

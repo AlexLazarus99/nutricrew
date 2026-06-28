@@ -189,3 +189,20 @@ export async function sendProSmartReminders(): Promise<void> {
     );
   }
 }
+
+export async function sendDailyAiTips(): Promise<void> {
+  const { buildDailyAiTip } = await import("./aiDailyTip.js");
+  const { trackEvents } = await import("./analytics.js");
+  const users = await usersRepo.listAllWithTeams();
+
+  for (const user of users) {
+    if (user.timezone_offset_minutes != null && !isLocalHour(user, 9)) continue;
+    if (user.timezone_offset_minutes == null && new Date().getUTCHours() !== 9) continue;
+
+    const tip = await buildDailyAiTip(user);
+    if (!tip) continue;
+
+    await send(user.telegram_id, tip);
+    await trackEvents(user.id, [{ name: "daily_ai_tip" }]);
+  }
+}

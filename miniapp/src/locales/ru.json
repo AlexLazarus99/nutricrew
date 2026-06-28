@@ -367,6 +367,7 @@
     "carbs": "Углеводы",
     "fat": "Жиры",
     "submit": "Начислить очки",
+    "microFeedbackTitle": "Совет ИИ",
     "success": "+{{points}} тебе, +{{team}} команде · серия {{streak}} дн.",
     "pickPhoto": "Сделать или выбрать фото",
     "liveCamera": "Камера — калории в реальном времени",
@@ -648,7 +649,8 @@
     "streak": "Серия",
     "teamBlock": "Команда",
     "teamRank": "Место #{{rank}} · {{points}} очк.",
-    "avgCalories": "В среднем {{value}} ккал на приём"
+    "avgCalories": "В среднем {{value}} ккал на приём",
+    "narrative": "Итог недели"
   },
   "teamAdmin": {
     "title": "Дашборд команды",
@@ -1655,6 +1657,9 @@
     "plateReviewHint": "Опишите тарелку — получите быстрые советы.",
     "plateReviewPlaceholder": "например: паста со сливочным соусом и салат",
     "plateReviewBtn": "Разобрать тарелку",
+    "plateReviewPhoto": "Добавить фото тарелки",
+    "plateReviewPhotoSelected": "Фото: {{name}}",
+    "plateReviewPhotoError": "Не удалось прочитать фото",
     "mealPlanPreview": "Полный план питания в Pro — здесь превью одного дня.",
     "trendsLiteHint": "Тренды 30 и 90 дней — в Pro:",
     "priceLine": "Подписка Pro · 30 дней",

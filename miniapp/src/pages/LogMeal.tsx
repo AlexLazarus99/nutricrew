@@ -627,6 +627,12 @@ export function LogMealPage() {
             inviteUrl={mealResult.inviteUrl}
             progress={me.progress}
           />
+          {mealResult.microFeedback && (
+            <div className="card meal-micro-feedback">
+              <p className="meal-micro-feedback__label">{t("log.microFeedbackTitle")}</p>
+              <p className="meal-micro-feedback__text">{mealResult.microFeedback}</p>
+            </div>
+          )}
           <Link to="/diary" className="btn btn-secondary btn-block">
             {t("diary.viewAfterLog")}
           </Link>

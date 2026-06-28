@@ -301,6 +301,7 @@ export interface WeeklyReportResponse {
   insights?: string[];
   avgCalories?: number;
   avgProtein?: number;
+  narrative?: string;
 }
 
 export interface TrendsResponse {
@@ -592,6 +593,7 @@ export interface MealResponse {
   mealsToday?: number;
   inviteUrl?: string | null;
   message: string;
+  microFeedback?: string | null;
 }
 
 export interface DiaryMealEntry {
@@ -1011,10 +1013,10 @@ export const api = {
         }>
       >;
     }>("/pro/meal-plan-4w"),
-  proPlateReview: (description: string) =>
+  proPlateReview: (description: string, imageBase64?: string) =>
     request<{ summary: string; tips: string[] }>("/pro/plate-review", {
       method: "POST",
-      body: JSON.stringify({ description }),
+      body: JSON.stringify({ description, imageBase64 }),
     }),
   getProPerks: () =>
     request<{

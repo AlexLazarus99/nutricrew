@@ -2,7 +2,7 @@ import * as mealsRepo from "../repositories/meals.js";
 import * as analyticsRepo from "../repositories/analytics.js";
 import { hashImageBase64 } from "../lib/imageHash.js";
 import type { MealAnalysis } from "../types.js";
-import { isUserPro } from "./userPro.js";
+import { getAnalyzeLimit } from "./userAiTier.js";
 
 export type MealValidationError =
   | "NOT_FOOD"
@@ -14,9 +14,6 @@ export type MealValidationError =
 export type MealValidationResult =
   | { ok: true; imageHash: string | null; verificationStatus: string; pointsPenalty: number }
   | { ok: false; error: MealValidationError };
-
-const FREE_ANALYZE_LIMIT = 20;
-const PRO_ANALYZE_LIMIT = 80;
 
 const AI_VISION_SOURCES = new Set<MealAnalysis["source"]>([
   "claude",
@@ -58,10 +55,9 @@ export async function validateMealInput(
     imageHash = hashImageBase64(input.photoBase64);
 
     if (isAiVisionAnalysis(input.analysis)) {
-      const pro = await isUserPro(userId);
-      const analyzeLimit = pro ? PRO_ANALYZE_LIMIT : FREE_ANALYZE_LIMIT;
+      const analyzeLimit = await getAnalyzeLimit(userId);
       const analyzesToday = await analyticsRepo.countEventsToday(userId, "meal_analyze");
-      if (analyzesToday > analyzeLimit) {
+      if (analyzesToday >= analyzeLimit) {
         return { ok: false, error: "ANALYZE_LIMIT" };
       }
 

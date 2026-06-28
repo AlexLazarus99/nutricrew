@@ -66,6 +66,13 @@ function WeeklyReportContent() {
         </div>
       </div>
 
+      {report.narrative && (
+        <div className="card report-narrative">
+          <h3>{t("report.narrative")}</h3>
+          <p>{report.narrative}</p>
+        </div>
+      )}
+
       {report.teamName && (
         <div className="card">
           <h3>{t("report.teamBlock")}</h3>

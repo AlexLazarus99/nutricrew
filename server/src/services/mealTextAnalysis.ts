@@ -8,12 +8,8 @@ import {
   parseMealJsonResponse,
 } from "../lib/mealLlmShared.js";
 import * as analyticsRepo from "../repositories/analytics.js";
-import { isUserPro } from "./userPro.js";
+import { getAnalyzeLimit, getVoiceAnalyzeLimit } from "./userAiTier.js";
 import type { AppLocale, MealAnalysis, VisionFallbackReason } from "../types.js";
-
-const FREE_ANALYZE_LIMIT = 20;
-const PRO_ANALYZE_LIMIT = 80;
-const VOICE_ANALYZE_DAILY_LIMIT = 5;
 
 type TextProvider = "claude" | "openai" | "gemini";
 
@@ -24,8 +20,7 @@ export function getLastTextHints() {
 }
 
 export async function assertTextAnalyzeLimit(userId: number): Promise<void> {
-  const pro = await isUserPro(userId);
-  const limit = pro ? PRO_ANALYZE_LIMIT : FREE_ANALYZE_LIMIT;
+  const limit = await getAnalyzeLimit(userId);
   const [imageCount, textCount] = await Promise.all([
     analyticsRepo.countEventsToday(userId, "meal_analyze"),
     analyticsRepo.countEventsToday(userId, "meal_analyze_text"),
@@ -36,17 +31,15 @@ export async function assertTextAnalyzeLimit(userId: number): Promise<void> {
 }
 
 export async function assertVoiceAnalyzeLimit(userId: number): Promise<void> {
-  const pro = await isUserPro(userId);
-  if (pro) return;
-
+  const limit = await getVoiceAnalyzeLimit(userId);
   const used = await analyticsRepo.countVoiceAnalyzeToday(userId);
-  if (used >= VOICE_ANALYZE_DAILY_LIMIT) {
+  if (used >= limit) {
     throw new Error("VOICE_ANALYZE_LIMIT");
   }
 }
 
-export function getVoiceAnalyzeDailyLimit(): number {
-  return VOICE_ANALYZE_DAILY_LIMIT;
+export async function getVoiceAnalyzeDailyLimit(userId: number): Promise<number> {
+  return getVoiceAnalyzeLimit(userId);
 }
 
 function hasAnyLlmKey(): boolean {
